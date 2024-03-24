@@ -38,39 +38,35 @@ public class Corner {
     }
 
     /**
-     * Getter method for the x coordinate
-     * @return x
+     * @return corner's horizontal coordinate
      */
     public int getX(){
         return x;
     }
 
     /**
-     * Getter method for the y coordinate
-     * @return y
+     * @return corner's vertical coordinate
      */
     public int getY(){
         return y;
     }
 
     /**
-     * Getter method for the content of the corner
-     * @return content
+     * @return corner's content
      */
     public Content getContent(){
         return content;
     }
 
     /**
-     * Getter method for the visibility of the corner
-     * @return visibility
+     * @return corner's visibility
      */
     public boolean getVisibility(){
         return visibility;
     }
 
     /**
-     * Sets corner visibility to false
+     * Sets corner's visibility to false
      */
     public void coverCorner(){
         this.visibility = false;

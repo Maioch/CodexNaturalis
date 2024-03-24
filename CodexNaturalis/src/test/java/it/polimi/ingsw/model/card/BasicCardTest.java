@@ -1,7 +1,11 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.card;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import it.polimi.ingsw.model.Content;
+import it.polimi.ingsw.model.Corner;
+import it.polimi.ingsw.model.Location;
+import it.polimi.ingsw.model.card.BasicCard;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -10,7 +14,7 @@ import java.util.HashMap;
 
 public class BasicCardTest {
     private final HashMap<Location, Corner> corners1 = new HashMap<Location,Corner>(){{
-        put(Location.TR, new Corner(0,1,Content.RED));
+        put(Location.TR, new Corner(0,1, Content.RED));
         put(Location.TL, new Corner(1,1,Content.RED));
         put(Location.BR, new Corner(0,0,Content.RED));
         put(Location.BL, new Corner(1,0,Content.RED));

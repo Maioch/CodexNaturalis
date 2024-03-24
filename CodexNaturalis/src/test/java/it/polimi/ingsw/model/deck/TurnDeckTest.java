@@ -1,11 +1,9 @@
-package it.polimi.ingsw.model;
-
-import it.polimi.ingsw.model.deck.*;
-import org.junit.jupiter.api.*;
-
-import java.util.ArrayList;
+package it.polimi.ingsw.model.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 /**
  * @author Andrea Fidanza

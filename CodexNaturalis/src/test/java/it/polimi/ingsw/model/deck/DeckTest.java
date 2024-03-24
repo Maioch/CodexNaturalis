@@ -1,11 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.deck;
 
-import it.polimi.ingsw.model.deck.Deck;
+import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Guglielmo Gatti

@@ -11,14 +11,6 @@ public class Objective {
     private final Player owner;
 
     /**
-     * Calculates the amount of points gained by satisfying the objective's requirements.
-     * @return the amount of points gained
-     */
-    public int checkObjective(){
-        return bonus.calculate(points);
-    }
-
-    /**
      * @param objectiveId the card's id
      * @param points the base amount of points awarded by the card
      * @param bonus the bonus object, used to calculate the multiplier
@@ -30,4 +22,14 @@ public class Objective {
         this.bonus = bonus;
         this.owner = owner;
     }
+
+    /**
+     * Calculates the amount of points gained by satisfying the objective's requirements.
+     * @return the amount of points gained
+     */
+    public int checkObjective(){
+        return bonus.calculate(points);
+    }
+
+    public int getObjectiveId() { return objectiveId; }
 }

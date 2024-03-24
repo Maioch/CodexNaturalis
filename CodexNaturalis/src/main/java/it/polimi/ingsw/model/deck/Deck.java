@@ -54,18 +54,25 @@ public class Deck {
      * @return a random integer from the deck
      * @exception NoMoreCardsException if the deck is empty when the user tries to draw.
      */
-    public int draw() throws NoMoreCardsException{
+    public int draw(){
         if(cards.isEmpty()){
             throw new NoMoreCardsException();
         }
-        int randomIndex = cards.getFirst() + random.nextInt(cards.getLast() + 1 - cards.getFirst());
+        int randomIndex = random.nextInt(cards.size());
         return cards.remove(randomIndex);
     }
 
     public static class NoMoreCardsException extends RuntimeException{
         @Override
-        public String toString(){
+        public String getMessage(){
             return "There are no more cards available at the requested source";
+        }
+    }
+
+    public static class InvalidRangeException extends RuntimeException{
+        @Override
+        public String getMessage(){
+            return "The supplied value range is not valid";
         }
     }
 }

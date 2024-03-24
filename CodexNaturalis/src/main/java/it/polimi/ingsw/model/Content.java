@@ -7,21 +7,26 @@ package it.polimi.ingsw.model;
  * @author Marco Maiocchi
  */
 public enum Content {
-    RED, GREEN, BLUE, PURPLE, WHITE, PEN, PAPER, INK;
+    RED, GREEN, BLUE, PURPLE, WHITE, PEN, PAPER, INK, EMPTY;
 
     /**
-     * @param content symbol to check
-     * @return true if content is a color
+     * @return true if this is a color
      */
-    public boolean isColor(Content content){
-        return content == RED || content == GREEN || content == BLUE || content == PURPLE || content == WHITE;
+    public boolean isColor(){
+        return this == RED || this == GREEN || this == BLUE || this == PURPLE || this == WHITE;
     }
 
     /**
-     * @param content symbol to check
-     * @return true if content is an object
+     * @return true if this is an object
      */
-    public boolean isObject(Content content){
-        return !isColor(content);
+    public boolean isObject(){
+        return this == PEN || this == PAPER || this == INK;
+    }
+
+    /**
+     * @return true if there's no symbol
+     */
+    public boolean isEmpty(){
+        return this == EMPTY;
     }
 }
