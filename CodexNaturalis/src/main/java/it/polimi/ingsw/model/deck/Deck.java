@@ -12,8 +12,8 @@ import java.util.Random;
  * @author Guglielmo Gatti
  */
 public class Deck {
-    private final Random random = new Random();
-    ArrayList<Integer> cards = new ArrayList<Integer>();
+    private final Random random;
+    ArrayList<Integer> cards;
 
     /**
      * Creates a deck including all card indices from rangeStart to rangeEnd in ascending order
@@ -22,7 +22,9 @@ public class Deck {
      * @param rangeEnd the inclusive index at which the card range of the deck ends
      */
     public Deck(int rangeStart, int rangeEnd){
-        if (rangeStart < rangeEnd || rangeStart < 0 || rangeEnd < 0){
+        cards = new ArrayList<Integer>();
+        random = new Random();
+        if (rangeStart > rangeEnd || rangeStart < 0){
             throw new InvalidRangeException();
         }
         for (int i = rangeStart; i <= rangeEnd; i++){

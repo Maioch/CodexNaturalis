@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class DeckTest {
     private final int deckStart = 25;
-    private final int deckEnd = 42;
+    private final int deckEnd = 67;
 
     private final ArrayList<Integer> ids = new ArrayList<Integer>();
     private final Deck deck = new Deck(deckStart,deckEnd);
@@ -22,15 +22,15 @@ public class DeckTest {
      */
     @Test
     public void RepeatedDrawTest(){
-        for(int i = deckStart; i <= deckEnd; i++){
+        for(int i = deckStart; i <= deckEnd + 1; i++){
             try{
                 int newId = deck.draw();
                 for (Integer id : ids) {
                     assertFalse(newId == id);
                 }
                 ids.add(newId);
-                assertTrue(deck.draw() <= deckEnd && deck.draw() >= deckStart);
-                assertFalse(deck.isEmpty());
+                assertTrue(newId <= deckEnd && newId >= deckStart);
+                assertEquals(deck.isEmpty(),i == deckEnd);
             }
             catch(Deck.NoMoreCardsException noCards){
                 assertTrue(deck.isEmpty());
