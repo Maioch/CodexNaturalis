@@ -1,8 +1,7 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.deck;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 
 /**
@@ -14,8 +13,31 @@ import java.util.stream.IntStream;
  */
 public class Deck {
     private final Random random = new Random();
-    protected ArrayList<Integer> cards = new ArrayList<Integer>();
+    ArrayList<Integer> cards = new ArrayList<Integer>();
 
+    /**
+     * Creates a deck including all card indices from rangeStart to rangeEnd in ascending order
+     *
+     * @param rangeStart the inclusive index at which the card range of the deck starts
+     * @param rangeEnd the inclusive index at which the card range of the deck ends
+     */
+    public Deck(int rangeStart, int rangeEnd){
+        if (rangeStart < rangeEnd || rangeStart < 0 || rangeEnd < 0){
+            throw new InvalidRangeException();
+        }
+        for (int i = rangeStart; i <= rangeEnd; i++){
+            this.cards.add(i);
+        }
+    }
+
+    /**
+     * Getter for cards
+     *
+     * @return ArrayList of cards
+     */
+    public ArrayList<Integer> getCards(){
+        return (ArrayList<Integer>)cards.clone();
+    }
 
     /**
      * Check whether the deck is empty
@@ -40,19 +62,7 @@ public class Deck {
         return cards.remove(randomIndex);
     }
 
-    /**
-     * Creates a deck including all card indices from rangeStart to rangeEnd in ascending order
-     *
-     * @param rangeStart the inclusive index at which the card range of the deck starts
-     * @param rangeEnd the inclusive index at which the card range of the deck ends
-     */
-    public Deck(int rangeStart, int rangeEnd){
-        for (int i = rangeStart; i <= rangeEnd; i++){
-            this.cards.add(i);
-        }
-    }
-
-    public static class NoMoreCardsException extends Exception{
+    public static class NoMoreCardsException extends RuntimeException{
         @Override
         public String toString(){
             return "There are no more cards available at the requested source";
