@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.deck;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * Class that represents gold and resource decks. It also represents the visible cards beside the deck
@@ -17,11 +16,14 @@ public class TurnDeck extends Deck {
      * @param range_start the inclusive index at which the card range of the deck starts
      * @param range_end the inclusive index at which the card range of the deck ends
      * @param numberOfVisibleCards the size of the array of visible cards
+     * @exception InvalidRangeException if numberOfVisibleCards is greater than the number of cards in the deck
      */
     public TurnDeck(int range_start, int range_end, int numberOfVisibleCards){
         super(range_start, range_end);
-        visibleCards = new ArrayList<Integer>(numberOfVisibleCards);
-        for(int i = 0; i < numberOfVisibleCards; i++)
+        if(numberOfVisibleCards > range_end - range_start)
+            throw new InvalidRangeException();
+        visibleCards = new ArrayList<>(numberOfVisibleCards);
+        for(int i = 0; i < numberOfVisibleCards && !this.isEmpty(); i++)
             visibleCards.add(cards.removeLast());
     }
 
@@ -44,16 +46,10 @@ public class TurnDeck extends Deck {
         if(visibleCards.get(index) == null)
             throw new NoMoreCardsException();
         int drawnCard = visibleCards.get(index);
-        visibleCards.set(index, cards.isEmpty() ? null : cards.removeLast());
+        if(cards.isEmpty())
+            visibleCards.remove(index);
+        else
+            visibleCards.set(index, cards.removeLast());
         return drawnCard;
-    }
-
-    /**
-     * Returns all the indexes that correspond to a visible card
-     *
-     * @return the valid indexes array
-     */
-    public ArrayList<Integer> getValidIndexes(){
-        return visibleCards.stream().filter(Objects::nonNull).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
     }
 }

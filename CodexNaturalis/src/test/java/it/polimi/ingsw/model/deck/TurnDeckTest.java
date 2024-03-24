@@ -18,18 +18,20 @@ public class TurnDeckTest {
     void drawVisibleCardTest(){
         int index = 0;
         try {
-            for(index = 0; index < numberOfVisibleCards; index++) {
-                ArrayList<Integer> cards = new ArrayList<>(deck.getCards());
-                ArrayList<Integer> visibleCards = new ArrayList<>(deck.getVisibleCards());
+            while(!deck.isEmpty()) {
+                for (index = 0; index < numberOfVisibleCards; index++) {
+                    ArrayList<Integer> cards = new ArrayList<>(deck.getCards());
+                    ArrayList<Integer> visibleCards = new ArrayList<>(deck.getVisibleCards());
 
-                int card = deck.drawVisibleCard(index);
+                    int card = deck.drawVisibleCard(index);
 
-                assertTrue(visibleCards.contains(card));
-                if(!deck.isEmpty())
-                    assertTrue(cards.contains(deck.getVisibleCards().get(index)));
+                    assertTrue(visibleCards.contains(card));
+                    if (!deck.isEmpty())
+                        assertTrue(cards.contains(deck.getVisibleCards().get(index)));
 
-                visibleCards = new ArrayList<>(deck.getVisibleCards());
-                assertFalse(visibleCards.contains(card));
+                    visibleCards = new ArrayList<>(deck.getVisibleCards());
+                    assertFalse(visibleCards.contains(card));
+                }
             }
         } catch (Deck.NoMoreCardsException ex){
             assertNull(deck.getVisibleCards().get(index));
