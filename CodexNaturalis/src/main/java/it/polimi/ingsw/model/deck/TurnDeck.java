@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model.deck;
 
+import it.polimi.ingsw.model.card.BasicCard;
+
 import java.util.ArrayList;
 
 /**
@@ -8,7 +10,7 @@ import java.util.ArrayList;
  * @author Andrea Fidanza
  */
 public class TurnDeck extends Deck {
-    private final ArrayList<Integer> visibleCards;
+    private final ArrayList<BasicCard> visibleCards;
 
     /**
      * Class constructor. Gets the visible cards from the top of the deck
@@ -20,11 +22,13 @@ public class TurnDeck extends Deck {
      */
     public TurnDeck(int range_start, int range_end, int numberOfVisibleCards){
         super(range_start, range_end);
+
         if(numberOfVisibleCards > range_end - range_start)
             throw new InvalidRangeException();
-        visibleCards = new ArrayList<>(numberOfVisibleCards);
+
+        this.visibleCards = new ArrayList<>(numberOfVisibleCards);
         for(int i = 0; i < numberOfVisibleCards; i++)
-            visibleCards.add(cards.removeLast());
+            this.visibleCards.add(this.cards.pop());
     }
 
     /**
@@ -32,8 +36,8 @@ public class TurnDeck extends Deck {
      *
      * @return ArrayList of visible cards
      */
-    public ArrayList<Integer> getVisibleCards(){
-        return (ArrayList<Integer>) visibleCards.clone();
+    public ArrayList<BasicCard> getVisibleCards(){
+        return new ArrayList<>(this.visibleCards);
     }
 
     /**
@@ -42,14 +46,17 @@ public class TurnDeck extends Deck {
      * @param index the index of the selected visible card
      * @return the selected visible card
      */
-    public int drawVisibleCard(int index) throws NoMoreCardsException{
-        if(visibleCards.get(index) == null)
+    public BasicCard drawVisibleCard(int index) throws NoMoreCardsException{
+        if(this.visibleCards.get(index) == null)
             throw new NoMoreCardsException();
-        int drawnCard = visibleCards.get(index);
-        if(cards.isEmpty())
-            visibleCards.remove(index);
+
+        BasicCard drawnCard = this.visibleCards.get(index);
+
+        if(this.cards.isEmpty())
+            this.visibleCards.remove(index);
         else
-            visibleCards.set(index, cards.removeLast());
+            this.visibleCards.set(index, this.cards.pop());
+
         return drawnCard;
     }
 }

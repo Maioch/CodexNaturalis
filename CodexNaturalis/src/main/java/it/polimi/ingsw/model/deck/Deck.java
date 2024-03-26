@@ -1,7 +1,9 @@
 package it.polimi.ingsw.model.deck;
 
-import java.util.ArrayList;
-import java.util.Random;
+import it.polimi.ingsw.model.card.BasicCard;
+import it.polimi.ingsw.model.card.CardBuilder;
+
+import java.util.*;
 
 
 /**
@@ -12,8 +14,7 @@ import java.util.Random;
  * @author Guglielmo Gatti
  */
 public class Deck {
-    private final Random random;
-    ArrayList<Integer> cards;
+    Stack<BasicCard> cards;
 
     /**
      * Creates a deck including all card indices from rangeStart to rangeEnd in ascending order
@@ -22,14 +23,16 @@ public class Deck {
      * @param rangeEnd the inclusive index at which the card range of the deck ends
      */
     public Deck(int rangeStart, int rangeEnd){
-        cards = new ArrayList<Integer>();
-        random = new Random();
         if (rangeStart > rangeEnd || rangeStart < 0){
             throw new InvalidRangeException();
         }
-        for (int i = rangeStart; i <= rangeEnd; i++){
-            this.cards.add(i);
+
+        this.cards = new Stack<>();
+        for(int i = rangeStart; i <= rangeEnd; i++){
+            this.cards.push(CardBuilder.getCard(i));
         }
+
+        Collections.shuffle(this.cards);
     }
 
     /**
@@ -37,8 +40,8 @@ public class Deck {
      *
      * @return ArrayList of cards
      */
-    public ArrayList<Integer> getCards(){
-        return (ArrayList<Integer>)cards.clone();
+    public ArrayList<BasicCard> getCards(){
+        return new ArrayList<>(this.cards);
     }
 
     /**
@@ -47,7 +50,7 @@ public class Deck {
      * @return a boolean representing if the deck is empty
      */
     public boolean isEmpty(){
-        return cards.isEmpty();
+        return this.cards.isEmpty();
     }
 
     /**
@@ -56,12 +59,12 @@ public class Deck {
      * @return a random integer from the deck
      * @exception NoMoreCardsException if the deck is empty when the user tries to draw.
      */
-    public int draw(){
-        if(cards.isEmpty()){
+    public BasicCard draw(){
+        if(this.cards.isEmpty()){
             throw new NoMoreCardsException();
         }
-        int randomIndex = random.nextInt(cards.size());
-        return cards.remove(randomIndex);
+
+        return this.cards.pop();
     }
 
     public static class NoMoreCardsException extends RuntimeException{

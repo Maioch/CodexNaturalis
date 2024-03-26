@@ -28,8 +28,8 @@ public class Objective {
      * @return the amount of points gained
      */
     public int checkObjective(){
-        return bonus.calculate(points);
+        return this.bonus.calculate(this.points);
     }
 
-    public int getObjectiveId() { return objectiveId; }
+    public int getObjectiveId() { return this.objectiveId; }
 }

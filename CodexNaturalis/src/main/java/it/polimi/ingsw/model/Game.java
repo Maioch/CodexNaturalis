@@ -26,8 +26,8 @@ public class Game {
     public final int currentPlayer;
 
     public Game(){
-        players = new ArrayList<Player>();
-        nicknames = new ArrayList<String>();
+        players = new ArrayList<>();
+        nicknames = new ArrayList<>();
         resourceDeck = new TurnDeck(resourceCardStartIndex, goldCardStartIndex - 1, numberOfVisibleCards);
         goldDeck = new TurnDeck(goldCardStartIndex, starterCardStartIndex - 1, numberOfVisibleCards);
         starterDeck = new Deck(starterCardStartIndex, objectiveCardStartIndex - 1);
@@ -49,7 +49,7 @@ public class Game {
      * @return the ArrayList including the players
      */
     public ArrayList<Player> getPlayers(){
-        return (ArrayList<Player>) players.clone();
+        return new ArrayList<>(this.players);
     }
 
     /**

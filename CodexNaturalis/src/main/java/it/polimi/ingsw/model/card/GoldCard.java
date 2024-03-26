@@ -25,7 +25,7 @@ public class GoldCard extends BasicCard {
     */
     GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements, Bonus bonus, Player owner){
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
-        this.requirements = (ArrayList<Content>) requirements.clone();
+        this.requirements = new ArrayList<>(requirements);
         this.bonus = bonus;
         this.owner = owner;
     }
@@ -35,7 +35,7 @@ public class GoldCard extends BasicCard {
      * @return the requirements needed to play the card
      */
     private ArrayList<Content> getRequirements(){
-        return (ArrayList<Content>) requirements.clone();
+        return new ArrayList<>(this.requirements);
     }
 
     /**

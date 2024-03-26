@@ -41,28 +41,28 @@ public class Corner {
      * @return corner's horizontal coordinate
      */
     public int getX(){
-        return x;
+        return this.x;
     }
 
     /**
      * @return corner's vertical coordinate
      */
     public int getY(){
-        return y;
+        return this.y;
     }
 
     /**
      * @return corner's content
      */
     public Content getContent(){
-        return content;
+        return this.content;
     }
 
     /**
      * @return corner's visibility
      */
     public boolean getVisibility(){
-        return visibility;
+        return this.visibility;
     }
 
     /**

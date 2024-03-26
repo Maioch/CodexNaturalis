@@ -10,7 +10,7 @@ import java.util.HashMap;
  * Class that represents each one of the 4 possible players in a game, each with his distinctive nickname and color,
  * and his board and hand status during the played turn. This keeps track of the score and objectives of each player, too.
  *
- * @author Marco Maiocchi
+ * @author Marco Maiocchi, Andrea Fidanza
  */
 public class Player {
     private final String nickname;
@@ -31,9 +31,9 @@ public class Player {
     public Player(String nickname, Content color, ArrayList<BasicCard> placedCards, ArrayList<BasicCard> handCards, ArrayList<Objective> objectives){
         this.nickname = nickname;
         this.color = color;
-        this.placedCards = (ArrayList<BasicCard>) placedCards.clone();
-        this.handCards = (ArrayList<BasicCard>) handCards.clone();
-        this.objectives = (ArrayList<Objective>) objectives.clone();
+        this.placedCards = new ArrayList<>(placedCards);
+        this.handCards = new ArrayList<>(handCards);
+        this.objectives = new ArrayList<>(objectives);
         this.score = 0;
     }
 
@@ -55,7 +55,7 @@ public class Player {
      * @return player's placed cards
      */
     public ArrayList<BasicCard> getPlacedCards(){
-        return (ArrayList<BasicCard>) this.placedCards.clone();
+        return new ArrayList<>(this.placedCards);
     }
 
     /**
@@ -78,7 +78,7 @@ public class Player {
      */
     public int getObjectivePoints(){
         int points = 0;
-        for(Objective objective : objectives)
+        for(Objective objective : this.objectives)
             points += objective.checkObjective();
         return points;
     }

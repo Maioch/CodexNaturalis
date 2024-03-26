@@ -47,9 +47,9 @@ public class BasicCard {
 
         this.cardId = cardId;
         this.color = color;
-        this.corners = (HashMap<Location, Corner>) corners.clone();
+        this.corners = new HashMap<>(corners);
         this.points = points;
-        this.resources = (ArrayList<Content>) resources.clone();
+        this.resources = new ArrayList<>(resources);
     }
 
     /**
@@ -57,7 +57,7 @@ public class BasicCard {
      * @return the point attribute
      */
     public int getPoints(){
-        return points;
+        return this.points;
     }
 
     /**
@@ -65,7 +65,7 @@ public class BasicCard {
      * @return the card's color
      */
     public Content getColor(){
-        return color;
+        return this.color;
     }
 
     /**
@@ -73,20 +73,20 @@ public class BasicCard {
      * @return the card's resources
      */
     public ArrayList<Content> getResources() {
-        return (ArrayList<Content>) resources.clone();
+        return new ArrayList<>(this.resources);
     }
 
     /**
      * Returns a hashmap that associates each resource type with the amount present in the card by pulling
      * from both the corners and the permanent resources
-     * @return an hashmap with the resource as key and the amount as value
+     * @return a hashmap with the resource as key and the amount as value
      */
     public HashMap<Content,Integer> getCardSymbols(){
         //Create a list containing all the contents of the card
-        ArrayList<Content> totalContent = corners.values().stream()
+        ArrayList<Content> totalContent = this.corners.values().stream()
                 .map(Corner::getContent)
                 .toList();
-        totalContent.addAll(resources);
+        totalContent.addAll(this.resources);
         return new HashMap<Content,Integer>(){{
             for(Content content : Content.values()){
                 put(content, totalContent.stream()
@@ -98,7 +98,7 @@ public class BasicCard {
     }
 
     public ArrayList<Corner> getValidCorners(){
-        return corners.values().stream().filter(Corner::getVisibility).toList();
+        return this.corners.values().stream().filter(Corner::getVisibility).toList();
     }
 
     /**
@@ -111,19 +111,21 @@ public class BasicCard {
     private boolean checkIfCoherentCorners(boolean isXAxis, HashMap<Location, Corner> corners){
 
         if(isXAxis){
-            if(corners.get((Location.BL)).getX() != corners.get((Location.TL)).getX() ||
-                    corners.get((Location.BR)).getX() != corners.get((Location.TR)).getX()){
+            if(corners.get(Location.BL).getX() != corners.get(Location.TL).getX() ||
+                    corners.get(Location.BR).getX() != corners.get(Location.TR).getX()) {
                 return false;
-            }else if((corners.get((Location.BR)).getX() - corners.get(Location.BL).getX()) != 1 ||
-                    (corners.get((Location.TR)).getX() - corners.get(Location.TL).getX()) != 1){
+            }
+            if((corners.get(Location.BR).getX() - corners.get(Location.BL).getX()) != 1 ||
+                    (corners.get(Location.TR).getX() - corners.get(Location.TL).getX()) != 1){
                 return false;
             }
         }else{
-            if(corners.get((Location.BR)).getY() != corners.get((Location.BL)).getY() ||
-                    corners.get((Location.TR)).getY() != corners.get((Location.TL)).getY()){
+            if(corners.get(Location.BR).getY() != corners.get(Location.BL).getY() ||
+                    corners.get(Location.TR).getY() != corners.get(Location.TL).getY()){
                 return false;
-            } else if ((corners.get((Location.TL)).getY() - corners.get(Location.BL).getY()) != 1 ||
-                    (corners.get((Location.TR)).getY() - corners.get(Location.BR).getY()) != 1) {
+            }
+            if((corners.get(Location.TL).getY() - corners.get(Location.BL).getY()) != 1 ||
+                    (corners.get(Location.TR).getY() - corners.get(Location.BR).getY()) != 1) {
                 return false;
             }
         }
