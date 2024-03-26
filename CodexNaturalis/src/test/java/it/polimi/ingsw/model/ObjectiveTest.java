@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-/** not currently implemented, waiting for Bonus implementations to be available.
+/** not currently implemented, waiting for Bonus implementations to be available
  * @author Guglielmo Gatti
  */
 
