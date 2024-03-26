@@ -23,7 +23,7 @@ public class TurnDeck extends Deck {
         if(numberOfVisibleCards > range_end - range_start)
             throw new InvalidRangeException();
         visibleCards = new ArrayList<>(numberOfVisibleCards);
-        for(int i = 0; i < numberOfVisibleCards && !this.isEmpty(); i++)
+        for(int i = 0; i < numberOfVisibleCards; i++)
             visibleCards.add(cards.removeLast());
     }
 

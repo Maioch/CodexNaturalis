@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * @author Guglielmo Gatti
  */
 public class Game {
+    /* may be parametrized through a file or a class in the future*/
     public final int resourceCardStartIndex = 0;
     public final int goldCardStartIndex = 20;
     public final int starterCardStartIndex = 40;

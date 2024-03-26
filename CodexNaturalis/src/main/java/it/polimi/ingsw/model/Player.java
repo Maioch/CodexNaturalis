@@ -1,4 +1,5 @@
 package it.polimi.ingsw.model;
+
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.card.*;
 
@@ -15,8 +16,8 @@ public class Player {
     private final String nickname;
     private final Content color;
     private final ArrayList<BasicCard> placedCards;
-    private final BasicCard[] handCards;
-    private final Objective[] objectives;
+    private final ArrayList<BasicCard> handCards;
+    private final ArrayList<Objective> objectives;
     private int score;
 
     /**
@@ -27,12 +28,12 @@ public class Player {
      * @param handCards cards held by the player (max 3), that he can play during his turn
      * @param objectives two objectives shared by the player and a personal one
      */
-    public Player(String nickname, Content color, ArrayList<BasicCard> placedCards, BasicCard[] handCards, Objective[] objectives){
+    public Player(String nickname, Content color, ArrayList<BasicCard> placedCards, ArrayList<BasicCard> handCards, ArrayList<Objective> objectives){
         this.nickname = nickname;
         this.color = color;
-        this.placedCards = placedCards;
-        this.handCards = handCards;
-        this.objectives = objectives;
+        this.placedCards = (ArrayList<BasicCard>) placedCards.clone();
+        this.handCards = (ArrayList<BasicCard>) handCards.clone();
+        this.objectives = (ArrayList<Objective>) objectives.clone();
         this.score = 0;
     }
 
@@ -54,22 +55,34 @@ public class Player {
      * @return player's placed cards
      */
     public ArrayList<BasicCard> getPlacedCards(){
-        return this.placedCards;
+        return (ArrayList<BasicCard>) this.placedCards.clone();
     }
 
     /**
-     * @return all the visible symbols on the player's board, useful when placing gold cards
+     * @return a hash map with every possible content as key, and the corresponding quantity that is
+     * visible in the player's board
      */
     public HashMap<Content,Integer> getPlayerContent(){
-        return null;
+        return new HashMap<>(){{
+        for(Content content : Content.values()){
+            put(content, getPlacedCards().stream()
+                    .map(BasicCard::getCardSymbols)
+                    .mapToInt(x -> x.get(content))
+                    .reduce(0, Integer::sum)
+            );
+        }}};
     }
 
     /**
      * @return total points to add to the player's score, given by his accomplished objectives
      */
     public int getObjectivePoints(){
-        return 0;
+        int points = 0;
+        for(Objective objective : objectives)
+            points += objective.checkObjective();
+        return points;
     }
+
 
     /**
      * Method that guides the player during each of his turns
@@ -83,10 +96,11 @@ public class Player {
 
     /**
      * Supporting method for playTurn that allows the player to place a card on his board
-     * @param card the card the player chose to place
+     * @param cardToPlace the card the player chose to place
+     * @param corner the corner on the board where the card is placed
      * @return true if the card is correctly placed
      */
-    private boolean placeCard(BasicCard card){
-        return true;
+    private boolean placeCard(BasicCard cardToPlace, Corner corner){
+        return false;
     }
 }

@@ -1,0 +1,53 @@
+package it.polimi.ingsw.model.card;
+
+import it.polimi.ingsw.model.Content;
+import it.polimi.ingsw.model.Corner;
+import it.polimi.ingsw.model.Location;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class GoldCardTest {
+    private final ArrayList<Content> contentForTest = new ArrayList<>(){{
+        add(Content.RED);
+        add(Content.BLUE);
+        add(Content.EMPTY);
+        add(Content.PEN);
+    }
+    };
+    private final ArrayList<Content> requirementsForTest = new ArrayList<>(){{
+        add(Content.RED);
+        add(Content.BLUE);
+        add(Content.EMPTY);
+        add(Content.PEN);
+    }
+    };
+    private final Content colorForTest = Content.BLUE;
+    private final HashMap<Location, Corner> cornersForTest = new HashMap<Location,Corner>(){{
+        put(Location.TR, new Corner(0,1, contentForTest.get(0)));
+        put(Location.TL, new Corner(1,1, contentForTest.get(1)));
+        put(Location.BR, new Corner(0,0, contentForTest.get(2)));
+        put(Location.BL, new Corner(1,0, contentForTest.get(3)));
+    }
+    };
+
+    private final BasicCard BasicCardForTest = new BasicCard(0, colorForTest, cornersForTest, 0, contentForTest);
+
+    private final GoldCard card1 = new GoldCard(BasicCardForTest, requirementsForTest, NULL);
+
+    @Test
+    void getRequirementsTest(){
+        for (int i = 0; i < requirementsForTest.size(); i++) {
+            assertEquals(requirementsForTest.get(i), card1.getResources().get(i));
+        }
+    }
+
+    @Test
+    void getPointsTest(){
+        assertEquals(0, card1.getPoints());
+    }
+}
