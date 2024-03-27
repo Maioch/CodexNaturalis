@@ -6,5 +6,5 @@ package it.polimi.ingsw.model;
  * @author Andrea Fidanza
  */
 public enum Location {
-    TR, TL, BR, BL
+    BL, BR, TL, TR
 }

@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 
 public class CornerTest {
     private Corner c1 = new Corner(1,1,Content.RED);
-    private Corner c2 = new Corner(-1,0,Content.EMPTY);
+    private Corner c2 = new Corner(-1,0,Content.WHITE);
+    private Corner c3 = new Corner(1,1,Content.WHITE);
+    private Corner c4 = new Corner(-1,0,Content.BLUE);
     private Corner bc1 = new Corner(2,-1);
 
     @Test
@@ -46,5 +48,11 @@ public class CornerTest {
     void coverCorner2(){
         bc1.coverCorner();
         assertFalse(bc1.getVisibility());
+    }
+
+    @Test
+    void isSamePosition(){
+        assertTrue(c1.isSamePosition(c3));
+        assertFalse(c2.isSamePosition(c1));
     }
 }

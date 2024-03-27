@@ -27,7 +27,7 @@ public class GoldCardTest {
     }
     };
     private final Content colorForTest = Content.BLUE;
-    private final HashMap<Location, Corner> cornersForTest = new HashMap<Location,Corner>(){{
+    private final HashMap<Location, Corner> cornersForTest = new HashMap<>(){{
         put(Location.TR, new Corner(0,1, contentForTest.get(0)));
         put(Location.TL, new Corner(1,1, contentForTest.get(1)));
         put(Location.BR, new Corner(0,0, contentForTest.get(2)));
@@ -37,12 +37,12 @@ public class GoldCardTest {
 
     private final BasicCard BasicCardForTest = new BasicCard(0, colorForTest, cornersForTest, 0, contentForTest);
 
-    private final GoldCard card1 = new GoldCard(BasicCardForTest, requirementsForTest, NULL);
+    private final GoldCard card1 = new GoldCard(BasicCardForTest, requirementsForTest, null, null);
 
     @Test
     void getRequirementsTest(){
         for (int i = 0; i < requirementsForTest.size(); i++) {
-            assertEquals(requirementsForTest.get(i), card1.getResources().get(i));
+            assertEquals(requirementsForTest.get(i), card1.getRequirements().get(i));
         }
     }
 

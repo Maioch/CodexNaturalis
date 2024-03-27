@@ -8,7 +8,7 @@ package it.polimi.ingsw.model;
  * @author Marco Maiocchi
  */
 public class Corner {
-    private final int x, y;
+    private int x, y;
     private final Content content;
     private boolean visibility;
 
@@ -33,8 +33,8 @@ public class Corner {
     public Corner(int x, int y){
         this.x = x;
         this.y = y;
-        this.content = null;
-        visibility = false;
+        this.content = Content.EMPTY;
+        visibility = true;
     }
 
     /**
@@ -50,6 +50,18 @@ public class Corner {
     public int getY(){
         return this.y;
     }
+
+    /**
+     * setter for the X coordinate of the Corner
+     * @param x the X coordinate where the corner is placed
+     */
+    public void setX(int x) { this.x = x; }
+
+    /**
+     * setter for the Y coordinate of the Corner
+     * @param y the Y coordinate where the corner is placed
+     */
+    public void setY(int y) { this.y = y; }
 
     /**
      * @return corner's content
@@ -72,4 +84,12 @@ public class Corner {
         this.visibility = false;
     }
 
+    /**
+     * Check if che corner is in the same position of otherCorner
+     * @param otherCorner the other corner
+     * @return true if they are in the same position
+     */
+    public boolean isSamePosition(Corner otherCorner){
+        return otherCorner.getX() == this.getX() && otherCorner.getY() == this.getY();
+    }
 }

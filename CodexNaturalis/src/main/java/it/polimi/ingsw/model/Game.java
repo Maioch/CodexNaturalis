@@ -66,5 +66,4 @@ public class Game {
     private boolean initializeGame(){
         return true;
     }
-
 }

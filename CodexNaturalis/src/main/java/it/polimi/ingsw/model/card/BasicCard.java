@@ -4,10 +4,8 @@ import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
 
-import javax.swing.text.AbstractDocument;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -35,13 +33,7 @@ public class BasicCard {
 
     BasicCard(int cardId, Content color, HashMap<Location, Corner> corners, int points, ArrayList<Content> resources) throws RuntimeException{
 
-        if(!color.isColor() ||
-                points<0 ||
-                checkIfCoherentCorners(true, corners) ||
-                checkIfCoherentCorners(false, corners) ||
-                whiteInCorners(corners)
-        )
-        {
+        if(!color.isColor() || points < 0){
             throw new RuntimeException();
         }
 
@@ -69,25 +61,19 @@ public class BasicCard {
     }
 
     /**
-     * Getter of the "resources" attribute list
-     * @return the card's resources
-     */
-    public ArrayList<Content> getResources() {
-        return new ArrayList<>(this.resources);
-    }
-
-    /**
      * Returns a hashmap that associates each resource type with the amount present in the card by pulling
      * from both the corners and the permanent resources
+     * IMPORTANT: this includes white and empty corners too
      * @return a hashmap with the resource as key and the amount as value
      */
     public HashMap<Content,Integer> getCardSymbols(){
         //Create a list containing all the contents of the card
         ArrayList<Content> totalContent = this.corners.values().stream()
+                .filter(Corner::getVisibility)
                 .map(Corner::getContent)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
         totalContent.addAll(this.resources);
-        return new HashMap<Content,Integer>(){{
+        return new HashMap<>(){{
             for(Content content : Content.values()){
                 put(content, totalContent.stream()
                         .filter(x -> x == content)
@@ -97,49 +83,56 @@ public class BasicCard {
         }};
     }
 
+    /*consider changing the return values of getValidCorners and coverCorner to Location*/
+
+    /**
+     * Method used for retrieving all available corners for placing a card
+     * @return the list of visible corners that aren't empty
+     */
     public ArrayList<Corner> getValidCorners(){
-        return this.corners.values().stream().filter(Corner::getVisibility).toList();
+        return this.corners.values().stream()
+                .filter(x -> x.getContent() != Content.EMPTY)
+                .filter(Corner::getVisibility)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
-     * A private method that checks the corner's coherence, which is based on the coordinates distances.
-     * To have a complete check, it's necessary to control (and so run this method) on both the axes.
-     * @param isXAxis selects the axis on which the control is based ("0" represents the x-axis, "1" represents the y-axis)
-     * @param corners HashMap containing the corners checked by the method
-     * @return True if the corners are coherent, false if they're not.
+     * Getter for the location and corner hashmap
+     * @return the "corners" hashmap
      */
-    private boolean checkIfCoherentCorners(boolean isXAxis, HashMap<Location, Corner> corners){
+    public HashMap<Location, Corner> getAllCorners(){
+        return new HashMap<>(corners);
+    }
 
-        if(isXAxis){
-            if(corners.get(Location.BL).getX() != corners.get(Location.TL).getX() ||
-                    corners.get(Location.BR).getX() != corners.get(Location.TR).getX()) {
-                return false;
-            }
-            if((corners.get(Location.BR).getX() - corners.get(Location.BL).getX()) != 1 ||
-                    (corners.get(Location.TR).getX() - corners.get(Location.TL).getX()) != 1){
-                return false;
-            }
-        }else{
-            if(corners.get(Location.BR).getY() != corners.get(Location.BL).getY() ||
-                    corners.get(Location.TR).getY() != corners.get(Location.TL).getY()){
-                return false;
-            }
-            if((corners.get(Location.TL).getY() - corners.get(Location.BL).getY()) != 1 ||
-                    (corners.get(Location.TR).getY() - corners.get(Location.BR).getY()) != 1) {
-                return false;
+    /**
+     * method called when a card gets placed onto a corner, hiding it.
+     */
+    public void coverCorner(Corner which){
+        for(Corner corner : corners.values()){
+            if(which == corner){
+                corner.coverCorner();
             }
         }
-
-        return true;
     }
 
     /**
-     * A method that searches if there's any corner containing a "WHITE" content value
-     * @param corners HashMap containing the corners checked by the method
-     * @return True if there's a corner with "WHITE" content, false otherwise
+     * A public method to "place" the card. It initializes the coordinates of the corners (components of the card).
+     * @param x represents the x-axis coordinate of the bottom-left corner where the card will be placed
+     * @param y represents the y-axis coordinate of the bottom-left corner where the card will be placed
      */
-    private boolean whiteInCorners(HashMap<Location, Corner> corners){
-        return corners.values().stream().filter(x -> x.getContent() == Content.WHITE).toList().isEmpty();
-    }
+    public void place(int x, int y){
 
+        corners.get(Location.BL).setX(x);
+        corners.get(Location.BL).setY(y);
+
+        corners.get(Location.BR).setX(x+1);
+        corners.get(Location.BR).setY(y);
+
+        corners.get(Location.TL).setX(x);
+        corners.get(Location.TL).setY(y+1);
+
+        corners.get(Location.TR).setX(x+1);
+        corners.get(Location.TR).setY(y+1);
+
+    }
 }

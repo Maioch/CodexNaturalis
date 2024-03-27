@@ -6,5 +6,5 @@ package it.polimi.ingsw.model;
  * @author Andrea Fidanza
  */
 public interface Bonus {
-    public int calculate(int cardPoints);
+    int calculate();
 }
