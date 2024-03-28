@@ -2,9 +2,11 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.card.BasicCard;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**
@@ -158,6 +160,71 @@ public class Objective {
             }while(!calculationCompleted);
 
             return calculatedPoints;
+        }
+    }
+
+    /**
+     * an attempt to make the PatternBonus class shorter and more legible.
+     * @author Guglielmo Gatti, Francesco Nisoli
+     */
+    public class AlternativePatternBonus implements Bonus{
+        private final HashMap<Point, Content> pattern;
+
+        /**
+         * @param pattern hashmap describing the required pattern by pairing each color
+         *                to its relative coordinates
+         */
+        public AlternativePatternBonus(HashMap<Point, Content> pattern){
+            boolean isValidPattern = pattern.values().stream()
+                    .filter(x -> x.isObject() || x == Content.EMPTY || x == Content.WHITE)
+                    .findAny()
+                    .isEmpty();
+            if(!isValidPattern){
+                throw new RuntimeException(
+                        String.format("Invalid pattern content in card %d", objectiveId));
+            }
+            this.pattern = pattern;
+        }
+
+        /**
+         * find out how many times a specific pattern is present without counting the same card twice and calculate
+         * the points awarded to the player.
+         * @return the base number of points awarded by the card multiplied by the amount of times the pattern appears
+         */
+         @Override
+        public int calculate(){
+            //Generate a color hashmap from the player's board
+            HashMap<Point,Content> colorHashMap = new HashMap<>(){{
+                for(BasicCard card : owner.getPlacedCards()){
+                    Corner cardBLCorner = card.getAllCorners().get(Location.BL);
+                    Point cardPosition = new Point(cardBLCorner.getX(), cardBLCorner.getY());
+                    put(cardPosition, card.getColor());
+                }
+            }};
+            //Check how many times the pattern is present (without counting any card twice)
+            int timesAppeared = 0;
+            for(Map.Entry<Point,Content> entry : colorHashMap.entrySet()){
+                Point offset = new Point(entry.getKey());
+                ArrayList<Point> evaluatedPoints = new ArrayList<>();
+                //Sub-iteration used to check for the pattern itself
+                boolean patternFound = true;
+                for(Map.Entry<Point, Content> patternEntry : pattern.entrySet()){
+                    evaluatedPoints.add(entry.getKey());
+                    offset.move(offset.x + patternEntry.getKey().x, offset.y + patternEntry.getKey().y);
+                    if(colorHashMap.get(offset) != patternEntry.getValue()){
+                        patternFound = false;
+                        break;
+                    }
+                }
+                //Mark all the cards that have been already counted as part of a pattern as WHITE
+                if(patternFound){
+                    for(Point point : evaluatedPoints){
+                        colorHashMap.put(point,Content.WHITE);
+                    }
+                }
+                timesAppeared += patternFound ? 1 : 0;
+            }
+            return points * timesAppeared;
         }
     }
 }
