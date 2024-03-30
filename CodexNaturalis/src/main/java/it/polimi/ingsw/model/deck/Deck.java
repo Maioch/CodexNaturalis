@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.deck;
 
-import it.polimi.ingsw.model.card.BasicCard;
+import it.polimi.ingsw.model.card.CardSides;
 import it.polimi.ingsw.model.card.CardBuilder;
 
 import java.util.*;
@@ -14,22 +14,23 @@ import java.util.*;
  * @author Guglielmo Gatti
  */
 public class Deck {
-    Stack<BasicCard> cards;
+    Stack<CardSides> cards;
 
     /**
      * Creates a deck including all card indices from rangeStart to rangeEnd in ascending order
      *
      * @param rangeStart the inclusive index at which the card range of the deck starts
      * @param rangeEnd the inclusive index at which the card range of the deck ends
+     * @exception RuntimeException if the given range is invalid
      */
     public Deck(int rangeStart, int rangeEnd){
         if (rangeStart > rangeEnd || rangeStart < 0){
-            throw new InvalidRangeException();
+            throw new RuntimeException("The supplied value range is not valid");
         }
 
         this.cards = new Stack<>();
         for(int i = rangeStart; i <= rangeEnd; i++){
-            this.cards.push(CardBuilder.getCard(i));
+            this.cards.push(CardBuilder.buildCard(i));
         }
 
         Collections.shuffle(this.cards);
@@ -40,7 +41,7 @@ public class Deck {
      *
      * @return ArrayList of cards
      */
-    public ArrayList<BasicCard> getCards(){
+    public ArrayList<CardSides> getCards(){
         return new ArrayList<>(this.cards);
     }
 
@@ -57,27 +58,13 @@ public class Deck {
      * Draws a random integer present in the deck and removes it.
      *
      * @return a random integer from the deck
-     * @exception NoMoreCardsException if the deck is empty when the user tries to draw.
+     * @exception RuntimeException if the deck is empty when the user tries to draw.
      */
-    public BasicCard draw(){
+    public CardSides draw(){
         if(this.cards.isEmpty()){
-            throw new NoMoreCardsException();
+            throw new RuntimeException("There are no more cards available at the requested source");
         }
 
         return this.cards.pop();
-    }
-
-    public static class NoMoreCardsException extends RuntimeException{
-        @Override
-        public String getMessage(){
-            return "There are no more cards available at the requested source";
-        }
-    }
-
-    public static class InvalidRangeException extends RuntimeException{
-        @Override
-        public String getMessage(){
-            return "The supplied value range is not valid";
-        }
     }
 }

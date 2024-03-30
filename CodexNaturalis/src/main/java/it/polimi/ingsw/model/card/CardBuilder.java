@@ -1,13 +1,14 @@
 package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.Objective;
+import it.polimi.ingsw.model.deck.Deck;
 
 public class CardBuilder {
     private static final String filePath = "";
-    public static BasicCard getCard(int idCard){
+    public static CardSides buildCard(int idCard){
         return null;
     }
-    public static Objective getObjective(int idObjective){
+    public static Objective buildObjective(int idObjective){
         return null;
     }
 }

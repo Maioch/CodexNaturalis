@@ -204,13 +204,14 @@ public class Objective {
             //Check how many times the pattern is present (without counting any card twice)
             int timesAppeared = 0;
             for(Map.Entry<Point,Content> entry : colorHashMap.entrySet()){
-                Point offset = new Point(entry.getKey());
+                Point baseOffset = new Point(entry.getKey());
+                Point offset = new Point(baseOffset);
                 ArrayList<Point> evaluatedPoints = new ArrayList<>();
                 //Sub-iteration used to check for the pattern itself
                 boolean patternFound = true;
                 for(Map.Entry<Point, Content> patternEntry : pattern.entrySet()){
                     evaluatedPoints.add(entry.getKey());
-                    offset.move(offset.x + patternEntry.getKey().x, offset.y + patternEntry.getKey().y);
+                    offset.move( baseOffset.x + patternEntry.getKey().x, baseOffset.y + patternEntry.getKey().y);
                     if(colorHashMap.get(offset) != patternEntry.getValue()){
                         patternFound = false;
                         break;

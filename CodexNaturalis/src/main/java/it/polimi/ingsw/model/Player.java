@@ -16,7 +16,7 @@ public class Player {
     private final String nickname;
     private final Content color;
     private final ArrayList<BasicCard> placedCards;
-    private final ArrayList<BasicCard> handCards;
+    private final ArrayList<CardSides> handCards;
     private final ArrayList<Objective> objectives;
     private int score;
 
@@ -24,14 +24,14 @@ public class Player {
      * Constructor for the player
      * @param nickname in-game name for the player
      * @param color color chosen by the player
-     * @param placedCards cards place by the player during the game; at first there's just the starter card
+     * @param starterCard starter card given by Game
      * @param handCards cards held by the player (max 3), that he can play during his turn
      * @param objectives two objectives shared by the player and a personal one
      */
-    public Player(String nickname, Content color, ArrayList<BasicCard> placedCards, ArrayList<BasicCard> handCards, ArrayList<Objective> objectives){
+    public Player(String nickname, Content color, BasicCard starterCard, ArrayList<CardSides> handCards, ArrayList<Objective> objectives){
         this.nickname = nickname;
         this.color = color;
-        this.placedCards = new ArrayList<>(placedCards);
+        this.placedCards = new ArrayList<>(){{add(starterCard);}};
         this.handCards = new ArrayList<>(handCards);
         this.objectives = new ArrayList<>(objectives);
         this.score = 0;
