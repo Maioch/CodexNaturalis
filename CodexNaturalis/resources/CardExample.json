@@ -1,0 +1,82 @@
+{
+  "placeableCards" : [
+    {
+      "id" : 1,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "corners" : {
+        "BL" : "PEN",
+        "TL" : "EMPTY",
+        "BR" : "RED",
+        "TR" : "WHITE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 5,
+      "type" : "GOLD",
+      "color" : "RED",
+      "corners" : {
+        "BL" : "PEN",
+        "TL" : "EMPTY",
+        "BR" : "RED",
+        "TR" : "WHITE"
+      },
+      "points" : 0,
+      "requirements" : ["PAPER", "PAPER"],
+      "bonus" : {"type" : "CORNER"}
+    },
+    {
+      "id" : 4,
+      "type" : "GOLD",
+      "color" : "RED",
+      "corners" : {
+        "BL" : "PEN",
+        "TL" : "EMPTY",
+        "BR" : "RED",
+        "TR" : "WHITE"
+      },
+      "points" : 0,
+      "requirements" : ["PAPER", "PAPER"],
+      "bonus" : {"type" : "OBJECT",
+        "object" : "PEN"}
+    },
+    {
+      "id" : 6,
+      "type" : "STARTER",
+      "cornersBack" : {
+        "BL" : "GREEN",
+        "TL" : "PURPLE",
+        "BR" : "RED",
+        "TR" : "BLUE"
+      },
+      "cornersFront" : {
+        "BL" : "GREEN",
+        "TL" : "PURPLE",
+        "BR" : "RED",
+        "TR" : "BLUE"
+      },
+      "resources" : ["RED","BLUE"]
+    }
+  ],
+  "objectiveCards": [
+    {
+      "id" : 2,
+      "points" : 1,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["PEN","PEN"]
+      }
+    },
+    {
+      "id" : 3,
+      "points" : 1,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [ {"color": "BLUE","x" : 0,"y" : 0},
+          {"color": "PURPLE","x" : 1,"y" : -1},
+          {"color": "PURPLE","x" : 1,"y" : -3}]
+      }
+    }
+  ]
+}

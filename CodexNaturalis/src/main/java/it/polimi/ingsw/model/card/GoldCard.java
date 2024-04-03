@@ -32,6 +32,7 @@ public class GoldCard extends BasicCard {
      * Getter of the "requirements" parameter
      * @return the requirements needed to play the card
      */
+    @Override
     public ArrayList<Content> getRequirements(){
         return new ArrayList<>(this.requirements);
     }

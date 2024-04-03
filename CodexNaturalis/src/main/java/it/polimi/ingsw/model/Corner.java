@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import javax.swing.*;
+
 /**
  * Class that represents a corner of a card.
  * Every corner hs 3 coordinates: (x, y, visibility): x, y -> position on the player's card setup,
@@ -8,33 +10,20 @@ package it.polimi.ingsw.model;
  * @author Marco Maiocchi
  */
 public class Corner {
-    private int x, y;
+    private int x;
+    private int y;
     private final Content content;
     private boolean visibility;
 
     /**
      * Constructor for usable corners
-     * @param x horizontal coordinate
-     * @param y vertical coordinate
      * @param content symbol in the corner
      */
-    public Corner(int x, int y, Content content){
-        this.x = x;
-        this.y = y;
+    public Corner(Content content){
         this.content = content;
-        visibility = true;
-    }
-
-    /**
-     * Constructor for blank corners (not superimposable corners)
-     * @param x horizontal coordinate
-     * @param y vertical coordinate
-     */
-    public Corner(int x, int y){
-        this.x = x;
-        this.y = y;
-        this.content = Content.EMPTY;
-        visibility = true;
+        this.visibility = true;
+        this.x = 0;
+        this.y = 0;
     }
 
     /**

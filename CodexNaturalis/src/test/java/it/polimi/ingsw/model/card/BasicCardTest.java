@@ -27,17 +27,17 @@ public class BasicCardTest {
     };
     private final Content colorForTest = Content.BLUE;
     private final HashMap<Location, Corner> corners1 = new HashMap<>(){{
-        put(Location.TR, new Corner(1,1, contentForTest.get(0)));
-        put(Location.TL, new Corner(1,0, contentForTest.get(1)));
-        put(Location.BR, new Corner(1,0, contentForTest.get(2)));
-        put(Location.BL, new Corner(0,0, contentForTest.get(3)));
+        put(Location.TR, new Corner(contentForTest.get(0)));
+        put(Location.TL, new Corner(contentForTest.get(1)));
+        put(Location.BR, new Corner(contentForTest.get(2)));
+        put(Location.BL, new Corner(contentForTest.get(3)));
     }
     };
     private final HashMap<Location, Corner> corners2 = new HashMap<>(){{
-        put(Location.TR, new Corner(1,1, contentForTest.get(1)));
-        put(Location.TL, new Corner(1,0, contentForTest.get(2)));
-        put(Location.BR, new Corner(1,0, contentForTest.get(3)));
-        put(Location.BL, new Corner(0,0, contentForTest.get(4)));
+        put(Location.TR, new Corner(contentForTest.get(1)));
+        put(Location.TL, new Corner(contentForTest.get(2)));
+        put(Location.BR, new Corner(contentForTest.get(3)));
+        put(Location.BL, new Corner(contentForTest.get(4)));
     }
     };
 

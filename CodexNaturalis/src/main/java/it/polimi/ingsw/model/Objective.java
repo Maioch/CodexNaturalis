@@ -155,6 +155,12 @@ public class Objective {
                         calculatedPoints = calculatedPoints + points;
                         calculationCompleted = false;
                     }
+                    //~rough solution~ the first found pattern match, could be not part of a pattern, causing the process to end with "calculationCompleted" == true, while it shouldn't.
+                    if(i == placedCards.size() && calculationCompleted){
+                        i = markedIndexesPlacedCards.getFirst();    //the index returns to the "wrong" match position, letting a new search that isn't based on that match.
+                        markedIndexesPattern.clear();               //matches cleared, new search next
+                        markedIndexesPlacedCards.clear();
+                    }
                 }
 
             }while(!calculationCompleted);

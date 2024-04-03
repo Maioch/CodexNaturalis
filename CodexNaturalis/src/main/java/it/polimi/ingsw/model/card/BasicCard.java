@@ -116,6 +116,14 @@ public class BasicCard {
     }
 
     /**
+     * Getter of the "requirements" parameter
+     * @return the requirements needed to play the card
+     */
+    public ArrayList<Content> getRequirements(){
+        return new ArrayList<Content>();
+    }
+
+    /**
      * A public method to "place" the card. It initializes the coordinates of the corners (components of the card).
      * @param x represents the x-axis coordinate of the bottom-left corner where the card will be placed
      * @param y represents the y-axis coordinate of the bottom-left corner where the card will be placed

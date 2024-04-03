@@ -4,15 +4,15 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 public class ContentTest {
-    private Content c1 = Content.RED;
-    private Content c2 = Content.GREEN;
-    private Content c3 = Content.BLUE;
-    private Content c4 = Content.PURPLE;
-    private Content c5 = Content.PEN;
-    private Content c6 = Content.PAPER;
-    private Content c7 = Content.INK;
-    private Content c8 = Content.EMPTY;
-    private Content c9 = Content.WHITE;
+    private final Content c1 = Content.RED;
+    private final Content c2 = Content.GREEN;
+    private final Content c3 = Content.BLUE;
+    private final Content c4 = Content.PURPLE;
+    private final Content c5 = Content.PEN;
+    private final Content c6 = Content.PAPER;
+    private final Content c7 = Content.INK;
+    private final Content c8 = Content.EMPTY;
+    private final Content c9 = Content.WHITE;
 
     @Test
     void isColor(){
