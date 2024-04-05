@@ -15,8 +15,8 @@ import java.util.Map;
 public class Objective {
     private final int objectiveId;
     private final int points;
-    private final Bonus bonus;
-    private final Player owner;
+    private Bonus bonus;
+    private Player owner;
 
     /**
      * @param objectiveId the card's id
@@ -102,11 +102,20 @@ public class Objective {
      * Class implementing pattern bonuses (of objective cards)
      */
     public class PatternBonus implements Bonus{
-        private final ArrayList<ArrayList<Content>> pattern;
+        private final HashMap<Point, Content> pattern;
 
-        public PatternBonus(ArrayList<ArrayList<Content>> pattern){
+        public PatternBonus(HashMap<Point, Content> pattern){
+            boolean isValidPattern = pattern.values().stream()
+                    .filter(x -> x.isObject() || x == Content.EMPTY || x == Content.WHITE)
+                    .findAny()
+                    .isEmpty();
+            if(!isValidPattern){
+                throw new RuntimeException(
+                        String.format("Invalid pattern content in card %d", objectiveId));
+            }
             this.pattern = pattern;
         }
+
 
         /**
          * A method that searches for a certain pattern in the owner's placed cards
@@ -130,14 +139,7 @@ public class Objective {
             markedIndexesPlacedCards = new ArrayList<Integer>(); //list of analysed indexes of the placed cards
             markedIndexesPattern = new ArrayList<Integer>(); //list of analysed indexes of the pattern elements
 
-            //part of the code that saves in a record the clue parts of the pattern (coordinates, color)
-            for(int i = 0; i < pattern.size(); i++){
-                for(int j = 0; j < pattern.get(i).size(); j++){
-                    if(pattern.get(i).get(j) != Content.WHITE){
-                        patternReferences.add(new patternReference(i, j, pattern.get(i).get(j)));
-                    }
-                }
-            }
+            pattern.forEach((point, content) -> { patternReferences.add(new patternReference(point.x, point.y, content)); });
 
             do{
                 calculationCompleted = true;

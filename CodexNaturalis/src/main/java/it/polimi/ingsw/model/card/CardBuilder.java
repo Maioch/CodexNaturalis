@@ -62,6 +62,7 @@ public class CardBuilder {
                 }});
 
                 break;
+
             case "STARTER":
                 ArrayList<Content> resources = getContentFromArray(cardJson, "resources");
                 cardFront = new BasicCard(cardId, Content.WHITE, frontCornerMap, 0, resources);

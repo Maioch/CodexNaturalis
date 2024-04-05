@@ -12,10 +12,10 @@ import java.util.ArrayList;
  */
 
 public class GoldCard extends BasicCard {
-    private final ArrayList<Content> requirements;
-    private final Bonus bonus;
-    private final Player owner;
 
+    private final ArrayList<Content> requirements;
+    private Bonus bonus;
+    private Player owner;
     
     /**
      * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated
@@ -44,6 +44,18 @@ public class GoldCard extends BasicCard {
     @Override
     public int getPoints(){
         return bonus.calculate();
+    }
+
+    /**
+     * Setter of the "owner" attribute, which represents the player owning the card.
+     * @param owner player who owns the card
+     */
+    public void setOwner(Player owner){
+        this.owner = owner;
+    }
+
+    public void setBonus(Bonus bonus){
+        this.bonus = bonus;
     }
 
     /**
