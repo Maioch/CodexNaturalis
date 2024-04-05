@@ -39,6 +39,10 @@ public class Objective {
         return this.bonus.calculate();
     }
 
+    /**
+     * Getter for objective id
+     * @return the id
+     */
     public int getObjectiveId() { return this.objectiveId; }
 
     /**

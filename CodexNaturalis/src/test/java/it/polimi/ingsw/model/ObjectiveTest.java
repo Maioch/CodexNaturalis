@@ -19,5 +19,4 @@ public class ObjectiveTest {
     @Test
     public void getObjectiveIdTest(){
     }
-
 }
