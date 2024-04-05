@@ -83,8 +83,30 @@ public class CardBuilder {
      */
     public static Objective buildObjective(int cardId){
         JsonNode cardJson = getCardJson(cardId, "objectiveCards");
-
-        return null;
+        int id = cardJson.get("id").asInt();
+        int points = cardJson.get("points").asInt();
+        Objective objective = new Objective(id,points);
+        Bonus bonus = switch (cardJson.get("bonus").get("type").asText()){
+            case "PATTERN" -> {
+                ArrayList<Content> contents = getContentFromArray(cardJson.get("bonus"), "content");
+                yield objective.new ContentBonus(contents);
+            }
+            case "CONTENT" -> {
+                HashMap<Point, Content> pattern = new HashMap<>(){{
+                    for(JsonNode subNode : cardJson.get("bonus").get("pattern")){
+                        int x = subNode.get("x").asInt();
+                        int y = subNode.get("y").asInt();
+                        Content color = Content.valueOf(subNode.get("color").asText());
+                        put(new Point(x,y),color);
+                    }
+                }};
+                yield objective.new AlternativePatternBonus(pattern);
+            }
+            default ->
+                throw new IllegalStateException("Unexpected value: " + cardJson.get("bonus").get("type").asText());
+        };
+        objective.setBonus(bonus);
+        return objective;
     }
 
     /**

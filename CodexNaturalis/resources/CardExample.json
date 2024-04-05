@@ -44,13 +44,14 @@
     {
       "id" : 6,
       "type" : "STARTER",
+      "points" : 0,
       "cornersBack" : {
         "BL" : "GREEN",
         "TL" : "PURPLE",
         "BR" : "RED",
         "TR" : "BLUE"
       },
-      "cornersFront" : {
+      "corners" : {
         "BL" : "GREEN",
         "TL" : "PURPLE",
         "BR" : "RED",

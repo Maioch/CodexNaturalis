@@ -21,14 +21,12 @@ public class Objective {
     /**
      * @param objectiveId the card's id
      * @param points the base amount of points awarded by the card
-     * @param bonus the bonus object, used to calculate the multiplier
-     * @param owner the player that owns the card, used to obtain the player's board to calculate the multiplier
      */
-    Objective(int objectiveId, int points, Bonus bonus, Player owner){
+    public Objective(int objectiveId, int points){
         this.objectiveId = objectiveId;
         this.points = points;
-        this.bonus = bonus;
-        this.owner = owner;
+        this.owner = null;
+        this.bonus = null;
     }
 
     /**

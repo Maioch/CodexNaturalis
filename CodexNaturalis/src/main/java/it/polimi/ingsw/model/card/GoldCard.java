@@ -21,11 +21,11 @@ public class GoldCard extends BasicCard {
      * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated
      * @param requirements the resources needed in order to play the card
     */
-    public GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements, Bonus bonus, Player owner){
+    public GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements){
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
         this.requirements = new ArrayList<>(requirements);
-        this.bonus = bonus;
-        this.owner = owner;
+        this.owner = null;
+        this.bonus = null;
     }
 
     /**
