@@ -6,11 +6,10 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 /**
  * Class that represents an Objective Card.
+ *
  * @author Guglielmo Gatti, Francesco Saverio Nisoli
  */
 public class Objective {
@@ -41,6 +40,24 @@ public class Objective {
     }
 
     public int getObjectiveId() { return this.objectiveId; }
+
+    /**
+     * Getter for points
+     * @return the points
+     */
+    public int getPoints() { return this.points; }
+
+    /**
+     * Setter for bonus
+     * @param bonus the bonus
+     */
+    public void setBonus(Bonus bonus) { this.bonus = bonus; }
+
+    /**
+     * A setter method of the "owner" attribute
+     * @param owner the player that owns the card, used to obtain the player's board to calculate the multiplier
+     */
+    public void setOwner(Player owner) { this.owner = owner; }
 
     /**
      * Strategy class used to handle the bonuses given out by objective cards
@@ -157,7 +174,7 @@ public class Objective {
                     }
                     //~rough solution~ the first found pattern match, could be not part of a pattern, causing the process to end with "calculationCompleted" == true, while it shouldn't.
                     if(i == placedCards.size() && calculationCompleted){
-                        i = markedIndexesPlacedCards.getFirst();    //the index returns to the "wrong" match position, letting a new search that isn't based on that match.
+                        i = markedIndexesPlacedCards.get(0);    //the index returns to the "wrong" match position, letting a new search that isn't based on that match.
                         markedIndexesPattern.clear();               //matches cleared, new search next
                         markedIndexesPlacedCards.clear();
                     }
@@ -197,7 +214,7 @@ public class Objective {
          * the points awarded to the player.
          * @return the base number of points awarded by the card multiplied by the amount of times the pattern appears
          */
-         @Override
+        @Override
         public int calculate(){
             //Generate a color hashmap from the player's board
             HashMap<Point,Content> colorHashMap = new HashMap<>(){{
@@ -234,4 +251,5 @@ public class Objective {
             return points * timesAppeared;
         }
     }
+
 }

@@ -2,7 +2,8 @@ package it.polimi.ingsw.model;
 
 /**
  * Enum to represent every possible symbol contained in cards. Every color si associated with the respective
- * resource (e.g. Red -> Mushroom); white is needed to represent starter cards.
+ * resource (e.g. Red -> Mushroom); white is used for corners with no symbols and empty for blank ones that
+ * can't be overlapped
  *
  * @author Marco Maiocchi
  */

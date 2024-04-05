@@ -1,11 +1,10 @@
 package it.polimi.ingsw.model;
 
-import javax.swing.*;
 
 /**
  * Class that represents a corner of a card.
  * Every corner hs 3 coordinates: (x, y, visibility): x, y -> position on the player's card setup,
- * visibility -> false if another corner is on top of it or if it's a blank corner
+ * visibility -> false if another corner is on top of it
  *
  * @author Marco Maiocchi
  */
@@ -16,7 +15,7 @@ public class Corner {
     private boolean visibility;
 
     /**
-     * Constructor for usable corners
+     * Constructor for corners
      * @param content symbol in the corner
      */
     public Corner(Content content){
@@ -44,13 +43,17 @@ public class Corner {
      * setter for the X coordinate of the Corner
      * @param x the X coordinate where the corner is placed
      */
-    public void setX(int x) { this.x = x; }
+    public void setX(int x) {
+        this.x = x;
+    }
 
     /**
      * setter for the Y coordinate of the Corner
      * @param y the Y coordinate where the corner is placed
      */
-    public void setY(int y) { this.y = y; }
+    public void setY(int y) {
+        this.y = y;
+    }
 
     /**
      * @return corner's content
@@ -74,9 +77,8 @@ public class Corner {
     }
 
     /**
-     * Check if che corner is in the same position of otherCorner
-     * @param otherCorner the other corner
-     * @return true if they are in the same position
+     * @param otherCorner another corner
+     * @return true if this corner and thew param one are in the same position (they have the same x and y coords)
      */
     public boolean isSamePosition(Corner otherCorner){
         return otherCorner.getX() == this.getX() && otherCorner.getY() == this.getY();

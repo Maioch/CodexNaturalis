@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.Bonus;
+
 import java.util.ArrayList;
 
 /**
@@ -18,8 +20,6 @@ public class GoldCard extends BasicCard {
     /**
      * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated
      * @param requirements the resources needed in order to play the card
-     * @param bonus the bonus object which the card possesses
-     * @param owner the player who owns the card
     */
     public GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements, Bonus bonus, Player owner){
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
