@@ -1,8 +1,10 @@
 package it.polimi.ingsw.model.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
+import it.polimi.ingsw.model.card.CardSides;
 import org.junit.jupiter.api.Test;
 
+import it.polimi.ingsw.model.card.BasicCard;
 import java.util.ArrayList;
 
 /**
@@ -14,27 +16,47 @@ public class TurnDeckTest {
     private final int numberOfVisibleCards = 2;
     private final TurnDeck deck = new TurnDeck(range_start, range_end, numberOfVisibleCards);
 
+    /**
+     * Tests the drawVisibleCard method by drawing visible cards until the deck is empty
+     */
     @Test
     void drawVisibleCardTest(){
-        /*int index = 0;
+        int index = 0;
         try {
             while(!deck.isEmpty()) {
                 for (index = 0; index < numberOfVisibleCards; index++) {
-                    ArrayList<Integer> cards = new ArrayList<>(deck.getCards());
-                    ArrayList<Integer> visibleCards = new ArrayList<>(deck.getVisibleCards());
-
-                    int card = deck.drawVisibleCard(index);
-
+                    ArrayList<CardSides> cards = new ArrayList<>(deck.getCards());
+                    ArrayList<CardSides> visibleCards = new ArrayList<>(deck.getVisibleCards());
+                    CardSides card = deck.drawVisibleCard(index);
                     assertTrue(visibleCards.contains(card));
                     if (!deck.isEmpty())
                         assertTrue(cards.contains(deck.getVisibleCards().get(index)));
-
                     visibleCards = new ArrayList<>(deck.getVisibleCards());
                     assertFalse(visibleCards.contains(card));
                 }
             }
-        } catch (Deck.NoMoreCardsException ex){
+        } catch (RuntimeException ex){
             assertNull(deck.getVisibleCards().get(index));
-        }*/
+        }
+    }
+
+    /**
+     * Tests the getCardOnTop method
+     */
+    @Test
+    void getCardOnTopTest(){
+        BasicCard topDeck = deck.getCardOnTop();
+        assertEquals(topDeck, deck.draw().backSide());
+    }
+
+    /**
+     * Tests the equals method
+     */
+    @Test
+    void equalsTest(){
+        TurnDeck otherDeck = new TurnDeck(range_start, range_end, numberOfVisibleCards);
+        assertEquals(deck, otherDeck);
+        otherDeck.drawVisibleCard(0);
+        assertNotEquals(deck, otherDeck);
     }
 }

@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.Bonus;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * A class that represents a gold card
@@ -43,7 +44,7 @@ public class GoldCard extends BasicCard {
      */
     @Override
     public int getPoints(){
-        return bonus.calculate();
+        return bonus != null ? bonus.calculate() : points;
     }
 
     /**
@@ -56,6 +57,24 @@ public class GoldCard extends BasicCard {
 
     public void setBonus(Bonus bonus){
         this.bonus = bonus;
+    }
+
+    /**
+    * Equals method.
+    * @param object Object to check
+    * @return true if each field is equals to each field of object
+    */
+    @Override
+    public boolean equals(Object object){
+        if(this.getClass() != object.getClass())
+            return false;
+        GoldCard other = (GoldCard) object;
+        boolean isSameBonus = (this.bonus == null) ? other.bonus == null : other.bonus != null && this.bonus.equals(other.bonus);
+        boolean isSameOwner = (this.owner == null) ? other.owner == null : other.owner != null && this.owner.equals(other.owner);
+        return super.equals(other) &&
+                this.requirements.equals(other.requirements) &&
+                isSameBonus &&
+                isSameOwner;
     }
 
     /**
@@ -79,6 +98,16 @@ public class GoldCard extends BasicCard {
                         bonusPoints += points;
 
             return bonusPoints;
+        }
+
+        /**
+        * Equals method
+        * @param object Object to check
+        * @return true if object is of class CornerBonus
+        */
+        @Override
+        public boolean equals(Object object){
+            return this.getClass() == object.getClass();
         }
     }
 
@@ -106,6 +135,19 @@ public class GoldCard extends BasicCard {
         @Override
         public int calculate(){
             return points * owner.getPlayerContent().get(object);
+        }
+
+        /**
+        * Equals method.
+        * @param object Object to check
+        * @return true if each field is equals to each field of object
+        */
+        @Override
+        public boolean equals(Object object){
+            if(this.getClass() != object.getClass())
+                return false;
+            ObjectBonus other = (ObjectBonus) object;
+            return this.object == other.object;
         }
     }
 }

@@ -83,4 +83,20 @@ public class Corner {
     public boolean isSamePosition(Corner otherCorner){
         return otherCorner.getX() == this.getX() && otherCorner.getY() == this.getY();
     }
+
+    /**
+     * Equals method.
+     * @param object Object to check
+     * @return true if each field is equals to each field of object
+     */
+    @Override
+    public boolean equals(Object object){
+        if(object.getClass() != this.getClass()){
+            return false;
+        }
+        Corner corner = (Corner) object;
+        return corner.x == this.x && corner.y == this.y &&
+                corner.visibility == this.visibility &&
+                corner.content == this.content;
+    }
 }

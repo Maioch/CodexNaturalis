@@ -33,7 +33,6 @@ public class GoldCardTest {
     }};
 
     private final BasicCard BasicCardForTest = new BasicCard(0, colorForTest, cornersForTest, 0, contentForTest);
-
     private final GoldCard card1 = new GoldCard(BasicCardForTest, requirementsForTest);
 
     @Test

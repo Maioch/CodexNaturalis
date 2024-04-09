@@ -83,14 +83,13 @@ public class Player {
         return points;
     }
 
-
     /**
      * Method that guides the player during each of his turns
      * @param resourceDeck deck of the resource cards the player can draw from
      * @param goldDeck deck of the gold cards the player can draw from
      * @return the total amount of points the player gathered during his turn
      */
-    public int playTurn(TurnDeck resourceDeck,TurnDeck goldDeck){
+    public int playTurn(TurnDeck resourceDeck, TurnDeck goldDeck){
         return 0;
     }
 
@@ -102,5 +101,23 @@ public class Player {
      */
     private boolean placeCard(BasicCard cardToPlace, Corner corner){
         return false;
+    }
+
+    /**
+     * Equals method.
+     * @param object Object to check
+     * @return true if each field is equals to each field of object
+     */
+    @Override
+    public boolean equals(Object object){
+        if(this.getClass() != object.getClass())
+            return false;
+        Player other = (Player) object;
+        return this.nickname.equals(other.nickname) &&
+                this.color == other.color &&
+                this.score == other.score &&
+                this.handCards.equals(other.handCards) &&
+                this.placedCards.equals(other.placedCards) &&
+                this.objectives.equals(other.objectives);
     }
 }

@@ -38,4 +38,14 @@ public class CornerTest {
         c1.coverCorner();
         assertFalse(c1.getVisibility());
     }
+
+    @Test
+    void equals(){
+        assertNotEquals(c0, c1);
+        c1.coverCorner();
+        c0.coverCorner();
+        assertEquals(c0, c1);
+        c1.setX(3);
+        assertNotEquals(c0, c1);
+    }
 }

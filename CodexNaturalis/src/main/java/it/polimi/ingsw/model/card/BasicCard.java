@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class BasicCard {
      * @param resources the card's resources, an array of the contained resources
      */
 
-    BasicCard(int cardId, Content color, HashMap<Location, Corner> corners, int points, ArrayList<Content> resources) throws RuntimeException{
+    public BasicCard(int cardId, Content color, HashMap<Location, Corner> corners, int points, ArrayList<Content> resources) throws RuntimeException{
 
         if(!color.isColor() || points < 0){
             throw new RuntimeException();
@@ -42,6 +43,14 @@ public class BasicCard {
         this.corners = new HashMap<>(corners);
         this.points = points;
         this.resources = new ArrayList<>(resources);
+    }
+
+    /**
+    * Getter of the "cardId" attribute
+    * @return the cardId attribute
+    */
+    public int getCardId(){
+        return this.cardId;
     }
 
     /**
@@ -120,7 +129,7 @@ public class BasicCard {
      * @return the requirements needed to play the card
      */
     public ArrayList<Content> getRequirements(){
-        return new ArrayList<Content>();
+        return new ArrayList<>();
     }
 
     /**
@@ -142,5 +151,25 @@ public class BasicCard {
         corners.get(Location.TR).setX(x+1);
         corners.get(Location.TR).setY(y+1);
 
+    }
+
+    /**
+     * Equals method.
+     * @param object Object to check
+     * @return true if each field is equals to each field of object
+     */
+    @Override
+    public boolean equals(Object object){
+        if(this.getClass() != object.getClass())
+            return false;
+        BasicCard other = (BasicCard) object;
+        other.resources.sort(Comparator.comparingInt(Enum::ordinal));
+        return this.cardId == other.cardId &&
+                this.color == other.color &&
+                this.points == other.points &&
+                this.resources.stream()
+                    .sorted(Comparator.comparingInt(Enum::ordinal)).toList()
+                    .equals(other.resources) &&
+                this.corners.equals(other.corners);
     }
 }

@@ -4,7 +4,7 @@
       "id" : 1,
       "type" : "RESOURCE",
       "color" : "RED",
-      "corners" : {
+      "cornersFront" : {
         "BL" : "PEN",
         "TL" : "EMPTY",
         "BR" : "RED",
@@ -16,7 +16,7 @@
       "id" : 5,
       "type" : "GOLD",
       "color" : "RED",
-      "corners" : {
+      "cornersFront" : {
         "BL" : "PEN",
         "TL" : "EMPTY",
         "BR" : "RED",
@@ -30,7 +30,7 @@
       "id" : 4,
       "type" : "GOLD",
       "color" : "RED",
-      "corners" : {
+      "cornersFront" : {
         "BL" : "PEN",
         "TL" : "EMPTY",
         "BR" : "RED",
@@ -51,7 +51,7 @@
         "BR" : "RED",
         "TR" : "BLUE"
       },
-      "corners" : {
+      "cornersFront" : {
         "BL" : "GREEN",
         "TL" : "PURPLE",
         "BR" : "RED",

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.*;
+import java.util.Optional;
 
 /**
  * A class that creates all the cards (starter, resource, gold, objective) that are present in the game, by
@@ -17,7 +18,8 @@ import java.awt.*;
  * @author Guglielmo Gatti, Marco Maiocchi, Andrea Fidanza, Francesco Saverio Nisoli
  */
 public class CardBuilder {
-    private static final String filePath = "/resources/CardExample.json";
+    private static final String fileName = "cards.json";
+    private static final String filePath = "resources/";
 
     /**
      * Method that creates resource/gold/starter cards
@@ -28,9 +30,16 @@ public class CardBuilder {
         BasicCard cardFront;
         BasicCard cardBack;
         JsonNode cardJson = getCardJson(cardId, "placeableCards");
-        Content color = Content.valueOf(cardJson.get("color").asText());
-        HashMap<Location, Corner> frontCornerMap = getCorners(cardJson, "cornerFront");
-        HashMap<Location, Corner> backCornerMap = getCorners(cardJson, "cornerBack");
+        JsonNode colorNode = cardJson.get("color");
+        Content color;
+        if(colorNode != null){
+            color = Content.valueOf(colorNode.asText());
+        }
+        else{
+            color = Content.WHITE;
+        }
+        HashMap<Location, Corner> frontCornerMap = getCorners(cardJson, "cornersFront");
+        HashMap<Location, Corner> backCornerMap = getCorners(cardJson, "cornersBack");
         int points = cardJson.get("points").asInt();
 
         switch (cardJson.get("type").asText()) {
@@ -52,6 +61,9 @@ public class CardBuilder {
                     case "OBJECT" -> {
                         Content object = Content.valueOf(cardJson.get("bonus").get("object").asText());
                         yield goldFront.new ObjectBonus(object);
+                    }
+                    case "NOTHING" ->{
+                        yield null;
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + cardJson.get("bonus").get("type").asText());
                 };
@@ -87,11 +99,11 @@ public class CardBuilder {
         int points = cardJson.get("points").asInt();
         Objective objective = new Objective(id,points);
         Bonus bonus = switch (cardJson.get("bonus").get("type").asText()){
-            case "PATTERN" -> {
+            case "CONTENT" -> {
                 ArrayList<Content> contents = getContentFromArray(cardJson.get("bonus"), "content");
                 yield objective.new ContentBonus(contents);
             }
-            case "CONTENT" -> {
+            case "PATTERN" -> {
                 HashMap<Point, Content> pattern = new HashMap<>(){{
                     for(JsonNode subNode : cardJson.get("bonus").get("pattern")){
                         int x = subNode.get("x").asInt();
@@ -117,7 +129,7 @@ public class CardBuilder {
      * @return the json node
      */
     private static JsonNode getCardJson(int cardId, String cardType){
-        File cardsJson = new File(filePath);
+        File cardsJson = new File(filePath + fileName);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node;
         try {
@@ -143,16 +155,16 @@ public class CardBuilder {
         JsonNode cornersJson = cardJson.get(fieldName);
         return new HashMap<>() {{
             for (Location loc : Location.values()) {
-                put(loc, new Corner((!cardJson.has(fieldName)) ? Content.WHITE : Content.valueOf(cornersJson.get(loc.name()).asText())));
+                put(loc, new Corner(!cardJson.has(fieldName) ? Content.WHITE : Content.valueOf(cornersJson.get(loc.name()).asText())));
             }
         }};
     }
 
     /**
-     *
-     * @param cardJson
-     * @param arrayName
-     * @return
+     * Helper method used to convert a JSON array to a Content ArrayList
+     * @param cardJson the JsonNode that represents the root of a single card's data
+     * @param arrayName the name of the array property
+     * @return an ArrayList containing the same elements as the JSON array, converted from string to Content
      */
     private static ArrayList<Content> getContentFromArray(JsonNode cardJson, String arrayName){
         return new ArrayList<>() {{

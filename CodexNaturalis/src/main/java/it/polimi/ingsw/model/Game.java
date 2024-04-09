@@ -10,11 +10,11 @@ import java.util.ArrayList;
  */
 public class Game {
     /* may be parametrized through a file or a class in the future*/
-    public final int resourceCardStartIndex = 0;
-    public final int goldCardStartIndex = 20;
-    public final int starterCardStartIndex = 40;
-    public final int objectiveCardStartIndex = 60;
-    public final int deckEndIndex = 80;
+    public final int resourceCardStartIndex = 1;
+    public final int goldCardStartIndex = 41;
+    public final int starterCardStartIndex = 81;
+    public final int objectiveCardStartIndex = 87;
+    public final int deckEndIndex = 102;
     public final int numberOfVisibleCards = 2;
     public final ArrayList<Player> players;
     public final ArrayList<String> nicknames;

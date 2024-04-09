@@ -62,6 +62,25 @@ public class Objective {
     public void setOwner(Player owner) { this.owner = owner; }
 
     /**
+     * Equals method.
+     * @param object Object to check
+     * @return true if each field is equals to each field of object
+     */
+    @Override
+    public boolean equals(Object object) {
+        if(object.getClass() != this.getClass()){
+            return false;
+        }
+        Objective objective = (Objective) object;
+        boolean isSameBonus = (this.bonus == null) ?
+                objective.bonus == null :
+                objective.bonus != null && this.bonus.equals(objective.bonus);
+        return objective.objectiveId == this.objectiveId &&
+                objective.points == this.points &&
+                isSameBonus;
+    }
+
+    /**
      * Strategy class used to handle the bonuses given out by objective cards
      * @author Guglielmo Gatti
      */
@@ -94,6 +113,21 @@ public class Objective {
             }
             return points * timesFound.values().stream().min(Integer::compareTo).orElse(0);
         }
+
+        /**
+         * Equals method.
+         * @param object Object to check
+         * @return true if each field is equals to each field of object
+         */
+        @Override
+        public boolean equals(Object object) {
+            if(object.getClass() != this.getClass()){
+                return false;
+            }
+            ContentBonus objective = (ContentBonus) object;
+            return objective.sequence.equals(this.sequence);
+        }
+
     }
 
     /**
@@ -132,12 +166,12 @@ public class Objective {
             calculatedPoints = 0;
             XOffSet = 0;
             YOffSet = 0;
-            patternReferences = new ArrayList<patternReference>();
+            patternReferences = new ArrayList<>();
             placedCards = owner.getPlacedCards();
-            markedIndexesPlacedCards = new ArrayList<Integer>(); //list of analysed indexes of the placed cards
-            markedIndexesPattern = new ArrayList<Integer>(); //list of analysed indexes of the pattern elements
+            markedIndexesPlacedCards = new ArrayList<>(); //list of analysed indexes of the placed cards
+            markedIndexesPattern = new ArrayList<>(); //list of analysed indexes of the pattern elements
 
-            pattern.forEach((point, content) -> { patternReferences.add(new patternReference(point.x, point.y, content)); });
+            pattern.forEach((point, content) -> patternReferences.add(new patternReference(point.x, point.y, content)));
 
             do{
                 calculationCompleted = true;
@@ -187,6 +221,20 @@ public class Objective {
             }while(!calculationCompleted);
 
             return calculatedPoints;
+        }
+
+        /**
+         * Equals method.
+         * @param object Object to check
+         * @return true if each field is equals to each field of object
+         */
+        @Override
+        public boolean equals(Object object) {
+            if(object.getClass() != this.getClass()){
+                return false;
+            }
+            PatternBonus objective = (PatternBonus) object;
+            return objective.pattern.equals(this.pattern);
         }
     }
 
@@ -254,6 +302,19 @@ public class Objective {
             }
             return points * timesAppeared;
         }
-    }
 
+        /**
+         * Equals method.
+         * @param object Object to check
+         * @return true if each field is equals to each field of object
+         */
+        @Override
+        public boolean equals(Object object) {
+            if(object.getClass() != this.getClass()){
+                return false;
+            }
+            AlternativePatternBonus objective = (AlternativePatternBonus) object;
+            return objective.pattern.equals(this.pattern);
+        }
+    }
 }

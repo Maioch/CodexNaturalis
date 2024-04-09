@@ -15,7 +15,6 @@ public class TurnDeck extends Deck {
 
     /**
      * Class constructor. Gets the visible cards from the top of the deck
-     *
      * @param range_start the inclusive index at which the card range of the deck starts
      * @param range_end the inclusive index at which the card range of the deck ends
      * @param numberOfVisibleCards the size of the array of visible cards
@@ -23,10 +22,8 @@ public class TurnDeck extends Deck {
      */
     public TurnDeck(int range_start, int range_end, int numberOfVisibleCards){
         super(range_start, range_end);
-
         if(numberOfVisibleCards > range_end - range_start)
             throw new RuntimeException("The supplied value range is not valid");
-
         this.visibleCards = new ArrayList<>(numberOfVisibleCards);
         for(int i = 0; i < numberOfVisibleCards; i++)
             this.visibleCards.add(this.cards.pop());
@@ -40,9 +37,9 @@ public class TurnDeck extends Deck {
     public BasicCard getCardOnTop(){
         return cards.peek().backSide();
     }
+
     /**
      * Getter for visible cards
-     *
      * @return ArrayList of visible cards
      */
     public ArrayList<CardSides> getVisibleCards(){
@@ -51,19 +48,30 @@ public class TurnDeck extends Deck {
 
     /**
      * Returns the visible card selected by index and replaces it with the top card of the deck if it's not empty
-     *
      * @param index the index of the selected visible card
      * @return the selected visible card
      */
     public CardSides drawVisibleCard(int index){
-
         CardSides drawnCard = this.visibleCards.get(index);
-
         if(this.cards.isEmpty())
             this.visibleCards.remove(index);
         else
             this.visibleCards.set(index, this.cards.pop());
-
         return drawnCard;
+    }
+
+    /**
+     * Equals method.
+     * @param object Object to check
+     * @return true if each field is equals to each field of object
+     */
+    @Override
+    public boolean equals(Object object){
+        if(this.getClass() != object.getClass())
+            return false;
+        TurnDeck other = (TurnDeck) object;
+        return super.equals(other) &&
+                this.visibleCards.containsAll(other.visibleCards) &&
+                other.visibleCards.containsAll(this.visibleCards);
     }
 }

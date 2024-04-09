@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -78,7 +79,9 @@ public class BasicCardTest {
 
     @Test
     void getValidCornersTest(){
-        assertEquals( corners1.values().stream().filter(Corner::getVisibility).filter(c -> c.getContent() == Content.EMPTY).toList(), card1.getValidCorners());
+        List<Corner> testResources = corners1.values().stream().filter(Corner::getVisibility).filter(c -> c.getContent() != Content.EMPTY).toList();
+        List<Corner> cardResources = card1.getValidCorners();
+        assertEquals(corners1.values().stream().filter(Corner::getVisibility).filter(c -> c.getContent() != Content.EMPTY).toList(), card1.getValidCorners());
     }
 
     @Test
@@ -88,7 +91,8 @@ public class BasicCardTest {
 
     @Test
     void coverCornerTest(){
-        card1.coverCorner(corners1.get(Location.BL));
+        BasicCard cardTest = new BasicCard(cardId, colorForTest, corners1, points, permResourcesForTest);
+        cardTest.coverCorner(card1.getAllCorners().get(Location.BL));
         assertFalse(card1.getAllCorners().get(Location.BL).getVisibility());
     }
 
@@ -105,5 +109,13 @@ public class BasicCardTest {
             assertEquals(y + offY, card1.getAllCorners().get(loc).getY());
             i++;
         }
+    }
+
+    @Test
+    void equalsTest(){
+        assertNotEquals(card1, card2);
+        ArrayList<Content> otherResources = new ArrayList<>(Arrays.asList(contentForTest.get(1), contentForTest.get(0)));
+        BasicCard other = new BasicCard(cardId, colorForTest, corners1, points, otherResources);
+        assertEquals(card1, other);
     }
 }
