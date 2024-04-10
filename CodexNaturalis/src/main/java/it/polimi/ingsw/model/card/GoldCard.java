@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.Bonus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
 
 /**
@@ -24,6 +25,13 @@ public class GoldCard extends BasicCard {
     */
     public GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements){
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
+        if(requirements.stream().anyMatch(c -> !c.isResource())){
+            throw new RuntimeException(
+                    String.format(
+                            "The card requirements contain elements that aren't considered resources on card: %d",
+                            cardTemplate.cardId)
+            );
+        }
         this.requirements = new ArrayList<>(requirements);
         this.owner = null;
         this.bonus = null;
@@ -34,8 +42,15 @@ public class GoldCard extends BasicCard {
      * @return the requirements needed to play the card
      */
     @Override
-    public ArrayList<Content> getRequirements(){
-        return new ArrayList<>(this.requirements);
+    public HashMap<Content,Integer> getRequirements(){
+        return new HashMap<>(){{
+            for(Content content : Content.values()){
+                put(content, requirements.stream()
+                        .filter(x -> x == content)
+                        .mapToInt(x -> 1)
+                        .reduce(0,Integer::sum));
+            }
+        }};
     }
 
     /**
@@ -93,10 +108,9 @@ public class GoldCard extends BasicCard {
             int bonusPoints = points;
 
             for(BasicCard card : owner.getPlacedCards())
-                for(Location loc : card.getAllCorners().keySet())
-                    if(corners.get(loc).getVisibility() && card.getAllCorners().get(loc).isSamePosition(corners.get(loc)))
+                for(Corner corner : card.getAllCorners())
+                    if(corners.stream().anyMatch(c -> c.isSamePosition(corner)))
                         bonusPoints += points;
-
             return bonusPoints;
         }
 

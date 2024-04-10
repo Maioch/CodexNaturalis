@@ -4,9 +4,11 @@ import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -19,7 +21,7 @@ public class BasicCard {
 
     protected final int cardId;
     protected final Content color;
-    protected final HashMap<Location, Corner> corners;
+    protected final HashSet<Corner> corners;
     protected final int points;
     protected final ArrayList<Content> resources;
 
@@ -32,15 +34,27 @@ public class BasicCard {
      * @param resources the card's resources, an array of the contained resources
      */
 
-    public BasicCard(int cardId, Content color, HashMap<Location, Corner> corners, int points, ArrayList<Content> resources) throws RuntimeException{
+    public BasicCard(int cardId, Content color, HashSet<Corner> corners, int points, ArrayList<Content> resources) throws RuntimeException{
 
         if(!color.isColor() || points < 0){
-            throw new RuntimeException();
+            throw new RuntimeException(
+                    String.format("Invalid card parameters on card with the following id:%d",cardId));
+        }
+        boolean allLocationsPresent = true;
+        for(Location loc : Location.values()){
+            if(corners.stream().noneMatch(c -> c.getLocation() == loc)){
+                allLocationsPresent = false;
+                break;
+            }
+        }
+        if(corners.size() != 4 || !allLocationsPresent){
+            throw new RuntimeException(
+                    String.format("Malformed corner set encountered on card with the following id:%d",cardId));
         }
 
         this.cardId = cardId;
         this.color = color;
-        this.corners = new HashMap<>(corners);
+        this.corners = new HashSet<>(corners);
         this.points = points;
         this.resources = new ArrayList<>(resources);
     }
@@ -77,7 +91,7 @@ public class BasicCard {
      */
     public HashMap<Content,Integer> getCardSymbols(){
         //Create a list containing all the contents of the card
-        ArrayList<Content> totalContent = this.corners.values().stream()
+        ArrayList<Content> totalContent = this.corners.stream()
                 .filter(Corner::getVisibility)
                 .map(Corner::getContent)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -99,7 +113,7 @@ public class BasicCard {
      * @return the list of visible corners that aren't empty
      */
     public ArrayList<Corner> getValidCorners(){
-        return this.corners.values().stream()
+        return this.corners.stream()
                 .filter(x -> x.getContent() != Content.EMPTY)
                 .filter(Corner::getVisibility)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -109,15 +123,15 @@ public class BasicCard {
      * Getter for the location and corner hashmap
      * @return the "corners" hashmap
      */
-    public HashMap<Location, Corner> getAllCorners(){
-        return new HashMap<>(corners);
+    public HashSet<Corner> getAllCorners(){
+        return new HashSet<>(corners);
     }
 
     /**
      * method called when a card gets placed onto a corner, hiding it.
      */
     public void coverCorner(Corner which){
-        for(Corner corner : corners.values()){
+        for(Corner corner : corners){
             if(which == corner){
                 corner.coverCorner();
             }
@@ -128,8 +142,12 @@ public class BasicCard {
      * Getter of the "requirements" parameter
      * @return the requirements needed to play the card
      */
-    public ArrayList<Content> getRequirements(){
-        return new ArrayList<>();
+    public HashMap<Content, Integer> getRequirements(){
+        return new HashMap<>(){{
+            for(Content content : Content.values()){
+                put(content, 0);
+            }
+        }};
     }
 
     /**
@@ -138,19 +156,22 @@ public class BasicCard {
      * @param y represents the y-axis coordinate of the bottom-left corner where the card will be placed
      */
     public void place(int x, int y){
-
-        corners.get(Location.BL).setX(x);
-        corners.get(Location.BL).setY(y);
-
-        corners.get(Location.BR).setX(x+1);
-        corners.get(Location.BR).setY(y);
-
-        corners.get(Location.TL).setX(x);
-        corners.get(Location.TL).setY(y+1);
-
-        corners.get(Location.TR).setX(x+1);
-        corners.get(Location.TR).setY(y+1);
-
+        for(Corner corner : corners){
+            Point offset = new Point(x, y);
+            switch(corner.getLocation()){
+                case Location.BR:
+                    offset.translate(1,0);
+                    break;
+                case Location.TL:
+                    offset.translate(0,1);
+                    break;
+                case Location.TR:
+                    offset.translate(1,1);
+                    break;
+            }
+            corner.setX(offset.x);
+            corner.setY(offset.y);
+        }
     }
 
     /**

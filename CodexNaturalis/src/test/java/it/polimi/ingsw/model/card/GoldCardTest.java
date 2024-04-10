@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.stream.Collectors;
+import java.util.HashMap;
 
 public class GoldCardTest {
     private final int startGold = 41;
@@ -21,13 +20,17 @@ public class GoldCardTest {
             assertEquals(card.getClass(), GoldCard.class);
             GoldCard gold = (GoldCard) card;
             ArrayList<Content> actualRequirements = CardBuilder.getContentFromArray(node, "requirements");
+            HashMap<Content,Integer> actualRequirementsMap = new HashMap<>(){{
+                for(Content content : Content.values()){
+                    put(content, actualRequirements.stream()
+                            .filter(x -> x == content)
+                            .mapToInt(x -> 1)
+                            .reduce(0,Integer::sum));
+                }
+            }};
             assertEquals(
-                    gold.getRequirements().stream().
-                        sorted(Comparator.comparingInt(Enum::ordinal)).
-                        collect(Collectors.toList()),
-                    actualRequirements.stream().
-                        sorted(Comparator.comparingInt(Enum::ordinal)).
-                        collect(Collectors.toList()));
+                    actualRequirementsMap,
+                    gold.getRequirements());
         }
     }
 

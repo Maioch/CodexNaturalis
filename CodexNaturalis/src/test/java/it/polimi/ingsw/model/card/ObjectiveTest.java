@@ -1,11 +1,10 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.card.CardBuilder;
+import it.polimi.ingsw.model.card.Objective;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Arrays;
 
 /** not currently implemented, waiting for Bonus implementations to be available
  * @author Guglielmo Gatti

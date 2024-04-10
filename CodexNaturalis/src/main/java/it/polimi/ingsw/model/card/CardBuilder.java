@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.awt.*;
 
 /**
@@ -30,8 +31,8 @@ public class CardBuilder {
         BasicCard cardBack;
         JsonNode cardJson = getCardJson(cardId, "placeableCards");
         Content color = getColor(cardJson);
-        HashMap<Location, Corner> frontCornerMap = getCorners(cardJson, "cornersFront");
-        HashMap<Location, Corner> backCornerMap = getCorners(cardJson, "cornersBack");
+        HashSet<Corner> frontCornerMap = getCorners(cardJson, "cornersFront");
+        HashSet<Corner> backCornerMap = getCorners(cardJson, "cornersBack");
         int points = getPoints(cardJson);
         switch (cardJson.get("type").asText()) {
 
@@ -119,7 +120,7 @@ public class CardBuilder {
      * @param cardType the card type
      * @return the json node
      */
-    public static JsonNode getCardJson(int cardId, String cardType){
+    static JsonNode getCardJson(int cardId, String cardType){
         File cardsJson = new File(filePath + fileName);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node;
@@ -141,12 +142,12 @@ public class CardBuilder {
      * @param cardJson json node that represents the card
      * @return the read color
      */
-    public static Content getColor(JsonNode cardJson){
+    static Content getColor(JsonNode cardJson){
         return cardJson.has("color") ? Content.valueOf(cardJson.get("color").asText()) : Content.WHITE;
     }
 
 
-    public static int getPoints(JsonNode cardJson){
+    static int getPoints(JsonNode cardJson){
         return cardJson.get("points").asInt();
     }
 
@@ -156,11 +157,11 @@ public class CardBuilder {
      * @param fieldName field that we want to read
      * @return the corners HashMap
      */
-    public static HashMap<Location, Corner> getCorners(JsonNode cardJson, String fieldName){
+    static HashSet<Corner> getCorners(JsonNode cardJson, String fieldName){
         JsonNode cornersJson = cardJson.get(fieldName);
-        return new HashMap<>() {{
+        return new HashSet<>() {{
             for (Location loc : Location.values()) {
-                put(loc, new Corner(!cardJson.has(fieldName) ? Content.WHITE : Content.valueOf(cornersJson.get(loc.name()).asText())));
+                add(new Corner(!cardJson.has(fieldName) ? Content.WHITE : Content.valueOf(cornersJson.get(loc.name()).asText()), loc));
             }
         }};
     }
@@ -171,7 +172,7 @@ public class CardBuilder {
      * @param arrayName the name of the array property
      * @return an ArrayList containing the same elements as the JSON array, converted from string to Content
      */
-    public static ArrayList<Content> getContentFromArray(JsonNode cardJson, String arrayName){
+    static ArrayList<Content> getContentFromArray(JsonNode cardJson, String arrayName){
         return new ArrayList<>() {{
             for (JsonNode subNode : cardJson.get(arrayName)) {
                 add(Content.valueOf(subNode.asText()));

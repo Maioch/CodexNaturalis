@@ -2,7 +2,6 @@ package it.polimi.ingsw.model.card;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
@@ -12,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -57,23 +57,23 @@ public class BasicCardTest {
                     new ArrayList<>();
             HashMap<Content, Integer> actualSymbols = getCorrectSymbols(resources, CardBuilder.getCorners(node, "cornersFront"));
             assertEquals(actualSymbols, card.getCardSymbols());
-            for(Location loc : Location.values()){
-                Content cornerContent = card.getAllCorners().get(loc).getContent();
+            for(Corner corner : card.getAllCorners()){
+                Content cornerContent = corner.getContent();
                 int current = actualSymbols.get(cornerContent);
                 actualSymbols.put(cornerContent, current - 1);
-                card.coverCorner(card.getAllCorners().get(loc));
+                card.coverCorner(corner);
                 assertEquals(actualSymbols, card.getCardSymbols());
             }
         }
     }
-    private HashMap<Content, Integer> getCorrectSymbols(ArrayList<Content> permResources, HashMap<Location, Corner> corners){
+    private HashMap<Content, Integer> getCorrectSymbols(ArrayList<Content> permResources, HashSet<Corner> corners){
         return new HashMap<>(){{
             for(Content content : Content.values())
                 put(content, 0);
             for(Content content : permResources){
                 this.put(content, this.get(content) + 1);
             }
-            for(Corner corner : corners.values())
+            for(Corner corner : corners)
                 if(corner.getVisibility()){
                     Content content = corner.getContent();
                     this.put(content, this.get(content) + 1);
@@ -86,8 +86,8 @@ public class BasicCardTest {
         for(int id = startResource; id <= endStarter; id++){
             JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
             BasicCard card = CardBuilder.buildCard(id).frontSide();
-            HashMap<Location, Corner> allCorners = CardBuilder.getCorners(node, "cornersFront");
-            ArrayList<Corner> actualCorners = allCorners.values().stream().
+            HashSet<Corner> allCorners = CardBuilder.getCorners(node, "cornersFront");
+            ArrayList<Corner> actualCorners = allCorners.stream().
                     filter(Corner::getVisibility).
                     filter(c -> c.getContent() != Content.EMPTY).
                     collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
@@ -106,7 +106,7 @@ public class BasicCardTest {
         for(int id = startResource; id <= endStarter; id++){
             JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
             BasicCard card = CardBuilder.buildCard(id).frontSide();
-            HashMap<Location, Corner> actualCorners = CardBuilder.getCorners(node, "cornersFront");
+            HashSet<Corner> actualCorners = CardBuilder.getCorners(node, "cornersFront");
             assertEquals(actualCorners, card.getAllCorners());
         }
     }
@@ -115,9 +115,9 @@ public class BasicCardTest {
     void coverCornerTest(){
         for(int id = startResource; id <= endStarter; id++) {
             BasicCard card = CardBuilder.buildCard(id).frontSide();
-            for (Location loc : Location.values()) {
-                card.coverCorner(card.getAllCorners().get(loc));
-                assertFalse(card.getAllCorners().get(loc).getVisibility());
+            for (Corner corner : card.getAllCorners()) {
+                card.coverCorner(corner);
+                assertFalse(corner.getVisibility());
             }
         }
     }
@@ -134,8 +134,16 @@ public class BasicCardTest {
             for (Location loc : Location.values()) {
                 offX = i % 2;
                 offY = (i / 2) % 2;
-                assertEquals(x + offX, card.getAllCorners().get(loc).getX());
-                assertEquals(y + offY, card.getAllCorners().get(loc).getY());
+                assertEquals(x + offX, card.getAllCorners().stream()
+                        .filter(c -> c.getLocation() == loc)
+                        .findAny()
+                        .orElseThrow()
+                        .getX());
+                assertEquals(y + offY, card.getAllCorners().stream()
+                        .filter(c -> c.getLocation() == loc)
+                        .findAny()
+                        .orElseThrow()
+                        .getY());
                 i++;
             }
         }

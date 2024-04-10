@@ -13,13 +13,15 @@ public class Corner {
     private int y;
     private final Content content;
     private boolean visibility;
+    private final Location location;
 
     /**
      * Constructor for corners
      * @param content symbol in the corner
      */
-    public Corner(Content content){
+    public Corner(Content content, Location location){
         this.content = content;
+        this.location = location;
         this.visibility = true;
         this.x = 0;
         this.y = 0;
@@ -53,6 +55,14 @@ public class Corner {
      */
     public void setY(int y) {
         this.y = y;
+    }
+
+    /**
+     * getter for the location
+     * @return corner's location
+     */
+    public Location getLocation(){
+        return this.location;
     }
 
     /**
@@ -97,6 +107,20 @@ public class Corner {
         Corner corner = (Corner) object;
         return corner.x == this.x && corner.y == this.y &&
                 corner.visibility == this.visibility &&
-                corner.content == this.content;
+                corner.content == this.content &&
+                corner.location == this.location;
+    }
+
+    /**
+     * Override of the hashCode function that enables the correct functionality
+     * of the equals method for Hash-based data structures. This *DOES* respect
+     * the contract for hashcode as it is only required for the method to return
+     * the same value for equal objects, while it is not needed for different
+     * objects to have different hash codes.
+     * @return an arbitrary integer
+     */
+    @Override
+    public int hashCode(){
+        return 1;
     }
 }

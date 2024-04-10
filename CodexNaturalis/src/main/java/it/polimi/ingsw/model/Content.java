@@ -18,6 +18,13 @@ public enum Content {
     }
 
     /**
+     * @return true if this is a resource
+     */
+    public boolean isResource(){
+        return this == RED || this == GREEN || this == BLUE || this == PURPLE;
+    }
+
+    /**
      * @return true if this is an object
      */
     public boolean isObject(){

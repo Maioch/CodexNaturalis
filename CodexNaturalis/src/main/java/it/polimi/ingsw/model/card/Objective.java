@@ -1,6 +1,6 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.card;
 
-import it.polimi.ingsw.model.card.BasicCard;
+import it.polimi.ingsw.model.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -156,8 +156,8 @@ public class Objective {
         @Override
         public int calculate(){
             record patternReference(int x, int y, Content color){}
-            int calculatedPoints;
-            boolean calculationCompleted;
+            int calculatedPoints = 0;
+          /*boolean calculationCompleted;
             int XOffSet, YOffSet;
             ArrayList<patternReference> patternReferences;
             ArrayList<BasicCard> placedCards;
@@ -217,9 +217,7 @@ public class Objective {
                         markedIndexesPlacedCards.clear();
                     }
                 }
-
-            }while(!calculationCompleted);
-
+            }while(!calculationCompleted);*/
             return calculatedPoints;
         }
 
@@ -271,7 +269,9 @@ public class Objective {
             //Generate a color hashmap from the player's board
             HashMap<Point,Content> colorHashMap = new HashMap<>(){{
                 for(BasicCard card : owner.getPlacedCards()){
-                    Corner cardBLCorner = card.getAllCorners().get(Location.BL);
+                    Corner cardBLCorner = card.getAllCorners().stream()
+                            .filter(c -> c.getLocation() == Location.BL)
+                            .findAny().orElseThrow();
                     Point cardPosition = new Point(cardBLCorner.getX(), cardBLCorner.getY());
                     put(cardPosition, card.getColor());
                 }

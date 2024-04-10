@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardSides;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Class that represents gold and resource decks. It also represents the visible cards beside the deck
@@ -70,8 +71,16 @@ public class TurnDeck extends Deck {
         if(this.getClass() != object.getClass())
             return false;
         TurnDeck other = (TurnDeck) object;
-        return super.equals(other) &&
-                this.visibleCards.containsAll(other.visibleCards) &&
-                other.visibleCards.containsAll(this.visibleCards);
+        ArrayList<CardSides> allCards = new ArrayList<>(){{
+            addAll(cards);
+            addAll(visibleCards);
+        }};
+        ArrayList<CardSides> allOtherCards = new ArrayList<>(){{
+            addAll(other.cards);
+            addAll(other.visibleCards);
+        }};
+        return allCards.containsAll(allOtherCards) &&
+                allOtherCards.containsAll(allCards) &&
+                this.visibleCards.size() == other.visibleCards.size();
     }
 }

@@ -96,11 +96,26 @@ public class Player {
     /**
      * Supporting method for playTurn that allows the player to place a card on his board
      * @param cardToPlace the card the player chose to place
-     * @param corner the corner on the board where the card is placed
-     * @return true if the card is correctly placed
+     * @param corner the corner on the card where the card is placed
      */
-    private boolean placeCard(BasicCard cardToPlace, Corner corner){
-        return false;
+    private void placeCard(BasicCard cardToPlace, Corner corner){
+        if(!checkIfPlaceable(cardToPlace, corner))
+            return;
+
+    }
+
+    /**
+     *
+     * @param cardToPlace the card the player chose to place
+     * @param corner the card's corner where the new card is going to be placed
+     * @return true if the card is placeable on the corner
+     */
+    public boolean checkIfPlaceable(BasicCard cardToPlace, Corner corner){
+        if(!corner.getVisibility() || corner.getContent() == Content.EMPTY)
+            return false;
+        HashMap<Content,Integer> requirements = cardToPlace.getRequirements();
+        HashMap<Content,Integer> playerSymbols = getPlayerContent();
+        return requirements.entrySet().stream().allMatch(e -> playerSymbols.get(e.getKey()) >= e.getValue());
     }
 
     /**

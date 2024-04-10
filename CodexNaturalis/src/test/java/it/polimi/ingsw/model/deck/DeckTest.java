@@ -13,9 +13,7 @@ import java.util.ArrayList;
 public class DeckTest {
     private final int deckStart = 25;
     private final int deckEnd = 67;
-
     private final ArrayList<Integer> ids = new ArrayList<>();
-    private final Deck deck = new Deck(deckStart,deckEnd);
 
     /**
      * Tests taking a deck and drawing all the cards from it.
@@ -23,6 +21,7 @@ public class DeckTest {
      */
     @Test
     public void RepeatedDrawTest(){
+        Deck deck = new Deck(deckStart,deckEnd);
         for(int i = deckStart; i <= deckEnd + 1; i++){
             try{
                 CardSides cardSides = deck.draw();
@@ -45,6 +44,7 @@ public class DeckTest {
      */
     @Test
     public void equalsTest(){
+        Deck deck = new Deck(deckStart,deckEnd);
         Deck otherDeck = new Deck(deckStart, deckEnd);
         assertEquals(deck, otherDeck);
         otherDeck.draw();

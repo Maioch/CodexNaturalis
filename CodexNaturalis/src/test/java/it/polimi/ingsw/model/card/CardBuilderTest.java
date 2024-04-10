@@ -3,13 +3,13 @@ package it.polimi.ingsw.model.card;
 import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
-import it.polimi.ingsw.model.Objective;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * class used for testing CardBuilder's functionality.
@@ -41,35 +41,35 @@ public class CardBuilderTest {
         add(Content.RED);
         add(Content.WHITE);
     }};
-    private final HashMap<Location,Corner> resourceFrontCorners = new HashMap<>(){{
-        put(Location.BL,new Corner(Content.RED));
-        put(Location.BR,new Corner(Content.EMPTY));
-        put(Location.TL,new Corner(Content.RED));
-        put(Location.TR,new Corner(Content.WHITE));
+    private final HashSet<Corner> resourceFrontCorners = new HashSet<>(){{
+        add(new Corner(Content.RED, Location.BL));
+        add(new Corner(Content.EMPTY, Location.BR));
+        add(new Corner(Content.RED, Location.TL));
+        add(new Corner(Content.WHITE, Location.TR));
     }};
-    private final HashMap<Location,Corner> resourceBackCorners = new HashMap<>(){{
-        put(Location.BL,new Corner(Content.WHITE));
-        put(Location.BR,new Corner(Content.WHITE));
-        put(Location.TL,new Corner(Content.WHITE));
-        put(Location.TR,new Corner(Content.WHITE));
+    private final HashSet<Corner> resourceBackCorners = new HashSet<>(){{
+        add(new Corner(Content.WHITE, Location.BL));
+        add(new Corner(Content.WHITE, Location.BR));
+        add(new Corner(Content.WHITE, Location.TL));
+        add(new Corner(Content.WHITE, Location.TR));
     }};
-    private final HashMap<Location,Corner> goldFrontCorners = new HashMap<>(){{
-        put(Location.BL,new Corner(Content.WHITE));
-        put(Location.BR,new Corner(Content.PEN));
-        put(Location.TL,new Corner(Content.EMPTY));
-        put(Location.TR,new Corner(Content.WHITE));
+    private final HashSet<Corner> goldFrontCorners = new HashSet<>(){{
+        add(new Corner(Content.WHITE, Location.BL));
+        add(new Corner(Content.PEN, Location.BR));
+        add(new Corner(Content.EMPTY, Location.TL));
+        add(new Corner(Content.WHITE, Location.TR));
     }};
-    private final HashMap<Location,Corner> starterBackCorners = new HashMap<>(){{
-        put(Location.BL,new Corner(Content.PURPLE));
-        put(Location.BR,new Corner(Content.BLUE));
-        put(Location.TL,new Corner(Content.RED));
-        put(Location.TR,new Corner(Content.GREEN));
+    private final HashSet<Corner> starterBackCorners = new HashSet<>(){{
+        add(new Corner(Content.PURPLE, Location.BL));
+        add(new Corner(Content.BLUE, Location.BR));
+        add(new Corner(Content.RED, Location.TL));
+        add(new Corner(Content.GREEN, Location.TR));
     }};
-    private final HashMap<Location,Corner> starterFrontCorners = new HashMap<>(){{
-        put(Location.BL,new Corner(Content.PURPLE));
-        put(Location.BR,new Corner(Content.WHITE));
-        put(Location.TL,new Corner(Content.WHITE));
-        put(Location.TR,new Corner(Content.GREEN));
+    private final HashSet<Corner> starterFrontCorners = new HashSet<>(){{
+        add(new Corner(Content.PURPLE, Location.BL));
+        add(new Corner(Content.WHITE, Location.BR));
+        add(new Corner(Content.WHITE, Location.TL));
+        add(new Corner(Content.GREEN, Location.TR));
     }};
     private final ArrayList<Content>goldRequirements = new ArrayList<Content>(){{
         add(Content.RED);

@@ -11,16 +11,16 @@ import java.util.ArrayList;
  * @author Andrea Fidanza
  */
 public class TurnDeckTest {
-    private final int range_start = 0;
+    private final int range_start = 1;
     private final int range_end = 20;
     private final int numberOfVisibleCards = 2;
-    private final TurnDeck deck = new TurnDeck(range_start, range_end, numberOfVisibleCards);
 
     /**
      * Tests the drawVisibleCard method by drawing visible cards until the deck is empty
      */
     @Test
     void drawVisibleCardTest(){
+        TurnDeck deck = new TurnDeck(range_start, range_end, numberOfVisibleCards);
         int index = 0;
         try {
             while(!deck.isEmpty()) {
@@ -45,6 +45,7 @@ public class TurnDeckTest {
      */
     @Test
     void getCardOnTopTest(){
+        TurnDeck deck = new TurnDeck(range_start, range_end, numberOfVisibleCards);
         BasicCard topDeck = deck.getCardOnTop();
         assertEquals(topDeck, deck.draw().backSide());
     }
@@ -54,6 +55,7 @@ public class TurnDeckTest {
      */
     @Test
     void equalsTest(){
+        TurnDeck deck = new TurnDeck(range_start, range_end, numberOfVisibleCards);
         TurnDeck otherDeck = new TurnDeck(range_start, range_end, numberOfVisibleCards);
         assertEquals(deck, otherDeck);
         otherDeck.drawVisibleCard(0);
