@@ -1,12 +1,13 @@
 package it.polimi.ingsw.model.card;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -38,15 +39,11 @@ public class BasicCardTest {
 
     @Test
     void getColorTest(){
-        for(int id = startResource; id <= endResource; id++){
+        for(int id = startResource; id <= endStarter; id++){
             JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             Content color = CardBuilder.getColor(node);
             assertEquals(color, card.getColor());
-        }
-        for(int id = startStarter; id <= endStarter; id++){
-            BasicCard card = CardBuilder.buildCard(id).frontSide();
-            assertEquals(Content.WHITE, card.getColor());
         }
     }
 
@@ -55,7 +52,7 @@ public class BasicCardTest {
         for(int id = startResource; id <= endStarter; id++){
             JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
             BasicCard card = CardBuilder.buildCard(id).frontSide();
-            ArrayList<Content> resources = (id > endResource) ?
+            ArrayList<Content> resources = (id >= startStarter) ?
                     CardBuilder.getContentFromArray(node, "resources") :
                     new ArrayList<>();
             HashMap<Content, Integer> actualSymbols = getCorrectSymbols(resources, CardBuilder.getCorners(node, "cornersFront"));
@@ -67,8 +64,6 @@ public class BasicCardTest {
                 card.coverCorner(card.getAllCorners().get(loc));
                 assertEquals(actualSymbols, card.getCardSymbols());
             }
-            if(id == endResource)
-                id = startStarter - 1;
         }
     }
     private HashMap<Content, Integer> getCorrectSymbols(ArrayList<Content> permResources, HashMap<Location, Corner> corners){
@@ -103,8 +98,6 @@ public class BasicCardTest {
                     card.getValidCorners().stream().
                             sorted(Comparator.comparingInt(a -> a.getContent().ordinal())).
                             collect(Collectors.toList()));
-            if(id == endResource)
-                id = startStarter - 1;
         }
     }
 
@@ -115,8 +108,6 @@ public class BasicCardTest {
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             HashMap<Location, Corner> actualCorners = CardBuilder.getCorners(node, "cornersFront");
             assertEquals(actualCorners, card.getAllCorners());
-            if(id == endResource)
-                id = startStarter - 1;
         }
     }
 
@@ -128,8 +119,6 @@ public class BasicCardTest {
                 card.coverCorner(card.getAllCorners().get(loc));
                 assertFalse(card.getAllCorners().get(loc).getVisibility());
             }
-            if(id == endResource)
-                id = startStarter - 1;
         }
     }
 
@@ -149,20 +138,28 @@ public class BasicCardTest {
                 assertEquals(y + offY, card.getAllCorners().get(loc).getY());
                 i++;
             }
-            if(id == endResource)
-                id = startStarter - 1;
         }
     }
 
     @Test
     void equalsTest(){
+        BasicCard otherFront = null;
+        BasicCard otherBack = null;
         for(int id = startResource; id <= endStarter; id++){
             CardSides cardSides = CardBuilder.buildCard(id);
             assertNotEquals(cardSides.frontSide(), cardSides.backSide());
             BasicCard front = CardBuilder.buildCard(id).frontSide();
             BasicCard back = CardBuilder.buildCard(id).backSide();
-            assertEquals(front, cardSides.frontSide());
-            assertEquals(back, cardSides.backSide());
+            if(otherFront != null && otherBack != null){
+                assertNotEquals(front, otherFront);
+                assertNotEquals(back, otherBack);
+            }
+            BasicCard sameFront = CardBuilder.buildCard(id).frontSide();
+            BasicCard sameBack = CardBuilder.buildCard(id).backSide();
+            assertEquals(front, sameFront);
+            assertEquals(back, sameBack);
+            otherFront = front;
+            otherBack = back;
             if(id == endResource)
                 id = startStarter - 1;
         }
