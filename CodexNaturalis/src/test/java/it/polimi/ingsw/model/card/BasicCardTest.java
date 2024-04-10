@@ -2,65 +2,74 @@ package it.polimi.ingsw.model.card;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * @author Francesco Nisoli, Guglielmo Gatti, Andrea Fidanza
  */
 public class BasicCardTest {
-    private final int cardId = 0;
-    private final int points = 0;
-    private final ArrayList<Content> contentForTest = new ArrayList<>(){{
-        add(Content.RED);
-        add(Content.BLUE);
-        add(Content.EMPTY);
-        add(Content.PEN);
-        add(Content.WHITE);
-    }
-    };
-    private final Content colorForTest = Content.BLUE;
-    private final HashMap<Location, Corner> corners1 = new HashMap<>(){{
-        put(Location.TR, new Corner(contentForTest.get(0)));
-        put(Location.TL, new Corner(contentForTest.get(1)));
-        put(Location.BR, new Corner(contentForTest.get(2)));
-        put(Location.BL, new Corner(contentForTest.get(3)));
-    }
-    };
-    private final HashMap<Location, Corner> corners2 = new HashMap<>(){{
-        put(Location.TR, new Corner(contentForTest.get(1)));
-        put(Location.TL, new Corner(contentForTest.get(2)));
-        put(Location.BR, new Corner(contentForTest.get(3)));
-        put(Location.BL, new Corner(contentForTest.get(4)));
-    }
-    };
-
-    private final ArrayList<Content> permResourcesForTest = new ArrayList<>(Arrays.asList(contentForTest.get(0), contentForTest.get(1)));
-
-    private final BasicCard card1 = new BasicCard(cardId, colorForTest, corners1, points, permResourcesForTest);
-    private final BasicCard card2 = new BasicCard(cardId, colorForTest, corners2, points, permResourcesForTest);
+    private final int startResource = 1;
+    private final int endResource = 40;
+    private final int startStarter = 81;
+    private final int endStarter = 86;
 
     @Test
     void getPointsTest(){
-        assertEquals(points, card1.getPoints());
+        for(int id = startResource; id <= endResource; id++){
+            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            int actualPoints = CardBuilder.getPoints(node);
+            assertEquals(actualPoints, card.getPoints());
+        }
+        for(int id = startStarter; id <= endStarter; id++){
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            assertEquals(0, card.getPoints());
+        }
     }
 
     @Test
-    void getColorTest(){ assertEquals(colorForTest, card1.color); }
+    void getColorTest(){
+        for(int id = startResource; id <= endResource; id++){
+            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            Content color = CardBuilder.getColor(node);
+            assertEquals(color, card.getColor());
+        }
+        for(int id = startStarter; id <= endStarter; id++){
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            assertEquals(Content.WHITE, card.getColor());
+        }
+    }
 
     @Test
     void getCardSymbols(){
-        HashMap<Content, Integer> correctMap1 = getCorrectSymbols(permResourcesForTest, corners1);
-        HashMap<Content, Integer> correctMap2 = getCorrectSymbols(permResourcesForTest, corners2);
-        assertEquals(correctMap1, card1.getCardSymbols());
-        assertEquals(correctMap2, card2.getCardSymbols());
+        for(int id = startResource; id <= endStarter; id++){
+            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            ArrayList<Content> resources = (id > endResource) ?
+                    CardBuilder.getContentFromArray(node, "resources") :
+                    new ArrayList<>();
+            HashMap<Content, Integer> actualSymbols = getCorrectSymbols(resources, CardBuilder.getCorners(node, "cornersFront"));
+            assertEquals(actualSymbols, card.getCardSymbols());
+            for(Location loc : Location.values()){
+                Content cornerContent = card.getAllCorners().get(loc).getContent();
+                int current = actualSymbols.get(cornerContent);
+                actualSymbols.put(cornerContent, current - 1);
+                card.coverCorner(card.getAllCorners().get(loc));
+                assertEquals(actualSymbols, card.getCardSymbols());
+            }
+            if(id == endResource)
+                id = startStarter - 1;
+        }
     }
     private HashMap<Content, Integer> getCorrectSymbols(ArrayList<Content> permResources, HashMap<Location, Corner> corners){
         return new HashMap<>(){{
@@ -79,43 +88,83 @@ public class BasicCardTest {
 
     @Test
     void getValidCornersTest(){
-        List<Corner> testResources = corners1.values().stream().filter(Corner::getVisibility).filter(c -> c.getContent() != Content.EMPTY).toList();
-        List<Corner> cardResources = card1.getValidCorners();
-        assertEquals(corners1.values().stream().filter(Corner::getVisibility).filter(c -> c.getContent() != Content.EMPTY).toList(), card1.getValidCorners());
+        for(int id = startResource; id <= endStarter; id++){
+            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            HashMap<Location, Corner> allCorners = CardBuilder.getCorners(node, "cornersFront");
+            ArrayList<Corner> actualCorners = allCorners.values().stream().
+                    filter(Corner::getVisibility).
+                    filter(c -> c.getContent() != Content.EMPTY).
+                    collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            assertEquals(
+                    actualCorners.stream().
+                            sorted(Comparator.comparingInt(a -> a.getContent().ordinal())).
+                            collect(Collectors.toList()),
+                    card.getValidCorners().stream().
+                            sorted(Comparator.comparingInt(a -> a.getContent().ordinal())).
+                            collect(Collectors.toList()));
+            if(id == endResource)
+                id = startStarter - 1;
+        }
     }
 
     @Test
     void getAllCornersTest(){
-        assertEquals(corners1, card1.getAllCorners());
+        for(int id = startResource; id <= endStarter; id++){
+            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            HashMap<Location, Corner> actualCorners = CardBuilder.getCorners(node, "cornersFront");
+            assertEquals(actualCorners, card.getAllCorners());
+            if(id == endResource)
+                id = startStarter - 1;
+        }
     }
 
     @Test
     void coverCornerTest(){
-        BasicCard cardTest = new BasicCard(cardId, colorForTest, corners1, points, permResourcesForTest);
-        cardTest.coverCorner(card1.getAllCorners().get(Location.BL));
-        assertFalse(card1.getAllCorners().get(Location.BL).getVisibility());
+        for(int id = startResource; id <= endStarter; id++) {
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            for (Location loc : Location.values()) {
+                card.coverCorner(card.getAllCorners().get(loc));
+                assertFalse(card.getAllCorners().get(loc).getVisibility());
+            }
+            if(id == endResource)
+                id = startStarter - 1;
+        }
     }
 
     @Test
     void placeTest(){
         int x = 5, y = 5;
         int offX, offY;
-        int i = 0;
-        card1.place(x,y);
-        for(Location loc : Location.values()) {
-            offX = i % 2;
-            offY = (i / 2) % 2;
-            assertEquals(x + offX, card1.getAllCorners().get(loc).getX());
-            assertEquals(y + offY, card1.getAllCorners().get(loc).getY());
-            i++;
+        int i;
+        for(int id = startResource; id <= endStarter; id++) {
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            card.place(x, y);
+            i = 0;
+            for (Location loc : Location.values()) {
+                offX = i % 2;
+                offY = (i / 2) % 2;
+                assertEquals(x + offX, card.getAllCorners().get(loc).getX());
+                assertEquals(y + offY, card.getAllCorners().get(loc).getY());
+                i++;
+            }
+            if(id == endResource)
+                id = startStarter - 1;
         }
     }
 
     @Test
     void equalsTest(){
-        assertNotEquals(card1, card2);
-        ArrayList<Content> otherResources = new ArrayList<>(Arrays.asList(contentForTest.get(1), contentForTest.get(0)));
-        BasicCard other = new BasicCard(cardId, colorForTest, corners1, points, otherResources);
-        assertEquals(card1, other);
+        for(int id = startResource; id <= endStarter; id++){
+            CardSides cardSides = CardBuilder.buildCard(id);
+            assertNotEquals(cardSides.frontSide(), cardSides.backSide());
+            BasicCard front = CardBuilder.buildCard(id).frontSide();
+            BasicCard back = CardBuilder.buildCard(id).backSide();
+            assertEquals(front, cardSides.frontSide());
+            assertEquals(back, cardSides.backSide());
+            if(id == endResource)
+                id = startStarter - 1;
+        }
     }
 }
