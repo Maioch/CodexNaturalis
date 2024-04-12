@@ -94,24 +94,6 @@ public class Player {
     }
 
     /**
-     * Supporting method for playTurn that allows the player to place a card on his board
-     * @param cardToPlace the card the player chose to place
-     * @param corner the corner on the card where the card is placed
-     */
-    private void placeCard(BasicCard cardToPlace, Corner corner){
-        if(!checkIfPlaceable(cardToPlace, corner))
-            return;
-        for(CardSides cards : handCards){
-            if(cards.frontSide().equals(cardToPlace) || cards.backSide().equals(cardToPlace)){
-                handCards.remove(cards);
-                break;
-            }
-        }
-        cardToPlace.place(corner.getX(), corner.getY());
-        placedCards.add(cardToPlace);
-    }
-
-    /**
      *
      * @param cardToPlace the card the player chose to place
      * @param corner the card's corner where the new card is going to be placed

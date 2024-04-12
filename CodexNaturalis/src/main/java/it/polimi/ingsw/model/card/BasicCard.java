@@ -132,7 +132,7 @@ public class BasicCard {
      */
     public void coverCorner(Corner which){
         for(Corner corner : corners){
-            if(which == corner){
+            if(corner.equals(which)){
                 corner.coverCorner();
             }
         }
