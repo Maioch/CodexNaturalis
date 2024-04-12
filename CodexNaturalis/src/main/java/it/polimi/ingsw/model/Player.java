@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.card.*;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Class that represents each one of the 4 possible players in a game, each with his distinctive nickname and color,
@@ -155,5 +156,19 @@ public class Player {
                 this.handCards.equals(other.handCards) &&
                 this.placedCards.equals(other.placedCards) &&
                 this.objectives.equals(other.objectives);
+    }
+
+    /**
+     * Supporting method for playTurn that allows the player to place a card on his board
+     * @param cardToPlace the card the player chose to place
+     * @param corner the corner on the card where the card is placed
+     */
+    private void placeCard(BasicCard cardToPlace, Corner corner){
+        if(!checkIfPlaceable(cardToPlace, corner))
+            return;
+        handCards.removeIf(c -> c.frontSide().equals(cardToPlace) || c.backSide().equals(cardToPlace));
+        cardToPlace.place(corner.getX(), corner.getY());
+        placedCards.add(cardToPlace);
+        corner.coverCorner();
     }
 }

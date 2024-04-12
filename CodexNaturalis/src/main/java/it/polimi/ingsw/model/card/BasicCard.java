@@ -162,10 +162,10 @@ public class BasicCard {
                 case BR:
                     offset.translate(1,0);
                     break;
-                case Location.TL:
+                case TL:
                     offset.translate(0,1);
                     break;
-                case Location.TR:
+                case TR:
                     offset.translate(1,1);
                     break;
             }
