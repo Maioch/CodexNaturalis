@@ -57,6 +57,7 @@ public class BasicCardTest {
                     new ArrayList<>();
             HashMap<Content, Integer> actualSymbols = getCorrectSymbols(resources, CardBuilder.getCorners(node, "cornersFront"));
             assertEquals(actualSymbols, card.getCardSymbols());
+
             for(Corner corner : card.getAllCorners()){
                 Content cornerContent = corner.getContent();
                 int current = actualSymbols.get(cornerContent);
