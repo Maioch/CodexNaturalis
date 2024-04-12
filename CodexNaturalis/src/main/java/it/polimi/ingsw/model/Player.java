@@ -101,7 +101,14 @@ public class Player {
     private void placeCard(BasicCard cardToPlace, Corner corner){
         if(!checkIfPlaceable(cardToPlace, corner))
             return;
-
+        for(CardSides cards : handCards){
+            if(cards.frontSide().equals(cardToPlace) || cards.backSide().equals(cardToPlace)){
+                handCards.remove(cards);
+                break;
+            }
+        }
+        cardToPlace.place(corner.getX(), corner.getY());
+        placedCards.add(cardToPlace);
     }
 
     /**

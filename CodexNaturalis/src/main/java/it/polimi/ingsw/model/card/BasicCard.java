@@ -159,7 +159,7 @@ public class BasicCard {
         for(Corner corner : corners){
             Point offset = new Point(x, y);
             switch(corner.getLocation()){
-                case Location.BR:
+                case BR:
                     offset.translate(1,0);
                     break;
                 case Location.TL:

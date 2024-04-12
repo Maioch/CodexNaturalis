@@ -45,7 +45,7 @@ public class Corner {
      * setter for the X coordinate of the Corner
      * @param x the X coordinate where the corner is placed
      */
-    public void setX(int x) {
+    public void setX(int x){
         this.x = x;
     }
 
@@ -53,7 +53,7 @@ public class Corner {
      * setter for the Y coordinate of the Corner
      * @param y the Y coordinate where the corner is placed
      */
-    public void setY(int y) {
+    public void setY(int y){
         this.y = y;
     }
 
