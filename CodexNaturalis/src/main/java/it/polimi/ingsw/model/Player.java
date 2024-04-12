@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.card.*;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -100,11 +101,42 @@ public class Player {
      * @return true if the card is placeable on the corner
      */
     public boolean checkIfPlaceable(BasicCard cardToPlace, Corner corner){
-        if(!corner.getVisibility() || corner.getContent() == Content.EMPTY)
-            return false;
         HashMap<Content,Integer> requirements = cardToPlace.getRequirements();
         HashMap<Content,Integer> playerSymbols = getPlayerContent();
-        return requirements.entrySet().stream().allMatch(e -> playerSymbols.get(e.getKey()) >= e.getValue());
+
+        if(!requirements.entrySet().stream().allMatch(e -> playerSymbols.get(e.getKey()) >= e.getValue())){
+            return false;
+        }
+
+        HashMap<Location, Point> offsets = new HashMap<>(){{
+            put(Location.BL, new Point(-1, -1));
+            put(Location.BR, new Point(1, -1));
+            put(Location.TL, new Point(-1, 1));
+            put(Location.TR, new Point(1, 1));
+        }};
+        List<Corner> cornersToCheck = placedCards.stream()
+                .flatMap(b -> b.getAllCorners().stream())
+                .filter(c -> c.getVisibility() && c.getContent() != Content.EMPTY)
+                .toList();
+        Point offset = offsets.get(corner.getLocation());
+
+        //checking that the corners in which the card will be placed aren't empty
+        //(and, by doing that, checking that there aren't already two cards placed over the same coordinates)
+        for(Corner c : cornersToCheck){
+            if(corner.getX() == c.getX() && corner.getY() == c.getY()){
+                return false;
+            }
+            if(corner.getX() + offset.x == c.getX() && corner.getY() == c.getY()){
+                return false;
+            }
+            if(corner.getX() == c.getX() && corner.getY() + offset.y == c.getY()){
+                return false;
+            }
+            if(corner.getX() + offset.x  == c.getX() && corner.getY() + offset.y == c.getY()){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

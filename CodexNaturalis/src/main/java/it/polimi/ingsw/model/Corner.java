@@ -13,6 +13,7 @@ public class Corner {
     private int y;
     private final Content content;
     private boolean visibility;
+    private boolean overlapping;
     private final Location location;
 
     /**
@@ -23,6 +24,7 @@ public class Corner {
         this.content = content;
         this.location = location;
         this.visibility = true;
+        this.overlapping = false;
         this.x = 0;
         this.y = 0;
     }
@@ -77,6 +79,21 @@ public class Corner {
      */
     public boolean getVisibility(){
         return this.visibility;
+    }
+
+    /**
+     * @return corner's overlapping attribute
+     */
+    public boolean getOverlapping(){
+        return this.overlapping;
+    }
+
+    /**
+     * setter of the overlapping parameter
+     * @param overlapping's attribute
+     */
+    public void setOverlapping(boolean overlapping){
+        this.overlapping = overlapping;
     }
 
     /**
