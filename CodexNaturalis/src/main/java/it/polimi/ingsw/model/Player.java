@@ -92,11 +92,28 @@ public class Player {
      * @return the total amount of points the player gathered during his turn
      */
     public int playTurn(TurnDeck resourceDeck, TurnDeck goldDeck){
-        return 0;
+        //ask the player what card he wants to play and where he wants to place it
+        BasicCard cardToPlace = null;
+        Corner cornerToPlaceOn = null;
+
+        //the player is asked which card to place and where to place it
+
+        placeCard(cardToPlace, cornerToPlaceOn);
+        boolean isResourceChosen = false;
+        int index = 0;
+
+        //the player has prior knowledge of what the deck board is looking like, so he chooses if he wants a card from
+        //the resource deck or the gold one and also gives the index (meaning 1 or 2 for visible cards, 0 for deck)
+
+        CardSides drawnCard = isResourceChosen ?
+                (index == 0 ? resourceDeck.draw() : resourceDeck.drawVisibleCard(index - 1)) :
+                (index == 0 ? goldDeck.draw() : goldDeck.drawVisibleCard(index - 1));
+        score += cardToPlace.getPoints();
+        return score;
     }
 
     /**
-     *
+     * A method which checks all the conditions that make a card correctly placeable
      * @param cardToPlace the card the player chose to place
      * @param corner the card's corner where the new card is going to be placed
      * @return true if the card is placeable on the corner
@@ -117,7 +134,7 @@ public class Player {
         }};
         List<Corner> cornersToCheck = placedCards.stream()
                 .flatMap(b -> b.getAllCorners().stream())
-                .filter(c -> c.getVisibility() && c.getContent() != Content.EMPTY)
+                .filter(c -> !c.getVisibility() || c.getContent() == Content.EMPTY)
                 .toList();
         Point offset = offsets.get(corner.getLocation());
 
