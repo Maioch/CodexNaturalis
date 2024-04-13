@@ -126,21 +126,21 @@ public class Player {
             return false;
         }
 
-        HashMap<Location, Point> offsets = new HashMap<>(){{
+        /*HashMap<Location, Point> offsets = new HashMap<>(){{
             put(Location.BL, new Point(-1, -1));
             put(Location.BR, new Point(1, -1));
             put(Location.TL, new Point(-1, 1));
             put(Location.TR, new Point(1, 1));
-        }};
+        }};*/
         List<Corner> cornersToCheck = placedCards.stream()
                 .flatMap(b -> b.getAllCorners().stream())
                 .filter(c -> !c.getVisibility() || c.getContent() == Content.EMPTY)
                 .toList();
-        Point offset = offsets.get(corner.getLocation());
+        //Point offset = offsets.get(corner.getLocation());
 
         //checking that the corners in which the card will be placed aren't empty
         //(and, by doing that, checking that there aren't already two cards placed over the same coordinates)
-        for(Corner c : cornersToCheck){
+        /*for(Corner c : cornersToCheck){
             if(corner.getX() == c.getX() && corner.getY() == c.getY()){
                 return false;
             }
@@ -152,6 +152,20 @@ public class Player {
             }
             if(corner.getX() + offset.x  == c.getX() && corner.getY() + offset.y == c.getY()){
                 return false;
+            }
+        }*/
+        int offsetX = corner.getLocation() == Location.TR || corner.getLocation() == Location.BR ? 1 : -1;
+        int offsetY = corner.getLocation() == Location.TR || corner.getLocation() == Location.TL ? 1 : -1;
+        for(int x = 0; x < 2; x++){
+            for(int y = 0; y < 2; y++){
+                //we need to save the values into separate variables because we need them to be final
+                int currentX = x;
+                int currentY = y;
+                if(cornersToCheck.stream()
+                        .anyMatch(c -> c.getX() == corner.getX() + currentX * offsetX &&
+                                c.getY() == corner.getY() + currentY * offsetY)){
+                    return false;
+                }
             }
         }
         return true;
