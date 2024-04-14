@@ -71,12 +71,12 @@ public class CardBuilderTest {
         add(new Corner(Content.WHITE, Location.TL));
         add(new Corner(Content.GREEN, Location.TR));
     }};
-    private final ArrayList<Content>goldRequirements = new ArrayList<Content>(){{
+    private final ArrayList<Content>goldRequirements = new ArrayList<>(){{
         add(Content.RED);
         add(Content.RED);
         add(Content.BLUE);
     }};
-    private final ArrayList<Content>starterResources = new ArrayList<Content>(){{
+    private final ArrayList<Content>starterResources = new ArrayList<>(){{
         add(Content.PURPLE);
     }};
     private final HashMap<Point,Content> testPattern = new HashMap<>(){{
@@ -91,7 +91,7 @@ public class CardBuilderTest {
      * and comparing the results with each other.
      */
     @Test
-    public void BuildResourceCard(){
+    public void buildResourceCardTest(){
         CardSides testCardSides = CardBuilder.buildCard(testIds.get(0));
         BasicCard testFront = testCardSides.frontSide();
         BasicCard testBack = testCardSides.backSide();
@@ -109,7 +109,7 @@ public class CardBuilderTest {
      * Test whether CardBuilder is creating resource cards correctly
      */
     @Test
-    public void BuildGoldCard(){
+    public void buildGoldCardTest(){
         CardSides testCardSides = CardBuilder.buildCard(testIds.get(1));
         BasicCard testFront = testCardSides.frontSide();
         BasicCard testBack = testCardSides.backSide();
@@ -129,7 +129,7 @@ public class CardBuilderTest {
      * Test whether starter cards are built correctly
      */
     @Test
-    public void BuildStarterCard(){
+    public void buildStarterCardTest(){
         CardSides testCardSides = CardBuilder.buildCard(testIds.get(2));
         BasicCard testFront = testCardSides.frontSide();
         BasicCard testBack = testCardSides.backSide();
@@ -147,7 +147,7 @@ public class CardBuilderTest {
      * Test whether objective cards are built correctly
      */
     @Test
-    public void BuildObjectiveCard(){
+    public void buildObjectiveCardTest(){
         Objective objective = CardBuilder.buildObjective(testIds.get(3));
         Objective correctObjective = new Objective(testIds.get(3),testPoints.get(3));
         correctObjective.setBonus(correctObjective.new AlternativePatternBonus(testPattern));

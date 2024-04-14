@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.Bonus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 /**
  * A class that represents a gold card

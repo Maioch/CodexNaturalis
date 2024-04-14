@@ -20,7 +20,7 @@ public class DeckTest {
      * used to test the draw method and the isEmpty method
      */
     @Test
-    public void RepeatedDrawTest(){
+    public void repeatedDrawTest(){
         Deck deck = new Deck(deckStart,deckEnd);
         for(int i = deckStart; i <= deckEnd + 1; i++){
             try{

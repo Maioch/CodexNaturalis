@@ -15,7 +15,7 @@ public class ContentTest {
     private final Content c9 = Content.WHITE;
 
     @Test
-    void isColor(){
+    void isColorTest(){
         assertTrue(c1.isColor());
         assertTrue(c2.isColor());
         assertTrue(c3.isColor());
@@ -28,7 +28,7 @@ public class ContentTest {
     }
 
     @Test
-    void isObject(){
+    void isObjectTest(){
         assertFalse(c1.isObject());
         assertFalse(c2.isObject());
         assertFalse(c3.isObject());
@@ -41,7 +41,7 @@ public class ContentTest {
     }
 
     @Test
-    void isEmpty(){
+    void isEmptyTest(){
         assertFalse(c1.isEmpty());
         assertFalse(c2.isEmpty());
         assertFalse(c3.isEmpty());

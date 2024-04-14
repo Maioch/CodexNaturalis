@@ -3,18 +3,16 @@ package it.polimi.ingsw.model;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-
 public class CornerTest {
     @Test
-    void isSamePosition(){
+    void isSamePositionTest(){
         Corner c0 = new Corner(Content.RED, Location.TR);
         Corner c1 = new Corner(Content.PURPLE, Location.TR);
         assertTrue(c0.isSamePosition(c1));
     }
 
     @Test
-    void getX(){
+    void getXTest(){
         Corner c0 = new Corner(Content.RED, Location.TR);
         Corner c1 = new Corner(Content.PURPLE, Location.TR);
         assertEquals(0, c0.getX());
@@ -23,7 +21,7 @@ public class CornerTest {
     }
 
     @Test
-    void getY(){
+    void getYTest(){
         Corner c0 = new Corner(Content.RED, Location.TR);
         Corner c1 = new Corner(Content.PURPLE, Location.TR);
         assertEquals(0, c0.getY());
@@ -32,7 +30,7 @@ public class CornerTest {
     }
 
     @Test
-    void getContent(){
+    void getContentTest(){
         Corner c0 = new Corner(Content.RED, Location.TR);
         Corner c1 = new Corner(Content.PURPLE, Location.TR);
         assertEquals(Content.RED, c0.getContent());
@@ -40,7 +38,7 @@ public class CornerTest {
     }
 
     @Test
-    void visibility(){
+    void visibilityTest(){
         Corner c0 = new Corner(Content.RED, Location.TR);
         Corner c1 = new Corner(Content.PURPLE, Location.TR);
         assertTrue(c0.getVisibility());
@@ -49,7 +47,7 @@ public class CornerTest {
     }
 
     @Test
-    void equals(){
+    void equalsTest(){
         Corner c0 = new Corner(Content.RED, Location.TR);
         Corner c1 = new Corner(Content.RED, Location.TR);
         c1.coverCorner();

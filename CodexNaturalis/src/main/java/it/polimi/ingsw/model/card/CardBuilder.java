@@ -54,9 +54,7 @@ public class CardBuilder {
                         Content object = Content.valueOf(cardJson.get("bonus").get("object").asText());
                         yield goldFront.new ObjectBonus(object);
                     }
-                    case "NOTHING" ->{
-                        yield null;
-                    }
+                    case "NOTHING" -> null;
                     default -> throw new IllegalStateException("Unexpected value: " + cardJson.get("bonus").get("type").asText());
                 };
                 goldFront.setBonus(bonus);

@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.card.CardBuilder;
 
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.Stack;
 
 
@@ -54,12 +55,9 @@ public class Deck {
     /**
      * Draws a random integer present in the deck and removes it.
      * @return a random integer from the deck
-     * @exception RuntimeException if the deck is empty when the user tries to draw.
+     * @exception EmptyStackException if the deck is empty when the user tries to draw.
      */
     public CardSides draw(){
-        if(this.cards.isEmpty()){
-            throw new RuntimeException("There are no more cards available at the requested source");
-        }
         return this.cards.pop();
     }
 
@@ -73,7 +71,7 @@ public class Deck {
         if(this.getClass() != object.getClass())
             return false;
         Deck other = (Deck) object;
-        return this.cards.containsAll(other.cards) &&
-                other.cards.containsAll(this.cards);
+        return this.cards.stream().sorted().toList()
+                .equals(other.cards.stream().sorted().toList());
     }
 }

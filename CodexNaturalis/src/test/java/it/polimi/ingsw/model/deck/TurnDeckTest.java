@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import it.polimi.ingsw.model.card.CardSides;
 import org.junit.jupiter.api.Test;
 
-import it.polimi.ingsw.model.card.BasicCard;
 import java.util.ArrayList;
 
 /**
@@ -46,8 +45,8 @@ public class TurnDeckTest {
     @Test
     void getCardOnTopTest(){
         TurnDeck deck = new TurnDeck(range_start, range_end, numberOfVisibleCards);
-        BasicCard topDeck = deck.getCardOnTop();
-        assertEquals(topDeck, deck.draw().backSide());
+        CardSides topDeck = deck.getCardOnTop();
+        assertEquals(topDeck, deck.draw());
     }
 
     /**

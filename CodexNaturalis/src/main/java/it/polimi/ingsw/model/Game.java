@@ -37,14 +37,6 @@ public class Game {
     }
 
     /**
-     * Method that represents the main game loop
-     * @return the status with which the game has ended
-     */
-    public boolean playGame(){
-        return true;
-    }
-
-    /**
      * obtain all the players playing on this instance of game
      * @return the ArrayList including the players
      */
@@ -63,7 +55,7 @@ public class Game {
      * initializes the game
      * @return the initialization status
      */
-    private boolean initializeGame(){
+    public boolean initializeGame(){
         return true;
     }
 }

@@ -48,7 +48,7 @@ public class BasicCardTest {
     }
 
     @Test
-    void getCardSymbols(){
+    void getCardSymbolsTest(){
         for(int id = startResource; id <= endStarter; id++){
             JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
             BasicCard card = CardBuilder.buildCard(id).frontSide();
@@ -60,8 +60,7 @@ public class BasicCardTest {
 
             for(Corner corner : card.getAllCorners()){
                 Content cornerContent = corner.getContent();
-                int current = actualSymbols.get(cornerContent);
-                actualSymbols.put(cornerContent, current - 1);
+                actualSymbols.computeIfPresent(cornerContent, (k, current) -> current - 1);
                 card.coverCorner(corner);
                 assertEquals(actualSymbols, card.getCardSymbols());
             }

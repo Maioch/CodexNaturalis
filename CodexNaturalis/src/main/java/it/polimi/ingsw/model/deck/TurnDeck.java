@@ -1,10 +1,8 @@
 package it.polimi.ingsw.model.deck;
 
-import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardSides;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Class that represents gold and resource decks. It also represents the visible cards beside the deck
@@ -31,12 +29,12 @@ public class TurnDeck extends Deck {
     }
 
     /**
-     * get the back of the card on top of the stack.
-     * this method will be used whenever we'll need to show the deck from the view
-     * @return the back side of the card that's on top of the deck
+     * Gets the card on top of the stack.
+     * This method will be used whenever we'll need to show the deck from the view
+     * @return the card that's on top of the deck
      */
-    public BasicCard getCardOnTop(){
-        return cards.peek().backSide();
+    public CardSides getCardOnTop(){
+        return cards.peek();
     }
 
     /**
@@ -53,12 +51,27 @@ public class TurnDeck extends Deck {
      * @return the selected visible card
      */
     public CardSides drawVisibleCard(int index){
-        CardSides drawnCard = this.visibleCards.get(index);
-        if(this.cards.isEmpty())
-            this.visibleCards.remove(index);
-        else
-            this.visibleCards.set(index, this.cards.pop());
-        return drawnCard;
+        try {
+            CardSides drawnCard = this.visibleCards.get(index);
+            if (this.cards.isEmpty())
+                this.visibleCards.remove(index);
+            else
+                this.visibleCards.set(index, this.cards.pop());
+            return drawnCard;
+        }
+        catch (IndexOutOfBoundsException e){
+            throw new RuntimeException(
+                    String.format("Attempted to draw a visible card, but the supplied index, %d, was out of bounds",index));
+        }
+    }
+
+    /**
+     * Overridden isEmpty method
+     * @return true if both the array of visible cards and the deck are empty
+     */
+    @Override
+    public boolean isEmpty(){
+        return this.visibleCards.isEmpty() && this.cards.isEmpty();
     }
 
     /**

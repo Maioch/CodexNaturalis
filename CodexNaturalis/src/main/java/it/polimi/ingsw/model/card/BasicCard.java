@@ -84,6 +84,14 @@ public class BasicCard {
     }
 
     /**
+     * Getter for the location and corner hashmap
+     * @return the "corners" hashmap
+     */
+    public HashSet<Corner> getAllCorners(){
+        return new HashSet<>(corners);
+    }
+
+    /**
      * Returns a hashmap that associates each resource type with the amount present in the card by pulling
      * from both the corners and the permanent resources
      * IMPORTANT: this includes white and empty corners too
@@ -117,14 +125,6 @@ public class BasicCard {
                 .filter(x -> x.getContent() != Content.EMPTY)
                 .filter(Corner::getVisibility)
                 .collect(Collectors.toCollection(ArrayList::new));
-    }
-
-    /**
-     * Getter for the location and corner hashmap
-     * @return the "corners" hashmap
-     */
-    public HashSet<Corner> getAllCorners(){
-        return new HashSet<>(corners);
     }
 
     /**
