@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.card;
 import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
+import it.polimi.ingsw.model.Player;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class BasicCard {
     protected final HashSet<Corner> corners;
     protected final int points;
     protected final ArrayList<Content> resources;
+    protected Player owner;
 
     /**
      * Constructor for the class
@@ -162,29 +164,14 @@ public class BasicCard {
      * @param where represents the corner where the card will be placed
      */
     public void place(Corner where){
-        int offsetX = where.getLocation() == Location.TR || where.getLocation() == Location.BR ? 0 : -1;
-        int offsetY = where.getLocation() == Location.TR || where.getLocation() == Location.TL ? 0 : -1;
-        /*
-        for(int x = 0; x < 2; x++){
-            for(int y = 0; y < 2; y++){
-                Corner corner = corners.stream()
-                        .filter(c -> c.getLocation() == location)
-                        .findAny()
-                        .orElseThrow(() -> new RuntimeException(
-                                String.format(
-                                        "Card with id %d is missing a corner for location %s",
-                                        cardId,
-                                        location.toString())));
-                corner.setX(x);
-                corner.setY(y);
-                //TONNO DOPO
-                //Quando finisci qui aggiorna anche BasicCardTest
-                //VA BENE
-            }
-        }*/
+        int offsetX = where.getLocation() == Location.TR || where.getLocation() == Location.BR ? 0 : 1;
+        int offsetY = where.getLocation() == Location.TR || where.getLocation() == Location.TL ? 0 : 1;
         for(Corner corner : corners){
-            Point offset = new Point(where.getX() - offsetX,where.getY() - offsetY);
+            Point offset = new Point(where.getX(),where.getY());
             switch(corner.getLocation()){
+                case BL:
+                    offset.translate(-offsetX, -offsetY);
+                    break;
                 case BR:
                     offset.translate(1 - offsetX,-offsetY);
                     break;
@@ -218,5 +205,13 @@ public class BasicCard {
                     .sorted(Comparator.comparingInt(Enum::ordinal)).toList()
                     .equals(other.resources) &&
                 this.corners.equals(other.corners);
+    }
+
+    /**
+     * Setter of the "owner" attribute, which represents the player owning the card.
+     * @param owner player who owns the card
+     */
+    public void setOwner(Player owner){
+        this.owner = owner;
     }
 }

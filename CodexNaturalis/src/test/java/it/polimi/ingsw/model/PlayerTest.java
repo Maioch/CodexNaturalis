@@ -87,36 +87,46 @@ public class PlayerTest {
                 colors.get(0),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
                         CardBuilder.buildCard(45),
-                        CardBuilder.buildCard(67))),
+                        CardBuilder.buildCard(73))),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
                         CardBuilder.buildObjective(92))));
         BasicCard starterCard = CardBuilder.buildCard(82).frontSide();
+
         //Test placing a resource card on a valid corner
         BasicCard firstCard = referencePlayer.getHandCards().get(0).frontSide();
         referencePlayer.placeStarterCard(starterCard);
-        Corner cornerToPlaceOn =starterCard.getValidCorners().stream()
+        Corner cornerToPlaceOn = starterCard.getValidCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
         boolean canBePlaced = referencePlayer.checkIfPlaceable(firstCard, cornerToPlaceOn);
         referencePlayer.placeCard(firstCard, cornerToPlaceOn);
-        assertEquals(canBePlaced, referencePlayer.getPlacedCards().contains(firstCard));
+        assertTrue(canBePlaced);
+
         //Test placing a gold card without the required resources on a valid corner
-        BasicCard secondCard = referencePlayer.getHandCards().get(1).frontSide();
+        BasicCard secondCard = referencePlayer.getHandCards().get(0).frontSide();
         cornerToPlaceOn = firstCard.getValidCorners().stream()
                 .filter(c -> c.getLocation() == Location.BR)
                 .findFirst().orElseThrow();
         canBePlaced = referencePlayer.checkIfPlaceable(secondCard, cornerToPlaceOn);
-        referencePlayer.placeCard(secondCard, cornerToPlaceOn);
-        assertEquals(canBePlaced, referencePlayer.getPlacedCards().contains(secondCard));
+        assertFalse(canBePlaced);
+
         //Test placing a gold card with the required resources on a valid corner
-        BasicCard thirdCard = referencePlayer.getHandCards().get(2).frontSide();
+        BasicCard thirdCard = referencePlayer.getHandCards().get(1).frontSide();
         cornerToPlaceOn = firstCard.getValidCorners().stream()
-                .filter(c -> c.getLocation() == Location.BR)
+                .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
         canBePlaced = referencePlayer.checkIfPlaceable(thirdCard, cornerToPlaceOn);
         referencePlayer.placeCard(thirdCard, cornerToPlaceOn);
-        assertEquals(canBePlaced, referencePlayer.getPlacedCards().contains(secondCard));
+        assertTrue(canBePlaced);
 
+        //Test placing a resource card on an already occupied corner
+        referencePlayer.drawCard(new TurnDeck(9,9,0),0);
+        BasicCard fourthCard = referencePlayer.getHandCards().get(0).frontSide();
+        cornerToPlaceOn = firstCard.getAllCorners().stream()
+                .filter(c -> c.getLocation() == Location.TR)
+                .findFirst().orElseThrow();
+        canBePlaced = referencePlayer.checkIfPlaceable(fourthCard, cornerToPlaceOn);
+        assertFalse(canBePlaced);
     }
 
     @Test

@@ -36,7 +36,9 @@ public class GoldCardTest {
 
     @Test
     void getPointsTest(){
-
+        for(int i = startGold; i <= endGold; i++){
+            GoldCard cardTest = (GoldCard) CardBuilder.buildCard(i).frontSide();
+        }
     }
 
     @Test

@@ -127,27 +127,31 @@ public class BasicCardTest {
         int x = 5, y = 5;
         int offX, offY;
         int i;
-        Corner corner = new Corner(Content.BLUE, Location.TR);
-        corner.setX(x);
-        corner.setY(y);
-        for(int id = startResource; id <= endStarter; id++) {
-            BasicCard card = CardBuilder.buildCard(id).frontSide();
-            card.place(corner);
-            i = 0;
-            for (Location loc : Location.values()) {
-                offX = i % 2;
-                offY = (i / 2) % 2;
-                assertEquals(x + offX, card.getAllCorners().stream()
-                        .filter(c -> c.getLocation() == loc)
-                        .findAny()
-                        .orElseThrow()
-                        .getX());
-                assertEquals(y + offY, card.getAllCorners().stream()
-                        .filter(c -> c.getLocation() == loc)
-                        .findAny()
-                        .orElseThrow()
-                        .getY());
-                i++;
+        for(Location location : Location.values()) {
+            int baseOffsetX = location == Location.TR || location == Location.BR ? 0 : 1;
+            int baseOffsetY = location == Location.TR || location == Location.TL ? 0 : 1;
+            Corner corner = new Corner(Content.BLUE, location);
+            corner.setX(x);
+            corner.setY(y);
+            for (int id = startResource; id <= endStarter; id++) {
+                BasicCard card = CardBuilder.buildCard(id).frontSide();
+                card.place(corner);
+                i = 0;
+                for (Location loc : Location.values()) {
+                    offX = i % 2 - baseOffsetX;
+                    offY = (i / 2) % 2 - baseOffsetY;
+                    assertEquals(x + offX, card.getAllCorners().stream()
+                            .filter(c -> c.getLocation() == loc)
+                            .findAny()
+                            .orElseThrow()
+                            .getX());
+                    assertEquals(y + offY, card.getAllCorners().stream()
+                            .filter(c -> c.getLocation() == loc)
+                            .findAny()
+                            .orElseThrow()
+                            .getY());
+                    i++;
+                }
             }
         }
     }

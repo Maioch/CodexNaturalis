@@ -16,7 +16,6 @@ public class GoldCard extends BasicCard {
 
     private final ArrayList<Content> requirements;
     private Bonus bonus;
-    private Player owner;
     
     /**
      * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated
@@ -53,24 +52,20 @@ public class GoldCard extends BasicCard {
     }
 
     /**
+     * Setter for bonus
+     * @param bonus the bonus to set
+     */
+    public void setBonus(Bonus bonus){
+        this.bonus = bonus;
+    }
+
+    /**
      * A method that calculates the total points value that the card gives when played (by the owner of it)
      * @return points value gained by playing the card
      */
     @Override
     public int getPoints(){
         return bonus != null ? bonus.calculate() : points;
-    }
-
-    /**
-     * Setter of the "owner" attribute, which represents the player owning the card.
-     * @param owner player who owns the card
-     */
-    public void setOwner(Player owner){
-        this.owner = owner;
-    }
-
-    public void setBonus(Bonus bonus){
-        this.bonus = bonus;
     }
 
     /**

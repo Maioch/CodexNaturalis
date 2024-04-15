@@ -35,6 +35,14 @@ public class Player {
         this.handCards = new ArrayList<>(handCards);
         this.objectives = new ArrayList<>(objectives);
         this.score = 0;
+        //Set the owner for both the regular cards and the objectives
+        for(CardSides card : this.handCards){
+            card.backSide().setOwner(this);
+            card.frontSide().setOwner(this);
+        }
+        for(Objective obj : this.objectives){
+            obj.setOwner(this);
+        }
     }
 
     /**
@@ -89,16 +97,12 @@ public class Player {
     /**
      * A method which checks all the conditions that make a card correctly placeable
      * assumes that the corner that has been passed is part of the player's board
+     * and that the player already has the card
      * @param cardToPlace the card the player chose to place
      * @param corner the card's corner where the new card is going to be placed
      * @return true if the card is placeable on the corner
      */
     public boolean checkIfPlaceable(BasicCard cardToPlace, Corner corner){
-        //Verifies that the card is present in the player's hand
-        if (handCards.stream()
-                .noneMatch(c -> c.frontSide().equals(cardToPlace) || c.backSide().equals(cardToPlace))){
-            return false;
-        }
         //Verifies that the requirements for placing the cards are met
         HashMap<Content,Integer> requirements = cardToPlace.getRequirements();
         HashMap<Content,Integer> playerSymbols = getPlayerContent();
@@ -182,6 +186,9 @@ public class Player {
      *                  or to take one of the visible ones (if the index is higher than 0).
      */
     public void drawCard(TurnDeck deck, int drawIndex){
-        handCards.add(drawIndex == 0 ? deck.draw() : deck.drawVisibleCard(drawIndex - 1));
+        CardSides newCard = drawIndex == 0 ? deck.draw() : deck.drawVisibleCard(drawIndex - 1);
+        newCard.frontSide().setOwner(this);
+        newCard.backSide().setOwner(this);
+        handCards.add(newCard);
     }
 }
