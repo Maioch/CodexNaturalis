@@ -155,7 +155,15 @@ public class BasicCard {
      * @param x represents the x-axis coordinate of the bottom-left corner where the card will be placed
      * @param y represents the y-axis coordinate of the bottom-left corner where the card will be placed
      */
-    public void place(int x, int y){
+    public void place(Corner where){
+        int offsetX = where.getLocation() == Location.TR || where.getLocation() == Location.BR ? 1 : -1;
+        int offsetY = where.getLocation() == Location.TR || where.getLocation() == Location.TL ? 1 : -1;
+        for(int x = 0; x < 2; x++){
+            for(int y = 0; y < 2; y++){
+                corners.isEmpty();
+            }
+        }
+        /*
         for(Corner corner : corners){
             Point offset = new Point(x, y);
             switch(corner.getLocation()){
@@ -171,7 +179,7 @@ public class BasicCard {
             }
             corner.setX(offset.x);
             corner.setY(offset.y);
-        }
+        }*/
     }
 
     /**
