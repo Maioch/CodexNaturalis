@@ -1,7 +1,5 @@
 package it.polimi.ingsw.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
@@ -13,27 +11,29 @@ import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class PlayerTest {
     private final ArrayList<String> nicknames = new ArrayList<String>(){{ add("test"); add("test2"); }};
     private final ArrayList<Content> colors = new ArrayList<Content>(){{ add(Content.RED); }};
 
     @Test
     public void equalsTest(){
-                Player referencePlayer = new Player(nicknames.get(0),
-                        colors.get(0),
-                        new ArrayList<>(Arrays.asList(
-                                CardBuilder.buildCard(32),
-                                CardBuilder.buildCard(45),
-                                CardBuilder.buildCard(67))),
-                        new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                                CardBuilder.buildObjective(91))));
-        Player testEqualPlayer = new Player(nicknames.get(92),
+        Player referencePlayer = new Player(nicknames.get(0),
+                colors.get(0),
+                new ArrayList<>(Arrays.asList(
+                        CardBuilder.buildCard(32),
+                        CardBuilder.buildCard(45),
+                        CardBuilder.buildCard(67))),
+                new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
+                        CardBuilder.buildObjective(91))));
+        Player testEqualPlayer = new Player(nicknames.get(0),
                 colors.get(0),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
                         CardBuilder.buildCard(45),
                         CardBuilder.buildCard(67))),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                        CardBuilder.buildObjective(92))));
+                        CardBuilder.buildObjective(91))));
         Player testDifferentPlayer = new Player(nicknames.get(1),
                 colors.get(0),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
@@ -111,7 +111,7 @@ public class PlayerTest {
         //Test placing a gold card with the required resources on a valid corner
         BasicCard thirdCard = referencePlayer.getHandCards().get(2).frontSide();
         cornerToPlaceOn = firstCard.getValidCorners().stream()
-                .filter(c -> c.getLocation() == Location.B)
+                .filter(c -> c.getLocation() == Location.BR)
                 .findFirst().orElseThrow();
         canBePlaced = referencePlayer.checkIfPlaceable(thirdCard, cornerToPlaceOn);
         referencePlayer.placeCard(thirdCard, cornerToPlaceOn);

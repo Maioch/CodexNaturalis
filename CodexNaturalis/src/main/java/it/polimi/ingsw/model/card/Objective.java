@@ -138,7 +138,7 @@ public class Objective {
 
         public PatternBonus(HashMap<Point, Content> pattern){
             boolean isValidPattern = pattern.values().stream()
-                    .filter(x -> x.isObject() || x == Content.EMPTY || x == Content.WHITE)
+                    .filter(x -> x.isObject() || x.isEmpty() || x == Content.WHITE)
                     .findAny()
                     .isEmpty();
             if(!isValidPattern){
@@ -249,7 +249,7 @@ public class Objective {
          */
         public AlternativePatternBonus(HashMap<Point, Content> pattern){
             boolean isValidPattern = pattern.values().stream()
-                    .filter(x -> x.isObject() || x == Content.EMPTY || x == Content.WHITE)
+                    .filter(x -> x.isObject() || x.isEmpty() || x == Content.WHITE)
                     .findAny()
                     .isEmpty();
             if(!isValidPattern){

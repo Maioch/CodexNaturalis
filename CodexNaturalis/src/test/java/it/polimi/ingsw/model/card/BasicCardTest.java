@@ -89,7 +89,7 @@ public class BasicCardTest {
             HashSet<Corner> allCorners = CardBuilder.getCorners(node, "cornersFront");
             ArrayList<Corner> actualCorners = allCorners.stream().
                     filter(Corner::getVisibility).
-                    filter(c -> c.getContent() != Content.EMPTY).
+                    filter(c -> !c.getContent().isEmpty()).
                     collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
             assertEquals(
                     actualCorners.stream().

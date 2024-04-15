@@ -109,7 +109,7 @@ public class Player {
         //whether one of the corners of the card is over them.
         List<Corner> cornersToCheck = placedCards.stream()
                 .flatMap(b -> b.getAllCorners().stream())
-                .filter(c -> !c.getVisibility() || c.getContent() == Content.EMPTY)
+                .filter(c -> !c.getVisibility() || c.getContent().isEmpty())
                 .toList();
         //checking that the corners in which the card will be placed aren't empty
         //(and, by doing that, checking that there aren't already two cards placed over the same coordinates)
@@ -157,7 +157,7 @@ public class Player {
         if(!checkIfPlaceable(cardToPlace, corner))
             return;
         handCards.removeIf(c -> c.frontSide().equals(cardToPlace) || c.backSide().equals(cardToPlace));
-        cardToPlace.place(corner.getX(), corner.getY());
+        cardToPlace.place(corner);
         placedCards.add(cardToPlace);
         corner.coverCorner();
         score += cardToPlace.getPoints();
@@ -168,7 +168,10 @@ public class Player {
             throw new RuntimeException("A starter card has already been placed.");
         }
         placedCards.add(starterCard);
-        starterCard.place(0,0);
+        Corner startCorner = new Corner(Content.WHITE, Location.TR);
+        startCorner.setX(0);
+        startCorner.setY(0);
+        starterCard.place(startCorner);
     }
 
     /**

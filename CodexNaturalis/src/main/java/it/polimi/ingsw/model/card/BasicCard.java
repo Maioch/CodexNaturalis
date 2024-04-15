@@ -4,7 +4,6 @@ import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -122,7 +121,7 @@ public class BasicCard {
      */
     public ArrayList<Corner> getValidCorners(){
         return this.corners.stream()
-                .filter(x -> x.getContent() != Content.EMPTY)
+                .filter(x -> !x.getContent().isEmpty())
                 .filter(Corner::getVisibility)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
@@ -152,15 +151,26 @@ public class BasicCard {
 
     /**
      * A public method to "place" the card. It initializes the coordinates of the corners (components of the card).
-     * @param x represents the x-axis coordinate of the bottom-left corner where the card will be placed
-     * @param y represents the y-axis coordinate of the bottom-left corner where the card will be placed
+     * @param where represents the corner where the card will be placed
      */
     public void place(Corner where){
         int offsetX = where.getLocation() == Location.TR || where.getLocation() == Location.BR ? 1 : -1;
         int offsetY = where.getLocation() == Location.TR || where.getLocation() == Location.TL ? 1 : -1;
+        Location location = where.getLocation();
         for(int x = 0; x < 2; x++){
             for(int y = 0; y < 2; y++){
-                corners.isEmpty();
+                Corner corner = corners.stream()
+                        .filter(c -> c.getLocation() == location)
+                        .findAny()
+                        .orElseThrow(() -> new RuntimeException(
+                                String.format(
+                                        "Card with id %d is missing a corner for location %s",
+                                        cardId,
+                                        location.toString())));
+                //location.
+                corner.setX(x);
+                corner.setY(y);
+                //TONNO DOPO
             }
         }
         /*

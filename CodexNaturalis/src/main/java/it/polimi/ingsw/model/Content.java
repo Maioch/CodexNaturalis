@@ -1,9 +1,9 @@
 package it.polimi.ingsw.model;
 
 /**
- * Enum to represent every possible symbol contained in cards. Every color si associated with the respective
+ * Enum that represents every possible symbol contained in cards. Every color si associated with the respective in-game
  * resource (e.g. Red -> Mushroom); white is used for corners with no symbols and empty for blank ones that
- * can't be overlapped
+ * can't be overlapped. Lastly there are the three object types.
  *
  * @author Marco Maiocchi
  */
@@ -32,7 +32,7 @@ public enum Content {
     }
 
     /**
-     * @return true if there's no symbol
+     * @return true if a corner is not overlappable
      */
     public boolean isEmpty(){
         return this == EMPTY;

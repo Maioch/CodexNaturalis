@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.card;
 
 /**
- * Record to represent the two sides of the cards
+ * Record that represents each side of the card, front and back.
  *
  * @param frontSide
  * @param backSide
