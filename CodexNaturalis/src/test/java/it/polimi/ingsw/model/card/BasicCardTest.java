@@ -127,9 +127,12 @@ public class BasicCardTest {
         int x = 5, y = 5;
         int offX, offY;
         int i;
+        Corner corner = new Corner(Content.BLUE, Location.TR);
+        corner.setX(x);
+        corner.setY(y);
         for(int id = startResource; id <= endStarter; id++) {
             BasicCard card = CardBuilder.buildCard(id).frontSide();
-            card.place(x, y);
+            card.place(corner);
             i = 0;
             for (Location loc : Location.values()) {
                 offX = i % 2;

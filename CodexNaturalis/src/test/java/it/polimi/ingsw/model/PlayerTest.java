@@ -14,8 +14,8 @@ import java.util.HashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
-    private final ArrayList<String> nicknames = new ArrayList<String>(){{ add("test"); add("test2"); }};
-    private final ArrayList<Content> colors = new ArrayList<Content>(){{ add(Content.RED); }};
+    private final ArrayList<String> nicknames = new ArrayList<>(){{ add("test"); add("test2"); }};
+    private final ArrayList<Content> colors = new ArrayList<>(){{ add(Content.RED); }};
 
     @Test
     public void equalsTest(){
@@ -57,12 +57,12 @@ public class PlayerTest {
             for(Content content : Content.values()) {
                 put(content, 0);
                 for (CardSides card : cardsForHand) {
-                    compute(content, (k, currentCount) -> currentCount + card.frontSide().getCardSymbols().get(content));
+                    computeIfPresent(content, (k, currentCount) -> currentCount + card.frontSide().getCardSymbols().get(content));
                 }
             }
         }};
         int coordinates = 0;
-        for(BasicCard card : cardsForHand.stream().map(c -> c.frontSide()).toList()){
+        for(BasicCard card : cardsForHand.stream().map(CardSides::frontSide).toList()){
             Corner corner = new Corner(Content.WHITE, Location.TR);
             corner.setX(coordinates);
             corner.setY(coordinates);

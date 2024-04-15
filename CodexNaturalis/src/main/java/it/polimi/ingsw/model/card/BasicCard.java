@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.Corner;
 import it.polimi.ingsw.model.Location;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,9 +12,10 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
- * A class that represents a "basic" card, which includes resource cards and starter cards.
- * It has a unique ID, and has a specific color. There can be a maximum of 4 corners.
+ * Class that represents a "basic" card, which includes resource cards and starter cards.
+ * It has a unique ID and has a specific color, with a maximum of 4 corners.
  * The resources attribute refers only to the resources found in the center of the card, not in the corners.
+ *
  * @author Francesco Saverio Nisoli, Guglielmo Gatti
  */
 public class BasicCard {
@@ -25,12 +27,13 @@ public class BasicCard {
     protected final ArrayList<Content> resources;
 
     /**
-     * Constructor of the BasicCard
+     * Constructor for the class
+     *
      * @param cardId the card's id
-     * @param color the "color" of the card.
-     * @param corners the card's corners, represented by
-     * @param points the card's points, value which represent the sore's incrementation when the card is played
-     * @param resources the card's resources, an array of the contained resources
+     * @param color the color of the card.
+     * @param corners the card's corners (max 4)
+     * @param points the card's points, that will be added to the player's score when he places the card on his board
+     * @param resources the card's central resources, that can go from 0 to 3
      */
 
     public BasicCard(int cardId, Content color, HashSet<Corner> corners, int points, ArrayList<Content> resources) throws RuntimeException{
@@ -59,23 +62,26 @@ public class BasicCard {
     }
 
     /**
-    * Getter of the "cardId" attribute
-    * @return the cardId attribute
-    */
+     * Getter for the id of the card
+     *
+     * @return the cardId attribute
+     */
     public int getCardId(){
         return this.cardId;
     }
 
     /**
-     * Getter of the "points" attribute
-     * @return the point attribute
+     * Getter for the points of the card
+     *
+     * @return the points attribute
      */
     public int getPoints(){
         return this.points;
     }
 
     /**
-     * Getter of the "color" attribute
+     * Getter for the color of the card
+     *
      * @return the card's color
      */
     public Content getColor(){
@@ -83,8 +89,9 @@ public class BasicCard {
     }
 
     /**
-     * Getter for the location and corner hashmap
-     * @return the "corners" hashmap
+     * Getter for the corners of the card
+     *
+     * @return the corners hashmap
      */
     public HashSet<Corner> getAllCorners(){
         return new HashSet<>(corners);
@@ -94,6 +101,7 @@ public class BasicCard {
      * Returns a hashmap that associates each resource type with the amount present in the card by pulling
      * from both the corners and the permanent resources
      * IMPORTANT: this includes white and empty corners too
+     *
      * @return a hashmap with the resource as key and the amount as value
      */
     public HashMap<Content,Integer> getCardSymbols(){
@@ -154,9 +162,9 @@ public class BasicCard {
      * @param where represents the corner where the card will be placed
      */
     public void place(Corner where){
-        int offsetX = where.getLocation() == Location.TR || where.getLocation() == Location.BR ? 1 : -1;
-        int offsetY = where.getLocation() == Location.TR || where.getLocation() == Location.TL ? 1 : -1;
-        Location location = where.getLocation();
+        int offsetX = where.getLocation() == Location.TR || where.getLocation() == Location.BR ? 0 : -1;
+        int offsetY = where.getLocation() == Location.TR || where.getLocation() == Location.TL ? 0 : -1;
+        /*
         for(int x = 0; x < 2; x++){
             for(int y = 0; y < 2; y++){
                 Corner corner = corners.stream()
@@ -167,29 +175,29 @@ public class BasicCard {
                                         "Card with id %d is missing a corner for location %s",
                                         cardId,
                                         location.toString())));
-                //location.
                 corner.setX(x);
                 corner.setY(y);
                 //TONNO DOPO
+                //Quando finisci qui aggiorna anche BasicCardTest
+                //VA BENE
             }
-        }
-        /*
+        }*/
         for(Corner corner : corners){
-            Point offset = new Point(x, y);
+            Point offset = new Point(where.getX() - offsetX,where.getY() - offsetY);
             switch(corner.getLocation()){
                 case BR:
-                    offset.translate(1,0);
+                    offset.translate(1 - offsetX,-offsetY);
                     break;
                 case TL:
-                    offset.translate(0,1);
+                    offset.translate(-offsetX,1 - offsetY);
                     break;
                 case TR:
-                    offset.translate(1,1);
+                    offset.translate(1 - offsetX,1 - offsetY);
                     break;
             }
             corner.setX(offset.x);
             corner.setY(offset.y);
-        }*/
+        }
     }
 
     /**

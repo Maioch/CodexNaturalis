@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model;
 
 /**
- * Enum to represent corner location in a card.
+ * Enum that represents corner locations in a card (e.g. BL -> bottom left).
  *
  * @author Andrea Fidanza
  */
