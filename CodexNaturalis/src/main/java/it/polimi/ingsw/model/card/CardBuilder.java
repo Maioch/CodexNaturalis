@@ -48,10 +48,10 @@ public class CardBuilder {
                 ArrayList<Content> requirements = getContentFromArray(cardJson, "requirements");
                 GoldCard goldFront = new GoldCard(
                     new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>()), requirements);
-                Bonus bonus = switch (cardJson.get("bonus").get("type").asText()) {
+                Bonus bonus = switch (getBonusType(cardJson)) {
                     case "CORNER" -> goldFront.new CornerBonus();
                     case "OBJECT" -> {
-                        Content object = Content.valueOf(cardJson.get("bonus").get("object").asText());
+                        Content object = getBonusContent(cardJson);
                         yield goldFront.new ObjectBonus(object);
                     }
                     case "NOTHING" -> null;
@@ -176,5 +176,23 @@ public class CardBuilder {
                 add(Content.valueOf(subNode.asText()));
             }
         }};
+    }
+
+    /**
+     * Helper method used to get the bonus type
+     * @param cardJson the JsonNode that represents the root of a single card's data
+     * @return the String representing the bonus
+     */
+    static String getBonusType(JsonNode cardJson){
+        return cardJson.get("bonus").get("type").asText();
+    }
+
+    /**
+     * Helper method used to get the object required for the bonus
+     * @param cardJson the JsonNode that represents the root of a single card's data
+     * @return the object
+     */
+    static Content getBonusContent(JsonNode cardJson){
+        return Content.valueOf(cardJson.get("bonus").get("object").asText());
     }
 }

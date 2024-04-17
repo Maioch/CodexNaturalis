@@ -92,15 +92,15 @@ public class CardBuilderTest {
      */
     @Test
     public void buildResourceCardTest(){
-        CardSides testCardSides = CardBuilder.buildCard(testIds.get(0));
+        CardSides testCardSides = CardBuilder.buildCard(testIds.getFirst());
         BasicCard testFront = testCardSides.frontSide();
         BasicCard testBack = testCardSides.backSide();
-        BasicCard correctFront = new BasicCard(testIds.get(0),
-                testColors.get(0), resourceFrontCorners, testPoints.get(0),
+        BasicCard correctFront = new BasicCard(testIds.getFirst(),
+                testColors.getFirst(), resourceFrontCorners, testPoints.getFirst(),
                 new ArrayList<>());
-        BasicCard correctBack = new BasicCard(testIds.get(0),
-                testColors.get(0), resourceBackCorners, 0,
-                new ArrayList<>(){{add(testColors.get(0));}});
+        BasicCard correctBack = new BasicCard(testIds.getFirst(),
+                testColors.getFirst(), resourceBackCorners, 0,
+                new ArrayList<>(){{add(testColors.getFirst());}});
         assertEquals(correctBack,testBack);
         assertEquals(correctFront,testFront);
     }

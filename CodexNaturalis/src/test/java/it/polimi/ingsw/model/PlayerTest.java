@@ -19,23 +19,23 @@ public class PlayerTest {
 
     @Test
     public void equalsTest(){
-        Player referencePlayer = new Player(nicknames.get(0),
-                colors.get(0),
+        Player referencePlayer = new Player(nicknames.getFirst(),
+                colors.getFirst(),
                 new ArrayList<>(Arrays.asList(
                         CardBuilder.buildCard(32),
                         CardBuilder.buildCard(45),
                         CardBuilder.buildCard(67))),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
                         CardBuilder.buildObjective(91))));
-        Player testEqualPlayer = new Player(nicknames.get(0),
-                colors.get(0),
+        Player testEqualPlayer = new Player(nicknames.getFirst(),
+                colors.getFirst(),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
                         CardBuilder.buildCard(45),
                         CardBuilder.buildCard(67))),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
                         CardBuilder.buildObjective(91))));
         Player testDifferentPlayer = new Player(nicknames.get(1),
-                colors.get(0),
+                colors.getFirst(),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
                         CardBuilder.buildCard(45),
                         CardBuilder.buildCard(67))),
@@ -52,7 +52,7 @@ public class PlayerTest {
                 add(CardBuilder.buildCard(i));
             }
         }};
-        Player playerTest = new Player(nicknames.get(0), colors.get(0), new ArrayList<>(cardsForHand), new ArrayList<>());
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>());
         HashMap<Content, Integer> expectedResult = new HashMap<>(){{
             for(Content content : Content.values()) {
                 put(content, 0);
@@ -83,8 +83,8 @@ public class PlayerTest {
      */
     @Test
     public void checkIfPlaceableTest(){
-        Player referencePlayer = new Player(nicknames.get(0),
-                colors.get(0),
+        Player referencePlayer = new Player(nicknames.getFirst(),
+                colors.getFirst(),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
                         CardBuilder.buildCard(45),
                         CardBuilder.buildCard(73))),
@@ -93,7 +93,7 @@ public class PlayerTest {
         BasicCard starterCard = CardBuilder.buildCard(82).frontSide();
 
         //Test placing a resource card on a valid corner
-        BasicCard firstCard = referencePlayer.getHandCards().get(0).frontSide();
+        BasicCard firstCard = referencePlayer.getHandCards().getFirst().frontSide();
         referencePlayer.placeStarterCard(starterCard);
         Corner cornerToPlaceOn = starterCard.getValidCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
@@ -103,7 +103,7 @@ public class PlayerTest {
         assertTrue(canBePlaced);
 
         //Test placing a gold card without the required resources on a valid corner
-        BasicCard secondCard = referencePlayer.getHandCards().get(0).frontSide();
+        BasicCard secondCard = referencePlayer.getHandCards().getFirst().frontSide();
         cornerToPlaceOn = firstCard.getValidCorners().stream()
                 .filter(c -> c.getLocation() == Location.BR)
                 .findFirst().orElseThrow();
@@ -121,7 +121,7 @@ public class PlayerTest {
 
         //Test placing a resource card on an already occupied corner
         referencePlayer.drawCard(new TurnDeck(9,9,0),0);
-        BasicCard fourthCard = referencePlayer.getHandCards().get(0).frontSide();
+        BasicCard fourthCard = referencePlayer.getHandCards().getFirst().frontSide();
         cornerToPlaceOn = firstCard.getAllCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
@@ -136,7 +136,7 @@ public class PlayerTest {
                 add(CardBuilder.buildCard(i));
             }
         }};
-        Player playerTest = new Player(nicknames.get(0), colors.get(0), new ArrayList<>(cardsForHand), new ArrayList<>());
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>());
         Corner cornerTest = new Corner(Content.WHITE, Location.BL);
         boolean front = true;
         for(CardSides card : cardsForHand){
@@ -164,7 +164,7 @@ public class PlayerTest {
     public void drawCardTest(){
         int numOfVisibleCards = 2;
         TurnDeck deckTest = new TurnDeck(1, 80, numOfVisibleCards);
-        Player playerTest = new Player(nicknames.get(0), colors.get(0), new ArrayList<>(), new ArrayList<>());
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
         try {
             int index = 0;
             while (!deckTest.isEmpty()) {
@@ -175,7 +175,7 @@ public class PlayerTest {
             }
         }catch(EmptyStackException e){
             while(!deckTest.isEmpty()){
-                CardSides card = deckTest.getVisibleCards().get(0);
+                CardSides card = deckTest.getVisibleCards().getFirst();
                 playerTest.drawCard(deckTest, 0);
                 assertTrue(playerTest.getHandCards().contains(card));
             }

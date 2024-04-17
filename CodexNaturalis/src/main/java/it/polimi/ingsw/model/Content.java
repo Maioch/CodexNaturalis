@@ -32,7 +32,7 @@ public enum Content {
     }
 
     /**
-     * @return true if a corner is not overlappable
+     * @return true if a corner can't be overlapped
      */
     public boolean isEmpty(){
         return this == EMPTY;

@@ -266,6 +266,8 @@ public class Objective {
          */
         @Override
         public int calculate(){
+            Point min = new Point(0,0);
+            Point max = new Point(0,0);
             //Generate a color hashmap from the player's board
             HashMap<Point,Content> colorHashMap = new HashMap<>(){{
                 for(BasicCard card : owner.getPlacedCards()){
@@ -273,32 +275,42 @@ public class Objective {
                             .filter(c -> c.getLocation() == Location.BL)
                             .findAny().orElseThrow();
                     Point cardPosition = new Point(cardBLCorner.getX(), cardBLCorner.getY());
+                    min.x = Math.min(cardBLCorner.getX(), min.x);
+                    min.y = Math.min(cardBLCorner.getY(), min.y);
+                    max.x = Math.max(cardBLCorner.getX(), max.x);
+                    max.y = Math.max(cardBLCorner.getY(), max.y);
                     put(cardPosition, card.getColor());
                 }
             }};
             //Check how many times the pattern is present (without counting any card twice)
+            //The checking order is now guaranteed in order to avoid evaluation issues with chained patterns:
+            //the search starts from the bottom left and ends at the top right.
             int timesAppeared = 0;
-            for(Map.Entry<Point,Content> entry : colorHashMap.entrySet()){
-                Point baseOffset = new Point(entry.getKey());
-                Point offset = new Point(baseOffset);
-                ArrayList<Point> evaluatedPoints = new ArrayList<>();
-                //Sub-iteration used to check for the pattern itself
-                boolean patternFound = true;
-                for(Map.Entry<Point, Content> patternEntry : pattern.entrySet()){
-                    evaluatedPoints.add(entry.getKey());
-                    offset.move( baseOffset.x + patternEntry.getKey().x, baseOffset.y + patternEntry.getKey().y);
-                    if(colorHashMap.get(offset) != patternEntry.getValue()){
-                        patternFound = false;
-                        break;
+            Point baseOffset = new Point();
+            for(int y = min.y; y < max.y; y++){
+                for(int x = min.x; x < max.x; x++){
+                    baseOffset.move(x,y);
+                    Point offset = new Point(baseOffset);
+                    ArrayList<Point> evaluatedPoints = new ArrayList<>();
+                    //Sub-iteration used to check for the pattern itself
+                    boolean patternFound = true;
+                    for(Map.Entry<Point, Content> patternEntry : pattern.entrySet()){
+                        offset.move( baseOffset.x + patternEntry.getKey().x,
+                                baseOffset.y + patternEntry.getKey().y);
+                        evaluatedPoints.add(offset);
+                        if(colorHashMap.get(offset) != patternEntry.getValue()){
+                            patternFound = false;
+                            break;
+                        }
                     }
-                }
-                //Mark all the cards that have been already counted as part of a pattern as WHITE
-                if(patternFound){
-                    for(Point point : evaluatedPoints){
-                        colorHashMap.put(point,Content.WHITE);
+                    //Mark all the cards that have been already counted as part of a pattern as WHITE
+                    if(patternFound){
+                        for(Point point : evaluatedPoints){
+                            colorHashMap.put(point,Content.WHITE);
+                        }
                     }
+                    timesAppeared += patternFound ? 1 : 0;
                 }
-                timesAppeared += patternFound ? 1 : 0;
             }
             return points * timesAppeared;
         }

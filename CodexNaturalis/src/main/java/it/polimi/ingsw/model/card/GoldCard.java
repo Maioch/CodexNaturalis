@@ -99,13 +99,12 @@ public class GoldCard extends BasicCard {
          */
         @Override
         public int calculate(){
-            int bonusPoints = points;
-
-            for(BasicCard card : owner.getPlacedCards())
-                for(Corner corner : card.getAllCorners())
-                    if(corners.stream().anyMatch(c -> c.isSamePosition(corner)))
-                        bonusPoints += points;
-            return bonusPoints;
+            return points * owner.getPlacedCards().stream()
+                .filter(card -> !card.equals(GoldCard.this))
+                .flatMap(card -> card.getAllCorners().stream())
+                .filter(corner -> corners.stream().anyMatch(c -> c.isSamePosition(corner)))
+                .mapToInt(c -> 1)
+                .reduce(0, Integer::sum);
         }
 
         /**

@@ -118,7 +118,7 @@ public class BasicCard {
                 put(content, totalContent.stream()
                         .filter(x -> x == content)
                         .mapToInt(x -> 1)
-                        .reduce(0,Integer::sum));
+                        .reduce(0, Integer::sum));
             }
         }};
     }

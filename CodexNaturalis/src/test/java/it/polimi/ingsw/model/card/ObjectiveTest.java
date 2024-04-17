@@ -5,8 +5,7 @@ import it.polimi.ingsw.model.Location;
 import it.polimi.ingsw.model.Player;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,40 +34,54 @@ public class ObjectiveTest {
                 new ArrayList<>(Arrays.asList(
                         referenceContentObjective,
                         referencePatternObjective
-                )
-                )
+                ))
         );
+        LinkedHashMap<Integer,Location> placements1 = new LinkedHashMap<>(){{
+            put(2,Location.TR);
+            put(3,Location.TR);
+            put(4, Location.TR);
+            put(14, Location.BR);
+            put(15, Location.TR);
+            put(16, Location.TR);
+            put(5, Location.TL);
+            put(6, Location.BL);
+            put(17, Location.TL);
+            put(18, Location.TR);
+            put(19, Location.TR);
+            put(7, Location.BR);
+        }};
 
         BasicCard starter = CardBuilder.buildCard(83).frontSide();
         starter.setOwner(referencePlayer);
         referencePlayer.placeStarterCard(starter);
 
-        BasicCard card1 = CardBuilder.buildCard(2).frontSide();
-        card1.setOwner(referencePlayer);
-        referencePlayer.placeCard(card1, starter.getAllCorners().stream().
-                filter(c -> c.getLocation() == Location.TL)
-                .findFirst().orElseThrow());
+        createTestBoard(referencePlayer, placements1, starter,true);
 
-        assertEquals(2, referenceContentObjective.checkObjective());
-        assertEquals(0, referencePatternObjective.checkObjective());
+        assertEquals(4, referenceContentObjective.checkObjective());
+        assertEquals(4, referencePatternObjective.checkObjective());
+    }
 
-        BasicCard card2 = CardBuilder.buildCard(4).frontSide();
-        card2.setOwner(referencePlayer);
-        referencePlayer.placeCard(card2, card1.getAllCorners().stream().
-                filter(c -> c.getLocation() == Location.TR)
-                .findFirst().orElseThrow());
-
-        assertEquals(2, referenceContentObjective.checkObjective());
-        assertEquals(0, referencePatternObjective.checkObjective());
-
-        BasicCard card3 = CardBuilder.buildCard(47).frontSide();
-        card3.setOwner(referencePlayer);
-        referencePlayer.placeCard(card3, card2.getAllCorners().stream().
-                filter(c -> c.getLocation() == Location.TR)
-                .findFirst().orElseThrow());
-
-        assertEquals(2, referenceContentObjective.checkObjective());
-        assertEquals(2, referencePatternObjective.checkObjective());
+    /**
+     * Helper method used to automatically place a set of cards on the player's board
+     * @param player the player who owns the board on which the method will place the cards on
+     * @param relativePlacements a LinkedHashMap (to preserve insertion order) which pairs the id of each card
+     *                           to the position of the corner it's going to be placed on
+     * @param base a card that has already been placed to use as a starting point
+     * @param useBack whether to retrieve the back sides or the front sides when placing the cards
+     * @return the last card placed
+     */
+    private BasicCard createTestBoard(Player player, LinkedHashMap<Integer,Location> relativePlacements, BasicCard base, boolean useBack){
+        BasicCard previousCard = base;
+        for(Map.Entry<Integer, Location> entry : relativePlacements.entrySet()){
+            CardSides sides = CardBuilder.buildCard(entry.getKey());
+            BasicCard card = useBack ? sides.backSide() : sides.frontSide();
+            card.setOwner(player);
+            player.placeCard(card, previousCard.getAllCorners().stream()
+                    .filter(c -> c.getLocation() == entry.getValue())
+                    .findFirst().orElseThrow());
+            previousCard = card;
+        }
+        return previousCard;
     }
 
     @Test

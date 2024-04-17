@@ -2,11 +2,15 @@ package it.polimi.ingsw.model.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.Content;
+import it.polimi.ingsw.model.Corner;
+import it.polimi.ingsw.model.Location;
+import it.polimi.ingsw.model.Player;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class GoldCardTest {
     private final int startGold = 41;
@@ -36,8 +40,48 @@ public class GoldCardTest {
 
     @Test
     void getPointsTest(){
-        for(int i = startGold; i <= endGold; i++){
-            GoldCard cardTest = (GoldCard) CardBuilder.buildCard(i).frontSide();
+        int startResource = 1;
+        int endResource = 40;
+        Player playerTest = new Player("test", Content.RED, new ArrayList<>(){{
+            for(int i = startResource; i <= endResource; i++)
+                add(CardBuilder.buildCard(i));
+        }}, new ArrayList<>());
+        int offset = 0;
+        for(CardSides card : playerTest.getHandCards()){
+            Corner cornerTest = new Corner(Content.WHITE, Location.BL);
+            cornerTest.setX(offset);
+            cornerTest.setY(offset);
+            playerTest.placeCard(card.frontSide(), cornerTest);
+            offset += 2;
+        }
+        ArrayList<BasicCard> placedCard = playerTest.getPlacedCards();
+        Iterator<BasicCard> iterator = placedCard.iterator();
+        BasicCard currentCard = iterator.next();
+        for(int id = startGold; id <= endGold; id++, currentCard = iterator.hasNext() ? iterator.next() : currentCard){
+            GoldCard goldTest = (GoldCard) CardBuilder.buildCard(id).frontSide();
+            goldTest.setOwner(playerTest);
+            JsonNode cardJson = CardBuilder.getCardJson(id, "placeableCards");
+            String bonusType = CardBuilder.getBonusType(cardJson);
+            int nativePoints = CardBuilder.getPoints(cardJson);
+            switch(bonusType){
+                case "OBJECT":
+                    playerTest.placeCard(goldTest, currentCard.getValidCorners().getFirst());
+                    Content bonusContent = CardBuilder.getBonusContent(cardJson);
+                    int expectedPoints = playerTest.getPlayerContent().get(bonusContent) * nativePoints;
+                    assertEquals(expectedPoints, goldTest.getPoints());
+                    break;
+                case "CORNER":
+                    if(playerTest.checkIfPlaceable(goldTest, currentCard.corners.stream().filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow())){
+                        playerTest.placeCard(goldTest, currentCard.corners.stream().filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow());
+                        assertEquals(2 * nativePoints, goldTest.getPoints());
+                        break;
+                    }
+                    playerTest.placeCard(goldTest, currentCard.getValidCorners().getFirst());
+                    assertEquals(nativePoints, goldTest.getPoints());
+                    break;
+                case "NOTHING":
+                    assertEquals(nativePoints, goldTest.getPoints());
+            }
         }
     }
 
