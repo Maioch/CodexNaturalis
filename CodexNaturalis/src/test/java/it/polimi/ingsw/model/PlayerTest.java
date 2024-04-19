@@ -98,7 +98,7 @@ public class PlayerTest {
         Corner cornerToPlaceOn = starterCard.getValidCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
-        boolean canBePlaced = referencePlayer.checkIfPlaceable(firstCard, cornerToPlaceOn);
+        boolean canBePlaced = referencePlayer.checkRequirements(firstCard) && referencePlayer.checkIfPlaceable(cornerToPlaceOn);
         referencePlayer.placeCard(firstCard, cornerToPlaceOn);
         assertTrue(canBePlaced);
 
@@ -107,7 +107,7 @@ public class PlayerTest {
         cornerToPlaceOn = firstCard.getValidCorners().stream()
                 .filter(c -> c.getLocation() == Location.BR)
                 .findFirst().orElseThrow();
-        canBePlaced = referencePlayer.checkIfPlaceable(secondCard, cornerToPlaceOn);
+        canBePlaced = referencePlayer.checkRequirements(secondCard) && referencePlayer.checkIfPlaceable(cornerToPlaceOn);
         assertFalse(canBePlaced);
 
         //Test placing a gold card with the required resources on a valid corner
@@ -115,7 +115,7 @@ public class PlayerTest {
         cornerToPlaceOn = firstCard.getValidCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
-        canBePlaced = referencePlayer.checkIfPlaceable(thirdCard, cornerToPlaceOn);
+        canBePlaced = referencePlayer.checkRequirements(thirdCard) && referencePlayer.checkIfPlaceable(cornerToPlaceOn);
         referencePlayer.placeCard(thirdCard, cornerToPlaceOn);
         assertTrue(canBePlaced);
 
@@ -125,7 +125,7 @@ public class PlayerTest {
         cornerToPlaceOn = firstCard.getAllCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
-        canBePlaced = referencePlayer.checkIfPlaceable(fourthCard, cornerToPlaceOn);
+        canBePlaced = referencePlayer.checkRequirements(fourthCard) && referencePlayer.checkIfPlaceable(cornerToPlaceOn);
         assertFalse(canBePlaced);
     }
 
@@ -143,7 +143,7 @@ public class PlayerTest {
             BasicCard currentCard = front ? card.frontSide() : card.backSide();
             playerTest.placeCard(currentCard, cornerTest);
             front = !front;
-            if(!playerTest.checkIfPlaceable(currentCard, cornerTest)) {
+            if(!(playerTest.checkRequirements(currentCard) && playerTest.checkIfPlaceable(cornerTest))) {
                 assertTrue(playerTest.getHandCards().contains(card));
                 assertFalse(playerTest.getPlacedCards().contains(currentCard));
             } else {

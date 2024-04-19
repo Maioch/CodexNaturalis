@@ -59,9 +59,14 @@ public class Player {
         return this.score;
     }
 
+    /**
+     * Getter for the player's hand cards
+     * @return the list of the player's hand cards
+     */
     public ArrayList<CardSides> getHandCards(){
         return new ArrayList<>(this.handCards);
     }
+
     /**
      * @return player's placed cards
      */
@@ -95,24 +100,33 @@ public class Player {
     }
 
     /**
-     * A method which checks all the conditions that make a card correctly placeable
-     * assumes that the corner that has been passed is part of the player's board
+     * Method that checks if a card is placeable by checking if the resources required
+     * are present on the player's board
+     * @param cardToPlace card to check
+     * @return true if the card can be placed
+     */
+    public boolean checkRequirements(BasicCard cardToPlace){
+        HashMap<Content,Integer> requirements = cardToPlace.getRequirements();
+        HashMap<Content,Integer> playerSymbols = getPlayerContent();
+        return requirements.entrySet().stream().allMatch(e -> playerSymbols.get(e.getKey()) >= e.getValue());
+    }
+
+    /**
+     * A method which checks if the position chosen by the player for a new card is correct,
+     * assuming that the corner that has been passed is part of the player's board
      * and that the player already has the card
-     * @param cardToPlace the card the player chose to place
      * @param corner the card's corner where the new card is going to be placed
      * @return true if the card is placeable on the corner
      */
-    public boolean checkIfPlaceable(BasicCard cardToPlace, Corner corner){
-        //Verifies that the requirements for placing the cards are met
-        HashMap<Content,Integer> requirements = cardToPlace.getRequirements();
-        HashMap<Content,Integer> playerSymbols = getPlayerContent();
-        if(!requirements.entrySet().stream().allMatch(e -> playerSymbols.get(e.getKey()) >= e.getValue())){
+    public boolean checkIfPlaceable(Corner corner){
+        List<Corner> allCorners = placedCards.stream()
+                .flatMap(b -> b.getAllCorners().stream())
+                .toList();
+        if(!allCorners.contains(corner))
             return false;
-        }
         //Finds all the corners where a card can't be placed and tests
         //whether one of the corners of the card is over them.
-        List<Corner> cornersToCheck = placedCards.stream()
-                .flatMap(b -> b.getAllCorners().stream())
+        List<Corner> cornersToCheck = allCorners.stream()
                 .filter(c -> !c.getVisibility() || c.getContent().isEmpty())
                 .toList();
         //checking that the corners in which the card will be placed aren't empty
@@ -135,30 +149,12 @@ public class Player {
     }
 
     /**
-     * Equals method.
-     * @param object Object to check
-     * @return true if each field is equals to each field of object
-     */
-    @Override
-    public boolean equals(Object object){
-        if(this.getClass() != object.getClass())
-            return false;
-        Player other = (Player) object;
-        return this.nickname.equals(other.nickname) &&
-                this.color == other.color &&
-                this.score == other.score &&
-                this.handCards.equals(other.handCards) &&
-                this.placedCards.equals(other.placedCards) &&
-                this.objectives.equals(other.objectives);
-    }
-
-    /**
      * Supporting method for playTurn that allows the player to place a card on his board
      * @param cardToPlace the card the player chose to place
      * @param corner the corner on the card where the card is placed
      */
     public void placeCard(BasicCard cardToPlace, Corner corner){
-        if(!checkIfPlaceable(cardToPlace, corner))
+        if(!checkRequirements(cardToPlace) || !checkIfPlaceable(corner))
             return;
         handCards.removeIf(c -> c.frontSide().equals(cardToPlace) || c.backSide().equals(cardToPlace));
         cardToPlace.place(corner);
@@ -167,6 +163,11 @@ public class Player {
         score += cardToPlace.getPoints();
     }
 
+    /**
+     * Method that initializes each player's board by placing a starter card in the centre; throws an exception
+     * if the board is already initialized
+     * @param starterCard the starter card chosen randomly for the player
+     */
     public void placeStarterCard(BasicCard starterCard){
         if(!placedCards.isEmpty()){
             throw new RuntimeException("A starter card has already been placed.");
@@ -190,5 +191,23 @@ public class Player {
         newCard.frontSide().setOwner(this);
         newCard.backSide().setOwner(this);
         handCards.add(newCard);
+    }
+
+    /**
+     * Equals method.
+     * @param object Object to check
+     * @return true if each field is equals to each field of object
+     */
+    @Override
+    public boolean equals(Object object){
+        if(this.getClass() != object.getClass())
+            return false;
+        Player other = (Player) object;
+        return this.nickname.equals(other.nickname) &&
+                this.color == other.color &&
+                this.score == other.score &&
+                this.handCards.equals(other.handCards) &&
+                this.placedCards.equals(other.placedCards) &&
+                this.objectives.equals(other.objectives);
     }
 }

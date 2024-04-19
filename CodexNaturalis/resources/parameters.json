@@ -7,5 +7,11 @@
   "starterCardEndIndex": 86,
   "objectiveCardStartIndex": 87,
   "objectiveCardEndIndex": 102,
-  "numberOfVisibleCards": 2
+  "numberOfVisibleCards": 2,
+  "maxNumberOfPlayers": 4,
+  "minNumberOfPlayers": 2,
+  "numberOfResourceCardsInHand": 3,
+  "numberOfGoldCardsInHand": 3,
+  "numberOfSecretObjectives": 1,
+  "numberOfCommonObjectives": 2
 }

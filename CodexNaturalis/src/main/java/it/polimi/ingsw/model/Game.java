@@ -1,26 +1,42 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.card.CardSides;
+import it.polimi.ingsw.model.card.Objective;
 import it.polimi.ingsw.model.deck.*;
+import it.polimi.ingsw.model.exceptions.IllegalNumberOfPlayers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Class that represents a single match of Codex Naturalis
+ *
  * @author Guglielmo Gatti
  */
 public class Game {
     public final ArrayList<Player> players;
-    public final ArrayList<String> nicknames;
     public final TurnDeck resourceDeck;
     public final TurnDeck goldDeck;
     public final Deck starterDeck;
-    public final Deck objectiveDeck;
-    public final boolean isLastTurn;
-    public final int currentPlayer;
+    public final ObjectivesDeck objectiveDeck;
+    public final ArrayList<Content> availableColors;
+    public final ArrayList<Objective> commonObjectives;
+    public final int numberOfPlayers;
+    public boolean isLastTurn;
 
-    public Game(){
-        players = new ArrayList<>();
-        nicknames = new ArrayList<>();
+    public Game(int numberOfPlayers) throws IllegalNumberOfPlayers {
+        if(numberOfPlayers < GameParameters.getMinPlayers() || numberOfPlayers > GameParameters.getMaxPlayers())
+            throw new IllegalNumberOfPlayers();
+        this.numberOfPlayers = numberOfPlayers;
+        availableColors = new ArrayList<>(){{
+            for(Content content : Content.values()){
+                if(content.isResource()){
+                    add(content);
+                }
+            }
+        }};
+        Collections.shuffle(availableColors);
+        players = new ArrayList<>(numberOfPlayers);
         int numberOfVisibleCards = GameParameters.getNumberOfVisibleCards();
         resourceDeck = new TurnDeck(
                 GameParameters.getStartCardIndex(GameParameters.CardType.RESOURCE),
@@ -33,11 +49,15 @@ public class Game {
         starterDeck = new Deck(
                 GameParameters.getStartCardIndex(GameParameters.CardType.STARTER),
                 GameParameters.getEndCardIndex(GameParameters.CardType.STARTER));
-        objectiveDeck = new Deck(
+        objectiveDeck = new ObjectivesDeck(
                 GameParameters.getStartCardIndex(GameParameters.CardType.OBJECTIVE),
                 GameParameters.getEndCardIndex(GameParameters.CardType.OBJECTIVE));
+        commonObjectives = new ArrayList<>(){{
+            for(int i = 0; i < GameParameters.getNumberOfCommonObjectives(); i++){
+                add(objectiveDeck.draw());
+            }
+        }};
         isLastTurn = false;
-        currentPlayer = 0;
     }
 
     /**
@@ -49,18 +69,44 @@ public class Game {
     }
 
     /**
-     * obtain the game's winner
-     * @return the name of the winner
+     * Method that the checks if the maximum number of players is reached
+     * @return true if the game is full
      */
-    public String getWinner(){
-        return "no winner";
+    public boolean isGameFull(){
+        return players.size() == numberOfPlayers;
     }
 
     /**
-     * initializes the game
-     * @return the initialization status
+     * Method that checks if there's a user with the same username of the new player that is joining the game
+     * @param nickname the nickname to check
+     * @return true if there's a duplicate username
      */
-    public boolean initializeGame(){
-        return true;
+    public boolean checkNickname(String nickname){
+        return players.stream().anyMatch(p -> p.getNickname().equals(nickname));
+    }
+
+    /**
+     * Method that gets the remaining colors that a player can choose when entering a game
+     * @return the list of colors that the player can choose from
+     */
+    public ArrayList<Content> getAvailableColors(){
+        return new ArrayList<>(availableColors);
+    }
+
+    /**
+     * Method that adds a player to an existing game
+     * @param nickname the nickname of the player
+     * @param color player's color
+     */
+    public void addPlayer(String nickname, Content color) {
+        ArrayList<CardSides> handCards = new ArrayList<>(){{
+            for(int i = 0; i < GameParameters.getNumberOfGoldCardsInHand(); i++){
+                add(goldDeck.draw());
+            }
+            for(int i = 0; i < GameParameters.getNumberOfResourceCardsInHand(); i++){
+                add(resourceDeck.draw());
+            }
+        }};
+        //players.add(new Player(nickname,availableColors.remove(0)));
     }
 }

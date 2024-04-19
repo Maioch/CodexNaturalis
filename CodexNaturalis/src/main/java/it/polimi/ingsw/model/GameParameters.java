@@ -48,6 +48,54 @@ public class GameParameters {
     }
 
     /**
+     * Method that gets the correct number of resource cards allowed for each player's hand
+     * @return number of hand cards from the json file
+     */
+    public static int getNumberOfGoldCardsInHand(){
+        return getParameter("numberOfResourceCardsInHand");
+    }
+
+    /**
+     * Method that gets the correct number of gold cards allowed for each player's hand
+     * @return number of hand cards from the json file
+     */
+    public static int getNumberOfResourceCardsInHand(){
+        return getParameter("numberOfGoldCardsInHand");
+    }
+
+    /**
+     * Method that gets the correct number of secret objectives allowed for each player
+     * @return number of secret objectives from the json file
+     */
+    public static int getNumberOfSecretObjectives(){
+        return getParameter("numberOfSecretObjectives");
+    }
+
+    /**
+     * Method that gets the correct number of common objectives allowed per game
+     * @return number of common objectives from the json file
+     */
+    public static int getNumberOfCommonObjectives(){
+        return getParameter("numberOfCommonObjectives");
+    }
+
+    /**
+     * Method that gets the maximum number of players allowed in a game
+     * @return maximum number of players from the json file
+     */
+    public static int getMaxPlayers(){
+        return getParameter("maxNumberOfPlayers");
+    }
+
+    /**
+     * Method that gets the minimum number of players allowed in a game
+     * @return minimum number of players from the json file
+     */
+    public static int getMinPlayers(){
+        return getParameter("minNumberOfPlayers");
+    }
+
+    /**
      * Gets the specified parameter read on the json file
      * @param parameter the parameter to retrieve from the file
      * @return the integer corresponding with the given parameter name

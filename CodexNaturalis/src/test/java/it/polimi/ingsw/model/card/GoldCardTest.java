@@ -58,11 +58,13 @@ public class GoldCardTest {
         Iterator<BasicCard> iterator = placedCard.iterator();
         BasicCard currentCard = iterator.next();
         for(int id = startGold; id <= endGold; id++, currentCard = iterator.hasNext() ? iterator.next() : currentCard){
+
             GoldCard goldTest = (GoldCard) CardBuilder.buildCard(id).frontSide();
             goldTest.setOwner(playerTest);
             JsonNode cardJson = CardBuilder.getCardJson(id, "placeableCards");
             String bonusType = CardBuilder.getBonusType(cardJson);
             int nativePoints = CardBuilder.getPoints(cardJson);
+
             switch(bonusType){
                 case "OBJECT":
                     playerTest.placeCard(goldTest, currentCard.getValidCorners().getFirst());
@@ -71,7 +73,9 @@ public class GoldCardTest {
                     assertEquals(expectedPoints, goldTest.getPoints());
                     break;
                 case "CORNER":
-                    if(playerTest.checkIfPlaceable(goldTest, currentCard.corners.stream().filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow())){
+                    if(playerTest.checkRequirements(goldTest) &&
+                            playerTest.checkIfPlaceable(currentCard.corners.stream().filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow())){
+
                         playerTest.placeCard(goldTest, currentCard.corners.stream().filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow());
                         assertEquals(2 * nativePoints, goldTest.getPoints());
                         break;
