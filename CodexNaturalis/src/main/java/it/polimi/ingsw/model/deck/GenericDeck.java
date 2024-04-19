@@ -55,18 +55,4 @@ public class GenericDeck <T>{
     public T draw(){
         return this.deck.pop();
     }
-
-    /**
-     * Equals method.
-     * @param object Object to check
-     * @return true if each field is equals to each field of object
-     */
-    @Override
-    public boolean equals(Object object){
-        if(this.getClass() != object.getClass())
-            return false;
-        GenericDeck<T> other = (GenericDeck<T>) object;
-        return this.deck.stream().sorted().toList()
-                .equals(other.deck.stream().sorted().toList());
-    }
 }
