@@ -1,0 +1,11 @@
+{
+  "resourceCardStartIndex": 1,
+  "resourceCardEndIndex": 40,
+  "goldCardStartIndex": 41,
+  "goldCardEndIndex": 80,
+  "starterCardStartIndex": 81,
+  "starterCardEndIndex": 86,
+  "objectiveCardStartIndex": 87,
+  "objectiveCardEndIndex": 102,
+  "numberOfVisibleCards": 2
+}

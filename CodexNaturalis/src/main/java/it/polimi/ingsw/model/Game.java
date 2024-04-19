@@ -51,6 +51,7 @@ public class Game {
     public String getWinner(){
         return "no winner";
     }
+
     /**
      * initializes the game
      * @return the initialization status
