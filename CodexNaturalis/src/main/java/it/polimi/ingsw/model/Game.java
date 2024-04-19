@@ -9,29 +9,33 @@ import java.util.ArrayList;
  * @author Guglielmo Gatti
  */
 public class Game {
-    /* may be parametrized through a file or a class in the future*/
-    public final int resourceCardStartIndex = 1;
-    public final int goldCardStartIndex = 41;
-    public final int starterCardStartIndex = 81;
-    public final int objectiveCardStartIndex = 87;
-    public final int deckEndIndex = 102;
-    public final int numberOfVisibleCards = 2;
     public final ArrayList<Player> players;
     public final ArrayList<String> nicknames;
     public final TurnDeck resourceDeck;
     public final TurnDeck goldDeck;
     public final Deck starterDeck;
-    public final Deck objectivesDeck;
+    public final Deck objectiveDeck;
     public final boolean isLastTurn;
     public final int currentPlayer;
 
     public Game(){
         players = new ArrayList<>();
         nicknames = new ArrayList<>();
-        resourceDeck = new TurnDeck(resourceCardStartIndex, goldCardStartIndex - 1, numberOfVisibleCards);
-        goldDeck = new TurnDeck(goldCardStartIndex, starterCardStartIndex - 1, numberOfVisibleCards);
-        starterDeck = new Deck(starterCardStartIndex, objectiveCardStartIndex - 1);
-        objectivesDeck = new Deck(objectiveCardStartIndex, deckEndIndex);
+        int numberOfVisibleCards = GameParameters.getNumberOfVisibleCards();
+        resourceDeck = new TurnDeck(
+                GameParameters.getStartCardIndex(GameParameters.CardType.RESOURCE),
+                GameParameters.getEndCardIndex(GameParameters.CardType.RESOURCE),
+                numberOfVisibleCards);
+        goldDeck = new TurnDeck(
+                GameParameters.getStartCardIndex(GameParameters.CardType.GOLD),
+                GameParameters.getEndCardIndex(GameParameters.CardType.GOLD),
+                numberOfVisibleCards);
+        starterDeck = new Deck(
+                GameParameters.getStartCardIndex(GameParameters.CardType.STARTER),
+                GameParameters.getEndCardIndex(GameParameters.CardType.STARTER));
+        objectiveDeck = new Deck(
+                GameParameters.getStartCardIndex(GameParameters.CardType.OBJECTIVE),
+                GameParameters.getEndCardIndex(GameParameters.CardType.OBJECTIVE));
         isLastTurn = false;
         currentPlayer = 0;
     }

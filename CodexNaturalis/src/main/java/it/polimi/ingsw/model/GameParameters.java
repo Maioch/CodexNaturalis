@@ -8,6 +8,7 @@ import java.io.IOException;
 
 /**
  * Class with static methods used to retrieve the game parameters from a json file
+ * @author Andrea Fidanza, Guglielmo Gatti
  */
 public class GameParameters {
     private final static String filePath = "resources/";
@@ -23,12 +24,19 @@ public class GameParameters {
     /**
      * Gets the start and end indexes of the specified card type
      * @param type the card type
-     * @return an array containing the start index in position 0 and the end index in position 1
+     * @return the id of the first card of the requested type
      */
-    public static int[] getCardIndices(CardType type){
-        String startParameter = type.toString().toLowerCase() + "cardStartIndex";
-        String endParameter = type.toString().toLowerCase() + "cardEndIndex";
-        return new int[]{getParameter(startParameter), getParameter(endParameter)};
+    public static int getStartCardIndex(CardType type){
+        return getParameter(type.toString().toLowerCase() + "cardStartIndex");
+    }
+
+    /**
+     * Gets the end indexes of the specified card type
+     * @param type the card type
+     * @return the id of the last card of the requested type
+     */
+    public static int getEndCardIndex(CardType type){
+        return getParameter(type.toString().toLowerCase() + "cardEndIndex");
     }
 
     /**
