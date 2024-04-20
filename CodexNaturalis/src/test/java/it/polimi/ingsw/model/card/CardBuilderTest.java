@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.Content;
-import it.polimi.ingsw.model.Corner;
-import it.polimi.ingsw.model.Location;
+import it.polimi.ingsw.model.card.corner.Corner;
+import it.polimi.ingsw.model.card.corner.Location;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

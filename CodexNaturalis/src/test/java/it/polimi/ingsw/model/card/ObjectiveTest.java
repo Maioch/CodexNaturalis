@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.Content;
-import it.polimi.ingsw.model.Location;
+import it.polimi.ingsw.model.card.corner.Location;
 import it.polimi.ingsw.model.Player;
 import org.junit.jupiter.api.Test;
 

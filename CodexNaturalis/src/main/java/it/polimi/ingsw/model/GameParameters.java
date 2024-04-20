@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.ingsw.model.card.CardType;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,13 +14,6 @@ import java.io.IOException;
 public class GameParameters {
     private final static String filePath = "resources/";
     private final static String fileName = "parameters.json";
-
-    /**
-     * Enum that represents the types of the cards
-     */
-    public enum CardType{
-        RESOURCE, GOLD, STARTER, OBJECTIVE;
-    }
 
     /**
      * Gets the start and end indexes of the specified card type
@@ -48,7 +42,7 @@ public class GameParameters {
     }
 
     /**
-     * Method that gets the correct number of resource cards allowed for each player's hand
+     * Method that gets the correct number of resource cards allowed given to each player during the first draw
      * @return number of hand cards from the json file
      */
     public static int getNumberOfGoldCardsInHand(){
@@ -56,7 +50,7 @@ public class GameParameters {
     }
 
     /**
-     * Method that gets the correct number of gold cards allowed for each player's hand
+     * Method that gets the correct number of gold cards given to each player during the first draw
      * @return number of hand cards from the json file
      */
     public static int getNumberOfResourceCardsInHand(){

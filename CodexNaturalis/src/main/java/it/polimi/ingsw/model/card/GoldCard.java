@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.Bonus;
 
 import java.util.ArrayList;
 import java.util.HashMap;

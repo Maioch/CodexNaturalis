@@ -1,6 +1,8 @@
 package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.card.corner.Corner;
+import it.polimi.ingsw.model.card.corner.Location;
 
 import java.awt.*;
 import java.util.ArrayList;

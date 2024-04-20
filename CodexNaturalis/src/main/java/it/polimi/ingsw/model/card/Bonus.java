@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.card;
 
 /**
  * Interface that introduces a method to calculate bonus points in different areas of the game.

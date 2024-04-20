@@ -47,7 +47,7 @@ public class TurnDeckTest {
     @Test
     void getCardOnTopTest(){
         TurnDeck<CardSides> deck = new TurnDeck<>(CardBuilder::buildCard, deckStart, deckEnd, numberOfVisibleCards);
-        CardSides topDeck = deck.getCardOnTop();
+        CardSides topDeck = deck.getElementOnTop();
         assertEquals(topDeck, deck.draw());
     }
 }

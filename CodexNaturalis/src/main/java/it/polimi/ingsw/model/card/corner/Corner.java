@@ -1,5 +1,7 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.card.corner;
 
+
+import it.polimi.ingsw.model.Content;
 
 /**
  * Class that represents a corner of a card.

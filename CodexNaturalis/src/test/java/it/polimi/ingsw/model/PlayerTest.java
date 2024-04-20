@@ -3,14 +3,13 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
-import it.polimi.ingsw.model.deck.DeprecatedDeck;
-import it.polimi.ingsw.model.deck.DeprecatedTurnDeck;
+import it.polimi.ingsw.model.card.corner.Corner;
+import it.polimi.ingsw.model.card.corner.Location;
 import it.polimi.ingsw.model.deck.TurnDeck;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.EmptyStackException;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,7 +74,8 @@ public class PlayerTest {
     }
 
     @Test
-    public void getObjectivePointsTest() {
+    public void getObjectivePointsTest(){
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
 
     }
 
@@ -182,7 +182,7 @@ public class PlayerTest {
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
         int index = 0;
         while (!deckTest.isEmpty()) {
-            CardSides card = (index == 0) ? deckTest.getCardOnTop() : deckTest.getVisibleElements().get(index - 1);
+            CardSides card = (index == 0) ? deckTest.getElementOnTop() : deckTest.getVisibleElements().get(index - 1);
             playerTest.drawCard(deckTest, index);
             assertTrue(playerTest.getHandCards().contains(card));
             index = (index + 1) % (numOfVisibleCards + 1);

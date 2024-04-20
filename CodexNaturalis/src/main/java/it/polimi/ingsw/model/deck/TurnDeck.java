@@ -34,7 +34,7 @@ public class TurnDeck<T> extends Deck<T> {
      * This method will be used whenever we'll need to show the deck from the view
      * @return the card that's on top of the deck
      */
-    public T getCardOnTop(){
+    public T getElementOnTop(){
         return deck.peek();
     }
 

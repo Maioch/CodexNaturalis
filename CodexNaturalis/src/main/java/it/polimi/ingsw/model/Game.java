@@ -1,13 +1,17 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
 import it.polimi.ingsw.model.card.Objective;
 import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.exceptions.IllegalNumberOfPlayers;
+import it.polimi.ingsw.model.card.CardType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Class that represents a single match of Codex Naturalis
@@ -25,6 +29,12 @@ public class Game {
     public final int numberOfPlayers;
     public boolean isLastTurn;
 
+    /**
+     * Constructor for the class
+     * @param numberOfPlayers the number of players requested by the creator of the game
+     * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number
+     * players allowed
+     */
     public Game(int numberOfPlayers) throws IllegalNumberOfPlayers {
         if(numberOfPlayers < GameParameters.getMinPlayers() || numberOfPlayers > GameParameters.getMaxPlayers())
             throw new IllegalNumberOfPlayers();
@@ -36,27 +46,26 @@ public class Game {
                 }
             }
         }};
-        Collections.shuffle(availableColors);
         players = new ArrayList<>(numberOfPlayers);
         int numberOfVisibleCards = GameParameters.getNumberOfVisibleCards();
         resourceDeck = new TurnDeck<>(
                 CardBuilder::buildCard,
-                GameParameters.getStartCardIndex(GameParameters.CardType.RESOURCE),
-                GameParameters.getStartCardIndex(GameParameters.CardType.RESOURCE),
+                GameParameters.getStartCardIndex(CardType.RESOURCE),
+                GameParameters.getStartCardIndex(CardType.RESOURCE),
                 numberOfVisibleCards);
         goldDeck = new TurnDeck<>(
                 CardBuilder::buildCard,
-                GameParameters.getStartCardIndex(GameParameters.CardType.GOLD),
-                GameParameters.getEndCardIndex(GameParameters.CardType.GOLD),
+                GameParameters.getStartCardIndex(CardType.GOLD),
+                GameParameters.getEndCardIndex(CardType.GOLD),
                 numberOfVisibleCards);
         starterDeck = new Deck<>(
                 CardBuilder::buildCard,
-                GameParameters.getStartCardIndex(GameParameters.CardType.STARTER),
-                GameParameters.getEndCardIndex(GameParameters.CardType.STARTER));
+                GameParameters.getStartCardIndex(CardType.STARTER),
+                GameParameters.getEndCardIndex(CardType.STARTER));
         objectiveDeck = new Deck<>(
                 CardBuilder::buildObjective,
-                GameParameters.getStartCardIndex(GameParameters.CardType.OBJECTIVE),
-                GameParameters.getEndCardIndex(GameParameters.CardType.OBJECTIVE));
+                GameParameters.getStartCardIndex(CardType.OBJECTIVE),
+                GameParameters.getEndCardIndex(CardType.OBJECTIVE));
         commonObjectives = new ArrayList<>(){{
             for(int i = 0; i < GameParameters.getNumberOfCommonObjectives(); i++){
                 add(objectiveDeck.draw());
@@ -103,7 +112,7 @@ public class Game {
      * @param nickname the nickname of the player
      * @param color player's color
      */
-    public void addPlayer(String nickname, Content color) {
+    public void addPlayer(String nickname, Content color){
         ArrayList<CardSides> handCards = new ArrayList<>(){{
             for(int i = 0; i < GameParameters.getNumberOfGoldCardsInHand(); i++){
                 add(goldDeck.draw());
@@ -119,5 +128,24 @@ public class Game {
             }
         }};
         players.add(new Player(nickname,color,handCards,objectives));
+    }
+
+    /**
+     * Method that gets the draw options for the player, both cards on top of the decks and also the visible ones;
+     * the first element of the returned lists is always the back side of the card on top of the deck, while the rest
+     * are the visible ones.
+     * @return all the cards the player can draw during his draw phase
+     */
+    public HashMap<CardType, ArrayList<BasicCard>> getDrawableCards(){
+        return new HashMap<>(){{
+            put(CardType.RESOURCE, new ArrayList<>(){{
+                add(resourceDeck.getElementOnTop().backSide());
+                addAll(resourceDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
+            }});
+            put(CardType.GOLD, new ArrayList<>(){{
+                add(goldDeck.getElementOnTop().backSide());
+                addAll(goldDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
+            }});
+        }};
     }
 }

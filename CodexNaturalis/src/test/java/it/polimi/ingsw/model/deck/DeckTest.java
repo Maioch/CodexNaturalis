@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import it.polimi.ingsw.model.GameParameters;
 import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
+import it.polimi.ingsw.model.card.CardType;
 import it.polimi.ingsw.model.card.Objective;
 import org.junit.jupiter.api.Test;
 
@@ -14,10 +15,10 @@ import java.util.ArrayList;
  * @author Guglielmo Gatti
  */
 public class DeckTest {
-    private final int deckStart = GameParameters.getStartCardIndex(GameParameters.CardType.RESOURCE);
-    private final int endBasicCards = GameParameters.getEndCardIndex(GameParameters.CardType.STARTER);
-    private final int startObjectives = GameParameters.getStartCardIndex(GameParameters.CardType.OBJECTIVE);
-    private final int deckEnd = GameParameters.getEndCardIndex(GameParameters.CardType.OBJECTIVE);
+    private final int deckStart = GameParameters.getStartCardIndex(CardType.RESOURCE);
+    private final int endBasicCards = GameParameters.getEndCardIndex(CardType.STARTER);
+    private final int startObjectives = GameParameters.getStartCardIndex(CardType.OBJECTIVE);
+    private final int deckEnd = GameParameters.getEndCardIndex(CardType.OBJECTIVE);
     private final ArrayList<Integer> ids = new ArrayList<>();
 
     /**

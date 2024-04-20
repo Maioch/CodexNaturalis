@@ -3,6 +3,8 @@ package it.polimi.ingsw.model.card;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.card.corner.Corner;
+import it.polimi.ingsw.model.card.corner.Location;
 
 import java.io.File;
 import java.io.IOException;
