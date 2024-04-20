@@ -89,6 +89,10 @@ public class GameParameters {
         return getParameter("minNumberOfPlayers");
     }
 
+    public static int getWinThreshold(){
+        return getParameter("winThreshold");
+    }
+
     /**
      * Gets the specified parameter read on the json file
      * @param parameter the parameter to retrieve from the file

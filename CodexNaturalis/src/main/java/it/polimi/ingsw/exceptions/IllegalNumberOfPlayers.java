@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.exceptions;
+package it.polimi.ingsw.exceptions;
 
 /**
  * Exception thrown when there's an illegal number of player in the game (either less than 2 or more than 4)

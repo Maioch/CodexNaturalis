@@ -104,7 +104,7 @@ public class CardBuilder {
                         put(new Point(x,y),color);
                     }
                 }};
-                yield objective.new AlternativePatternBonus(pattern);
+                yield objective.new PatternBonus(pattern);
             }
             default ->
                 throw new IllegalStateException("Unexpected value: " + cardJson.get("bonus").get("type").asText());

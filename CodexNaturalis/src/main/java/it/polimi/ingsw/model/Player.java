@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.card.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -55,6 +56,13 @@ public class Player {
     }
 
     /**
+     * @return player's color
+     */
+    public Content getColor(){
+        return this.color;
+    }
+
+    /**
      * @return player's score
      */
     public int getScore(){
@@ -92,12 +100,18 @@ public class Player {
     }
 
     /**
-     * @return total points to add to the player's score, given by his accomplished objectives
+     * updates the player's score by adding the points awarded by the objectives
+     * and returns an array where each element is the amount of points given by
+     * each objective.
+     * @return an arraylist with the amount of points given by each objective
      */
-    public int getObjectivePoints(){
-        int points = 0;
-        for(Objective objective : this.objectives)
-            points += objective.checkObjective();
+    public ArrayList<Integer> awardObjectivePoints(){
+        ArrayList<Integer> points = new ArrayList<>();
+        for(Objective objective : this.objectives) {
+            int objectiveResult = objective.checkObjective();
+            points.add(objectiveResult);
+            score += objectiveResult;
+        }
         return points;
     }
 
@@ -198,17 +212,13 @@ public class Player {
     }
 
     /**
-     * method that draws a card from a deck and adds it to the player's hand.
-     * @param deck the deck to draw from, which is either the Gold Card deck or the Resource Card deck
-     * @param drawIndex the deck has a number of visible cards which the player can see. this index lets
-     *                  the player choose whether to draw a hidden card (if the index is 0)
-     *                  or to take one of the visible ones (if the index is higher than 0).
+     * method that adds a card to the player's hand.
+     * @param cardSides the card to add to the player's hand
      */
-    public void drawCard(TurnDeck<CardSides> deck, int drawIndex){
-        CardSides newCard = drawIndex == 0 ? deck.draw() : deck.drawVisibleElement(drawIndex - 1);
-        newCard.frontSide().setOwner(this);
-        newCard.backSide().setOwner(this);
-        handCards.add(newCard);
+    public void addCardToHand(CardSides cardSides){
+        handCards.add(cardSides);
+        cardSides.frontSide().setOwner(this);
+        cardSides.backSide().setOwner(this);
     }
 
     /**

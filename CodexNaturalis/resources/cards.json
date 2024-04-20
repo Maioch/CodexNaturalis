@@ -1261,8 +1261,8 @@
         "type" : "PATTERN",
         "pattern" : [
           {"color": "GREEN","x" : 0,"y" : 0},
-          {"color": "GREEN","x" : -1,"y" : -1},
-          {"color": "GREEN","x" : -2,"y" : -2}
+          {"color": "GREEN","x" : 1,"y" : -1},
+          {"color": "GREEN","x" : 2,"y" : -2}
         ]
       }
     },
@@ -1285,8 +1285,8 @@
         "type" : "PATTERN",
         "pattern" : [
           {"color": "PURPLE","x" : 0,"y" : 0},
-          {"color": "PURPLE","x" : -1,"y" : -1},
-          {"color": "PURPLE","x" : -2,"y" : -2}
+          {"color": "PURPLE","x" : 1,"y" : -1},
+          {"color": "PURPLE","x" : 2,"y" : -2}
         ]
       }
     },

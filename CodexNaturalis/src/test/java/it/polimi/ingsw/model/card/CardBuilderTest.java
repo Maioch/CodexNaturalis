@@ -150,7 +150,7 @@ public class CardBuilderTest {
     public void buildObjectiveCardTest(){
         Objective objective = CardBuilder.buildObjective(testIds.get(3));
         Objective correctObjective = new Objective(testIds.get(3),testPoints.get(3));
-        correctObjective.setBonus(correctObjective.new AlternativePatternBonus(testPattern));
+        correctObjective.setBonus(correctObjective.new PatternBonus(testPattern));
         assertEquals(objective,correctObjective);
     }
 }

@@ -13,5 +13,6 @@
   "numberOfResourceCardsInHand": 3,
   "numberOfGoldCardsInHand": 3,
   "numberOfSecretObjectives": 1,
-  "numberOfCommonObjectives": 2
+  "numberOfCommonObjectives": 2,
+  "winThreshold": 20
 }

@@ -133,11 +133,18 @@ public class Objective {
     }
 
     /**
-     * Class implementing pattern bonuses (of objective cards)
+     * Class that represents the objective which consists in having on the board a defined pattern of
+     * correctly colored cards; each card can only be used once to calculate this particular bonus
+     *
+     * @author Guglielmo Gatti, Francesco Nisoli
      */
     public class PatternBonus implements Bonus{
         private final HashMap<Point, Content> pattern;
 
+        /**
+         * Constructor for the class
+         * @param pattern hashmap describing the required pattern by pairing each color to its relative coordinates
+         */
         public PatternBonus(HashMap<Point, Content> pattern){
             boolean isValidPattern = pattern.values().stream()
                     .filter(x -> x.isObject() || x.isEmpty() || x == Content.WHITE)
@@ -150,119 +157,8 @@ public class Objective {
             this.pattern = pattern;
         }
 
-
         /**
-         * A method that searches for a certain pattern in the owner's placed cards
-         * @return the number of points calculated
-         */
-        @Override
-        public int calculate(){
-            record patternReference(int x, int y, Content color){}
-            int calculatedPoints = 0;
-          /*boolean calculationCompleted;
-            int XOffSet, YOffSet;
-            ArrayList<patternReference> patternReferences;
-            ArrayList<BasicCard> placedCards;
-            ArrayList<Integer> markedIndexesPlacedCards, markedIndexesPattern;
-
-            calculatedPoints = 0;
-            XOffSet = 0;
-            YOffSet = 0;
-            patternReferences = new ArrayList<>();
-            placedCards = owner.getPlacedCards();
-            markedIndexesPlacedCards = new ArrayList<>(); //list of analysed indexes of the placed cards
-            markedIndexesPattern = new ArrayList<>(); //list of analysed indexes of the pattern elements
-
-            pattern.forEach((point, content) -> patternReferences.add(new patternReference(point.x, point.y, content)));
-
-            do{
-                calculationCompleted = true;
-
-                for(int i = 0; i < placedCards.size(); i++){    //streaming the placed cards array
-                    for(int k = 0; k < patternReferences.size(); k++){  // streaming of the patternReferences array, in order to eventually find matches with the cards
-
-                        if (placedCards.get(i).getColor() == patternReferences.get(k).color) { //color match between a pattern element and a card
-                            if(markedIndexesPattern.isEmpty()){     //first pattern element to be matched
-                                markedIndexesPattern.add(k);    //saving the index of the pattern element matched
-                                markedIndexesPlacedCards.add(i);    //saving the index of the matched placed card
-                                XOffSet = placedCards.get(i).getAllCorners().get(Location.BL).getX() - patternReferences.get(k).x;  //the first match, sets the offset considered during the search of matches
-                                YOffSet = placedCards.get(i).getAllCorners().get(Location.BL).getY() - patternReferences.get(k).y;
-
-                            }else {
-                                for (int indexValuePattern : markedIndexesPattern) {
-                                    for(int indexValueCard : markedIndexesPlacedCards) {
-                                        if (indexValuePattern != k && indexValueCard != i &&    //condition that makes sure there's no doubling of the elements considered
-                                                placedCards.get(i).getAllCorners().get(Location.BL).getX() - XOffSet == patternReferences.get(k).x &&   //condition that makes sure the x coordinates are coherent within the pattern constrains
-                                                placedCards.get(i).getAllCorners().get(Location.BL).getY() - YOffSet == patternReferences.get(k).y)     //condition that makes sure the y coordinates are coherent within the pattern constrains
-                                        {
-                                            markedIndexesPlacedCards.add(i);
-                                            markedIndexesPattern.add(k);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if(patternReferences.size() == markedIndexesPattern.size()){    //pattern found, we remove cards from it
-                        for (int indexValueCard : markedIndexesPlacedCards) {
-                            placedCards.remove(indexValueCard);
-                        }
-                        markedIndexesPattern.clear();
-                        markedIndexesPlacedCards.clear();
-                        calculatedPoints = calculatedPoints + points;
-                        calculationCompleted = false;
-                    }
-                    //~rough solution~ the first found pattern match, could be not part of a pattern, causing the process to end with "calculationCompleted" == true, while it shouldn't.
-                    if(i == placedCards.size() && calculationCompleted){
-                        i = markedIndexesPlacedCards.get(0);    //the index returns to the "wrong" match position, letting a new search that isn't based on that match.
-                        markedIndexesPattern.clear();               //matches cleared, new search next
-                        markedIndexesPlacedCards.clear();
-                    }
-                }
-            }while(!calculationCompleted);*/
-            return calculatedPoints;
-        }
-
-        /**
-         * Equals method.
-         * @param object Object to check
-         * @return true if each field is equals to each field of object
-         */
-        @Override
-        public boolean equals(Object object) {
-            if(object.getClass() != this.getClass()){
-                return false;
-            }
-            PatternBonus objective = (PatternBonus) object;
-            return objective.pattern.equals(this.pattern);
-        }
-    }
-
-    /**
-     * an attempt to make the PatternBonus class shorter and more legible.
-     * @author Guglielmo Gatti, Francesco Nisoli
-     */
-    public class AlternativePatternBonus implements Bonus{
-        private final HashMap<Point, Content> pattern;
-
-        /**
-         * @param pattern hashmap describing the required pattern by pairing each color
-         *                to its relative coordinates
-         */
-        public AlternativePatternBonus(HashMap<Point, Content> pattern){
-            boolean isValidPattern = pattern.values().stream()
-                    .filter(x -> x.isObject() || x.isEmpty() || x == Content.WHITE)
-                    .findAny()
-                    .isEmpty();
-            if(!isValidPattern){
-                throw new RuntimeException(
-                        String.format("Invalid pattern content in card %d", objectiveId));
-            }
-            this.pattern = pattern;
-        }
-
-        /**
-         * find out how many times a specific pattern is present without counting the same card twice and calculate
+         * Find out how many times a specific pattern is present without counting the same card twice and calculate
          * the points awarded to the player.
          * @return the base number of points awarded by the card multiplied by the amount of times the pattern appears
          */
@@ -327,7 +223,7 @@ public class Objective {
             if(object.getClass() != this.getClass()){
                 return false;
             }
-            AlternativePatternBonus objective = (AlternativePatternBonus) object;
+            PatternBonus objective = (PatternBonus) object;
             return objective.pattern.equals(this.pattern);
         }
     }

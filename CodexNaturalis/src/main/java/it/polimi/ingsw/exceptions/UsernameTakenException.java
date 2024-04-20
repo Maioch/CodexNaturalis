@@ -1,10 +1,10 @@
-package it.polimi.ingsw.model.exceptions;
+package it.polimi.ingsw.exceptions;
 
 /**
  * Exception thrown when a user with the same username as one of the players
  * who have already joined the game tries to join it.
  */
-public class UsernameTakenException extends Exception{
+public class UsernameTakenException extends RuntimeException{
     public UsernameTakenException(){
 
     }

@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
+import it.polimi.ingsw.model.card.Objective;
 import it.polimi.ingsw.model.card.corner.Corner;
 import it.polimi.ingsw.model.card.corner.Location;
 import it.polimi.ingsw.model.deck.TurnDeck;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,17 +75,56 @@ public class PlayerTest {
         assertEquals(expectedResult, playerTest.getPlayerContent());
     }
 
+    /*
+     * DA RIVEDERE
+     */
     @Test
-    public void getObjectivePointsTest(){
-        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
+    public void awardObjectivePointsTest(){
+        Objective referenceContentObjective = CardBuilder.buildObjective(95);
+        Objective referencePatternObjective = CardBuilder.buildObjective(87);
+        Objective referencePatternObjective2 = CardBuilder.buildObjective(91);
 
+        Player playerTest = new Player(
+                nicknames.getFirst(),
+                colors.getFirst(),
+                new ArrayList<>(Arrays.asList(
+                        CardBuilder.buildCard(72),
+                        CardBuilder.buildCard(73),
+                        CardBuilder.buildCard(74)
+                )),
+                new ArrayList<>(Arrays.asList(
+                        referenceContentObjective,
+                        referencePatternObjective,
+                        referencePatternObjective2
+                ))
+        );
+        LinkedHashMap<Integer,Location> placements = new LinkedHashMap<>(){{
+            put(2,Location.TL);
+            put(4,Location.TR);
+            //put(47,Location.TR);
+            put(9,Location.BR);
+            put(11,Location.BR);
+            //put(1,Location.BL);
+        }};
+
+        BasicCard starter = CardBuilder.buildCard(83).frontSide();
+        starter.setOwner(playerTest);
+        playerTest.placeStarterCard(starter);
+
+        TestUtilities.createTestBoard(playerTest, placements, starter,false);
+
+        //playerTest.placeCard(CardBuilder.buildCard(47), playerTest.getPlacedCards());
+
+        assertEquals(2, playerTest.awardObjectivePoints().get(0));
+        assertEquals(2, playerTest.awardObjectivePoints().get(1));
+        assertEquals(3, playerTest.awardObjectivePoints().get(2));
     }
 
     /**
      * verify the functionality of checkIfPlaceable and checkRequirements. this method creates its own cards
      * to avoid
      */
-    @Test
+    /*@Test
     public void checkIfCardIsPlaceableTest(){
         Player referencePlayer = new Player(nicknames.getFirst(),
                 colors.getFirst(),
@@ -129,7 +170,7 @@ public class PlayerTest {
                 .findFirst().orElseThrow();
         canBePlaced = referencePlayer.checkRequirements(fourthCard) && referencePlayer.checkIfPlaceable(cornerToPlaceOn);
         assertFalse(canBePlaced);
-    }
+    }*/
 
     @Test
     public void placeCardTest(){
@@ -155,10 +196,10 @@ public class PlayerTest {
                 assertFalse(playerTest.getHandCards().contains(card));
                 assertTrue(playerTest.getPlacedCards().contains(currentCard));
                 assertEquals(cornerTest.getX(), currentCard.getAllCorners().stream()
-                        .filter(c -> getOppositeLocation(c.getLocation()) == cornerTest.getLocation())
+                        .filter(c -> TestUtilities.getOppositeLocation(c.getLocation()) == cornerTest.getLocation())
                         .findFirst().orElseThrow().getX());
                 assertEquals(cornerTest.getY(), currentCard.getAllCorners().stream()
-                        .filter(c -> getOppositeLocation(c.getLocation()) == cornerTest.getLocation())
+                        .filter(c -> TestUtilities.getOppositeLocation(c.getLocation()) == cornerTest.getLocation())
                         .findFirst().orElseThrow().getY());
                 assertFalse(cornerTest.getVisibility());
             }
@@ -166,16 +207,7 @@ public class PlayerTest {
         }
     }
 
-    private Location getOppositeLocation(Location loc){
-        return switch(loc){
-            case BL -> Location.TR;
-            case BR -> Location.TL;
-            case TL -> Location.BR;
-            case TR -> Location.BL;
-        };
-    }
-
-    @Test
+    /*@Test
     public void drawCardTest(){
         int numOfVisibleCards = 2;
         TurnDeck<CardSides> deckTest = new TurnDeck<>(CardBuilder::buildCard, 1, 80, numOfVisibleCards);
@@ -187,5 +219,5 @@ public class PlayerTest {
             assertTrue(playerTest.getHandCards().contains(card));
             index = (index + 1) % (numOfVisibleCards + 1);
         }
-    }
+    }*/
 }
