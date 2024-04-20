@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
+import it.polimi.ingsw.model.card.corner.Corner;
 import it.polimi.ingsw.model.card.corner.Location;
 
 import java.util.LinkedHashMap;
@@ -25,9 +26,10 @@ public class TestUtilities {
             CardSides sides = CardBuilder.buildCard(entry.getKey());
             BasicCard card = useBack ? sides.backSide() : sides.frontSide();
             card.setOwner(player);
-            player.placeCard(card, previousCard.getAllCorners().stream()
+            Corner corner = previousCard.getAllCorners().stream()
                     .filter(c -> c.getLocation() == entry.getValue())
-                    .findFirst().orElseThrow());
+                    .findFirst().orElseThrow();
+            player.placeCard(card,corner);
             previousCard = card;
         }
         return previousCard;
@@ -41,5 +43,4 @@ public class TestUtilities {
             case TR -> Location.BL;
         };
     }
-
 }

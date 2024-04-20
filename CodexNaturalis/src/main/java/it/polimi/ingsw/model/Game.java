@@ -1,14 +1,11 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exceptions.ColorTakenException;
-import it.polimi.ingsw.exceptions.GameFullException;
-import it.polimi.ingsw.exceptions.UsernameTakenException;
+import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
 import it.polimi.ingsw.model.card.Objective;
 import it.polimi.ingsw.model.deck.*;
-import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.model.card.CardType;
 
 import java.util.ArrayList;
@@ -28,7 +25,6 @@ public class Game {
     private final ArrayList<Content> availableColors;
     private final ArrayList<Objective> commonObjectives;
     private final int numberOfPlayers;
-    private boolean isLastTurn;
 
     /**
      * Constructor for the class
@@ -73,7 +69,6 @@ public class Game {
                 add(objectiveDeck.draw());
             }
         }};
-        isLastTurn = false;
     }
 
     /**
@@ -131,27 +126,25 @@ public class Game {
                 goldDeck.getVisibleElements().isEmpty() &&
                 resourceDeck.isEmpty() &&
                 resourceDeck.getVisibleElements().isEmpty()) ||
-                players.stream().anyMatch(p -> p.getScore() > GameParameters.getWinThreshold());
+                players.stream().anyMatch(p -> p.getScore() >= GameParameters.getWinThreshold());
     }
 
     /**
      * Method that adds a player to an existing game
      *
      * @param nickname the nickname of the player
-     * @param color    player's color
-     * @exception UsernameTakenException if the username is already taken
-     * @exception ColorTakenException if the color is already taken
-     * @exception GameFullException if the game is full
+     * @param color player's color
+     * @exception GameException if the color or the nickname are already taken or if the game is full
      */
-    public void addPlayer(String nickname, Content color) throws UsernameTakenException, ColorTakenException, GameFullException {
+    public void addPlayer(String nickname, Content color) throws GameException {
         if(isGameFull()) {
-            throw new GameFullException();
+            throw new GameException("The game you tried to join is already full");
         }
         if(!checkNickname(nickname)){
-            throw new UsernameTakenException();
+            throw new GameException("The chosen username has already been taken");
         }
         if(!getAvailableColors().contains(color)){
-            throw new ColorTakenException();
+            throw new GameException("The chosen color has already been taken");
         }
         ArrayList<CardSides> handCards = new ArrayList<>() {{
             for (int i = 0; i < GameParameters.getNumberOfGoldCardsInHand(); i++) {
@@ -171,13 +164,19 @@ public class Game {
     }
 
     /**
-     * method that draws a card from a deck and adds it to the player's hand.
-     * @param deck the deck to draw from, which is either the Gold Card deck or the Resource Card deck
+     * Method that draws a card from a deck and adds it to the player's hand.
+     * @param type the type of card deck to draw from, which is either the Gold Card deck or the Resource Card deck
      * @param drawIndex the deck has a number of visible cards which the player can see. this index lets
      *                  the player choose whether to draw a hidden card (if the index is 0)
      *                  or to take one of the visible ones (if the index is higher than 0).
+     * @exception GameException if the given card type doesn't match any deck
      */
-    public void drawCard(Player player,TurnDeck<CardSides> deck, int drawIndex){
+    public void drawCard(Player player, CardType type, int drawIndex) throws GameException{
+        TurnDeck<CardSides> deck = switch(type){
+            case RESOURCE -> resourceDeck;
+            case GOLD -> goldDeck;
+            default -> throw new GameException("The given deck type is invalid");
+        };
         CardSides newCard = drawIndex == 0 ? deck.draw() : deck.drawVisibleElement(drawIndex - 1);
         newCard.frontSide().setOwner(player);
         newCard.backSide().setOwner(player);
@@ -186,19 +185,19 @@ public class Game {
 
     /**
      * Method that gets the draw options for the player, both cards on top of the decks and also the visible ones;
-     * the first element of the returned lists is always the back side of the card on top of the deck, while the rest
-     * are the visible ones.
+     * the first element of the returned lists is always the back side of the card on top of the deck or null if
+     * the deck is empty, while the rest are the visible ones.
      *
      * @return all the cards the player can draw during his draw phase
      */
     public HashMap<CardType, ArrayList<BasicCard>> getDrawableCards() {
         return new HashMap<>() {{
             put(CardType.RESOURCE, new ArrayList<>() {{
-                add(resourceDeck.getElementOnTop().backSide());
+                add(resourceDeck.isEmpty() ? null : resourceDeck.getElementOnTop().backSide());
                 addAll(resourceDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
             }});
             put(CardType.GOLD, new ArrayList<>() {{
-                add(goldDeck.getElementOnTop().backSide());
+                add(goldDeck.isEmpty() ? null : goldDeck.getElementOnTop().backSide());
                 addAll(goldDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
             }});
         }};

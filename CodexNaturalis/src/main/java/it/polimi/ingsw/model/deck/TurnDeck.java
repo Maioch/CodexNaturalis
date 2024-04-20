@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.deck;
 
+import it.polimi.ingsw.exceptions.DeckException;
 import java.util.ArrayList;
 import java.util.function.Function;
 
@@ -19,11 +20,12 @@ public class TurnDeck<T> extends Deck<T> {
      * @param rangeStart the id to start generating the deck's objects from
      * @param rangeEnd the id to end generating the deck's objects at
      * @param numberOfVisibleElements the number of visible elements
+     * @exception DeckException if the given range is illegal
      */
-    public TurnDeck(Function<Integer,T> factoryMethod, int rangeStart, int rangeEnd, int numberOfVisibleElements) {
+    public TurnDeck(Function<Integer,T> factoryMethod, int rangeStart, int rangeEnd, int numberOfVisibleElements) throws DeckException {
         super(factoryMethod, rangeStart, rangeEnd);
         if(numberOfVisibleElements > rangeEnd - rangeStart)
-            throw new RuntimeException("The supplied value range is not valid");
+            throw new DeckException("The supplied value range is not valid");
         this.visibleElements = new ArrayList<>(numberOfVisibleElements);
         for(int i = 0; i < numberOfVisibleElements; i++)
             this.visibleElements.add(this.deck.pop());
@@ -49,9 +51,10 @@ public class TurnDeck<T> extends Deck<T> {
     /**
      * Returns the visible card selected by index and replaces it with the top card of the deck if it's not empty
      * @param index the index of the selected visible card
+     * @exception DeckException if the given index is illegal
      * @return the selected visible card
      */
-    public T drawVisibleElement(int index){
+    public T drawVisibleElement(int index) throws DeckException{
         try {
             T drawnCard = this.visibleElements.get(index);
             if (this.deck.isEmpty())
@@ -61,9 +64,7 @@ public class TurnDeck<T> extends Deck<T> {
             return drawnCard;
         }
         catch (IndexOutOfBoundsException e){
-            throw new RuntimeException(
-                    String.format("Attempted to draw a visible card, but the supplied index, %d, was out of bounds",index));
+            throw new DeckException("The given index does not correspond to any card");
         }
     }
 }
-

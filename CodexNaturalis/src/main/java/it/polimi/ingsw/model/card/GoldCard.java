@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.card;
 
+import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.model.*;
 
 import java.util.ArrayList;
@@ -19,11 +20,12 @@ public class GoldCard extends BasicCard {
     /**
      * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated
      * @param requirements the resources needed in order to play the card
+     * @exception CardException if there are invalid requirements
     */
-    public GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements){
+    public GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements) throws CardException {
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
         if(requirements.stream().anyMatch(c -> !c.isResource())){
-            throw new RuntimeException(
+            throw new CardException(
                     String.format(
                             "The card requirements contain elements that aren't considered resources on card: %d",
                             cardTemplate.cardId)

@@ -124,7 +124,7 @@ public class PlayerTest {
      * verify the functionality of checkIfPlaceable and checkRequirements. this method creates its own cards
      * to avoid
      */
-    /*@Test
+    @Test
     public void checkIfCardIsPlaceableTest(){
         Player referencePlayer = new Player(nicknames.getFirst(),
                 colors.getFirst(),
@@ -134,10 +134,10 @@ public class PlayerTest {
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
                         CardBuilder.buildObjective(92))));
         BasicCard starterCard = CardBuilder.buildCard(82).frontSide();
+        referencePlayer.placeStarterCard(starterCard);
 
         //Test placing a resource card on a valid corner
         BasicCard firstCard = referencePlayer.getHandCards().getFirst().frontSide();
-        referencePlayer.placeStarterCard(starterCard);
         Corner cornerToPlaceOn = starterCard.getValidCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
@@ -163,14 +163,14 @@ public class PlayerTest {
         assertTrue(canBePlaced);
 
         //Test placing a resource card on an already occupied corner
-        referencePlayer.drawCard(new TurnDeck<>(CardBuilder::buildCard, 9,9,0),0);
+        referencePlayer.addCardToHand(CardBuilder.buildCard(9));
         BasicCard fourthCard = referencePlayer.getHandCards().getFirst().frontSide();
         cornerToPlaceOn = firstCard.getAllCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
         canBePlaced = referencePlayer.checkRequirements(fourthCard) && referencePlayer.checkIfPlaceable(cornerToPlaceOn);
         assertFalse(canBePlaced);
-    }*/
+    }
 
     @Test
     public void placeCardTest(){
@@ -207,17 +207,12 @@ public class PlayerTest {
         }
     }
 
-    /*@Test
-    public void drawCardTest(){
-        int numOfVisibleCards = 2;
-        TurnDeck<CardSides> deckTest = new TurnDeck<>(CardBuilder::buildCard, 1, 80, numOfVisibleCards);
-        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
-        int index = 0;
-        while (!deckTest.isEmpty()) {
-            CardSides card = (index == 0) ? deckTest.getElementOnTop() : deckTest.getVisibleElements().get(index - 1);
-            playerTest.drawCard(deckTest, index);
-            assertTrue(playerTest.getHandCards().contains(card));
-            index = (index + 1) % (numOfVisibleCards + 1);
-        }
-    }*/
+    @Test
+    public void addCardToHandTest(){
+        Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>());
+        assertTrue(playerTest.getHandCards().isEmpty());
+        CardSides card = CardBuilder.buildCard(41);
+        playerTest.addCardToHand(card);
+        assertTrue(playerTest.getHandCards().contains(card));
+    }
 }

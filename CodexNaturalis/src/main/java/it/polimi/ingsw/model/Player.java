@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.PlayerException;
 import it.polimi.ingsw.model.card.corner.Corner;
 import it.polimi.ingsw.model.card.corner.Location;
 import it.polimi.ingsw.model.deck.*;
@@ -199,10 +200,11 @@ public class Player {
      * Method that initializes each player's board by placing a starter card in the centre; throws an exception
      * if the board is already initialized
      * @param starterCard the starter card chosen randomly for the player
+     * @exception PlayerException if there is already a placed starter card
      */
-    public void placeStarterCard(BasicCard starterCard){
+    public void placeStarterCard(BasicCard starterCard) throws PlayerException {
         if(!placedCards.isEmpty()){
-            throw new RuntimeException("A starter card has already been placed.");
+            throw new PlayerException("A starter card has already been placed.");
         }
         placedCards.add(starterCard);
         Corner startCorner = new Corner(Content.WHITE, Location.TR);

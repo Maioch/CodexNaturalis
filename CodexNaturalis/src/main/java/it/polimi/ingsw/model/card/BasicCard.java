@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.card;
 
+import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.model.Content;
 import it.polimi.ingsw.model.card.corner.Corner;
 import it.polimi.ingsw.model.card.corner.Location;
@@ -36,12 +37,12 @@ public class BasicCard {
      * @param corners the card's corners (max 4)
      * @param points the card's points, that will be added to the player's score when he places the card on his board
      * @param resources the card's central resources, that can go from 0 to 3
+     * @exception CardException if the given parameters are invalid
      */
 
-    public BasicCard(int cardId, Content color, HashSet<Corner> corners, int points, ArrayList<Content> resources) throws RuntimeException{
-
+    public BasicCard(int cardId, Content color, HashSet<Corner> corners, int points, ArrayList<Content> resources) throws CardException {
         if(!color.isColor() || points < 0){
-            throw new RuntimeException(
+            throw new CardException(
                     String.format("Invalid card parameters on card with the following id:%d",cardId));
         }
         boolean allLocationsPresent = true;
@@ -52,10 +53,9 @@ public class BasicCard {
             }
         }
         if(corners.size() != 4 || !allLocationsPresent){
-            throw new RuntimeException(
+            throw new CardException(
                     String.format("Malformed corner set encountered on card with the following id:%d",cardId));
         }
-
         this.cardId = cardId;
         this.color = color;
         this.corners = new HashSet<>(corners);

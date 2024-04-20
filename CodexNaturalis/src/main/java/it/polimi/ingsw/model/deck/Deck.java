@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.deck;
 
+import it.polimi.ingsw.exceptions.DeckException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EmptyStackException;
 import java.util.Stack;
 import java.util.function.Function;
 
@@ -21,10 +21,11 @@ public class Deck<T>{
      * @param factoryMethod a method that takes an id and creates the corresponding object
      * @param rangeStart the id to start generating the deck's objects from
      * @param rangeEnd the id to end generating the deck's objects at
+     * @exception DeckException if the given range is illegal
      */
-    public Deck(Function<Integer,T> factoryMethod, int rangeStart, int rangeEnd){
+    public Deck(Function<Integer,T> factoryMethod, int rangeStart, int rangeEnd) throws DeckException{
         if (rangeStart > rangeEnd || rangeStart < 0){
-            throw new RuntimeException("The supplied value range is not valid");
+            throw new DeckException("The supplied value range is not valid");
         }
         this.deck = new Stack<>();
         for(int i = rangeStart; i <= rangeEnd; i++){
@@ -52,9 +53,11 @@ public class Deck<T>{
     /**
      * Draws a random integer present in the deck and removes it.
      * @return a random integer from the deck
-     * @exception EmptyStackException if the deck is empty when the user tries to draw.
+     * @exception DeckException if the deck is empty when the user tries to draw.
      */
-    public T draw(){
+    public T draw() throws DeckException{
+        if(this.deck.isEmpty())
+            throw new DeckException("Called draw on empty deck");
         return this.deck.pop();
     }
 }
