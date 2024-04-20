@@ -79,11 +79,9 @@ public class GoldCard extends BasicCard {
             return false;
         GoldCard other = (GoldCard) object;
         boolean isSameBonus = (this.bonus == null) ? other.bonus == null : other.bonus != null && this.bonus.equals(other.bonus);
-        boolean isSameOwner = (this.owner == null) ? other.owner == null : other.owner != null && this.owner.equals(other.owner);
         return super.equals(other) &&
                 this.requirements.equals(other.requirements) &&
-                isSameBonus &&
-                isSameOwner;
+                isSameBonus;
     }
 
     /**

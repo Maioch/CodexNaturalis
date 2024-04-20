@@ -3,6 +3,8 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.model.card.BasicCard;
 import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
+import it.polimi.ingsw.model.deck.DeprecatedDeck;
+import it.polimi.ingsw.model.deck.DeprecatedTurnDeck;
 import it.polimi.ingsw.model.deck.TurnDeck;
 import org.junit.jupiter.api.Test;
 
@@ -78,11 +80,11 @@ public class PlayerTest {
     }
 
     /**
-     * verify the functionality of checkIfPlaceable. this method creates its own cards
+     * verify the functionality of checkIfPlaceable and checkRequirements. this method creates its own cards
      * to avoid
      */
     @Test
-    public void checkIfPlaceableTest(){
+    public void checkIfCardIsPlaceableTest(){
         Player referencePlayer = new Player(nicknames.getFirst(),
                 colors.getFirst(),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
@@ -120,7 +122,7 @@ public class PlayerTest {
         assertTrue(canBePlaced);
 
         //Test placing a resource card on an already occupied corner
-        referencePlayer.drawCard(new TurnDeck(9,9,0),0);
+        referencePlayer.drawCard(new TurnDeck<>(CardBuilder::buildCard, 9,9,0),0);
         BasicCard fourthCard = referencePlayer.getHandCards().getFirst().frontSide();
         cornerToPlaceOn = firstCard.getAllCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
@@ -137,48 +139,53 @@ public class PlayerTest {
             }
         }};
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>());
-        Corner cornerTest = new Corner(Content.WHITE, Location.BL);
         boolean front = true;
+        int coordinates = 0;
         for(CardSides card : cardsForHand){
+            Corner cornerTest = new Corner(Content.WHITE, Location.TR);
+            cornerTest.setX(coordinates);
+            cornerTest.setY(coordinates);
             BasicCard currentCard = front ? card.frontSide() : card.backSide();
             playerTest.placeCard(currentCard, cornerTest);
             front = !front;
-            if(!(playerTest.checkRequirements(currentCard) && playerTest.checkIfPlaceable(cornerTest))) {
+            if(!playerTest.checkRequirements(currentCard)) {
                 assertTrue(playerTest.getHandCards().contains(card));
                 assertFalse(playerTest.getPlacedCards().contains(currentCard));
             } else {
                 assertFalse(playerTest.getHandCards().contains(card));
                 assertTrue(playerTest.getPlacedCards().contains(currentCard));
                 assertEquals(cornerTest.getX(), currentCard.getAllCorners().stream()
-                        .filter(c -> c.getLocation() == cornerTest.getLocation())
+                        .filter(c -> getOppositeLocation(c.getLocation()) == cornerTest.getLocation())
                         .findFirst().orElseThrow().getX());
                 assertEquals(cornerTest.getY(), currentCard.getAllCorners().stream()
-                        .filter(c -> c.getLocation() == cornerTest.getLocation())
+                        .filter(c -> getOppositeLocation(c.getLocation()) == cornerTest.getLocation())
                         .findFirst().orElseThrow().getY());
                 assertFalse(cornerTest.getVisibility());
             }
+            coordinates += 10;
         }
+    }
+
+    private Location getOppositeLocation(Location loc){
+        return switch(loc){
+            case BL -> Location.TR;
+            case BR -> Location.TL;
+            case TL -> Location.BR;
+            case TR -> Location.BL;
+        };
     }
 
     @Test
     public void drawCardTest(){
         int numOfVisibleCards = 2;
-        TurnDeck deckTest = new TurnDeck(1, 80, numOfVisibleCards);
+        TurnDeck<CardSides> deckTest = new TurnDeck<>(CardBuilder::buildCard, 1, 80, numOfVisibleCards);
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
-        try {
-            int index = 0;
-            while (!deckTest.isEmpty()) {
-                CardSides card = (index == 0) ? deckTest.getCardOnTop() : deckTest.getVisibleCards().get(index - 1);
-                playerTest.drawCard(deckTest, index);
-                assertTrue(playerTest.getHandCards().contains(card));
-                index = (index + 1) % (numOfVisibleCards + 1);
-            }
-        }catch(EmptyStackException e){
-            while(!deckTest.isEmpty()){
-                CardSides card = deckTest.getVisibleCards().getFirst();
-                playerTest.drawCard(deckTest, 0);
-                assertTrue(playerTest.getHandCards().contains(card));
-            }
+        int index = 0;
+        while (!deckTest.isEmpty()) {
+            CardSides card = (index == 0) ? deckTest.getCardOnTop() : deckTest.getVisibleElements().get(index - 1);
+            playerTest.drawCard(deckTest, index);
+            assertTrue(playerTest.getHandCards().contains(card));
+            index = (index + 1) % (numOfVisibleCards + 1);
         }
     }
 }

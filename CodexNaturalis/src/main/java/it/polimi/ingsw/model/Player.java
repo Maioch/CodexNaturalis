@@ -25,7 +25,7 @@ public class Player {
      * Constructor for the player
      * @param nickname in-game name for the player
      * @param color color chosen by the player
-     * @param handCards cards held by the player (max 3), that he can play during his turn
+     * @param handCards cards held by the player (max 3), that they can play during his turn
      * @param objectives two objectives shared by the player and a personal one
      */
     public Player(String nickname, Content color, ArrayList<CardSides> handCards, ArrayList<Objective> objectives){
@@ -119,14 +119,10 @@ public class Player {
      * @return true if the card is placeable on the corner
      */
     public boolean checkIfPlaceable(Corner corner){
-        List<Corner> allCorners = placedCards.stream()
-                .flatMap(b -> b.getAllCorners().stream())
-                .toList();
-        if(!allCorners.contains(corner))
-            return false;
         //Finds all the corners where a card can't be placed and tests
         //whether one of the corners of the card is over them.
-        List<Corner> cornersToCheck = allCorners.stream()
+        List<Corner> cornersToCheck = placedCards.stream()
+                .flatMap(b -> b.getAllCorners().stream())
                 .filter(c -> !c.getVisibility() || c.getContent().isEmpty())
                 .toList();
         //checking that the corners in which the card will be placed aren't empty
@@ -135,7 +131,7 @@ public class Player {
         int offsetY = corner.getLocation() == Location.TR || corner.getLocation() == Location.TL ? 1 : -1;
         for(int x = 0; x < 2; x++){
             for(int y = 0; y < 2; y++){
-                //we need to save the values into separate variables because we need them to be final
+                //we have to save the values into separate variables because we need them to be final
                 int currentX = x;
                 int currentY = y;
                 if(cornersToCheck.stream()
@@ -146,6 +142,26 @@ public class Player {
             }
         }
         return true;
+    }
+
+    /**
+     * Method that checks if a certain corner is present in the player's board
+     * @param corner the corner to check
+     * @return true if it is present, false otherwise
+     */
+    public boolean isCornerPartOfBoard(Corner corner){
+        return placedCards.stream()
+                .flatMap(b -> b.getAllCorners().stream())
+                .toList().contains(corner);
+    }
+
+    /**
+     * Method that checks if a BasicCard is present in the player's hand
+     * @param card the card to check
+     * @return true if present, false otherwise
+     */
+    public boolean isCardInHand(BasicCard card){
+        return handCards.stream().anyMatch(c -> c.frontSide().equals(card) || c.backSide().equals(card));
     }
 
     /**
@@ -186,8 +202,8 @@ public class Player {
      *                  the player choose whether to draw a hidden card (if the index is 0)
      *                  or to take one of the visible ones (if the index is higher than 0).
      */
-    public void drawCard(TurnDeck deck, int drawIndex){
-        CardSides newCard = drawIndex == 0 ? deck.draw() : deck.drawVisibleCard(drawIndex - 1);
+    public void drawCard(TurnDeck<CardSides> deck, int drawIndex){
+        CardSides newCard = drawIndex == 0 ? deck.draw() : deck.drawVisibleElement(drawIndex - 1);
         newCard.frontSide().setOwner(this);
         newCard.backSide().setOwner(this);
         handCards.add(newCard);

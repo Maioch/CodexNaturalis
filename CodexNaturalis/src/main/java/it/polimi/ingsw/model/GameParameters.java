@@ -27,7 +27,7 @@ public class GameParameters {
      * @return the id of the first card of the requested type
      */
     public static int getStartCardIndex(CardType type){
-        return getParameter(type.toString().toLowerCase() + "cardStartIndex");
+        return getParameter(type.toString().toLowerCase() + "CardStartIndex");
     }
 
     /**
@@ -36,7 +36,7 @@ public class GameParameters {
      * @return the id of the last card of the requested type
      */
     public static int getEndCardIndex(CardType type){
-        return getParameter(type.toString().toLowerCase() + "cardEndIndex");
+        return getParameter(type.toString().toLowerCase() + "CardEndIndex");
     }
 
     /**

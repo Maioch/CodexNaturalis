@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
 import it.polimi.ingsw.model.card.Objective;
 import it.polimi.ingsw.model.deck.*;
@@ -15,10 +16,10 @@ import java.util.Collections;
  */
 public class Game {
     public final ArrayList<Player> players;
-    public final TurnDeck resourceDeck;
-    public final TurnDeck goldDeck;
-    public final Deck starterDeck;
-    public final ObjectivesDeck objectiveDeck;
+    public final TurnDeck<CardSides> resourceDeck;
+    public final TurnDeck<CardSides> goldDeck;
+    public final Deck<CardSides> starterDeck;
+    public final Deck<Objective> objectiveDeck;
     public final ArrayList<Content> availableColors;
     public final ArrayList<Objective> commonObjectives;
     public final int numberOfPlayers;
@@ -38,18 +39,22 @@ public class Game {
         Collections.shuffle(availableColors);
         players = new ArrayList<>(numberOfPlayers);
         int numberOfVisibleCards = GameParameters.getNumberOfVisibleCards();
-        resourceDeck = new TurnDeck(
+        resourceDeck = new TurnDeck<>(
+                CardBuilder::buildCard,
                 GameParameters.getStartCardIndex(GameParameters.CardType.RESOURCE),
-                GameParameters.getEndCardIndex(GameParameters.CardType.RESOURCE),
+                GameParameters.getStartCardIndex(GameParameters.CardType.RESOURCE),
                 numberOfVisibleCards);
-        goldDeck = new TurnDeck(
+        goldDeck = new TurnDeck<>(
+                CardBuilder::buildCard,
                 GameParameters.getStartCardIndex(GameParameters.CardType.GOLD),
                 GameParameters.getEndCardIndex(GameParameters.CardType.GOLD),
                 numberOfVisibleCards);
-        starterDeck = new Deck(
+        starterDeck = new Deck<>(
+                CardBuilder::buildCard,
                 GameParameters.getStartCardIndex(GameParameters.CardType.STARTER),
                 GameParameters.getEndCardIndex(GameParameters.CardType.STARTER));
-        objectiveDeck = new ObjectivesDeck(
+        objectiveDeck = new Deck<>(
+                CardBuilder::buildObjective,
                 GameParameters.getStartCardIndex(GameParameters.CardType.OBJECTIVE),
                 GameParameters.getEndCardIndex(GameParameters.CardType.OBJECTIVE));
         commonObjectives = new ArrayList<>(){{
@@ -107,6 +112,12 @@ public class Game {
                 add(resourceDeck.draw());
             }
         }};
-        //players.add(new Player(nickname,availableColors.remove(0)));
+        ArrayList<Objective> objectives = new ArrayList<>(){{
+            addAll(commonObjectives);
+            for(int i = 0; i < GameParameters.getNumberOfSecretObjectives(); i++){
+                add(objectiveDeck.draw());
+            }
+        }};
+        players.add(new Player(nickname,color,handCards,objectives));
     }
 }

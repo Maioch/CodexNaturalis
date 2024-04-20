@@ -1,16 +1,23 @@
 package it.polimi.ingsw.model.deck;
 
-import it.polimi.ingsw.model.card.CardBuilder;
 import it.polimi.ingsw.model.card.CardSides;
-import it.polimi.ingsw.model.card.Objective;
+import it.polimi.ingsw.model.card.CardBuilder;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
-public class ObjectivesDeck {
-    Stack<Objective> objectives;
+
+/**
+ * Class that represents a generic deck from which the identifying integers for cards can be drawn.
+ * Used to represent the starter card deck and the objective deck.
+ * the cards are ordered by their id in ascending order
+ *
+ * @author Guglielmo Gatti, Andrea Fidanza
+ */
+public class DeprecatedDeck {
+    Stack<CardSides> cards;
 
     /**
      * Creates a deck including all card indices from rangeStart to rangeEnd in ascending order
@@ -18,23 +25,23 @@ public class ObjectivesDeck {
      * @param rangeEnd the inclusive index at which the card range of the deck ends
      * @exception RuntimeException if the given range is invalid
      */
-    public ObjectivesDeck(int rangeStart, int rangeEnd){
+    public DeprecatedDeck(int rangeStart, int rangeEnd){
         if (rangeStart > rangeEnd || rangeStart < 0){
             throw new RuntimeException("The supplied value range is not valid");
         }
-        this.objectives = new Stack<>();
+        this.cards = new Stack<>();
         for(int i = rangeStart; i <= rangeEnd; i++){
-            this.objectives.push(CardBuilder.buildObjective(i));
+            this.cards.push(CardBuilder.buildCard(i));
         }
-        Collections.shuffle(this.objectives);
+        Collections.shuffle(this.cards);
     }
 
     /**
      * Getter for cards
      * @return ArrayList of cards
      */
-    public ArrayList<Objective> getObjectives(){
-        return new ArrayList<>(this.objectives);
+    public ArrayList<CardSides> getCards(){
+        return new ArrayList<>(this.cards);
     }
 
     /**
@@ -42,7 +49,7 @@ public class ObjectivesDeck {
      * @return a boolean representing if the deck is empty
      */
     public boolean isEmpty(){
-        return this.objectives.isEmpty();
+        return this.cards.isEmpty();
     }
 
     /**
@@ -50,8 +57,8 @@ public class ObjectivesDeck {
      * @return a random integer from the deck
      * @exception EmptyStackException if the deck is empty when the user tries to draw.
      */
-    public Objective draw(){
-        return this.objectives.pop();
+    public CardSides draw(){
+        return this.cards.pop();
     }
 
     /**
@@ -63,8 +70,8 @@ public class ObjectivesDeck {
     public boolean equals(Object object){
         if(this.getClass() != object.getClass())
             return false;
-        ObjectivesDeck other = (ObjectivesDeck) object;
-        return this.objectives.stream().sorted().toList()
-                .equals(other.objectives.stream().sorted().toList());
+        DeprecatedDeck other = (DeprecatedDeck) object;
+        return this.cards.stream().sorted().toList()
+                .equals(other.cards.stream().sorted().toList());
     }
 }
