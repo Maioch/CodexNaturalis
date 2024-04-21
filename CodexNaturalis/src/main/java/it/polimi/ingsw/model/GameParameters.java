@@ -46,7 +46,7 @@ public class GameParameters {
      * @return number of hand cards from the json file
      */
     public static int getNumberOfGoldCardsInHand(){
-        return getParameter("numberOfResourceCardsInHand");
+        return getParameter("numberOfGoldCardsInHand");
     }
 
     /**
@@ -54,7 +54,7 @@ public class GameParameters {
      * @return number of hand cards from the json file
      */
     public static int getNumberOfResourceCardsInHand(){
-        return getParameter("numberOfGoldCardsInHand");
+        return getParameter("numberOfResourceCardsInHand");
     }
 
     /**

@@ -3,11 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.PlayerException;
 import it.polimi.ingsw.model.card.corner.Corner;
 import it.polimi.ingsw.model.card.corner.Location;
-import it.polimi.ingsw.model.deck.*;
 import it.polimi.ingsw.model.card.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 

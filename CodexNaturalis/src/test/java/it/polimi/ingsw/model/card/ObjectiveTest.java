@@ -16,9 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 public class ObjectiveTest {
-    private final int startObjective = 87;
-    private final int endObjective = 102;
 
+    /**
+     * Testing method that assures a correct computation of the points given by the objective
+     */
     @Test
     void checkObjectiveTest(){
         Objective referenceContentObjective = CardBuilder.buildObjective(95);
@@ -66,6 +67,8 @@ public class ObjectiveTest {
     @Test
     void equalsTest(){
         Objective otherObjective = null;
+        int endObjective = 102;
+        int startObjective = 87;
         for(int id = startObjective; id <= endObjective; id++){
             Objective objective = CardBuilder.buildObjective(id);
             if(otherObjective != null){

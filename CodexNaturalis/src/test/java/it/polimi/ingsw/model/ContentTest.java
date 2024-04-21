@@ -14,6 +14,9 @@ public class ContentTest {
     private final Content c8 = Content.EMPTY;
     private final Content c9 = Content.WHITE;
 
+    /**
+     * Tests the isColor method, by checking every possible content value
+     */
     @Test
     void isColorTest(){
         assertTrue(c1.isColor());
@@ -27,19 +30,25 @@ public class ContentTest {
         assertFalse(c8.isColor());
     }
 
+    /**
+     * Tests the isObject method, by checking every possible content value
+     */
     @Test
     void isObjectTest(){
         assertFalse(c1.isObject());
         assertFalse(c2.isObject());
         assertFalse(c3.isObject());
         assertFalse(c4.isObject());
+        assertFalse(c8.isObject());
         assertFalse(c9.isObject());
         assertTrue(c5.isObject());
         assertTrue(c6.isObject());
         assertTrue(c7.isObject());
-        assertFalse(c8.isObject());
     }
 
+    /**
+     * Tests the isEmpty method, by checking every possible content value
+     */
     @Test
     void isEmptyTest(){
         assertFalse(c1.isEmpty());

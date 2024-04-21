@@ -51,6 +51,9 @@ public class DeckTest {
         }
     }
 
+    /**
+     * Helper method for repeatedDrawTest
+     */
     private void checkId(int idToCheck, int deckStart, int deckEnd) {
         for (int id : ids) {
             assertNotEquals(idToCheck, id);

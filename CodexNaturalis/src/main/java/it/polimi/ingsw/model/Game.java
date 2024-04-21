@@ -134,9 +134,10 @@ public class Game {
      *
      * @param nickname the nickname of the player
      * @param color player's color
+     * @return the starter card assigned to the player
      * @exception GameException if the color or the nickname are already taken or if the game is full
      */
-    public void addPlayer(String nickname, Content color) throws GameException {
+    public CardSides addPlayer(String nickname, Content color) throws GameException {
         if(isGameFull()) {
             throw new GameException("The game you tried to join is already full");
         }
@@ -161,6 +162,8 @@ public class Game {
             }
         }};
         players.add(new Player(nickname, color, handCards, objectives));
+        availableColors.remove(color);
+        return starterDeck.draw();
     }
 
     /**
@@ -184,7 +187,7 @@ public class Game {
     }
 
     /**
-     * Method that gets the draw options for the player, both cards on top of the decks and also the visible ones;
+     * Method that gets the draw options for the player, both cards on top of the decks and visible ones, too;
      * the first element of the returned lists is always the back side of the card on top of the deck or null if
      * the deck is empty, while the rest are the visible ones.
      *
