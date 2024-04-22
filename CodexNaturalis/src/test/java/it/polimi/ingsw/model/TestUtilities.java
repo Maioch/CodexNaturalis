@@ -35,6 +35,10 @@ public class TestUtilities {
         return previousCard;
     }
 
+    /**
+     * @param loc the location
+     * @return the opposite location (symmetrical with respect to the diagonal of the card)
+     */
     public static Location getOppositeLocation(Location loc){
         return switch(loc){
             case BL -> Location.TR;
