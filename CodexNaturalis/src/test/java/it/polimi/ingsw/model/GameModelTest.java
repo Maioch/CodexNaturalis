@@ -25,7 +25,7 @@ public class GameModelTest {
      * Tests whether the game class can correctly assess whether a game should end during the next turn or not
      */
     @Test
-    public void isLastTurnTest() {
+    public void isLastTurnTest() throws GameException, GameFullException, NicknameTakenException{
         GameModel gameModel;
         String playerName = "test";
         Content playerContent = Content.RED;
@@ -76,7 +76,7 @@ public class GameModelTest {
      * Tests whether new players can be added to the game as long as it's not full
      */
     @Test
-    public void addPlayerTest() {
+    public void addPlayerTest() throws GameException, NicknameTakenException{
         GameModel gameModel;
         for (int numberOfPlayers = GameParameters.getMinPlayers(); numberOfPlayers <= GameParameters.getMaxPlayers(); numberOfPlayers++) {
             try {
@@ -87,7 +87,7 @@ public class GameModelTest {
                         assertNotNull(gameModel.getPlayer(color.toString()));
                         assertEquals(color.toString(), gameModel.getPlayer(color.toString()).getNickname());
                         assertEquals(color, gameModel.getPlayer(color.toString()).getColor());
-                    } catch (GameException e) {
+                    } catch (GameFullException e) {
                         if (gameModel.isGameFull()) {
                             assertEquals(gameModel.getAllPlayers().size(), numberOfPlayers);
                             break;
@@ -108,7 +108,7 @@ public class GameModelTest {
      * Doesn't test if the cards are the same due to the decks' order being random.
      */
     @Test
-    public void getDrawableCardsTest() {
+    public void getDrawableCardsTest() throws GameException, GameFullException, NicknameTakenException{
         GameModel gameModel;
         int playersNumber = 2;
         try {
@@ -163,7 +163,7 @@ public class GameModelTest {
      * Tests whether cards can be drawn from the Resource card deck and the Gold card deck
      */
     @Test
-    public void drawCardTest(){
+    public void drawCardTest() throws GameException{
         int numberOfPlayers = 2;
         try {
             GameModel gameModel = new GameModel(numberOfPlayers);

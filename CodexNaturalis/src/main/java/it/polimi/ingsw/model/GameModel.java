@@ -136,13 +136,15 @@ public class GameModel {
      * @param color player's color
      * @return the starter card assigned to the player
      * @exception GameException if the color or the nickname are already taken or if the game is full
+     * @exception GameFullException if the game is full
+     * @exception NicknameTakenException if the nickname is already chosen by another player
      */
-    public CardSides addPlayer(String nickname, Content color) throws GameException {
+    public CardSides addPlayer(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
         if(isGameFull()) {
-            throw new GameException("The game you tried to join is already full");
+            throw new GameFullException();
         }
         if(!checkNickname(nickname)){
-            throw new GameException("The chosen username has already been taken");
+            throw new NicknameTakenException();
         }
         if(!getAvailableColors().contains(color)){
             throw new GameException("The chosen color has already been taken");
