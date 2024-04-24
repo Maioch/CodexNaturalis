@@ -221,10 +221,10 @@ public class PlayerTest {
                 assertFalse(playerTest.getHandCards().contains(card));
                 assertTrue(playerTest.getPlacedCards().contains(currentCard));
                 assertEquals(cornerTest.getX(), currentCard.getAllCorners().stream()
-                        .filter(c -> TestUtilities.getOppositeLocation(c.getLocation()) == cornerTest.getLocation())
+                        .filter(c -> c.getLocation().getOppositeLocation() == cornerTest.getLocation())
                         .findFirst().orElseThrow().getX());
                 assertEquals(cornerTest.getY(), currentCard.getAllCorners().stream()
-                        .filter(c -> TestUtilities.getOppositeLocation(c.getLocation()) == cornerTest.getLocation())
+                        .filter(c -> c.getLocation().getOppositeLocation() == cornerTest.getLocation())
                         .findFirst().orElseThrow().getY());
                 assertFalse(cornerTest.getVisibility());
             }

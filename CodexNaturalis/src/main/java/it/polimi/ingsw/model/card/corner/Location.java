@@ -6,5 +6,17 @@ package it.polimi.ingsw.model.card.corner;
  * @author Andrea Fidanza
  */
 public enum Location {
-    BL, BR, TL, TR
+    BL, BR, TL, TR;
+
+    /**
+     * @return the opposite location (symmetrical with respect to the diagonal of the card)
+     */
+    public Location getOppositeLocation(){
+        return switch(this){
+            case BL -> Location.TR;
+            case BR -> Location.TL;
+            case TL -> Location.BR;
+            case TR -> Location.BL;
+        };
+    }
 }

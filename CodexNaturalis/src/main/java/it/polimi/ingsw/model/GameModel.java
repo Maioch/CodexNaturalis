@@ -16,7 +16,7 @@ import java.util.HashMap;
  *
  * @author Guglielmo Gatti, Andrea Fidanza, Francesco Nisoli, Marco Maiocchi
  */
-public class Game {
+public class GameModel {
     private final ArrayList<Player> players;
     private final TurnDeck<CardSides> resourceDeck;
     private final TurnDeck<CardSides> goldDeck;
@@ -33,7 +33,7 @@ public class Game {
      * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number
      *                                players allowed
      */
-    public Game(int numberOfPlayers) throws IllegalNumberOfPlayers {
+    public GameModel(int numberOfPlayers) throws IllegalNumberOfPlayers {
         if (numberOfPlayers < GameParameters.getMinPlayers() || numberOfPlayers > GameParameters.getMaxPlayers())
             throw new IllegalNumberOfPlayers();
         this.numberOfPlayers = numberOfPlayers;
