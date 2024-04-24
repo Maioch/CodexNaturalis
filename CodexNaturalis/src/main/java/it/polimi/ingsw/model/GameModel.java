@@ -10,6 +10,7 @@ import it.polimi.ingsw.model.card.CardType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Class that represents a single match of Codex Naturalis
@@ -206,5 +207,15 @@ public class GameModel {
                 addAll(goldDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
             }});
         }};
+    }
+
+    /**
+     * Method that returns the player/s with the most points
+     *
+     * @return a list of said players
+     */
+    public List<String> getWinningPlayers() {
+        int max = players.stream().map(Player::getScore).max(Integer::compareTo).orElse(0);
+        return players.stream().filter(p -> p.getScore() == max).map(Player::getNickname).toList();
     }
 }
