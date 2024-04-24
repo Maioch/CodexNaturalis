@@ -185,4 +185,42 @@ public class GameModelTest {
             fail(playerNumberFail);
         }
     }
+
+    /**
+     * A testing method that assures the return of the winning players (who have the maximum number of points)
+     */
+    @Test
+    public void getWinningPlayersTest() throws GameException, GameFullException, NicknameTakenException{
+        int numberOfPlayers = 2;
+        try{
+            GameModel gameModel = new GameModel(numberOfPlayers);
+            Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>());
+            Player playerTest2 = new Player("test2", Content.BLUE, new ArrayList<>(), new ArrayList<>());
+            ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(playerTest.getNickname(), playerTest2.getNickname()));
+
+            assertTrue(gameModel.getWinningPlayers().isEmpty());
+
+            gameModel.addPlayer(nicknames.getFirst(), playerTest.getColor());
+            gameModel.addPlayer(nicknames.get(1), playerTest2.getColor());
+
+            Corner fakeCorner = new Corner(Content.WHITE, Location.TR);
+
+            for(int i = GameParameters.getStartCardIndex(CardType.RESOURCE); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
+                playerTest.placeCard(CardBuilder.buildCard(i).backSide(), fakeCorner);
+            }
+
+            assertEquals(nicknames.getFirst(), gameModel.getWinningPlayers().getFirst());
+
+            for(int i = GameParameters.getStartCardIndex(CardType.RESOURCE); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
+                playerTest2.placeCard(CardBuilder.buildCard(i).backSide(), fakeCorner);
+            }
+
+            assertEquals(nicknames, gameModel.getWinningPlayers());
+
+        }catch (IllegalNumberOfPlayers e){
+            assertTrue(numberOfPlayers < GameParameters.getMinPlayers() ||
+                    numberOfPlayers > GameParameters.getMaxPlayers());
+            fail(playerNumberFail);
+        }
+    }
 }
