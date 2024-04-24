@@ -104,7 +104,7 @@ public class GameModel {
      * @param nickname the nickname to check
      * @return false if there's a duplicate username
      */
-    public boolean checkNickname(String nickname){
+    public boolean checkNickname(String nickname) {
         return players.stream().noneMatch(p -> p.getNickname().equals(nickname));
     }
 
@@ -120,9 +120,10 @@ public class GameModel {
     /**
      * Method that checks if it's the last game's turn, condition met if one of the players reaches the points cap or
      * if both decks are empty
+     *
      * @return true if it's the last turn
      */
-    public boolean isLastTurn(){
+    public boolean isLastTurn() {
         return (goldDeck.isEmpty() &&
                 goldDeck.getVisibleElements().isEmpty() &&
                 resourceDeck.isEmpty() &&
@@ -134,20 +135,20 @@ public class GameModel {
      * Method that adds a player to an existing game
      *
      * @param nickname the nickname of the player
-     * @param color player's color
+     * @param color    player's color
      * @return the starter card assigned to the player
-     * @exception GameException if the color or the nickname are already taken or if the game is full
-     * @exception GameFullException if the game is full
-     * @exception NicknameTakenException if the nickname is already chosen by another player
+     * @throws GameException          if the color or the nickname are already taken or if the game is full
+     * @throws GameFullException      if the game is full
+     * @throws NicknameTakenException if the nickname is already chosen by another player
      */
     public CardSides addPlayer(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
-        if(isGameFull()) {
+        if (isGameFull()) {
             throw new GameFullException();
         }
-        if(!checkNickname(nickname)){
+        if (!checkNickname(nickname)) {
             throw new NicknameTakenException();
         }
-        if(!getAvailableColors().contains(color)){
+        if (!getAvailableColors().contains(color)) {
             throw new GameException("The chosen color has already been taken");
         }
         ArrayList<CardSides> handCards = new ArrayList<>() {{
@@ -171,18 +172,25 @@ public class GameModel {
 
     /**
      * Method that draws a card from a deck and adds it to the player's hand.
-     * @param type the type of card deck to draw from, which is either the Gold Card deck or the Resource Card deck
+     *
+     * @param type      the type of card deck to draw from, which is either the Gold Card deck or the Resource Card deck
      * @param drawIndex the deck has a number of visible cards which the player can see. this index lets
      *                  the player choose whether to draw a hidden card (if the index is 0)
      *                  or to take one of the visible ones (if the index is higher than 0).
-     * @exception GameException if the given card type doesn't match any deck
+     * @throws GameException if the given card type doesn't match any deck and if the given index is invalid
      */
-    public void drawCard(Player player, CardType type, int drawIndex) throws GameException{
-        TurnDeck<CardSides> deck = switch(type){
+    public void drawCard(Player player, CardType type, int drawIndex) throws GameException {
+        TurnDeck<CardSides> deck = switch (type) {
             case RESOURCE -> resourceDeck;
             case GOLD -> goldDeck;
             default -> throw new GameException("The given deck type is invalid");
         };
+        if(drawIndex <= deck.getVisibleElements().size()){
+            throw new GameException("Invalid draw index");
+        }
+        if(drawIndex == 0 && deck.isEmpty()){
+            throw new GameException("The given deck is empty");
+        }
         CardSides newCard = drawIndex == 0 ? deck.draw() : deck.drawVisibleElement(drawIndex - 1);
         newCard.frontSide().setOwner(player);
         newCard.backSide().setOwner(player);
