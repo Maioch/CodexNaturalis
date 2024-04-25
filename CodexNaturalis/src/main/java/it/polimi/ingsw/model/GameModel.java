@@ -185,7 +185,7 @@ public class GameModel {
             case GOLD -> goldDeck;
             default -> throw new GameException("The given deck type is invalid");
         };
-        if(drawIndex <= deck.getVisibleElements().size()){
+        if(drawIndex < 0 || drawIndex > deck.getVisibleElements().size()){
             throw new GameException("Invalid draw index");
         }
         if(drawIndex == 0 && deck.isEmpty()){
