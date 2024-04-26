@@ -17,7 +17,7 @@ import java.util.HashSet;
 public class GoldCard extends BasicCard {
 
     private final ArrayList<Content> requirements;
-    private Bonus bonus;
+    private transient Bonus bonus;
     
     /**
      * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated

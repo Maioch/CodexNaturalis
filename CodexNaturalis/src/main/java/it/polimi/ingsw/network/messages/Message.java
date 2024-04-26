@@ -64,7 +64,8 @@ public enum Message {
 
     /**
      * Client: the next message will contain the sides of the starter card that the player wants to place
-     * Server: the next message will contain the starter card given to the player (front and back).
+     * Server: the next message will contain the starter card given to the player (front and back)
+     * immediately followed by the list of objectives (both personal and global)
      */
     GAME_STARTED(""),
 
@@ -74,9 +75,9 @@ public enum Message {
     TURN_NOTIFICATION(""),
 
     /**
-     * Server: the next message will contain the hand of the player.
+     * Server: the next message will contain the hand of the player immediately followed by the placed cards of the player
      */
-    HAND_CARDS(""),
+    PLAYER_CURRENT_STATUS(""),
 
     /**
      * Client: the next message will contain the card chosen by the player along with the corner where

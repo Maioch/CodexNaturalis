@@ -17,8 +17,8 @@ import java.util.Map;
 public class Objective {
     private final int objectiveId;
     private final int points;
-    private Bonus bonus;
-    private Player owner;
+    private transient Bonus bonus;
+    private transient Player owner;
 
     /**
      * @param objectiveId the card's id
@@ -31,6 +31,10 @@ public class Objective {
         this.bonus = null;
     }
 
+    /**
+     * Copy constructor for the class
+     * @param objective the objective to duplicate
+     */
     public Objective(Objective objective){
         this.objectiveId = objective.objectiveId;
         this.points = objective.points;

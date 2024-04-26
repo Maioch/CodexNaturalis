@@ -133,15 +133,15 @@ public class GameModel {
 
     /**
      * Method that adds a player to an existing game
+     * The first card given to the player is the starterCard, w
      *
      * @param nickname the nickname of the player
      * @param color    player's color
-     * @return the starter card assigned to the player
      * @throws GameException          if the color or the nickname are already taken or if the game is full
      * @throws GameFullException      if the game is full
      * @throws NicknameTakenException if the nickname is already chosen by another player
      */
-    public CardSides addPlayer(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
+    public void addPlayer(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
         if (isGameFull()) {
             throw new GameFullException();
         }
@@ -152,6 +152,7 @@ public class GameModel {
             throw new GameException("The chosen color has already been taken");
         }
         ArrayList<CardSides> handCards = new ArrayList<>() {{
+            add(starterDeck.draw());
             for (int i = 0; i < GameParameters.getNumberOfGoldCardsInHand(); i++) {
                 add(goldDeck.draw());
             }
@@ -165,9 +166,9 @@ public class GameModel {
                 add(objectiveDeck.draw());
             }
         }};
-        players.add(new Player(nickname, color, handCards, objectives));
+        Player newPlayer = new Player(nickname, color, handCards, objectives);
+        players.add(newPlayer);
         availableColors.remove(color);
-        return starterDeck.draw();
     }
 
     /**
@@ -225,5 +226,17 @@ public class GameModel {
     public List<String> getWinningPlayers() {
         int max = players.stream().map(Player::getScore).max(Integer::compareTo).orElse(0);
         return players.stream().filter(p -> p.getScore() == max).map(Player::getNickname).toList();
+    }
+
+    /**
+     * Getter for the game's common objectives
+     * @return a deep copy of the game's common objectives list
+     */
+    public List<Objective> getCommonObjectives() {
+        return new ArrayList<>(){{
+            for(Objective objective : commonObjectives){
+                add(new Objective(objective));
+            }
+        }};
     }
 }

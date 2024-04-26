@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.card.corner.Corner;
 import it.polimi.ingsw.model.card.corner.Location;
 import it.polimi.ingsw.model.card.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +16,12 @@ import java.util.List;
  *
  * @author Marco Maiocchi, Andrea Fidanza
  */
-public class Player {
+public class Player implements Serializable {
     private final String nickname;
     private final Content color;
     private final ArrayList<BasicCard> placedCards;
-    private final ArrayList<CardSides> handCards;
-    private final ArrayList<Objective> objectives;
+    private transient final ArrayList<CardSides> handCards;
+    private transient final ArrayList<Objective> objectives;
     private int score;
 
     /**

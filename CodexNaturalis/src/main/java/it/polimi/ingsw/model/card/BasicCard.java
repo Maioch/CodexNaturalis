@@ -7,6 +7,7 @@ import it.polimi.ingsw.model.card.corner.Location;
 import it.polimi.ingsw.model.Player;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -20,14 +21,14 @@ import java.util.stream.Collectors;
  *
  * @author Francesco Saverio Nisoli, Guglielmo Gatti
  */
-public class BasicCard {
+public class BasicCard implements Serializable {
 
     protected final int cardId;
     protected final Content color;
     protected final HashSet<Corner> corners;
     protected final int points;
     protected final ArrayList<Content> resources;
-    protected Player owner;
+    protected transient Player owner;
 
     /**
      * Constructor for the class

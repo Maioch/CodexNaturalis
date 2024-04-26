@@ -3,6 +3,8 @@ package it.polimi.ingsw.model.card.corner;
 
 import it.polimi.ingsw.model.Content;
 
+import java.io.Serializable;
+
 /**
  * Class that represents a corner of a card.
  * Every corner hs 3 coordinates: (x, y, visibility): x, y -> position on the player's card setup,
@@ -10,7 +12,7 @@ import it.polimi.ingsw.model.Content;
  *
  * @author Marco Maiocchi
  */
-public class Corner {
+public class Corner implements Serializable {
     private int x;
     private int y;
     private final Content content;
