@@ -2,9 +2,11 @@ package it.polimi.ingsw.model.card;
 
 import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.card.corner.Corner;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * A class that represents a gold card
@@ -34,6 +36,17 @@ public class GoldCard extends BasicCard {
         this.requirements = new ArrayList<>(requirements);
         this.owner = null;
         this.bonus = null;
+    }
+
+    /**
+     * Copy-Constructor method for the GoldCard
+     * @param card the GoldCard to be copied
+     */
+
+    public GoldCard(GoldCard card){
+        super(card);
+        this.requirements = new ArrayList<>(card.requirements);
+        this.bonus = card.bonus;
     }
 
     /**
@@ -83,6 +96,15 @@ public class GoldCard extends BasicCard {
         return super.equals(other) &&
                 this.requirements.equals(other.requirements) &&
                 isSameBonus;
+    }
+
+    /**
+     * copy method that Guarantees that the card will be copied using the right constructor
+     * @return a copy of the card
+     */
+    @Override
+    public GoldCard copy(){
+        return new GoldCard(this);
     }
 
     /**

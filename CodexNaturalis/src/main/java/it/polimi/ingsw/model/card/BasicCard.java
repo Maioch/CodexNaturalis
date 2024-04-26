@@ -64,6 +64,23 @@ public class BasicCard {
     }
 
     /**
+     * copy constructor for card
+     * @param card the card to copy
+     */
+    public BasicCard(BasicCard card){
+        this.cardId = card.cardId;
+        this.color = card.color;
+        this.corners = new HashSet<>(){{
+            for(Corner corner : card.corners){
+                add(new Corner(corner));
+            }
+        }};
+        this.points = card.points;
+        this.resources = new ArrayList<>(card.resources);
+        this.owner = card.owner;
+    }
+
+    /**
      * Getter for the id of the card
      *
      * @return the cardId attribute
@@ -213,5 +230,14 @@ public class BasicCard {
      */
     public void setOwner(Player owner){
         this.owner = owner;
+    }
+
+    /**
+     * copy method which has to be overridden in all subclasses; Guarantees that the
+     * card will be copied using the right constructor
+     * @return a copy of the card
+     */
+    public BasicCard copy(){
+        return new BasicCard(this);
     }
 }

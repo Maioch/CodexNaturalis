@@ -30,6 +30,18 @@ public class Corner {
     }
 
     /**
+     * Copy constructor for corner, used to avoid direct object access to other methods
+     * @param corner the corner to be copied
+     */
+    public Corner(Corner corner){
+        this.content = corner.content;
+        this.location = corner.location;
+        this.visibility = corner.visibility;
+        this.x = corner.x;
+        this.y = corner.y;
+    }
+
+    /**
      * @return corner's horizontal coordinate
      */
     public int getX(){

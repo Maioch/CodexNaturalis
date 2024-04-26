@@ -48,6 +48,31 @@ public class Player {
     }
 
     /**
+     * copy constructor for player
+     * @param player the player to copy
+     */
+    public Player(Player player){
+        this.nickname = player.nickname;
+        this.color = player.color;
+        this.placedCards = new ArrayList<>(){{
+            for(BasicCard card : player.placedCards){
+                add(new BasicCard(card));
+            }
+        }};
+        this.handCards = new ArrayList<>(){{
+            for (CardSides cards : player.handCards){
+                add(new CardSides(new BasicCard(cards.frontSide()), new BasicCard(cards.backSide())));
+            }
+        }};
+        this.objectives = new ArrayList<>(){{
+            for(Objective objective : player.objectives){
+                add(new Objective(objective));
+            }
+        }};
+        this.score = player.score;
+    }
+
+    /**
      * @return player's nickname
      */
     public String getNickname(){
@@ -69,18 +94,40 @@ public class Player {
     }
 
     /**
-     * Getter for the player's hand cards
-     * @return the list of the player's hand cards
+     * getter for the player's objectives
+     * @return a deep copy of the player's objectives list
      */
-    public ArrayList<CardSides> getHandCards(){
-        return new ArrayList<>(this.handCards);
+    public ArrayList<Objective> getObjectives(){
+        return new ArrayList<>(){{
+            for(Objective objective : objectives){
+                add(new Objective(objective));
+            }
+        }};
     }
 
     /**
-     * @return player's placed cards
+     * Getter for the player's hand cards
+     * @return a deep copy of the player's hand
+     */
+    public ArrayList<CardSides> getHandCards(){
+        return new ArrayList<>(){{
+            for(CardSides cardSides : handCards){
+                add(new CardSides(
+                        cardSides.frontSide().copy(),
+                        cardSides.backSide().copy()));
+            }
+        }};
+    }
+
+    /**
+     * @return a deep copy of the player's placed cards
      */
     public ArrayList<BasicCard> getPlacedCards(){
-        return new ArrayList<>(this.placedCards);
+        return new ArrayList<>(){{
+            for(BasicCard card : placedCards){
+                add(card.copy());
+            }
+        }};
     }
 
     /**

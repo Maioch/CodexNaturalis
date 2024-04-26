@@ -31,6 +31,13 @@ public class Objective {
         this.bonus = null;
     }
 
+    public Objective(Objective objective){
+        this.objectiveId = objective.objectiveId;
+        this.points = objective.points;
+        this.owner = objective.owner;
+        this.bonus = objective.bonus;
+    }
+
     /**
      * Calculates the amount of points gained by satisfying the objective's requirements.
      * @return the amount of points gained
