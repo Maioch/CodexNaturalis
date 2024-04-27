@@ -1,15 +1,15 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
-import it.polimi.ingsw.model.Content;
-import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.GameParameters;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.model.card.BasicCard;
-import it.polimi.ingsw.model.card.CardSides;
-import it.polimi.ingsw.model.card.CardType;
-import it.polimi.ingsw.model.card.corner.Corner;
-import it.polimi.ingsw.network.server.ServerListener;
+import it.polimi.ingsw.server.model.Content;
+import it.polimi.ingsw.server.model.GameModel;
+import it.polimi.ingsw.server.model.GameParameters;
+import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.server.model.card.BasicCard;
+import it.polimi.ingsw.server.model.card.CardSides;
+import it.polimi.ingsw.server.model.card.CardType;
+import it.polimi.ingsw.server.model.card.corner.Corner;
+import it.polimi.ingsw.network.server.DeprecatedServerListener;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class GameController {
     private final GameModel game;
-    private final HashMap<String, ServerListener> listeners;
+    private final HashMap<String, DeprecatedServerListener> listeners;
 
     /**
      * Constructor for the class
@@ -32,7 +32,7 @@ public class GameController {
      * @param numberOfPlayers the number of players allowed to enter the game and needed for it to start
      * @throws IllegalNumberOfPlayers when the number of players chosen exceeds the limit
      */
-    public GameController(String firstPlayerName, ServerListener firstPlayerListener, int numberOfPlayers) throws IllegalNumberOfPlayers {
+    public GameController(String firstPlayerName, DeprecatedServerListener firstPlayerListener, int numberOfPlayers) throws IllegalNumberOfPlayers {
         this.game = new GameModel(numberOfPlayers);
         this.listeners = new HashMap<>();
         try {
@@ -50,7 +50,7 @@ public class GameController {
      * @throws GameFullException      when the game is full
      * @throws NicknameTakenException when the username of the new player already exists in the game
      */
-    public void acceptPlayer(String nickname, ServerListener listener) throws GameException, GameFullException, NicknameTakenException {
+    public void acceptPlayer(String nickname, DeprecatedServerListener listener) throws GameException, GameFullException, NicknameTakenException {
         listeners.put(nickname, listener);
         Content chosenColor = listener.requestColor();
         game.addPlayer(nickname, chosenColor);
@@ -65,8 +65,7 @@ public class GameController {
      */
     private void initializeGame() {
         for (Player player : game.getAllPlayers()) {
-            ServerListener currentListener = listeners.get(player.getNickname());
-            currentListener.sendObjectives(player.getObjectives());
+            DeprecatedServerListener currentListener = listeners.get(player.getNickname());
             CardSides starterCard = player.getHandCards().getFirst();
             currentListener.sendStarterCard(starterCard);
             BasicCard starterSide = currentListener.requestStarterSide();
@@ -74,6 +73,7 @@ public class GameController {
                 starterSide = currentListener.requestStarterSide();
             }
             player.placeStarterCard(starterSide);
+            currentListener.sendObjectives(player.getObjectives());
         }
     }
 
@@ -83,7 +83,7 @@ public class GameController {
     private void startGame() {
         while (!game.isLastTurn()) {
             for (Player player : game.getAllPlayers()) {
-                ServerListener currentListener = listeners.get(player.getNickname());
+                DeprecatedServerListener currentListener = listeners.get(player.getNickname());
                 currentListener.sendHandCards(player.getHandCards());
                 currentListener.sendBoard(player.getPlacedCards());
                 placeCard(player);
@@ -92,7 +92,7 @@ public class GameController {
         }
         //last turn of the game
         for (Player player : game.getAllPlayers()) {
-            ServerListener currentListener = listeners.get(player.getNickname());
+            DeprecatedServerListener currentListener = listeners.get(player.getNickname());
             currentListener.sendHandCards(player.getHandCards());
             currentListener.sendBoard(player.getPlacedCards());
             placeCard(player);
@@ -107,7 +107,7 @@ public class GameController {
      * @param player the player that plays the card
      */
     private void placeCard(Player player) {
-        ServerListener listener = listeners.get(player.getNickname());
+        DeprecatedServerListener listener = listeners.get(player.getNickname());
         BasicCard cardToPlace = listener.requestCardToPlace();
         while (!player.checkRequirements(cardToPlace) || !player.isCardInHand(cardToPlace)) {
             cardToPlace = listener.requestCardToPlace();
@@ -125,7 +125,7 @@ public class GameController {
      * @param player the player that is drawing
      */
     private void drawCard(Player player) {
-        ServerListener listener = listeners.get(player.getNickname());
+        DeprecatedServerListener listener = listeners.get(player.getNickname());
         listener.sendDrawableCards(game.getDrawableCards());
         boolean drawSuccess = false;
         while (!drawSuccess){

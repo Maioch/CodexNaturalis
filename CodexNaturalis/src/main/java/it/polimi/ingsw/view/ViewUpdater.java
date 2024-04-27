@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.model.card.BasicCard;
-import it.polimi.ingsw.model.card.CardType;
+import it.polimi.ingsw.server.model.card.BasicCard;
+import it.polimi.ingsw.server.model.card.CardType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
