@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.*;
-import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.server.model.card.BasicCard;
 import it.polimi.ingsw.server.model.card.CardBuilder;
 import it.polimi.ingsw.server.model.card.CardType;

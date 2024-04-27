@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.PlayerException;
-import it.polimi.ingsw.model.card.*;
 import it.polimi.ingsw.server.model.card.*;
 import it.polimi.ingsw.server.model.card.corner.Corner;
 import it.polimi.ingsw.server.model.card.corner.Location;

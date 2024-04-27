@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server.model.card;
 
 import it.polimi.ingsw.exceptions.CardException;
-import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.server.model.Content;
 
 import java.util.ArrayList;

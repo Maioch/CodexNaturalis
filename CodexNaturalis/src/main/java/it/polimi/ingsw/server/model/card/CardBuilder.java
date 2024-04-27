@@ -2,7 +2,6 @@ package it.polimi.ingsw.server.model.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.server.model.card.corner.Corner;
 import it.polimi.ingsw.server.model.card.corner.Location;
 import it.polimi.ingsw.server.model.Content;

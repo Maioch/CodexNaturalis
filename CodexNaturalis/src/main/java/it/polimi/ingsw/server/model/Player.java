@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.PlayerException;
+import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.card.BasicCard;
 import it.polimi.ingsw.server.model.card.CardSides;
 import it.polimi.ingsw.server.model.card.Objective;
@@ -8,7 +9,6 @@ import it.polimi.ingsw.server.model.card.corner.Corner;
 import it.polimi.ingsw.server.model.card.corner.Location;
 import it.polimi.ingsw.network.server.DeprecatedServerListener;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,13 +19,13 @@ import java.util.List;
  *
  * @author Marco Maiocchi, Andrea Fidanza
  */
-public class Player implements Serializable {
+public class Player extends ServerSubject{
     private final String nickname;
     private final Content color;
     private final ArrayList<BasicCard> placedCards;
     private DeprecatedServerListener listener;
-    private transient final ArrayList<CardSides> handCards;
-    private transient final ArrayList<Objective> objectives;
+    private final ArrayList<CardSides> handCards;
+    private final ArrayList<Objective> objectives;
     private int score;
 
     /**

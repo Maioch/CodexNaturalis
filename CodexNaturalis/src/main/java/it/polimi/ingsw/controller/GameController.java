@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.Content;
 import it.polimi.ingsw.server.model.GameModel;
 import it.polimi.ingsw.server.model.GameParameters;
@@ -21,7 +22,7 @@ import java.util.List;
  *
  * @author Andrea Fidanza, Guglielmo Gatti, Marco Maiocchi, Francesco Saverio Nisoli
  */
-public class GameController {
+public class GameController extends ServerSubject{
     private final GameModel game;
     private final HashMap<String, DeprecatedServerListener> listeners;
 

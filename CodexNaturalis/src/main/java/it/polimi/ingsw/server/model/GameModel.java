@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.card.BasicCard;
 import it.polimi.ingsw.server.model.card.CardBuilder;
 import it.polimi.ingsw.server.model.card.CardSides;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @author Guglielmo Gatti, Andrea Fidanza, Francesco Nisoli, Marco Maiocchi
  */
-public class GameModel {
+public class GameModel extends ServerSubject {
     private final ArrayList<Player> players;
     private final TurnDeck<CardSides> resourceDeck;
     private final TurnDeck<CardSides> goldDeck;
