@@ -5,7 +5,7 @@ import it.polimi.ingsw.network.messages.Message;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public abstract class ServerSubject {
+public class ServerSubject {
     private final HashMap<String,ServerListener> listeners;
 
     public ServerSubject(){
@@ -26,7 +26,9 @@ public abstract class ServerSubject {
         }
     }
 
-    public void notify(Message message, String nickname){
-        listeners.get(nickname).update(message);
+    public void notify(String nickname, Message message){
+        if(listeners.containsKey(nickname)){
+            listeners.get(nickname).update(message);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.PlayerException;
+import it.polimi.ingsw.network.messages.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.card.BasicCard;
 import it.polimi.ingsw.server.model.card.CardSides;
@@ -19,11 +20,11 @@ import java.util.List;
  *
  * @author Marco Maiocchi, Andrea Fidanza
  */
-public class Player extends ServerSubject{
+public class Player {
+    private final ServerSubject serverSubject;
     private final String nickname;
     private final Content color;
     private final ArrayList<BasicCard> placedCards;
-    private DeprecatedServerListener listener;
     private final ArrayList<CardSides> handCards;
     private final ArrayList<Objective> objectives;
     private int score;
@@ -34,14 +35,19 @@ public class Player extends ServerSubject{
      * @param color color chosen by the player
      * @param handCards cards held by the player (max 3), that they can play during his turn
      * @param objectives two objectives shared by the player and a personal one
+     * @param serverSubject the object used to notify the serverListeners
      */
-    public Player(String nickname, Content color, ArrayList<CardSides> handCards, ArrayList<Objective> objectives){
+    public Player(String nickname,
+                  Content color,
+                  ArrayList<CardSides> handCards,
+                  ArrayList<Objective> objectives,
+                  ServerSubject serverSubject){
         this.nickname = nickname;
         this.color = color;
         this.placedCards = new ArrayList<>();
         this.handCards = new ArrayList<>(handCards);
         this.objectives = new ArrayList<>(objectives);
-        this.listener = null;
+        this.serverSubject = serverSubject;
         this.score = 0;
         //Set the owner for both the regular cards and the objectives
         for(CardSides card : this.handCards){
@@ -51,39 +57,7 @@ public class Player extends ServerSubject{
         for(Objective obj : this.objectives){
             obj.setOwner(this);
         }
-    }
-
-    public void setListener(DeprecatedServerListener listener){
-        this.listener = listener;
-    }
-
-    public DeprecatedServerListener getListener(){
-        return listener;
-    }
-
-    /**
-     * copy constructor for player
-     * @param player the player to copy
-     */
-    public Player(Player player){
-        this.nickname = player.nickname;
-        this.color = player.color;
-        this.placedCards = new ArrayList<>(){{
-            for(BasicCard card : player.placedCards){
-                add(new BasicCard(card));
-            }
-        }};
-        this.handCards = new ArrayList<>(){{
-            for (CardSides cards : player.handCards){
-                add(new CardSides(new BasicCard(cards.frontSide()), new BasicCard(cards.backSide())));
-            }
-        }};
-        this.objectives = new ArrayList<>(){{
-            for(Objective objective : player.objectives){
-                add(new Objective(objective));
-            }
-        }};
-        this.score = player.score;
+        serverSubject.notifyAll(new PlayerMessage(nickname, color));
     }
 
     /**

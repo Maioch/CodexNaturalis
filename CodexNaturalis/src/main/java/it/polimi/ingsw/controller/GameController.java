@@ -1,6 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.Content;
 import it.polimi.ingsw.server.model.GameModel;
@@ -22,25 +23,27 @@ import java.util.List;
  *
  * @author Andrea Fidanza, Guglielmo Gatti, Marco Maiocchi, Francesco Saverio Nisoli
  */
-public class GameController extends ServerSubject{
+public class GameController {
     private final GameModel game;
-    private final HashMap<String, DeprecatedServerListener> listeners;
+    private final String name;
+    private final ServerSubject serverSubject;
+    private boolean isEnded;
 
     /**
      * Constructor for the class
      *
-     * @param firstPlayerName the player that creates a game and the first to be added
      * @param numberOfPlayers the number of players allowed to enter the game and needed for it to start
      * @throws IllegalNumberOfPlayers when the number of players chosen exceeds the limit
      */
-    public GameController(String firstPlayerName, DeprecatedServerListener firstPlayerListener, int numberOfPlayers) throws IllegalNumberOfPlayers {
-        this.game = new GameModel(numberOfPlayers);
-        this.listeners = new HashMap<>();
-        try {
-            acceptPlayer(firstPlayerName, firstPlayerListener);
-        } catch (GameException | GameFullException | NicknameTakenException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+    public GameController(int numberOfPlayers, ServerSubject serverSubject, String name) throws IllegalNumberOfPlayers {
+        this.game = new GameModel(numberOfPlayers, serverSubject);
+        this.name = name;
+        this.serverSubject = serverSubject;
+        this.isEnded = false;
+    }
+
+    public void requestColors(){
+        serverSubject.notifyAll(new ContentMessage(Status.REQUEST_COLOR,game.getAvailableColors()));
     }
 
     /**
@@ -51,10 +54,16 @@ public class GameController extends ServerSubject{
      * @throws GameFullException      when the game is full
      * @throws NicknameTakenException when the username of the new player already exists in the game
      */
-    public void acceptPlayer(String nickname, DeprecatedServerListener listener) throws GameException, GameFullException, NicknameTakenException {
-        listeners.put(nickname, listener);
-        Content chosenColor = listener.requestColor();
-        game.addPlayer(nickname, chosenColor);
+    public void acceptPlayer(String nickname, Content color){
+        try{
+            game.addPlayer(nickname, color);
+        }
+        catch (GameFullException g){
+            serverSubject.notify(nickname, new Message(Status.GAME_FULL));
+        }
+        catch (NicknameTakenException | GameException e){
+            serverSubject.notify(nickname, new StringMessage(Status.ERROR,e.getMessage()));
+        }
         if (game.isGameFull()) {
             initializeGame();
             startGame();
@@ -66,8 +75,8 @@ public class GameController extends ServerSubject{
      */
     private void initializeGame() {
         for (Player player : game.getAllPlayers()) {
-            DeprecatedServerListener currentListener = listeners.get(player.getNickname());
             CardSides starterCard = player.getHandCards().getFirst();
+            serverSubject.notify(player.getNickname(), new CardHandMessage(Status.PLAYER_HAND_CARD, player.getHandCards()));
             currentListener.sendStarterCard(starterCard);
             BasicCard starterSide = currentListener.requestStarterSide();
             while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
@@ -99,6 +108,7 @@ public class GameController extends ServerSubject{
             placeCard(player);
         }
         List<String> winners = game.getWinningPlayers();
+        isEnded = true;
         //ViewUpdater is updated with the winners
     }
 
@@ -146,5 +156,13 @@ public class GameController extends ServerSubject{
                 drawSuccess = false;
             }
         }
+    }
+
+    public boolean isGameEnded(){
+        return isEnded;
+    }
+
+    public String getName(){
+        return name;
     }
 }

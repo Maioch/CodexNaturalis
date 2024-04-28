@@ -18,6 +18,11 @@ public enum Status {
     NEW_GAME(""),
 
     /**
+     * Server: sends a message that sentences an error during the creation of the game
+     */
+    NEW_GAME_FAIL(""),
+
+    /**
      * Client: the next message will contain the chosen number of players, Server: requests the number of players.
      */
     REQUEST_PLAYER_NUMBER(""),
@@ -68,6 +73,11 @@ public enum Status {
     NEW_PLAYER_JOINED(""),
 
     /**
+     * Server: sends a message to the client, notifying it that the chosen game is already full
+     */
+    GAME_FULL(""),
+
+    /**
      * Client: the next message will contain the sides of the starter card that the player wants to place
      * Server: the next message will contain the starter card given to the player (front and back)
      * immediately followed by the list of objectives (both personal and global)
@@ -87,7 +97,12 @@ public enum Status {
     /**
      * Server: the next message will contain the hand of the player
      */
-    PLAYER_CURRENT_STATUS(""),
+    PLAYER_HAND_CARD(""),
+
+    /**
+     * Server: sends the current board state of the player
+     */
+    PLAYER_BOARD(""),
 
     /**
      * Client: the next message will contain the card chosen by the player along with the corner where
@@ -131,7 +146,12 @@ public enum Status {
     /**
      * Client: a player left the game voluntarily, Server: the next message will contain the nickname of the player who left
      */
-    PLAYER_DISCONNECTED("");
+    PLAYER_DISCONNECTED(""),
+
+    /**
+     * Message sent when an error occurs
+     */
+    ERROR("");
 
     Status(String message){}
 }

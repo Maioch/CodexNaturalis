@@ -20,6 +20,7 @@ import java.util.List;
  * @author Guglielmo Gatti, Andrea Fidanza, Francesco Nisoli, Marco Maiocchi
  */
 public class GameModel extends ServerSubject {
+    private final ServerSubject serverSubject;
     private final ArrayList<Player> players;
     private final TurnDeck<CardSides> resourceDeck;
     private final TurnDeck<CardSides> goldDeck;
@@ -36,10 +37,11 @@ public class GameModel extends ServerSubject {
      * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number
      *                                players allowed
      */
-    public GameModel(int numberOfPlayers) throws IllegalNumberOfPlayers {
+    public GameModel(int numberOfPlayers, ServerSubject serverSubject) throws IllegalNumberOfPlayers {
         if (numberOfPlayers < GameParameters.getMinPlayers() || numberOfPlayers > GameParameters.getMaxPlayers())
             throw new IllegalNumberOfPlayers();
         this.numberOfPlayers = numberOfPlayers;
+        this.serverSubject = serverSubject;
         availableColors = new ArrayList<>() {{
             for (Content content : Content.values()) {
                 if (content.isResource()) {
@@ -168,7 +170,7 @@ public class GameModel extends ServerSubject {
                 add(objectiveDeck.draw());
             }
         }};
-        Player newPlayer = new Player(nickname, color, handCards, objectives);
+        Player newPlayer = new Player(nickname, color, handCards, objectives, serverSubject);
         players.add(newPlayer);
         availableColors.remove(color);
     }
