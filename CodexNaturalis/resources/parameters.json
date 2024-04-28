@@ -14,5 +14,6 @@
   "numberOfGoldCardsInHand": 1,
   "numberOfSecretObjectives": 1,
   "numberOfCommonObjectives": 2,
-  "winThreshold": 20
+  "winThreshold": 20,
+  "serverPort" : 33333
 }

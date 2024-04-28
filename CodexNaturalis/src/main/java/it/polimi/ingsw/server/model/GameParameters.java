@@ -93,6 +93,8 @@ public class GameParameters {
         return getParameter("winThreshold");
     }
 
+    public static int getPort() { return getParameter("serverPort"); }
+
     /**
      * Gets the specified parameter read on the json file
      * @param parameter the parameter to retrieve from the file
