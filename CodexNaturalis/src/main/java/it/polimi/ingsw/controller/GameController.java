@@ -2,6 +2,7 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.network.messages.*;
+import it.polimi.ingsw.network.server.ServerListener;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.Content;
 import it.polimi.ingsw.server.model.GameModel;
@@ -10,11 +11,13 @@ import it.polimi.ingsw.server.model.Player;
 import it.polimi.ingsw.server.model.card.BasicCard;
 import it.polimi.ingsw.server.model.card.CardSides;
 import it.polimi.ingsw.server.model.card.CardType;
+import it.polimi.ingsw.server.model.card.Objective;
 import it.polimi.ingsw.server.model.card.corner.Corner;
 import it.polimi.ingsw.network.server.DeprecatedServerListener;
+import it.polimi.ingsw.utilities.Pair;
 
 import java.awt.*;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -22,10 +25,11 @@ import java.util.List;
  *
  * @author Andrea Fidanza, Guglielmo Gatti, Marco Maiocchi, Francesco Saverio Nisoli
  */
-public class GameController {
+public class GameController implements Runnable{
     private final GameModel game;
     private final String name;
     private final ServerSubject serverSubject;
+    private final Queue<Pair<ServerListener,Message>> messageQueue;
     private boolean isEnded;
 
     /**
@@ -38,11 +42,12 @@ public class GameController {
         this.game = new GameModel(numberOfPlayers, serverSubject);
         this.name = name;
         this.serverSubject = serverSubject;
+        this.messageQueue = new LinkedList<>();
         this.isEnded = false;
     }
 
-    public void requestColors(){
-        serverSubject.notifyAll(new ContentMessage(Status.REQUEST_COLOR,game.getAvailableColors()));
+    public ArrayList<Content> requestColors(){
+        return new ArrayList<>(game.getAvailableColors());
     }
 
     /**
@@ -53,20 +58,9 @@ public class GameController {
      * @throws GameFullException      when the game is full
      * @throws NicknameTakenException when the username of the new player already exists in the game
      */
-    public void acceptPlayer(String nickname, Content color){
-        try{
-            game.addPlayer(nickname, color);
-        }
-        catch (GameFullException g){
-            serverSubject.notify(nickname, new Message(Status.GAME_FULL));
-        }
-        catch (NicknameTakenException | GameException e){
-            serverSubject.notify(nickname, new StringMessage(Status.ERROR,e.getMessage()));
-        }
-        if (game.isGameFull()) {
-            initializeGame();
-            startGame();
-        }
+    public void acceptPlayer(String nickname, Content color, ServerListener serverListener) throws GameFullException, NicknameTakenException, GameException{
+        game.addPlayer(nickname, color);
+        serverSubject.subscribe(nickname, serverListener);
     }
 
     /**
@@ -75,14 +69,19 @@ public class GameController {
     private void initializeGame() {
         for (Player player : game.getAllPlayers()) {
             CardSides starterCard = player.getHandCards().getFirst();
-            serverSubject.notify(player.getNickname(), new CardHandMessage(Status.PLAYER_HAND_CARD, player.getHandCards()));
-            currentListener.sendStarterCard(starterCard);
-            BasicCard starterSide = currentListener.requestStarterSide();
+            serverSubject.notify(player.getNickname(), new CardHandMessage(Status.GAME_STARTED, player.getHandCards()));
+            BasicCard starterSide = null;
             while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
-                starterSide = currentListener.requestStarterSide();
+                Pair<ServerListener, Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
+                if (messagePair.getValue() instanceof CardPlacementMessage cardPlacementMessage){
+                    starterSide = cardPlacementMessage.getCard();
+                }
             }
             player.placeStarterCard(starterSide);
-            currentListener.sendObjectives(player.getObjectives());
+            ArrayList<Objective> secretObjectives = player.getObjectives().stream()
+                    .filter(o -> !game.getCommonObjectives().contains(o))
+                    .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+            serverSubject.notify(player.getNickname(),new ObjectivesMessage(secretObjectives,game.getCommonObjectives()));
         }
     }
 
@@ -92,7 +91,7 @@ public class GameController {
     private void startGame() {
         while (!game.isLastTurn()) {
             for (Player player : game.getAllPlayers()) {
-                DeprecatedServerListener currentListener = listeners.get(player.getNickname());
+                serverSubject.notify(player.getNickname(), new CardHandMessage(Status.CARD,player.getHandCards()));
                 currentListener.sendHandCards(player.getHandCards());
                 currentListener.sendBoard(player.getPlacedCards());
                 placeCard(player);
@@ -161,7 +160,39 @@ public class GameController {
         return isEnded;
     }
 
+
+
     public String getName(){
         return name;
+    }
+
+    public synchronized void addMessageToQueue(Message message, ServerListener listener){
+        messageQueue.add(new Pair<>(listener,message));
+    }
+
+    public Pair<ServerListener,Message> readFromQueue(ServerListener serverListener){
+        Pair<ServerListener,Message> messagePair = null;
+        boolean isTimeOut = false; //must implement a timer system
+        while(messagePair == null || isTimeOut){
+            synchronized(messageQueue){
+                if(messageQueue.isEmpty()){
+                    continue;
+                }
+                messagePair = messageQueue.peek().getKey() == serverListener ? messageQueue.poll() : null;
+            }
+        }
+        return messagePair;
+    }
+
+    @Override
+    public void run(){
+        while(true){
+            if(!game.isGameFull()){
+                continue;
+            }
+            initializeGame();
+
+
+        }
     }
 }

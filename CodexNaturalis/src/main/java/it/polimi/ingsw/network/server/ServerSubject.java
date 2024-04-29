@@ -12,23 +12,27 @@ public class ServerSubject {
         listeners = new HashMap<>();
     }
 
-    public void subscribe(String nickname, ServerListener listener){
+    public synchronized void subscribe(String nickname, ServerListener listener){
         listeners.put(nickname,listener);
     }
 
-    public void unsubscribe(String nickname){
+    public synchronized void unsubscribe(String nickname){
         listeners.remove(nickname);
     }
 
-    public void notifyAll(Message message){
+    public synchronized void notifyAll(Message message){
         for(ServerListener listener : listeners.values()){
             listener.update(message);
         }
     }
 
-    public void notify(String nickname, Message message){
+    public synchronized void notify(String nickname, Message message){
         if(listeners.containsKey(nickname)){
             listeners.get(nickname).update(message);
         }
+    }
+
+    public synchronized ServerListener getListener(String nickname){
+        return listeners.get(nickname);
     }
 }

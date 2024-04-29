@@ -25,6 +25,12 @@ public class CardHandMessage extends Message{
      * @return cardHand attribute
      */
     public ArrayList<CardSides> getCardHand() {
-        return cardHand;
+        return new ArrayList<>(){{
+            for(CardSides cardSides : cardHand){
+                add(new CardSides(
+                        cardSides.frontSide().copy(),
+                        cardSides.backSide().copy()));
+            }
+        }};
     }
 }

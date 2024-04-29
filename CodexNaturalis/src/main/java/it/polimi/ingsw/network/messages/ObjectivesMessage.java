@@ -8,17 +8,17 @@ import java.util.ArrayList;
  * A message sent by the server, containing all the objectives belonging to the player
  */
 public class ObjectivesMessage extends Message {
-    private final Objective personalObjective;
+    private final ArrayList<Objective> personalObjectives;
     private final ArrayList<Objective> commonObjectives;
 
     /**
      * Constructor of the class
-     * @param personalObjective the player's personal objective
+     * @param personalObjectives the player's personal objective
      * @param commonObjectives the common objectives, belonging to all the players
      */
-    public ObjectivesMessage(Objective personalObjective, ArrayList<Objective> commonObjectives) {
+    public ObjectivesMessage(ArrayList<Objective> personalObjectives, ArrayList<Objective> commonObjectives) {
         super(Status.SEND_OBJECTIVES);
-        this.personalObjective = personalObjective;
+        this.personalObjectives = personalObjectives;
         this.commonObjectives = commonObjectives;
     }
 
@@ -26,8 +26,8 @@ public class ObjectivesMessage extends Message {
      * Getter of the personal objective
      * @return the player's personal objective
      */
-    public Objective getPersonalObjective() {
-        return personalObjective;
+    public ArrayList<Objective> getPersonalObjective() {
+        return new ArrayList<Objective>(personalObjectives);
     }
 
     /**
@@ -35,6 +35,6 @@ public class ObjectivesMessage extends Message {
      * @return the game's common objectives, belonging to all the players
      */
     public ArrayList<Objective> getCommonObjectives() {
-        return commonObjectives;
+        return new ArrayList<Objective>(commonObjectives);
     }
 }

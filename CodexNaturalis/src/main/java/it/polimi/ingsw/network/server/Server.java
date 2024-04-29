@@ -15,14 +15,21 @@ public class Server {
 
     public static void main(String[] args){
         matches = new ConcurrentHashMap<>();
+        ClientMessageHandler clientMessageHandler = new ClientMessageHandler();
+        new Thread(clientMessageHandler).start();
         new Thread(()-> {
             try (ServerSocket serverSocket = new ServerSocket(GameParameters.getPort())) {
                 System.out.println("TCP server started on port: " + GameParameters.getPort());
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
                     System.out.println("New client connected");
-                    ClientHandler clientHandler = new ClientHandler(clientSocket);
-                    new Thread(clientHandler).start();
+                    try {
+                        ClientHandler clientHandler = new TCPClientHandler(clientSocket, clientMessageHandler);
+                        new Thread(clientHandler).start();
+                    }catch (IOException e){
+                        System.out.println("Encountered an IO exception when creating a clientHandler");
+                        System.out.println(e.getMessage());
+                    }
                 }
             } catch (IOException e) {
                 System.out.println("Encountered an IO exception when starting the server");
@@ -31,12 +38,16 @@ public class Server {
         }).start();
     }
 
-    public static HashMap<Integer, String> getMatches(){
+    public static HashMap<Integer, String> getFormattedMatches(){
         return new HashMap<>(){{
             for(Entry<Integer, GameController> entry : matches.entrySet()){
                 put(entry.getKey(), entry.getValue().getName());
             }
         }};
+    }
+
+    public static GameController getMatch(int id){
+        return matches.get(id);
     }
 
     public static int addMatch(int numberOfPlayers, String name) throws IllegalNumberOfPlayers{

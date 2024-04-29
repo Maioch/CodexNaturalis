@@ -82,14 +82,14 @@ public class GameModel extends ServerSubject {
      * @param nickname the specified nickname
      * @return the player or null if there are no players with that nickname
      */
-    public Player getPlayer(String nickname) {
+    public synchronized Player getPlayer(String nickname) {
         return players.stream().filter(p -> p.getNickname().equals(nickname)).findFirst().orElse(null);
     }
 
     /**
      * @return all the players
      */
-    public ArrayList<Player> getAllPlayers() {
+    public synchronized ArrayList<Player> getAllPlayers() {
         return new ArrayList<>(players);
     }
 
@@ -98,7 +98,7 @@ public class GameModel extends ServerSubject {
      *
      * @return true if the game is full
      */
-    public boolean isGameFull() {
+    public synchronized boolean isGameFull() {
         return players.size() == numberOfPlayers;
     }
 
@@ -108,7 +108,7 @@ public class GameModel extends ServerSubject {
      * @param nickname the nickname to check
      * @return false if there's a duplicate username
      */
-    public boolean checkNickname(String nickname) {
+    public synchronized boolean checkNickname(String nickname) {
         return players.stream().noneMatch(p -> p.getNickname().equals(nickname));
     }
 
@@ -117,7 +117,7 @@ public class GameModel extends ServerSubject {
      *
      * @return the list of colors that the player can choose from
      */
-    public ArrayList<Content> getAvailableColors() {
+    public synchronized ArrayList<Content> getAvailableColors() {
         return new ArrayList<>(availableColors);
     }
 
@@ -127,7 +127,7 @@ public class GameModel extends ServerSubject {
      *
      * @return true if it's the last turn
      */
-    public boolean isLastTurn() {
+    public synchronized boolean isLastTurn() {
         return (goldDeck.isEmpty() &&
                 goldDeck.getVisibleElements().isEmpty() &&
                 resourceDeck.isEmpty() &&
@@ -145,7 +145,7 @@ public class GameModel extends ServerSubject {
      * @throws GameFullException      if the game is full
      * @throws NicknameTakenException if the nickname is already chosen by another player
      */
-    public void addPlayer(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
+    public synchronized void addPlayer(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
         if (isGameFull()) {
             throw new GameFullException();
         }
@@ -227,7 +227,7 @@ public class GameModel extends ServerSubject {
      *
      * @return a list of said players
      */
-    public List<String> getWinningPlayers() {
+    public synchronized List<String> getWinningPlayers() {
         int max = players.stream().map(Player::getScore).max(Integer::compareTo).orElse(0);
         return players.stream().filter(p -> p.getScore() == max).map(Player::getNickname).toList();
     }
@@ -236,7 +236,7 @@ public class GameModel extends ServerSubject {
      * Getter for the game's common objectives
      * @return a deep copy of the game's common objectives list
      */
-    public List<Objective> getCommonObjectives() {
+    public ArrayList<Objective> getCommonObjectives() {
         return new ArrayList<>(){{
             for(Objective objective : commonObjectives){
                 add(new Objective(objective));
