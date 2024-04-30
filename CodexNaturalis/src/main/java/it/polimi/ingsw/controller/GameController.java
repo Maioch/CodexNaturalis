@@ -67,7 +67,9 @@ public class GameController implements Runnable{
      * A method that lets every player place their starter card (by doing so, initializing the boards)
      */
     private void initializeGame() {
+        serverSubject.notifyAll(new DrawOptionsMessage(game.getDrawableCards()));
         for (Player player : game.getAllPlayers()) {
+            serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             CardSides starterCard = player.getHandCards().getFirst();
             serverSubject.notify(player.getNickname(), new CardHandMessage(Status.GAME_STARTED, player.getHandCards()));
             BasicCard starterSide = null;
@@ -91,18 +93,14 @@ public class GameController implements Runnable{
     private void startGame() {
         while (!game.isLastTurn()) {
             for (Player player : game.getAllPlayers()) {
-                serverSubject.notify(player.getNickname(), new CardHandMessage(Status.CARD,player.getHandCards()));
-                currentListener.sendHandCards(player.getHandCards());
-                currentListener.sendBoard(player.getPlacedCards());
+                serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
                 placeCard(player);
                 drawCard(player);
             }
         }
         //last turn of the game
         for (Player player : game.getAllPlayers()) {
-            DeprecatedServerListener currentListener = listeners.get(player.getNickname());
-            currentListener.sendHandCards(player.getHandCards());
-            currentListener.sendBoard(player.getPlacedCards());
+            serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             placeCard(player);
         }
         List<String> winners = game.getWinningPlayers();
@@ -116,16 +114,31 @@ public class GameController implements Runnable{
      * @param player the player that plays the card
      */
     private void placeCard(Player player) {
-        DeprecatedServerListener listener = listeners.get(player.getNickname());
-        BasicCard cardToPlace = listener.requestCardToPlace();
-        while (!player.checkRequirements(cardToPlace) || !player.isCardInHand(cardToPlace)) {
-            cardToPlace = listener.requestCardToPlace();
-        }
-        Corner chosenCorner = listener.requestCornerToPlaceOn();
-        while (!player.checkIfPlaceable(chosenCorner) || !player.isCornerPartOfBoard(chosenCorner)) {
-            chosenCorner = listener.requestCornerToPlaceOn();
+        serverSubject.notify(player.getNickname(), new Message(Status.PLACE_CARD));
+        BasicCard cardToPlace = null;
+        Corner chosenCorner = null;
+        boolean moveValid = false;
+        while (!moveValid) {
+            Pair<ServerListener, Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
+            if (messagePair.getValue() instanceof CardPlacementMessage cardPlacementMessage) {
+                cardToPlace = cardPlacementMessage.getCard();
+                chosenCorner = cardPlacementMessage.getCorner();
+            }
+            moveValid = isMoveValid(player,cardToPlace,chosenCorner);
+            if (!moveValid){
+                serverSubject.notify(player.getNickname(), new Message(Status.PLACEMENT_FAILED));
+            }
         }
         player.placeCard(cardToPlace, chosenCorner);
+    }
+
+    private boolean isMoveValid(Player player,BasicCard card, Corner corner){
+        return (card != null &&
+                player.checkRequirements(card) &&
+                player.isCardInHand(card) &&
+                corner != null &&
+                player.checkIfPlaceable(corner) &&
+                player.isCornerPartOfBoard(corner));
     }
 
     /**
@@ -134,18 +147,16 @@ public class GameController implements Runnable{
      * @param player the player that is drawing
      */
     private void drawCard(Player player) {
-        DeprecatedServerListener listener = listeners.get(player.getNickname());
-        listener.sendDrawableCards(game.getDrawableCards());
         boolean drawSuccess = false;
         while (!drawSuccess){
-            Point cardChosen;
-            CardType typeChosen;
-            int indexChosen;
+            CardType typeChosen = null;
+            int indexChosen = -1;
             do{
-                cardChosen = listener.requestCardToDraw();
-                Point finalCardChosen = cardChosen;
-                typeChosen = Arrays.stream(CardType.values()).filter(c -> c.ordinal() == finalCardChosen.x).findFirst().orElse(null);
-                indexChosen = cardChosen.y;
+                Pair<ServerListener,Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
+                if (messagePair.getValue() instanceof DrawChoiceMessage drawChoiceMessage){
+                    indexChosen = drawChoiceMessage.getIndex();
+                    typeChosen = drawChoiceMessage.getCardType();
+                }
             }while(typeChosen == null || indexChosen < 0 || indexChosen > GameParameters.getNumberOfVisibleCards());
             try{
                 drawSuccess = true;
@@ -154,6 +165,7 @@ public class GameController implements Runnable{
                 drawSuccess = false;
             }
         }
+        serverSubject.notifyAll(new DrawOptionsMessage(game.getDrawableCards()));
     }
 
     public boolean isGameEnded(){

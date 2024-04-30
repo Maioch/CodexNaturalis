@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model.card;
 
+import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.Content;
 import it.polimi.ingsw.server.model.TestUtilities;
 import it.polimi.ingsw.server.model.card.corner.Location;
@@ -36,7 +37,8 @@ public class ObjectiveTest {
                 new ArrayList<>(Arrays.asList(
                         referenceContentObjective,
                         referencePatternObjective
-                ))
+                )),
+                new ServerSubject()
         );
         LinkedHashMap<Integer,Location> placements1 = new LinkedHashMap<>(){{
             put(2,Location.TR);

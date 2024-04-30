@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.Content;
 import it.polimi.ingsw.server.model.card.corner.Corner;
 import it.polimi.ingsw.server.model.card.corner.Location;
@@ -45,7 +46,7 @@ public class GoldCardTest {
         Player playerTest = new Player("test", Content.RED, new ArrayList<>(){{
             for(int i = startResource; i <= endResource; i++)
                 add(CardBuilder.buildCard(i));
-        }}, new ArrayList<>());
+        }}, new ArrayList<>(), new ServerSubject());
         int offset = 0;
         for(CardSides card : playerTest.getHandCards()){
             Corner cornerTest = new Corner(Content.WHITE, Location.BL);

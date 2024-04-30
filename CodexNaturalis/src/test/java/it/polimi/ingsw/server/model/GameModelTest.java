@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.card.BasicCard;
 import it.polimi.ingsw.server.model.card.CardBuilder;
 import it.polimi.ingsw.server.model.card.CardType;
@@ -33,7 +34,7 @@ public class GameModelTest {
         Content playerContent = Content.RED;
         int players = 2;
         try {
-            gameModel = new GameModel(players);
+            gameModel = new GameModel(players, new ServerSubject());
             gameModel.addPlayer(playerName, playerContent);
             Player player = gameModel.getPlayer(playerName);
             BasicCard starter = CardBuilder.buildCard(81).backSide();
@@ -50,7 +51,7 @@ public class GameModelTest {
                 previousCard = card;
             }
             assertTrue(gameModel.isLastTurn());
-            gameModel = new GameModel(players);
+            gameModel = new GameModel(players, new ServerSubject());
             gameModel.addPlayer(playerName, playerContent);
             player = gameModel.getPlayer(playerName);
             while (gameModel.getDrawableCards().get(CardType.RESOURCE).getFirst() != null) {
@@ -82,7 +83,7 @@ public class GameModelTest {
         GameModel gameModel;
         for (int numberOfPlayers = GameParameters.getMinPlayers(); numberOfPlayers <= GameParameters.getMaxPlayers(); numberOfPlayers++) {
             try {
-                gameModel = new GameModel(numberOfPlayers);
+                gameModel = new GameModel(numberOfPlayers, new ServerSubject());
                 for (Content color : Arrays.stream(Content.values()).filter(Content::isColor).toList()) {
                     try {
                         gameModel.addPlayer(color.toString(), color);
@@ -114,7 +115,7 @@ public class GameModelTest {
         GameModel gameModel;
         int playersNumber = 2;
         try {
-            gameModel = new GameModel(playersNumber);
+            gameModel = new GameModel(playersNumber, new ServerSubject());
             gameModel.addPlayer("resource", Content.GREEN);
             gameModel.addPlayer("gold", Content.RED);
             Player resource = gameModel.getPlayer("resource");
@@ -168,8 +169,8 @@ public class GameModelTest {
     public void drawCardTest() throws GameException{
         int numberOfPlayers = 2;
         try {
-            GameModel gameModel = new GameModel(numberOfPlayers);
-            Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>());
+            GameModel gameModel = new GameModel(numberOfPlayers, new ServerSubject());
+            Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
             int index = 0;
             gameModel.drawCard(playerTest, CardType.RESOURCE, index);
             assertFalse(playerTest.getHandCards().isEmpty());
@@ -195,9 +196,9 @@ public class GameModelTest {
     public void getWinningPlayersTest() throws GameException, GameFullException, NicknameTakenException{
         int numberOfPlayers = 2;
         try{
-            GameModel gameModel = new GameModel(numberOfPlayers);
-            Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>());
-            Player playerTest2 = new Player("test2", Content.BLUE, new ArrayList<>(), new ArrayList<>());
+            GameModel gameModel = new GameModel(numberOfPlayers, new ServerSubject());
+            Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
+            Player playerTest2 = new Player("test2", Content.BLUE, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
             ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(playerTest.getNickname(), playerTest2.getNickname()));
 
             assertTrue(gameModel.getWinningPlayers().isEmpty());

@@ -1,22 +1,24 @@
 package it.polimi.ingsw.network.messages;
 
+import it.polimi.ingsw.server.model.card.BasicCard;
 import it.polimi.ingsw.server.model.card.CardSides;
 import it.polimi.ingsw.server.model.card.CardType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Message sent by the server, containing all the possible draw options
  */
 public class DrawOptionsMessage extends Message{
-    private final HashMap<CardType, ArrayList<CardSides>> drawableOptions;
+    private final HashMap<CardType, ArrayList<BasicCard>> drawableOptions;
 
     /**
      * Constructor of the class
      * @param drawableOptions hashmap containing, respectively, the card type and the card (sides) itself of all the possible options
      */
-    public DrawOptionsMessage(HashMap<CardType, ArrayList<CardSides>> drawableOptions) {
+    public DrawOptionsMessage(HashMap<CardType, ArrayList<BasicCard>> drawableOptions) {
         super(Status.DRAW_OPTIONS);
         this.drawableOptions = drawableOptions;
     }
@@ -25,7 +27,11 @@ public class DrawOptionsMessage extends Message{
      * Getter method of the drawable options
      * @return hashmap containing, respectively, the card type and the card (sides) itself of all the possible options
      */
-    public HashMap<CardType, ArrayList<CardSides>> getDrawableOptions() {
-        return drawableOptions;
+    public HashMap<CardType, ArrayList<BasicCard>> getDrawableOptions() {
+        return new HashMap<>(){{
+            for(Map.Entry<CardType, ArrayList<BasicCard>> entry : drawableOptions.entrySet()){
+                put(entry.getKey(), new ArrayList<>(entry.getValue()));
+            }
+        }};
     }
 }

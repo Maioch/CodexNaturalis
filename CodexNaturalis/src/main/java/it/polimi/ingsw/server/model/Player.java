@@ -1,7 +1,10 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.PlayerException;
+import it.polimi.ingsw.network.messages.CardHandMessage;
+import it.polimi.ingsw.network.messages.PlayerBoardMessage;
 import it.polimi.ingsw.network.messages.PlayerMessage;
+import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.card.BasicCard;
 import it.polimi.ingsw.server.model.card.CardSides;
@@ -227,6 +230,7 @@ public class Player {
         placedCards.add(cardToPlace);
         corner.coverCorner();
         score += cardToPlace.getPoints();
+        serverSubject.notifyAll(new PlayerBoardMessage(this.getPlacedCards(),this.score));
     }
 
     /**
@@ -244,6 +248,9 @@ public class Player {
         startCorner.setX(0);
         startCorner.setY(0);
         starterCard.place(startCorner);
+        serverSubject.notifyAll(new PlayerBoardMessage(this.getPlacedCards(), this.score));
+        serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_CARD,this.getHandCards()));
+        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD,this.getHandCards()));
     }
 
     /**

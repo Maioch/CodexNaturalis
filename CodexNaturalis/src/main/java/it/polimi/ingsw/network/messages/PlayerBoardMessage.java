@@ -9,14 +9,16 @@ import java.util.ArrayList;
  */
 public class PlayerBoardMessage extends Message {
     private final ArrayList<BasicCard> board;
+    private final int playerScore;
 
     /**
      * Constructor of the class
      * @param board the placed cards of the player
      */
-    public PlayerBoardMessage(ArrayList<BasicCard> board){
-        super(Status.PLAYER_BOARD);
+    public PlayerBoardMessage(ArrayList<BasicCard> board, int playerScore){
+        super(Status.PLACEMENT_OK);
         this.board = board;
+        this.playerScore = playerScore;
     }
 
     /**
@@ -24,6 +26,10 @@ public class PlayerBoardMessage extends Message {
      * @return the player's board, as an ArrayList of BasicCards
      */
     public ArrayList<BasicCard> getBoard() {
-        return board;
+        return new ArrayList<>(board);
+    }
+
+    public int getPlayerScore(){
+        return playerScore;
     }
 }

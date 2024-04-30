@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.PlayerException;
+import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.server.model.card.*;
 import it.polimi.ingsw.server.model.card.corner.Corner;
 import it.polimi.ingsw.server.model.card.corner.Location;
@@ -29,21 +30,24 @@ public class PlayerTest {
                         CardBuilder.buildCard(45),
                         CardBuilder.buildCard(67))),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                        CardBuilder.buildObjective(91))));
+                        CardBuilder.buildObjective(91))),
+                new ServerSubject());
         Player testEqualPlayer = new Player(nicknames.getFirst(),
                 colors.getFirst(),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
                         CardBuilder.buildCard(45),
                         CardBuilder.buildCard(67))),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                        CardBuilder.buildObjective(91))));
+                        CardBuilder.buildObjective(91))),
+                new ServerSubject());
         Player testDifferentPlayer = new Player(nicknames.get(1),
                 colors.getFirst(),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
                         CardBuilder.buildCard(45),
                         CardBuilder.buildCard(67))),
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                        CardBuilder.buildObjective(92))));
+                        CardBuilder.buildObjective(92))),
+                new ServerSubject());
         assertEquals(testEqualPlayer,referencePlayer);
         assertNotEquals(testDifferentPlayer,referencePlayer);
     }
@@ -58,7 +62,7 @@ public class PlayerTest {
                 add(CardBuilder.buildCard(i));
             }
         }};
-        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>());
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), new ServerSubject());
         HashMap<Content, Integer> expectedResult = new HashMap<>(){{
             for(Content content : Content.values()) {
                 put(content, 0);
@@ -97,7 +101,8 @@ public class PlayerTest {
                         referenceContentObjective2,
                         referenceContentObjective3,
                         referenceContentObjective4
-                ))
+                )),
+                new ServerSubject()
         );
 
         Corner fakeCorner = new Corner(Content.WHITE, Location.TR);
@@ -118,7 +123,7 @@ public class PlayerTest {
      */
     @Test
     public void checkRequirementsTest(){
-        Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>());
+        Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
         ArrayList<BasicCard> resourceCards = new ArrayList<>(){{
             for(int id = GameParameters.getStartCardIndex(CardType.RESOURCE); id <= GameParameters.getEndCardIndex(CardType.RESOURCE); id++){
                 add(CardBuilder.buildCard(id).backSide());
@@ -159,7 +164,8 @@ public class PlayerTest {
                 colors.getFirst(),
                 new ArrayList<>(){{add(CardBuilder.buildCard(32));}},
                 new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                        CardBuilder.buildObjective(92))));
+                        CardBuilder.buildObjective(92))),
+                new ServerSubject());
         BasicCard starterCard = CardBuilder.buildCard(82).frontSide();
         referencePlayer.placeStarterCard(starterCard);
 
@@ -204,7 +210,7 @@ public class PlayerTest {
                 add(CardBuilder.buildCard(i));
             }
         }};
-        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>());
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), new ServerSubject());
         boolean front = true;
         int coordinates = 0;
         for(CardSides card : cardsForHand){
@@ -237,7 +243,7 @@ public class PlayerTest {
      */
     @Test
     public void addCardToHandTest(){
-        Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>());
+        Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
         assertTrue(playerTest.getHandCards().isEmpty());
         CardSides card = CardBuilder.buildCard(41);
         playerTest.addCardToHand(card);
@@ -250,7 +256,7 @@ public class PlayerTest {
     @Test
     public void isCornerPartOfBoardTest(){
         Player playerTest = new Player("test", Content.RED,
-                new ArrayList<>(){{add(CardBuilder.buildCard(1));}}, new ArrayList<>());
+                new ArrayList<>(){{add(CardBuilder.buildCard(1));}}, new ArrayList<>(), new ServerSubject());
         BasicCard starterCard = CardBuilder.buildCard(81).frontSide();
         playerTest.placeStarterCard(starterCard);
         BasicCard card1 = playerTest.getHandCards().getFirst().frontSide();
@@ -275,8 +281,8 @@ public class PlayerTest {
      */
     @Test
     public void isCardInHandTest(){
-        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
-        Player playerTest2 = new Player(nicknames.get(1), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>(), new ServerSubject());
+        Player playerTest2 = new Player(nicknames.get(1), colors.getFirst(), new ArrayList<>(), new ArrayList<>(), new ServerSubject());
 
         for(int i = GameParameters.getStartCardIndex(CardType.RESOURCE); i <= GameParameters.getEndCardIndex(CardType.RESOURCE); i++) {
             BasicCard cardFront = CardBuilder.buildCard(i).frontSide();
@@ -297,7 +303,7 @@ public class PlayerTest {
      */
     @Test
     public void placeStarterCardTest(){
-        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>());
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>(), new ServerSubject());
         BasicCard starterCard = CardBuilder.buildCard(GameParameters.getStartCardIndex(CardType.STARTER)).frontSide();
         assertTrue(playerTest.getPlacedCards().isEmpty());
         playerTest.placeStarterCard(starterCard);
