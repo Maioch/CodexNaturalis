@@ -1,10 +1,11 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.server.model.card.BasicCard;
-import it.polimi.ingsw.server.model.card.CardBuilder;
-import it.polimi.ingsw.server.model.card.CardSides;
-import it.polimi.ingsw.server.model.card.corner.Corner;
-import it.polimi.ingsw.server.model.card.corner.Location;
+import it.polimi.ingsw.model.server.Player;
+import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardBuilder;
+import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.model.server.card.corner.Location;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

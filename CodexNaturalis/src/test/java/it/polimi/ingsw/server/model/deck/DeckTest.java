@@ -2,11 +2,12 @@ package it.polimi.ingsw.server.model.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import it.polimi.ingsw.server.model.GameParameters;
-import it.polimi.ingsw.server.model.card.CardBuilder;
-import it.polimi.ingsw.server.model.card.CardSides;
-import it.polimi.ingsw.server.model.card.CardType;
-import it.polimi.ingsw.server.model.card.Objective;
+import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.server.card.CardBuilder;
+import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.server.card.CardType;
+import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.server.deck.Deck;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

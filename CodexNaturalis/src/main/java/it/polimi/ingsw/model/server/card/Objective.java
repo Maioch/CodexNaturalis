@@ -1,9 +1,9 @@
-package it.polimi.ingsw.server.model.card;
+package it.polimi.ingsw.model.server.card;
 
-import it.polimi.ingsw.server.model.card.corner.Corner;
-import it.polimi.ingsw.server.model.card.corner.Location;
-import it.polimi.ingsw.server.model.Content;
-import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.Player;
 
 import java.awt.*;
 import java.util.ArrayList;

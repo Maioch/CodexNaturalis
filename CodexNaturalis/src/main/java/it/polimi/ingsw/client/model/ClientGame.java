@@ -1,9 +1,9 @@
 package it.polimi.ingsw.client.model;
 
-import it.polimi.ingsw.server.model.Content;
-import it.polimi.ingsw.server.model.card.BasicCard;
-import it.polimi.ingsw.server.model.card.CardType;
-import it.polimi.ingsw.server.model.card.Objective;
+import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardType;
+import it.polimi.ingsw.model.server.card.Objective;
 
 import java.util.ArrayList;
 import java.util.HashMap;

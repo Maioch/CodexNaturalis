@@ -1,8 +1,7 @@
 package it.polimi.ingsw.client.model;
 
-import it.polimi.ingsw.server.model.card.BasicCard;
-import it.polimi.ingsw.server.model.card.CardSides;
-import it.polimi.ingsw.server.model.card.Objective;
+import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.server.card.Objective;
 
 import java.util.ArrayList;
 

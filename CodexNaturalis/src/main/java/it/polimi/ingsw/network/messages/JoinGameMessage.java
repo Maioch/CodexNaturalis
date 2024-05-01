@@ -1,6 +1,6 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.server.model.Content;
+import it.polimi.ingsw.model.server.Content;
 
 public class JoinGameMessage extends Message{
     private final String nickname;

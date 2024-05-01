@@ -1,14 +1,15 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.model.server.deck.Deck;
+import it.polimi.ingsw.model.server.deck.TurnDeck;
+import it.polimi.ingsw.network.messages.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
-import it.polimi.ingsw.server.model.card.BasicCard;
-import it.polimi.ingsw.server.model.card.CardBuilder;
-import it.polimi.ingsw.server.model.card.CardSides;
-import it.polimi.ingsw.server.model.card.Objective;
-import it.polimi.ingsw.server.model.card.CardType;
-import it.polimi.ingsw.server.model.deck.Deck;
-import it.polimi.ingsw.server.model.deck.TurnDeck;
+import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardBuilder;
+import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.server.card.CardType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -173,6 +174,9 @@ public class GameModel extends ServerSubject {
         Player newPlayer = new Player(nickname, color, handCards, objectives, serverSubject);
         players.add(newPlayer);
         availableColors.remove(color);
+        for(Player player : players) {
+            serverSubject.notifyAll(new PlayerMessage(player.getNickname(), player.getColor()));
+        }
     }
 
     /**
@@ -184,7 +188,7 @@ public class GameModel extends ServerSubject {
      *                  or to take one of the visible ones (if the index is higher than 0).
      * @throws GameException if the given card type doesn't match any deck and if the given index is invalid
      */
-    public void drawCard(Player player, CardType type, int drawIndex) throws GameException {
+    public synchronized void drawCard(Player player, CardType type, int drawIndex) throws GameException {
         TurnDeck<CardSides> deck = switch (type) {
             case RESOURCE -> resourceDeck;
             case GOLD -> goldDeck;
@@ -209,7 +213,7 @@ public class GameModel extends ServerSubject {
      *
      * @return all the cards the player can draw during his draw phase
      */
-    public HashMap<CardType, ArrayList<BasicCard>> getDrawableCards() {
+    public synchronized HashMap<CardType, ArrayList<BasicCard>> getDrawableCards() {
         return new HashMap<>() {{
             put(CardType.RESOURCE, new ArrayList<>() {{
                 add(resourceDeck.isEmpty() ? null : resourceDeck.getElementOnTop().backSide());

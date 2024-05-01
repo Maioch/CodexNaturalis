@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model.card;
+package it.polimi.ingsw.model.server.card;
 
 /**
  * Record that represents each side of the card, front and back.

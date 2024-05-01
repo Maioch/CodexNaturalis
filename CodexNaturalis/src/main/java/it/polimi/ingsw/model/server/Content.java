@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.model.server;
 
 /**
  * Enum that represents every possible symbol contained in cards. Every color si associated with the respective in-game

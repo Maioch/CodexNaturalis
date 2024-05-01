@@ -1,26 +1,27 @@
-package it.polimi.ingsw.network.server;
+package it.polimi.ingsw.network;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.network.server.ServerMessageHandler;
 
 import java.io.*;
 
 /**
  * Class used to handle each client connected to the server
  */
-public abstract class ClientHandler implements Runnable, ServerListener{
-    protected final ClientMessageHandler handler;
+public abstract class NetworkHandler implements Runnable, Listener {
+    protected final ServerMessageHandler handler;
     private GameController currentGame;
 
     /**
      * Constructor for the class
      * @param handler the message handler to which the client refers to
      */
-    public ClientHandler(ClientMessageHandler handler) throws IOException{
+    public NetworkHandler(ServerMessageHandler handler) throws IOException{
         this.currentGame = null;
         this.handler = handler;
     }
 
-    public GameController getCurrentGame() {
+    public GameController getCurrentGame(){
         return currentGame;
     }
 

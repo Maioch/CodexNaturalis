@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model.card.corner;
+package it.polimi.ingsw.model.server.card.corner;
 
 /**
  * Enum that represents corner locations in a card (e.g. BL -> bottom left).

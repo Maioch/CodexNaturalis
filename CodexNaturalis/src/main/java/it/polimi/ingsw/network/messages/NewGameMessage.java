@@ -1,7 +1,5 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.server.model.Content;
-
 public class NewGameMessage extends Message{
     private final String name;
     private final int numberOfPlayers;

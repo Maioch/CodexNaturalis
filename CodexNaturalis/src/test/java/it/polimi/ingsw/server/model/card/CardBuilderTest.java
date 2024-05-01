@@ -1,8 +1,9 @@
 package it.polimi.ingsw.server.model.card;
 
-import it.polimi.ingsw.server.model.Content;
-import it.polimi.ingsw.server.model.card.corner.Corner;
-import it.polimi.ingsw.server.model.card.corner.Location;
+import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.card.*;
+import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.model.server.card.corner.Location;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

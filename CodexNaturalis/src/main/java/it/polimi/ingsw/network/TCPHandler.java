@@ -1,15 +1,14 @@
-package it.polimi.ingsw.network.server;
+package it.polimi.ingsw.network;
 
-import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.server.ServerMessageHandler;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class TCPClientHandler extends ClientHandler{
-    private final Socket socket;
+public class TCPHandler extends NetworkHandler {
     private final ObjectOutputStream clientOutput;
     private final ObjectInputStream clientInput;
 
@@ -17,9 +16,8 @@ public class TCPClientHandler extends ClientHandler{
      * Constructor for the class
      * @param socket the socket to which the client is connected
      */
-    public TCPClientHandler(Socket socket, ClientMessageHandler handler) throws IOException {
+    public TCPHandler(Socket socket, ServerMessageHandler handler) throws IOException{
         super(handler);
-        this.socket = socket;
         this.clientOutput = new ObjectOutputStream(socket.getOutputStream());
         this.clientInput = new ObjectInputStream(socket.getInputStream());
     }
@@ -29,9 +27,9 @@ public class TCPClientHandler extends ClientHandler{
      */
     @Override
     public void run(){
-        try {
-            while (socket.isConnected()) {
-                try {
+        try{
+            while(true){
+                try{
                     Message message = (Message) clientInput.readObject();
                     handler.addMessageToQueue(message,this);
                 }catch (ClassNotFoundException e){
@@ -44,10 +42,10 @@ public class TCPClientHandler extends ClientHandler{
     }
 
     @Override
-    public void update(Message message) {
-        try {
+    public void update(Message message){
+        try{
             clientOutput.writeObject(message);
-        }catch (IOException e){
+        }catch(IOException e){
             //needs a better way to be handled
             System.out.println(e.getMessage());
         }

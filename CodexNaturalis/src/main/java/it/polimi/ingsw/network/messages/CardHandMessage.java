@@ -1,6 +1,6 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.server.model.card.CardSides;
+import it.polimi.ingsw.model.server.card.CardSides;
 
 import java.util.ArrayList;
 

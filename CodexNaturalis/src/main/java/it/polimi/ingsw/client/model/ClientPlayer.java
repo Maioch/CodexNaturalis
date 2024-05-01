@@ -1,6 +1,6 @@
 package it.polimi.ingsw.client.model;
 
-import it.polimi.ingsw.server.model.card.BasicCard;
+import it.polimi.ingsw.model.server.card.BasicCard;
 
 import java.util.ArrayList;
 

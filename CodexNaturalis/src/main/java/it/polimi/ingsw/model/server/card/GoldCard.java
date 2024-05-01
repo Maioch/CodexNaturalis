@@ -1,7 +1,7 @@
-package it.polimi.ingsw.server.model.card;
+package it.polimi.ingsw.model.server.card;
 
 import it.polimi.ingsw.exceptions.CardException;
-import it.polimi.ingsw.server.model.Content;
+import it.polimi.ingsw.model.server.Content;
 
 import java.util.ArrayList;
 import java.util.HashMap;

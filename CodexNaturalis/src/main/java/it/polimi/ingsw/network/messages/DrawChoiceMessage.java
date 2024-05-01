@@ -1,6 +1,6 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.server.model.card.CardType;
+import it.polimi.ingsw.model.server.card.CardType;
 
 /**
  * A message sent by the client, containing the infos regarding the draw choice

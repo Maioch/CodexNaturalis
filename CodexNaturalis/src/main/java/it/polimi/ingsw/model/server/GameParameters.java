@@ -1,8 +1,8 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.model.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.ingsw.server.model.card.CardType;
+import it.polimi.ingsw.model.server.card.CardType;
 
 import java.io.File;
 import java.io.IOException;

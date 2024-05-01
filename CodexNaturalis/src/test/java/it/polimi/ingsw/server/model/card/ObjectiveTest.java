@@ -1,10 +1,13 @@
 package it.polimi.ingsw.server.model.card;
 
+import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardBuilder;
+import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.network.server.ServerSubject;
-import it.polimi.ingsw.server.model.Content;
+import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.server.model.TestUtilities;
-import it.polimi.ingsw.server.model.card.corner.Location;
-import it.polimi.ingsw.server.model.Player;
+import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.model.server.Player;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

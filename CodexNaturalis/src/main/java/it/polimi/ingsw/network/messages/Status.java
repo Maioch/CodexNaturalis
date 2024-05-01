@@ -139,6 +139,11 @@ public enum Status {
     LAST_TURN(""),
 
     /**
+     *
+     */
+    PLAYER_SCORE(""),
+
+    /**
      * Server: the next message will contain the nickname of the person who won.
      */
     DECLARE_WINNER(""),

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model.deck;
+package it.polimi.ingsw.model.server.deck;
 
 import it.polimi.ingsw.exceptions.DeckException;
 import java.util.ArrayList;

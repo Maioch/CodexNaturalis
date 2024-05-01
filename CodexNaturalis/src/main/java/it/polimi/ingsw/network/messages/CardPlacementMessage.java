@@ -1,7 +1,7 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.server.model.card.BasicCard;
-import it.polimi.ingsw.server.model.card.corner.Corner;
+import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.corner.Corner;
 
 /**
  * Message sent by the client along with a card and a corner where he wants to place it

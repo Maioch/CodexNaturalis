@@ -1,19 +1,19 @@
 package it.polimi.ingsw.network.server;
 
+import it.polimi.ingsw.network.Listener;
 import it.polimi.ingsw.network.messages.Message;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ServerSubject {
-    private final HashMap<String,ServerListener> listeners;
+    private final HashMap<String, Listener> listeners;
 
     public ServerSubject(){
         listeners = new HashMap<>();
     }
 
-    public synchronized void subscribe(String nickname, ServerListener listener){
-        listeners.put(nickname,listener);
+    public synchronized void subscribe(String nickname, Listener listener){
+        listeners.put(nickname, listener);
     }
 
     public synchronized void unsubscribe(String nickname){
@@ -21,7 +21,7 @@ public class ServerSubject {
     }
 
     public synchronized void notifyAll(Message message){
-        for(ServerListener listener : listeners.values()){
+        for(Listener listener : listeners.values()){
             listener.update(message);
         }
     }
@@ -32,7 +32,7 @@ public class ServerSubject {
         }
     }
 
-    public synchronized ServerListener getListener(String nickname){
+    public synchronized Listener getListener(String nickname){
         return listeners.get(nickname);
     }
 }

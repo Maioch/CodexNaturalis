@@ -1,12 +1,16 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.GameModel;
+import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.network.server.ServerSubject;
-import it.polimi.ingsw.server.model.card.BasicCard;
-import it.polimi.ingsw.server.model.card.CardBuilder;
-import it.polimi.ingsw.server.model.card.CardType;
-import it.polimi.ingsw.server.model.card.corner.Corner;
-import it.polimi.ingsw.server.model.card.corner.Location;
+import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardBuilder;
+import it.polimi.ingsw.model.server.card.CardType;
+import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.model.server.card.corner.Location;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

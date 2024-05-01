@@ -2,8 +2,9 @@ package it.polimi.ingsw.server.model.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import it.polimi.ingsw.server.model.card.CardBuilder;
-import it.polimi.ingsw.server.model.card.CardSides;
+import it.polimi.ingsw.model.server.card.CardBuilder;
+import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.server.deck.TurnDeck;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

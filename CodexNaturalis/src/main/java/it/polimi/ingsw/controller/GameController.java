@@ -2,21 +2,19 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.network.server.ServerListener;
+import it.polimi.ingsw.network.Listener;
 import it.polimi.ingsw.network.server.ServerSubject;
-import it.polimi.ingsw.server.model.Content;
-import it.polimi.ingsw.server.model.GameModel;
-import it.polimi.ingsw.server.model.GameParameters;
-import it.polimi.ingsw.server.model.Player;
-import it.polimi.ingsw.server.model.card.BasicCard;
-import it.polimi.ingsw.server.model.card.CardSides;
-import it.polimi.ingsw.server.model.card.CardType;
-import it.polimi.ingsw.server.model.card.Objective;
-import it.polimi.ingsw.server.model.card.corner.Corner;
-import it.polimi.ingsw.network.server.DeprecatedServerListener;
+import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.GameModel;
+import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.server.Player;
+import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.server.card.CardType;
+import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.utilities.Pair;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class GameController implements Runnable{
     private final GameModel game;
     private final String name;
     private final ServerSubject serverSubject;
-    private final Queue<Pair<ServerListener,Message>> messageQueue;
+    private final Queue<Pair<Listener,Message>> messageQueue;
     private boolean isEnded;
 
     /**
@@ -58,7 +56,7 @@ public class GameController implements Runnable{
      * @throws GameFullException      when the game is full
      * @throws NicknameTakenException when the username of the new player already exists in the game
      */
-    public void acceptPlayer(String nickname, Content color, ServerListener serverListener) throws GameFullException, NicknameTakenException, GameException{
+    public void acceptPlayer(String nickname, Content color, Listener serverListener) throws GameFullException, NicknameTakenException, GameException{
         game.addPlayer(nickname, color);
         serverSubject.subscribe(nickname, serverListener);
     }
@@ -74,7 +72,7 @@ public class GameController implements Runnable{
             serverSubject.notify(player.getNickname(), new CardHandMessage(Status.GAME_STARTED, player.getHandCards()));
             BasicCard starterSide = null;
             while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
-                Pair<ServerListener, Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
+                Pair<Listener, Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
                 if (messagePair.getValue() instanceof CardPlacementMessage cardPlacementMessage){
                     starterSide = cardPlacementMessage.getCard();
                 }
@@ -83,7 +81,7 @@ public class GameController implements Runnable{
             ArrayList<Objective> secretObjectives = player.getObjectives().stream()
                     .filter(o -> !game.getCommonObjectives().contains(o))
                     .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-            serverSubject.notify(player.getNickname(),new ObjectivesMessage(secretObjectives,game.getCommonObjectives()));
+            serverSubject.notify(player.getNickname(),new ObjectivesMessage(Status.SEND_OBJECTIVES,secretObjectives,game.getCommonObjectives()));
         }
     }
 
@@ -103,7 +101,13 @@ public class GameController implements Runnable{
             serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             placeCard(player);
         }
+        //calculate the final score
+        for (Player player : game.getAllPlayers()){
+            serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            player.awardObjectivePoints();
+        }
         List<String> winners = game.getWinningPlayers();
+        serverSubject.notifyAll(new WinnersMessage(winners));
         isEnded = true;
         //ViewUpdater is updated with the winners
     }
@@ -119,7 +123,7 @@ public class GameController implements Runnable{
         Corner chosenCorner = null;
         boolean moveValid = false;
         while (!moveValid) {
-            Pair<ServerListener, Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
+            Pair<Listener, Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
             if (messagePair.getValue() instanceof CardPlacementMessage cardPlacementMessage) {
                 cardToPlace = cardPlacementMessage.getCard();
                 chosenCorner = cardPlacementMessage.getCorner();
@@ -149,10 +153,11 @@ public class GameController implements Runnable{
     private void drawCard(Player player) {
         boolean drawSuccess = false;
         while (!drawSuccess){
+            serverSubject.notify(player.getNickname(),new Message(Status.DRAW));
             CardType typeChosen = null;
             int indexChosen = -1;
             do{
-                Pair<ServerListener,Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
+                Pair<Listener,Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
                 if (messagePair.getValue() instanceof DrawChoiceMessage drawChoiceMessage){
                     indexChosen = drawChoiceMessage.getIndex();
                     typeChosen = drawChoiceMessage.getCardType();
@@ -172,18 +177,16 @@ public class GameController implements Runnable{
         return isEnded;
     }
 
-
-
     public String getName(){
         return name;
     }
 
-    public synchronized void addMessageToQueue(Message message, ServerListener listener){
+    public synchronized void addMessageToQueue(Message message, Listener listener){
         messageQueue.add(new Pair<>(listener,message));
     }
 
-    public Pair<ServerListener,Message> readFromQueue(ServerListener serverListener){
-        Pair<ServerListener,Message> messagePair = null;
+    public Pair<Listener,Message> readFromQueue(Listener serverListener){
+        Pair<Listener,Message> messagePair = null;
         boolean isTimeOut = false; //must implement a timer system
         while(messagePair == null || isTimeOut){
             synchronized(messageQueue){
@@ -203,8 +206,7 @@ public class GameController implements Runnable{
                 continue;
             }
             initializeGame();
-
-
+            startGame();
         }
     }
 }

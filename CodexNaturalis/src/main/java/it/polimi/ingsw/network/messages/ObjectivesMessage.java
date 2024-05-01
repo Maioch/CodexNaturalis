@@ -1,6 +1,6 @@
 package it.polimi.ingsw.network.messages;
 
-import it.polimi.ingsw.server.model.card.Objective;
+import it.polimi.ingsw.model.server.card.Objective;
 
 import java.util.ArrayList;
 
@@ -16,8 +16,8 @@ public class ObjectivesMessage extends Message {
      * @param personalObjectives the player's personal objective
      * @param commonObjectives the common objectives, belonging to all the players
      */
-    public ObjectivesMessage(ArrayList<Objective> personalObjectives, ArrayList<Objective> commonObjectives) {
-        super(Status.SEND_OBJECTIVES);
+    public ObjectivesMessage(Status status,ArrayList<Objective> personalObjectives, ArrayList<Objective> commonObjectives) {
+        super(status);
         this.personalObjectives = personalObjectives;
         this.commonObjectives = commonObjectives;
     }
