@@ -1,4 +1,7 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.generic;
+
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 /**
  * Message sent by the client along with an integer value (e.g. the number of players of a new match)

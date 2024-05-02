@@ -12,6 +12,6 @@ public class PlaceableCornersMessage {
     }
 
     public ArrayList<Corner> getPlaceableCorners(){
-        return new ArrayList<>();
+        return new ArrayList<>(corners);
     }
 }

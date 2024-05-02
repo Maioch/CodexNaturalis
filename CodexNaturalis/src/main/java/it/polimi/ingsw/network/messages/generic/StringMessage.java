@@ -1,9 +1,12 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.generic;
+
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 /**
  * Message sent by the client along with a string value (e.g. the username)
  */
-public class StringMessage extends Message{
+public class StringMessage extends Message {
     private final String string;
 
     /**

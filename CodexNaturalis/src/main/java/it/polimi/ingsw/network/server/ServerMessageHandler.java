@@ -8,6 +8,8 @@ import it.polimi.ingsw.exceptions.NicknameTakenException;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
 import it.polimi.ingsw.network.messages.*;
+import it.polimi.ingsw.network.messages.generic.ContentMessage;
+import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.MatchListMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;

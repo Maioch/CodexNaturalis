@@ -112,7 +112,11 @@ public class BasicCard implements Serializable {
      * @return the corners hashmap
      */
     public HashSet<Corner> getAllCorners(){
-        return new HashSet<>(corners);
+        return new HashSet<>(){{
+            for(Corner corner : corners){
+                add(new Corner(corner));
+            }
+        }};
     }
 
     /**
@@ -143,10 +147,15 @@ public class BasicCard implements Serializable {
      * @return the list of visible corners that aren't empty
      */
     public ArrayList<Corner> getValidCorners(){
-        return this.corners.stream()
+        ArrayList<Corner> validCorners = this.corners.stream()
                 .filter(x -> !x.getContent().isEmpty())
                 .filter(Corner::getVisibility)
                 .collect(Collectors.toCollection(ArrayList::new));
+        return new ArrayList<>(){{
+            for(Corner corner : validCorners){
+                add(new Corner(corner));
+            }
+        }};
     }
 
     /**

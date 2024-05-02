@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model.deck;
+package it.polimi.ingsw.model.server.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 

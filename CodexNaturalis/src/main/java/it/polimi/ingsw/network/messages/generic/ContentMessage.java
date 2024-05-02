@@ -1,13 +1,15 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.generic;
 
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
 
 /**
  * Message sent by the client along with a content value (e.g. the color chosen by the player)
  */
-public class ContentMessage extends Message{
+public class ContentMessage extends Message {
     private final ArrayList<Content> content;
 
     /**

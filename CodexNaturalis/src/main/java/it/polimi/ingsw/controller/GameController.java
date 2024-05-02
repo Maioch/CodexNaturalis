@@ -5,6 +5,7 @@ import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.game.*;
+import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameModel;

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model.card.corner;
+package it.polimi.ingsw.model.server.card.corner;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.server.Content;

@@ -11,6 +11,7 @@ import it.polimi.ingsw.network.messages.game.CardHandMessage;
 import it.polimi.ingsw.network.messages.game.ObjectiveScoresMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.network.messages.game.PlayerBoardMessage;
+import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.ArrayList;

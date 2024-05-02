@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model.card;
+package it.polimi.ingsw.model.server.card;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -120,7 +120,12 @@ public class BasicCardTest {
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             for (Corner corner : card.getAllCorners()) {
                 card.coverCorner(corner);
-                assertFalse(corner.getVisibility());
+                assertTrue(corner.getVisibility());
+                //the corner returned by getAllCorners is a clone
+                corner.coverCorner();
+                assertFalse(card.getAllCorners().stream().
+                        filter(c -> c.equals(corner)).
+                        toList().getFirst().getVisibility());
             }
         }
     }

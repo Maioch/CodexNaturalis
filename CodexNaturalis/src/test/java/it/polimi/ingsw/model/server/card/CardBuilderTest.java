@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model.card;
+package it.polimi.ingsw.model.server.card;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.*;
