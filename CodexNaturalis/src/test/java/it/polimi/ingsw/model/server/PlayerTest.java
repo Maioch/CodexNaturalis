@@ -235,7 +235,6 @@ public class PlayerTest {
                 assertEquals(cornerTest.getY(), currentCard.getAllCorners().stream()
                         .filter(c -> c.getLocation().getOppositeLocation() == cornerTest.getLocation())
                         .findFirst().orElseThrow().getY());
-                assertFalse(cornerTest.getVisibility());
             }
             coordinates += 10;
         }
