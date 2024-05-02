@@ -1,13 +1,15 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.game;
 
 import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
 
 /**
  * Message sent by the client along with a list of card sides (e.g. everytime the server shows to the player his hand)
  */
-public class CardHandMessage extends Message{
+public class CardHandMessage extends Message {
     private final ArrayList<CardSides> cardHand;
 
     /**

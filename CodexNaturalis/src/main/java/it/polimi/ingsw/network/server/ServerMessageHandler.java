@@ -5,59 +5,73 @@ import it.polimi.ingsw.exceptions.GameException;
 import it.polimi.ingsw.exceptions.GameFullException;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.exceptions.NicknameTakenException;
+import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
-import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.utilities.Pair;
+import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
+import it.polimi.ingsw.network.messages.setup.MatchListMessage;
+import it.polimi.ingsw.network.messages.setup.NewGameMessage;
 
 import java.util.*;
 
+/**
+* Class that handles the messages received by the server
+*
+* @author Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli, Marco Maiocchi
+*/
 public class ServerMessageHandler extends MessageHandler implements Runnable{
     private final GamesManager games;
 
+    /**
+     * Class constructor.
+     * @param games represents the current list of games
+     */
     public ServerMessageHandler(GamesManager games){
         super();
         this.games = games;
     }
 
+    /**
+     * Overridden run method. It reads the message queue and handles the message according to its status
+     */
     @Override
     public void run(){
         while(true){
-            Pair<NetworkHandler, Message> messagePair;
+            LabeledMessage messagePair;
             messagePair = getMessageFromQueue();
             if(messagePair == null){
                 continue;
             }
-            GameController currentClientGame = messagePair.getKey().getCurrentGame();
+            GameController currentClientGame = messagePair.networkHandler().getCurrentGame();
             if(currentClientGame != null) {
-                messagePair.getKey().getCurrentGame().addMessageToQueue(messagePair.getValue(), messagePair.getKey());
+                messagePair.networkHandler().getCurrentGame().addMessageToQueue(messagePair.message(), messagePair.networkHandler());
                 continue;
             }
-            switch(messagePair.getValue().getStatus()){
+            switch(messagePair.message().getStatus()){
                 case SHOW_MATCHES -> {
-                    HashMap<Integer, String> matches = games.getFormattedMatches();
-                    messagePair.getKey().update(new MatchListMessage(matches));
+                    HashMap<Integer, String> matches = games.getFormattedAvailableMatches();
+                    messagePair.networkHandler().update(new MatchListMessage(matches));
                 }
                 case NEW_GAME -> {
-                    if (messagePair.getValue() instanceof NewGameMessage newGameMessage) {
+                    if (messagePair.message() instanceof NewGameMessage newGameMessage) {
                         try{
                             int gameId = games.addGame(newGameMessage.getNumberOfPlayers(), newGameMessage.getName());
-                            messagePair.getKey().update(new IntegerMessage(Status.NEW_GAME, gameId));
+                            messagePair.networkHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
                         }catch (IllegalNumberOfPlayers e) {
-                            messagePair.getKey().update(new Message(Status.NEW_GAME_FAIL));
+                            messagePair.networkHandler().update(new Message(Status.NEW_GAME_FAIL));
                         }
                     }
                 }
                 case REQUEST_COLOR -> {
-                    if(messagePair.getValue() instanceof IntegerMessage integerMessage){
+                    if(messagePair.message() instanceof IntegerMessage integerMessage){
                         GameController game = games.getController(integerMessage.getValue());
-                        messagePair.getKey().update(game != null ?
+                        messagePair.networkHandler().update(game != null ?
                                 new ContentMessage(Status.REQUEST_COLOR, game.requestColors()) :
                                 new Message(Status.ERROR));
                     }
                 }
                 case JOIN_GAME -> {
-                    if(messagePair.getValue() instanceof JoinGameMessage joinGameMessage){
+                    if(messagePair.message() instanceof JoinGameMessage joinGameMessage){
                         GameController game = games.getController(joinGameMessage.getRoomId());
                         if(game == null) {
                             break;
@@ -65,14 +79,15 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                         try{
                             game.acceptPlayer(joinGameMessage.getNickname(),
                                     joinGameMessage.getColor(),
-                                    messagePair.getKey());
-                            messagePair.getKey().setCurrentGame(game);
+                                    messagePair.networkHandler());
+                            messagePair.networkHandler().setCurrentGame(game);
+                            messagePair.networkHandler().update(new Message(Status.JOIN_GAME_OK));
                         }catch(GameFullException f){
-                            messagePair.getKey().update(new Message(Status.GAME_FULL));
+                            messagePair.networkHandler().update(new Message(Status.GAME_FULL));
                         }catch(NicknameTakenException e){
-                            messagePair.getKey().update(new Message(Status.REQUEST_USERNAME));
+                            messagePair.networkHandler().update(new Message(Status.REQUEST_USERNAME));
                         }catch(GameException e){
-                            messagePair.getKey().update(new Message(Status.ERROR));
+                            messagePair.networkHandler().update(new Message(Status.ERROR));
                         }
                     }
                 }

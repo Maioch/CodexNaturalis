@@ -3,7 +3,7 @@ package it.polimi.ingsw.model.server;
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
-import it.polimi.ingsw.network.messages.PlayerMessage;
+import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardBuilder;
@@ -32,9 +32,10 @@ public class GameModel extends ServerSubject {
     private final int numberOfPlayers;
 
     /**
-     * Constructor for the class
+     * Constructor for the class. It constructs the decks and gets the available colors
      *
      * @param numberOfPlayers the number of players requested by the creator of the game
+     * @param serverSubject the object used to notify the serverListeners
      * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number
      *                                players allowed
      */
@@ -79,7 +80,6 @@ public class GameModel extends ServerSubject {
 
     /**
      * Gets the player with the specified nickname
-     *
      * @param nickname the specified nickname
      * @return the player or null if there are no players with that nickname
      */
@@ -96,7 +96,6 @@ public class GameModel extends ServerSubject {
 
     /**
      * Method that the checks if the maximum number of players is reached
-     *
      * @return true if the game is full
      */
     public synchronized boolean isGameFull() {
@@ -105,7 +104,6 @@ public class GameModel extends ServerSubject {
 
     /**
      * Method that checks if there's a user with the same username of the new player that is joining the game
-     *
      * @param nickname the nickname to check
      * @return false if there's a duplicate username
      */
@@ -114,8 +112,6 @@ public class GameModel extends ServerSubject {
     }
 
     /**
-     * Method that gets the remaining colors that a player can choose when entering a game
-     *
      * @return the list of colors that the player can choose from
      */
     public synchronized ArrayList<Content> getAvailableColors() {
@@ -125,7 +121,6 @@ public class GameModel extends ServerSubject {
     /**
      * Method that checks if it's the last game's turn, condition met if one of the players reaches the points cap or
      * if both decks are empty
-     *
      * @return true if it's the last turn
      */
     public synchronized boolean isLastTurn() {
@@ -137,9 +132,9 @@ public class GameModel extends ServerSubject {
     }
 
     /**
-     * Method that adds a player to an existing game
-     * The first card given to the player is the starterCard, w
-     *
+     * Method that adds a player to the game and gives him the needed cards
+     * The first card given to the player is the starterCard
+     * Finally, it notifies through the server subject the addition of the player
      * @param nickname the nickname of the player
      * @param color    player's color
      * @throws GameException          if the color or the nickname are already taken or if the game is full
@@ -181,7 +176,6 @@ public class GameModel extends ServerSubject {
 
     /**
      * Method that draws a card from a deck and adds it to the player's hand.
-     *
      * @param type      the type of card deck to draw from, which is either the Gold Card deck or the Resource Card deck
      * @param drawIndex the deck has a number of visible cards which the player can see. this index lets
      *                  the player choose whether to draw a hidden card (if the index is 0)
@@ -210,7 +204,6 @@ public class GameModel extends ServerSubject {
      * Method that gets the draw options for the player, both cards on top of the decks and visible ones, too;
      * the first element of the returned lists is always the back side of the card on top of the deck or null if
      * the deck is empty, while the rest are the visible ones.
-     *
      * @return all the cards the player can draw during his draw phase
      */
     public synchronized HashMap<CardType, ArrayList<BasicCard>> getDrawableCards() {
@@ -228,7 +221,6 @@ public class GameModel extends ServerSubject {
 
     /**
      * Method that returns the player/s with the most points
-     *
      * @return a list of said players
      */
     public synchronized List<String> getWinningPlayers() {

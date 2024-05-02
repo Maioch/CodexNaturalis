@@ -15,5 +15,6 @@
   "numberOfSecretObjectives": 1,
   "numberOfCommonObjectives": 2,
   "winThreshold": 20,
-  "serverPort" : 33333
+  "TCPPort" : 33333,
+  "RMIPort" : 44444
 }

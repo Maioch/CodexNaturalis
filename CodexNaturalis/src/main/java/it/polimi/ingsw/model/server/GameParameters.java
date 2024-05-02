@@ -9,6 +9,7 @@ import java.io.IOException;
 
 /**
  * Class with static methods used to retrieve the game parameters from a json file
+ *
  * @author Andrea Fidanza, Guglielmo Gatti
  */
 public class GameParameters {
@@ -34,7 +35,6 @@ public class GameParameters {
     }
 
     /**
-     * Gets the number of visible cards read on the json file
      * @return the number of visible cards
      */
     public static int getNumberOfVisibleCards(){
@@ -42,7 +42,6 @@ public class GameParameters {
     }
 
     /**
-     * Method that gets the correct number of resource cards allowed given to each player during the first draw
      * @return number of hand cards from the json file
      */
     public static int getNumberOfGoldCardsInHand(){
@@ -50,7 +49,6 @@ public class GameParameters {
     }
 
     /**
-     * Method that gets the correct number of gold cards given to each player during the first draw
      * @return number of hand cards from the json file
      */
     public static int getNumberOfResourceCardsInHand(){
@@ -58,7 +56,6 @@ public class GameParameters {
     }
 
     /**
-     * Method that gets the correct number of secret objectives allowed for each player
      * @return number of secret objectives from the json file
      */
     public static int getNumberOfSecretObjectives(){
@@ -66,7 +63,6 @@ public class GameParameters {
     }
 
     /**
-     * Method that gets the correct number of common objectives allowed per game
      * @return number of common objectives from the json file
      */
     public static int getNumberOfCommonObjectives(){
@@ -74,7 +70,6 @@ public class GameParameters {
     }
 
     /**
-     * Method that gets the maximum number of players allowed in a game
      * @return maximum number of players from the json file
      */
     public static int getMaxPlayers(){
@@ -82,18 +77,28 @@ public class GameParameters {
     }
 
     /**
-     * Method that gets the minimum number of players allowed in a game
      * @return minimum number of players from the json file
      */
     public static int getMinPlayers(){
         return getParameter("minNumberOfPlayers");
     }
 
+    /**
+     * @return the points threshold for the last turn condition from the json file
+     */
     public static int getWinThreshold(){
         return getParameter("winThreshold");
     }
 
-    public static int getPort() { return getParameter("serverPort"); }
+    /**
+     * @return the port associated to the TCP connections from the json file
+     */
+    public static int getTCPPort() { return getParameter("TCPPort"); }
+
+    /**
+     * @return the port associated to the RMI connections from the json file
+     */
+    public static int getRMIPort() { return getParameter("RMIPort"); }
 
     /**
      * Gets the specified parameter read on the json file

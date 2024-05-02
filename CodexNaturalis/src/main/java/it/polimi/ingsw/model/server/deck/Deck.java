@@ -9,8 +9,9 @@ import java.util.function.Function;
 /**
  * Class that represents a stack of randomly sorted objects that have been created
  * through the factory method given to the constructor.
+ *
  * @param <T> the type of the object contained inside the deck.
- * @author Guglielmo Gatti
+ * @author Guglielmo Gatti, Andrea Fidanza
  */
 
 public class Deck<T>{
@@ -18,6 +19,7 @@ public class Deck<T>{
 
     /**
      * Constructor for Deck
+     *
      * @param factoryMethod a method that takes an id and creates the corresponding object
      * @param rangeStart the id to start generating the deck's objects from
      * @param rangeEnd the id to end generating the deck's objects at
@@ -35,7 +37,6 @@ public class Deck<T>{
     }
 
     /**
-     * Getter for cards
      * @return ArrayList of cards
      */
     public ArrayList<T> getDeck(){

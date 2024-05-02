@@ -1,14 +1,17 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.game;
+
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
 
-public class ObjectiveScoresMessage extends Message{
+public class ObjectiveScoresMessage extends Message {
     private final ArrayList<Integer> scores;
 
     /**
      *Constructor for the class
      * @param status the message sent
-     * @param value the integer value sent along the message
+     * @param scores the integer, other players', score values
      */
     public ObjectiveScoresMessage(Status status, ArrayList<Integer> scores){
         super(status);
@@ -16,7 +19,7 @@ public class ObjectiveScoresMessage extends Message{
     }
 
     /**
-     * Getter method for the integer sent along the message
+     * Getter method for the scores sent along the message
      * @return value attribute
      */
     public ArrayList<Integer> getScores() {

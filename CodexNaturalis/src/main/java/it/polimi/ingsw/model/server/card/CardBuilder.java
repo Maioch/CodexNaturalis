@@ -38,18 +38,16 @@ public class CardBuilder {
         int points = getPoints(cardJson);
         switch (cardJson.get("type").asText()) {
 
-            case "RESOURCE":
+            case "RESOURCE" -> {
                 cardFront = new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>());
                 cardBack = new BasicCard(cardId, color, backCornerMap, 0, new ArrayList<>() {{
                     add(color);
                 }});
-
-                break;
-
-            case "GOLD":
+            }
+            case "GOLD" -> {
                 ArrayList<Content> requirements = getContentFromArray(cardJson, "requirements");
                 GoldCard goldFront = new GoldCard(
-                    new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>()), requirements);
+                        new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>()), requirements);
                 Bonus bonus = switch (getBonusType(cardJson)) {
                     case "CORNER" -> goldFront.new CornerBonus();
                     case "OBJECT" -> {
@@ -57,26 +55,22 @@ public class CardBuilder {
                         yield goldFront.new ObjectBonus(object);
                     }
                     case "NOTHING" -> null;
-                    default -> throw new IllegalStateException("Unexpected value: " + cardJson.get("bonus").get("type").asText());
+                    default ->
+                            throw new IllegalStateException("Unexpected value: " + cardJson.get("bonus").get("type").asText());
                 };
                 goldFront.setBonus(bonus);
                 cardFront = goldFront;
                 cardBack = new BasicCard(cardId, color, backCornerMap, 0, new ArrayList<>() {{
                     add(color);
                 }});
-
-                break;
-
-            case "STARTER":
+            }
+            case "STARTER" -> {
                 ArrayList<Content> resources = getContentFromArray(cardJson, "resources");
                 cardFront = new BasicCard(cardId, Content.WHITE, frontCornerMap, 0, resources);
                 cardBack = new BasicCard(cardId, Content.WHITE, backCornerMap, 0, new ArrayList<>());
-
-                break;
-
-            default: throw new IllegalStateException("Unexpected value: " + cardJson.get("type").asText());
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + cardJson.get("type").asText());
         }
-
         return new CardSides(cardFront, cardBack);
     }
 
@@ -114,8 +108,7 @@ public class CardBuilder {
     }
 
     /**
-     * It creates the json node that represents the card corresponding to the given cardId by reading the json file
-     *
+     * Method that creates the json node that represents the card corresponding to the given cardId by reading the json file
      * @param cardId the card id
      * @param cardType the card type
      * @return the json node
@@ -137,8 +130,6 @@ public class CardBuilder {
     }
 
     /**
-     * Method that returns the color read from the json file
-     *
      * @param cardJson json node that represents the card
      * @return the read color
      */
@@ -146,7 +137,10 @@ public class CardBuilder {
         return cardJson.has("color") ? Content.valueOf(cardJson.get("color").asText()) : Content.WHITE;
     }
 
-
+    /**
+     * @param cardJson json node that represents the card
+     * @return the read points
+     */
     static int getPoints(JsonNode cardJson){
         return cardJson.get("points").asInt();
     }

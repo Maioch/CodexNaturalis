@@ -14,6 +14,7 @@ public abstract class NetworkHandler implements Runnable, Listener {
 
     /**
      * Constructor for the class
+     *
      * @param handler the message handler to which the client refers to
      */
     public NetworkHandler(ServerMessageHandler handler) throws IOException{
@@ -21,10 +22,16 @@ public abstract class NetworkHandler implements Runnable, Listener {
         this.handler = handler;
     }
 
+    /**
+     * @return the game that the player associated to this handler is playing
+     */
     public GameController getCurrentGame(){
         return currentGame;
     }
 
+    /**
+     * @param currentGame the game to set
+     */
     public void setCurrentGame(GameController currentGame){
         this.currentGame = currentGame;
     }

@@ -1,38 +1,39 @@
 package it.polimi.ingsw.network.server;
 
-import it.polimi.ingsw.network.Listener;
+import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.Message;
 
 import java.util.HashMap;
 
 public class ServerSubject {
-    private final HashMap<String, Listener> listeners;
+    private final HashMap<String, NetworkHandler> networkHandlers;
 
     public ServerSubject(){
-        listeners = new HashMap<>();
+        networkHandlers = new HashMap<>();
     }
 
-    public synchronized void subscribe(String nickname, Listener listener){
-        listeners.put(nickname, listener);
+    public synchronized void subscribe(String nickname, NetworkHandler networkHandler){
+        networkHandlers.put(nickname, networkHandler);
     }
+
 
     public synchronized void unsubscribe(String nickname){
-        listeners.remove(nickname);
+        networkHandlers.remove(nickname);
     }
 
     public synchronized void notifyAll(Message message){
-        for(Listener listener : listeners.values()){
-            listener.update(message);
+        for(NetworkHandler networkHandler : networkHandlers.values()){
+            networkHandler.update(message);
         }
     }
 
     public synchronized void notify(String nickname, Message message){
-        if(listeners.containsKey(nickname)){
-            listeners.get(nickname).update(message);
+        if(networkHandlers.containsKey(nickname)){
+            networkHandlers.get(nickname).update(message);
         }
     }
 
-    public synchronized Listener getListener(String nickname){
-        return listeners.get(nickname);
+    public synchronized NetworkHandler getNetworkHandler(String nickname){
+        return networkHandlers.get(nickname);
     }
 }

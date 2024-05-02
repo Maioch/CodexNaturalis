@@ -1,15 +1,17 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.game;
+
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WinnersMessage extends Message{
+public class WinnersMessage extends Message {
     private final List<String> winners;
 
     /**
      * Constructor for the class
-     * @param status the message sent
-     * @param string the string sent along the message
+     * @param winners list of the wnners' name
      */
     public WinnersMessage(List<String> winners) {
         super(Status.DECLARE_WINNER);

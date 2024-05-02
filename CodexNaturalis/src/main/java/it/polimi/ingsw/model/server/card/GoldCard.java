@@ -9,7 +9,7 @@ import java.util.HashMap;
 /**
  * A class that represents a gold card
  * Used to extend (and so, specify) BasicCard
- * @author Francesco Saverio Nisoli
+ * @author Francesco Saverio Nisoli, Andrea Fidanza, Guglielmo Gatti, Marco Maiocchi
  */
 
 public class GoldCard extends BasicCard {
@@ -18,9 +18,11 @@ public class GoldCard extends BasicCard {
     private transient Bonus bonus;
     
     /**
+     * Class constructor
+     *
      * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated
      * @param requirements the resources needed in order to play the card
-     * @exception CardException if there are invalid requirements
+     * @throws CardException if there are invalid requirements
     */
     public GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements) throws CardException {
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
@@ -48,7 +50,6 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Getter of the "requirements" parameter
      * @return the requirements needed to play the card
      */
     @Override
@@ -64,7 +65,6 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Setter for bonus
      * @param bonus the bonus to set
      */
     public void setBonus(Bonus bonus){
@@ -72,7 +72,7 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * A method that calculates the total points value that the card gives when played (by the owner of it)
+     * Method that calculates the total points value that the card gives when played (by the owner of it)
      * @return points value gained by playing the card
      */
     @Override
@@ -97,7 +97,7 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * copy method that Guarantees that the card will be copied using the right constructor
+     * Copy method that Guarantees that the card will be copied using the right constructor
      * @return a copy of the card
      */
     @Override

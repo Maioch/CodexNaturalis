@@ -7,6 +7,10 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.network.messages.*;
+import it.polimi.ingsw.network.messages.game.CardHandMessage;
+import it.polimi.ingsw.network.messages.game.ObjectiveScoresMessage;
+import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
+import it.polimi.ingsw.network.messages.game.PlayerBoardMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.ArrayList;
@@ -17,7 +21,7 @@ import java.util.List;
  * Class that represents each one of the 4 possible players in a game, each with his distinctive nickname and color,
  * and his board and hand status during the played turn. This keeps track of the score and objectives of each player, too.
  *
- * @author Marco Maiocchi, Andrea Fidanza
+ * @author Marco Maiocchi, Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli
  */
 public class Player {
     private final ServerSubject serverSubject;
@@ -80,7 +84,6 @@ public class Player {
     }
 
     /**
-     * getter for the player's objectives
      * @return a deep copy of the player's objectives list
      */
     public ArrayList<Objective> getObjectives(){
@@ -92,7 +95,6 @@ public class Player {
     }
 
     /**
-     * Getter for the player's hand cards
      * @return a deep copy of the player's hand
      */
     public ArrayList<CardSides> getHandCards(){
@@ -132,9 +134,10 @@ public class Player {
     }
 
     /**
-     * updates the player's score by adding the points awarded by the objectives
+     * Updates the player's score by adding the points awarded by the objectives
      * and returns an array where each element is the amount of points given by
      * each objective.
+     * Finally, it notifies through the server subject the updated score
      * @return an arraylist with the amount of points given by each objective
      */
     public ArrayList<Integer> awardObjectivePoints(){
@@ -163,7 +166,7 @@ public class Player {
     }
 
     /**
-     * A method which checks if the position chosen by the player for a new card is correct,
+     * Method that checks if the position chosen by the player for a new card is correct,
      * assuming that the corner that has been passed is part of the player's board
      * and that the player already has the card
      * @param corner the card's corner where the new card is going to be placed
@@ -216,7 +219,8 @@ public class Player {
     }
 
     /**
-     * Supporting method for playTurn that allows the player to place a card on his board
+     * Method that lets the player place a card on his board
+     * Finally, it notifies through the server subject the updated player's placed cards
      * @param cardToPlace the card the player chose to place
      * @param corner the corner on the card where the card is placed
      */
@@ -235,7 +239,8 @@ public class Player {
 
     /**
      * Method that initializes each player's board by placing a starter card in the centre; throws an exception
-     * if the board is already initialized
+     * if the board is already initialized.
+     * Finally, it notifies through the server subject the updated player's placed cards
      * @param starterCard the starter card chosen randomly for the player
      * @exception PlayerException if there is already a placed starter card
      */
@@ -254,7 +259,8 @@ public class Player {
     }
 
     /**
-     * method that adds a card to the player's hand.
+     * Method that adds a card to the player's hand.
+     * Finally, it notifies through the server subject the updated player's hand
      * @param cardSides the card to add to the player's hand
      */
     public void addCardToHand(CardSides cardSides){
@@ -265,6 +271,10 @@ public class Player {
         serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD,getHandCards()));
     }
 
+    /**
+     * Method that gets the backside of the cards in the player's hand
+     * @return the list of backsides
+     */
     private ArrayList<CardSides> getBackOnlyCardHand(){
         return new ArrayList<>(){{
             for(CardSides cardSides : Player.this.getHandCards()){

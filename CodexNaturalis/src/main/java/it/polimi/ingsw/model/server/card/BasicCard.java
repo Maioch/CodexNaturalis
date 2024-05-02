@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * It has a unique ID and has a specific color, with a maximum of 4 corners.
  * The resources attribute refers only to the resources found in the center of the card, not in the corners.
  *
- * @author Francesco Saverio Nisoli, Guglielmo Gatti
+ * @author Francesco Saverio Nisoli, Guglielmo Gatti, Marco Maiocchi, Andrea Fidanza
  */
 public class BasicCard implements Serializable {
 
@@ -41,7 +41,13 @@ public class BasicCard implements Serializable {
      * @exception CardException if the given parameters are invalid
      */
 
-    public BasicCard(int cardId, Content color, HashSet<Corner> corners, int points, ArrayList<Content> resources) throws CardException {
+    public BasicCard(
+            int cardId,
+            Content color,
+            HashSet<Corner> corners,
+            int points,
+            ArrayList<Content> resources)
+            throws CardException {
         if(!color.isColor() || points < 0){
             throw new CardException(
                     String.format("Invalid card parameters on card with the following id:%d",cardId));
@@ -65,7 +71,7 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * copy constructor for card
+     * Copy constructor for card
      * @param card the card to copy
      */
     public BasicCard(BasicCard card){
@@ -82,8 +88,6 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Getter for the id of the card
-     *
      * @return the cardId attribute
      */
     public int getCardId(){
@@ -91,8 +95,6 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Getter for the points of the card
-     *
      * @return the points attribute
      */
     public int getPoints(){
@@ -100,8 +102,6 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Getter for the color of the card
-     *
      * @return the card's color
      */
     public Content getColor(){
@@ -109,8 +109,6 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Getter for the corners of the card
-     *
      * @return the corners hashmap
      */
     public HashSet<Corner> getAllCorners(){
@@ -121,7 +119,6 @@ public class BasicCard implements Serializable {
      * Returns a hashmap that associates each resource type with the amount present in the card by pulling
      * from both the corners and the permanent resources
      * IMPORTANT: this includes white and empty corners too
-     *
      * @return a hashmap with the resource as key and the amount as value
      */
     public HashMap<Content,Integer> getCardSymbols(){
@@ -141,8 +138,6 @@ public class BasicCard implements Serializable {
         }};
     }
 
-    /*consider changing the return values of getValidCorners and coverCorner to Location*/
-
     /**
      * Method used for retrieving all available corners for placing a card
      * @return the list of visible corners that aren't empty
@@ -155,7 +150,8 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * method called when a card gets placed onto a corner, hiding it.
+     * Method called when a card gets placed onto a corner, hiding it.
+     * @param which the corner to cover
      */
     public void coverCorner(Corner which){
         for(Corner corner : corners){
@@ -166,7 +162,6 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Getter of the "requirements" parameter
      * @return the requirements needed to play the card
      */
     public HashMap<Content, Integer> getRequirements(){
@@ -178,7 +173,7 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * A public method to "place" the card. It initializes the coordinates of the corners (components of the card).
+     * Method to place the card. It initializes the coordinates of the corners (components of the card).
      * @param where represents the corner where the card will be placed
      */
     public void place(Corner where){
@@ -206,6 +201,23 @@ public class BasicCard implements Serializable {
     }
 
     /**
+     * Setter of the "owner" attribute, which represents the player owning the card.
+     * @param owner player who owns the card
+     */
+    public void setOwner(Player owner){
+        this.owner = owner;
+    }
+
+    /**
+     * Copy method which has to be overridden in all subclasses; Guarantees that the
+     * card will be copied using the right constructor
+     * @return a copy of the card
+     */
+    public BasicCard copy(){
+        return new BasicCard(this);
+    }
+
+    /**
      * Equals method.
      * @param object Object to check
      * @return true if each field is equals to each field of object
@@ -220,25 +232,8 @@ public class BasicCard implements Serializable {
                 this.color == other.color &&
                 this.points == other.points &&
                 this.resources.stream()
-                    .sorted(Comparator.comparingInt(Enum::ordinal)).toList()
-                    .equals(other.resources) &&
+                        .sorted(Comparator.comparingInt(Enum::ordinal)).toList()
+                        .equals(other.resources) &&
                 this.corners.equals(other.corners);
-    }
-
-    /**
-     * Setter of the "owner" attribute, which represents the player owning the card.
-     * @param owner player who owns the card
-     */
-    public void setOwner(Player owner){
-        this.owner = owner;
-    }
-
-    /**
-     * copy method which has to be overridden in all subclasses; Guarantees that the
-     * card will be copied using the right constructor
-     * @return a copy of the card
-     */
-    public BasicCard copy(){
-        return new BasicCard(this);
     }
 }

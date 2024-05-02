@@ -20,7 +20,8 @@ public class Corner implements Serializable {
     private final Location location;
 
     /**
-     * Constructor for corners
+     * Class constructor
+     *
      * @param content symbol in the corner
      */
     public Corner(Content content, Location location){
@@ -58,7 +59,6 @@ public class Corner implements Serializable {
     }
 
     /**
-     * setter for the X coordinate of the Corner
      * @param x the X coordinate where the corner is placed
      */
     public void setX(int x){
@@ -66,7 +66,6 @@ public class Corner implements Serializable {
     }
 
     /**
-     * setter for the Y coordinate of the Corner
      * @param y the Y coordinate where the corner is placed
      */
     public void setY(int y){
@@ -74,7 +73,6 @@ public class Corner implements Serializable {
     }
 
     /**
-     * getter for the location
      * @return corner's location
      */
     public Location getLocation(){

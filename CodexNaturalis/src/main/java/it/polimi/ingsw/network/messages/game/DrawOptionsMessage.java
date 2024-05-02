@@ -1,7 +1,9 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.game;
 
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardType;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +12,7 @@ import java.util.Map;
 /**
  * Message sent by the server, containing all the possible draw options
  */
-public class DrawOptionsMessage extends Message{
+public class DrawOptionsMessage extends Message {
     private final HashMap<CardType, ArrayList<BasicCard>> drawableOptions;
 
     /**

@@ -1,11 +1,13 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.game;
 
 import it.polimi.ingsw.model.server.card.CardType;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 /**
  * A message sent by the client, containing the infos regarding the draw choice
  */
-public class DrawChoiceMessage extends Message{
+public class DrawChoiceMessage extends Message {
     private final int index;
     private final CardType cardType;
 

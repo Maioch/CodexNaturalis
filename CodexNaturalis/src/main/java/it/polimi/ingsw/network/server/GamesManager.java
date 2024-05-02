@@ -3,9 +3,12 @@ package it.polimi.ingsw.network.server;
 import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class GamesManager {
+public class GamesManager{
     private final HashMap<Integer, GameController> games;
 
     public GamesManager(){
@@ -17,19 +20,31 @@ public class GamesManager {
                 games.keySet().stream()
                         .filter(x -> games.get(x + 1) == null)
                         .min(Integer::compareTo).orElse(0);
-        GameController newController = new GameController(numberOfPlayers, new ServerSubject(), name);
+        GameController newController = new GameController(numberOfPlayers, new ServerSubject(), name, this::deleteGame);
         games.put(gameId + 1, newController);
         return gameId + 1;
+    }
+
+    public synchronized void deleteGame(GameController game){
+        List<Integer> idsToRemove = games.entrySet().stream()
+                .filter(e -> e.getValue() == game)
+                .map(Map.Entry::getKey)
+                .toList();
+        for(Integer id : idsToRemove){
+            games.remove(id);
+        }
     }
 
     public synchronized GameController getController(int gameId){
         return games.get(gameId);
     }
 
-    public synchronized HashMap<Integer, String> getFormattedMatches(){
+    public synchronized HashMap<Integer, String> getFormattedAvailableMatches(){
         return new HashMap<>(){{
             for(Entry<Integer, GameController> entry : games.entrySet()){
-                put(entry.getKey(), entry.getValue().getName());
+                if(!entry.getValue().isGameFull()){
+                    put(entry.getKey(), entry.getValue().getName());
+                }
             }
         }};
     }

@@ -1,12 +1,14 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.game;
 
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 /**
  * Message sent by the client along with a card and a corner where he wants to place it
  */
-public class CardPlacementMessage extends Message{
+public class CardPlacementMessage extends Message {
     private final BasicCard card;
     private final Corner corner;
 

@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.server.card.CardType;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public interface ViewUpdater {
+public interface GameView {
     void updateBoard(String nickname, ArrayList<BasicCard> placedCards);
     void updateDecks(HashMap<CardType, ArrayList<BasicCard>> drawableCards);
     void declareWinner(String nickname);

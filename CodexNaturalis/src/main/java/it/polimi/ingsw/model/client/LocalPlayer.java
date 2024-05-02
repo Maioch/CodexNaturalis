@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.model;
+package it.polimi.ingsw.model.client;
 
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
@@ -7,11 +7,10 @@ import java.util.ArrayList;
 
 public class LocalPlayer extends ClientPlayer{
     private ArrayList<CardSides> handCards;
-    private final ArrayList<Objective> objectives;
+    private ArrayList<Objective> objectives;
 
-    public LocalPlayer(String nickname, ArrayList<Objective> objectives) {
+    public LocalPlayer(String nickname) {
         super(nickname);
-        this.objectives = objectives;
     }
 
     public ArrayList<CardSides> getHandCards() {
@@ -26,6 +25,10 @@ public class LocalPlayer extends ClientPlayer{
 
     public void setHandCards(ArrayList<CardSides> handCards) {
         this.handCards = handCards;
+    }
+
+    public void setObjectives(ArrayList<Objective> objectives) {
+        this.objectives = objectives;
     }
 
     public ArrayList<Objective> getObjectives() {

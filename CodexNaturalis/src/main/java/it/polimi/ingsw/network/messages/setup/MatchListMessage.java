@@ -1,13 +1,15 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.setup;
 
-import java.util.ArrayList;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
+
 import java.util.HashMap;
 
 /**
  * Client: requests the available matches.
  * Server: in response, will in the next message, send the available matches.
  */
-public class MatchListMessage extends Message{
+public class MatchListMessage extends Message {
     private final HashMap<Integer,String> matchList;
 
     /**

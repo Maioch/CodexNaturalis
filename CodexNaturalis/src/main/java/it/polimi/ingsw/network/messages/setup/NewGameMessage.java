@@ -1,13 +1,16 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.setup;
 
-public class NewGameMessage extends Message{
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
+
+public class NewGameMessage extends Message {
     private final String name;
     private final int numberOfPlayers;
 
     /**
      * Constructor for the class
      * @param status the message sent
-     * @param name string sent along the message
+     * @param name of the game, decided by the player creating the match
      * @param numberOfPlayers integer representing the game's number of players
      */
     public NewGameMessage(Status status, String name, int numberOfPlayers) {

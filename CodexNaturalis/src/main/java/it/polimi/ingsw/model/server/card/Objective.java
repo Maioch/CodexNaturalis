@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Class that represents an Objective Card.
  *
- * @author Guglielmo Gatti, Francesco Saverio Nisoli
+ * @author Guglielmo Gatti, Francesco Saverio Nisoli, Marco Maiocchi, Andrea Fidanza
  */
 public class Objective {
     private final int objectiveId;
@@ -22,6 +22,8 @@ public class Objective {
     private transient Player owner;
 
     /**
+     * Class constructor
+     *
      * @param objectiveId the card's id
      * @param points the base amount of points awarded by the card
      */
@@ -52,25 +54,21 @@ public class Objective {
     }
 
     /**
-     * Getter for objective id
      * @return the id
      */
     public int getObjectiveId() { return this.objectiveId; }
 
     /**
-     * Getter for points
      * @return the points
      */
     public int getPoints() { return this.points; }
 
     /**
-     * Setter for bonus
      * @param bonus the bonus
      */
     public void setBonus(Bonus bonus) { this.bonus = bonus; }
 
     /**
-     * A setter method of the "owner" attribute
      * @param owner the player that owns the card, used to obtain the player's board to calculate the multiplier
      */
     public void setOwner(Player owner) { this.owner = owner; }
@@ -106,7 +104,7 @@ public class Objective {
         }
 
         /**
-         * calculate the number of instances a pattern of objects occurs on the player's board
+         * Calculate the number of instances a pattern of objects occurs on the player's board
          * and multiply it by the card's base points value
          * @return the amount of points that the card should award on placement
          */

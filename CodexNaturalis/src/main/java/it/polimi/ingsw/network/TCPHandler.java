@@ -15,6 +15,7 @@ public class TCPHandler extends NetworkHandler {
     /**
      * Constructor for the class
      * @param socket the socket to which the client is connected
+     * @param handler the message handler that will handle the messages received
      */
     public TCPHandler(Socket socket, ServerMessageHandler handler) throws IOException{
         super(handler);
@@ -41,6 +42,10 @@ public class TCPHandler extends NetworkHandler {
         }
     }
 
+    /**
+     * Implemented update method. It writes the message on the output stream
+     * @param message the message to write
+     */
     @Override
     public void update(Message message){
         try{

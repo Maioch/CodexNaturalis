@@ -38,7 +38,7 @@ public enum Status {
     JOIN_GAME(""),
 
     /**
-     * Server: the chosen game is not full
+     * Server: the chosen game is not full, the nickname and the color aren't taken
      */
     JOIN_GAME_OK(""),
 
@@ -46,11 +46,6 @@ public enum Status {
      * Client: the next message will contain the chosen username, Server: requests the username.
      */
     REQUEST_USERNAME(""),
-
-    /**
-     * Server: the chosen username is valid
-     */
-    USERNAME_OK(""),
 
     /**
      * Server: requests the color, and so sends the available colors to the client
@@ -61,11 +56,6 @@ public enum Status {
      * Client: the message contains the chosen color
      */
     SEND_COLOR(""),
-
-    /**
-     * Server: the chosen color is valid
-     */
-    COLOR_OK(""),
 
     /**
      * Server: the next message will contain the username of the player that joined the game

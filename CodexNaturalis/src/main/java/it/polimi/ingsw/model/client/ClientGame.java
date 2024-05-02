@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.model;
+package it.polimi.ingsw.model.client;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;

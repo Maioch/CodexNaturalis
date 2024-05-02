@@ -1,6 +1,8 @@
-package it.polimi.ingsw.network.messages;
+package it.polimi.ingsw.network.messages.game;
 
 import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
 

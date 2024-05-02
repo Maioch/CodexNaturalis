@@ -1,8 +1,10 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.network.LabeledMessage;
+import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.network.Listener;
+import it.polimi.ingsw.network.messages.game.*;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameModel;
@@ -13,10 +15,11 @@ import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
-import it.polimi.ingsw.utilities.Pair;
 
 import java.util.*;
 import java.util.List;
+import java.util.function.Consumer;
+
 
 /**
  * Class that represents the controller for each game, according to the MVC model.
@@ -27,7 +30,8 @@ public class GameController implements Runnable{
     private final GameModel game;
     private final String name;
     private final ServerSubject serverSubject;
-    private final Queue<Pair<Listener,Message>> messageQueue;
+    private final Queue<LabeledMessage> messageQueue;
+    private final Consumer<GameController> endGameProcedure;
     private boolean isEnded;
 
     /**
@@ -36,11 +40,15 @@ public class GameController implements Runnable{
      * @param numberOfPlayers the number of players allowed to enter the game and needed for it to start
      * @throws IllegalNumberOfPlayers when the number of players chosen exceeds the limit
      */
-    public GameController(int numberOfPlayers, ServerSubject serverSubject, String name) throws IllegalNumberOfPlayers {
+    public GameController(int numberOfPlayers,
+                          ServerSubject serverSubject,
+                          String name,
+                          Consumer<GameController> endGameProcedure) throws IllegalNumberOfPlayers {
         this.game = new GameModel(numberOfPlayers, serverSubject);
         this.name = name;
         this.serverSubject = serverSubject;
         this.messageQueue = new LinkedList<>();
+        this.endGameProcedure = endGameProcedure;
         this.isEnded = false;
     }
 
@@ -56,9 +64,9 @@ public class GameController implements Runnable{
      * @throws GameFullException      when the game is full
      * @throws NicknameTakenException when the username of the new player already exists in the game
      */
-    public void acceptPlayer(String nickname, Content color, Listener serverListener) throws GameFullException, NicknameTakenException, GameException{
+    public void acceptPlayer(String nickname, Content color, NetworkHandler handler) throws GameFullException, NicknameTakenException, GameException{
         game.addPlayer(nickname, color);
-        serverSubject.subscribe(nickname, serverListener);
+        serverSubject.subscribe(nickname, handler);
     }
 
     /**
@@ -72,8 +80,8 @@ public class GameController implements Runnable{
             serverSubject.notify(player.getNickname(), new CardHandMessage(Status.GAME_STARTED, player.getHandCards()));
             BasicCard starterSide = null;
             while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
-                Pair<Listener, Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
-                if (messagePair.getValue() instanceof CardPlacementMessage cardPlacementMessage){
+                LabeledMessage LabeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+                if (LabeledMessage.message() instanceof CardPlacementMessage cardPlacementMessage){
                     starterSide = cardPlacementMessage.getCard();
                 }
             }
@@ -123,8 +131,8 @@ public class GameController implements Runnable{
         Corner chosenCorner = null;
         boolean moveValid = false;
         while (!moveValid) {
-            Pair<Listener, Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
-            if (messagePair.getValue() instanceof CardPlacementMessage cardPlacementMessage) {
+            LabeledMessage LabeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+            if (LabeledMessage.message() instanceof CardPlacementMessage cardPlacementMessage) {
                 cardToPlace = cardPlacementMessage.getCard();
                 chosenCorner = cardPlacementMessage.getCorner();
             }
@@ -157,8 +165,8 @@ public class GameController implements Runnable{
             CardType typeChosen = null;
             int indexChosen = -1;
             do{
-                Pair<Listener,Message> messagePair = readFromQueue(serverSubject.getListener(player.getNickname()));
-                if (messagePair.getValue() instanceof DrawChoiceMessage drawChoiceMessage){
+                LabeledMessage LabeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+                if (LabeledMessage.message() instanceof DrawChoiceMessage drawChoiceMessage){
                     indexChosen = drawChoiceMessage.getIndex();
                     typeChosen = drawChoiceMessage.getCardType();
                 }
@@ -177,26 +185,30 @@ public class GameController implements Runnable{
         return isEnded;
     }
 
+    public boolean isGameFull() {
+        return game.isGameFull();
+    }
+
     public String getName(){
         return name;
     }
 
-    public synchronized void addMessageToQueue(Message message, Listener listener){
-        messageQueue.add(new Pair<>(listener,message));
+    public synchronized void addMessageToQueue(Message message, NetworkHandler handler){
+        messageQueue.add(new LabeledMessage(handler, message));
     }
 
-    public Pair<Listener,Message> readFromQueue(Listener serverListener){
-        Pair<Listener,Message> messagePair = null;
+    public LabeledMessage readFromQueue(NetworkHandler handler){
+        LabeledMessage LabeledMessage = null;
         boolean isTimeOut = false; //must implement a timer system
-        while(messagePair == null || isTimeOut){
+        while(LabeledMessage == null || isTimeOut){
             synchronized(messageQueue){
                 if(messageQueue.isEmpty()){
                     continue;
                 }
-                messagePair = messageQueue.peek().getKey() == serverListener ? messageQueue.poll() : null;
+                LabeledMessage = messageQueue.peek().networkHandler() == handler ? messageQueue.poll() : null;
             }
         }
-        return messagePair;
+        return LabeledMessage;
     }
 
     @Override
@@ -207,6 +219,10 @@ public class GameController implements Runnable{
             }
             initializeGame();
             startGame();
+            for(Player player : game.getAllPlayers()){
+                serverSubject.getNetworkHandler(player.getNickname()).setCurrentGame(null);
+            }
+            endGameProcedure.accept(this);
         }
     }
 }
