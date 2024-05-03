@@ -162,7 +162,7 @@ public class BasicCard implements Serializable {
      * Method called when a card gets placed onto a corner, hiding it.
      * @param which the corner to cover
      */
-    public void coverCorner(Corner which){
+    public void coverCornerIfPresent(Corner which){
         for(Corner corner : corners){
             if(corner.equals(which)){
                 corner.coverCorner();

@@ -229,13 +229,11 @@ public class Player {
         if(!checkRequirements(cardToPlace) || !checkIfPlaceable(corner))
             return;
         handCards.removeIf(c -> c.frontSide().equals(cardToPlace) || c.backSide().equals(cardToPlace));
+        for(BasicCard card : placedCards){
+            card.coverCornerIfPresent(corner);
+        }
         cardToPlace.place(corner);
         placedCards.add(cardToPlace);
-        for(BasicCard card : placedCards){
-            if(card.getAllCorners().contains(corner)){
-                card.coverCorner(corner);
-            }
-        }
         score += cardToPlace.getPoints();
         serverSubject.notifyAll(new PlayerBoardMessage(getPlacedCards(),score));
         serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_CARD,getBackOnlyCardHand()));

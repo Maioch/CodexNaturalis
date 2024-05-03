@@ -3,9 +3,6 @@ package it.polimi.ingsw.model.server.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardBuilder;
-import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import org.junit.jupiter.api.Test;
@@ -64,7 +61,7 @@ public class BasicCardTest {
             for(Corner corner : card.getAllCorners()){
                 Content cornerContent = corner.getContent();
                 actualSymbols.computeIfPresent(cornerContent, (k, current) -> current - 1);
-                card.coverCorner(corner);
+                card.coverCornerIfPresent(corner);
                 assertEquals(actualSymbols, card.getCardSymbols());
             }
         }
@@ -115,11 +112,11 @@ public class BasicCardTest {
     }
 
     @Test
-    void coverCornerTest(){
+    void coverCornerIfPresentTest(){
         for(int id = startResource; id <= endStarter; id++) {
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             for (Corner corner : card.getAllCorners()) {
-                card.coverCorner(corner);
+                card.coverCornerIfPresent(corner);
                 assertTrue(corner.getVisibility());
                 //the corner returned by getAllCorners is a clone
                 corner.coverCorner();
