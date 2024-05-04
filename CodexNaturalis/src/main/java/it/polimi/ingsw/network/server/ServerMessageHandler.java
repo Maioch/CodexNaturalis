@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.controller.GamesManager;
 import it.polimi.ingsw.exceptions.GameException;
 import it.polimi.ingsw.exceptions.GameFullException;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
@@ -10,6 +11,7 @@ import it.polimi.ingsw.network.MessageHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.generic.ContentMessage;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
+import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.MatchListMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
@@ -89,7 +91,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                         }catch(NicknameTakenException e){
                             messagePair.networkHandler().update(new Message(Status.REQUEST_USERNAME));
                         }catch(GameException e){
-                            messagePair.networkHandler().update(new Message(Status.ERROR));
+                            messagePair.networkHandler().update(new Message(Status.REQUEST_COLOR));
                         }
                     }
                 }

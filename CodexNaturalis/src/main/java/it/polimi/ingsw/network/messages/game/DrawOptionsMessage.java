@@ -19,8 +19,8 @@ public class DrawOptionsMessage extends Message {
      * Constructor of the class
      * @param drawableOptions hashmap containing, respectively, the card type and the card (sides) itself of all the possible options
      */
-    public DrawOptionsMessage(HashMap<CardType, ArrayList<BasicCard>> drawableOptions) {
-        super(Status.DRAW_OPTIONS);
+    public DrawOptionsMessage(Status status, HashMap<CardType, ArrayList<BasicCard>> drawableOptions) {
+        super(status);
         this.drawableOptions = drawableOptions;
     }
 

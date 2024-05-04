@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.network.messages.Status;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -95,9 +96,10 @@ public class BasicCardTest {
                     actualCorners.stream().
                             sorted(Comparator.comparingInt(a -> a.getContent().ordinal())).
                             collect(Collectors.toList()),
-                    card.getValidCorners().stream().
-                            sorted(Comparator.comparingInt(a -> a.getContent().ordinal())).
-                            collect(Collectors.toList()));
+                    card.getAllCorners().stream()
+                            .filter(c -> c.getVisibility() && c.getContent() != Content.EMPTY)
+                            .sorted(Comparator.comparingInt(a -> a.getContent().ordinal()))
+                            .collect(Collectors.toList()));
         }
     }
 

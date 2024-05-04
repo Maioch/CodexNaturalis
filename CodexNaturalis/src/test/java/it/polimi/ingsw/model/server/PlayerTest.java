@@ -174,7 +174,7 @@ public class PlayerTest {
 
         //Test checkIfPlaceable on a valid corner
         BasicCard firstCard = referencePlayer.getHandCards().getFirst().frontSide();
-        Corner cornerToPlaceOn = starterCard.getValidCorners().stream()
+        Corner cornerToPlaceOn = starterCard.getAllCorners().stream()
                 .filter(c -> c.getLocation() == Location.TR)
                 .findFirst().orElseThrow();
         boolean canBePlaced = referencePlayer.checkIfPlaceable(cornerToPlaceOn);
@@ -272,7 +272,9 @@ public class PlayerTest {
             assertFalse(playerTest.isCornerPartOfBoard(corner));
         }
         //Test the corners of a card that has already been placed
-        playerTest.placeCard(card1,starterCard.getValidCorners().getFirst());
+        playerTest.placeCard(card1,starterCard.getAllCorners().stream()
+                .filter(c -> c.getLocation() == Location.TL)
+                .findFirst().orElseThrow());
         for(Corner corner : card1.getAllCorners()){
             assertTrue(playerTest.isCornerPartOfBoard(corner));
         }

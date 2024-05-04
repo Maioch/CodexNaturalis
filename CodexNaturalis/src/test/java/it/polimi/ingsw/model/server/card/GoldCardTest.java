@@ -1,10 +1,6 @@
 package it.polimi.ingsw.model.server.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardBuilder;
-import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.card.GoldCard;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.corner.Corner;
@@ -72,7 +68,10 @@ public class GoldCardTest {
 
             switch(bonusType){
                 case "OBJECT":
-                    playerTest.placeCard(goldTest, currentCard.getValidCorners().getFirst());
+                    playerTest.placeCard(goldTest, currentCard.getAllCorners().stream()
+                            .filter(c -> c.getVisibility() && c.getContent() != Content.EMPTY)
+                            .toList()
+                            .getFirst());
                     Content bonusContent = CardBuilder.getBonusContent(cardJson);
                     int expectedPoints = playerTest.getPlayerContent().get(bonusContent) * nativePoints;
                     assertEquals(expectedPoints, goldTest.getPoints());
@@ -85,7 +84,9 @@ public class GoldCardTest {
                         assertEquals(2 * nativePoints, goldTest.getPoints());
                         break;
                     }
-                    playerTest.placeCard(goldTest, currentCard.getValidCorners().getFirst());
+                    playerTest.placeCard(goldTest, currentCard.getAllCorners().stream()
+                            .filter(c -> c.getVisibility() && c.getContent() != Content.EMPTY)
+                            .toList().getFirst());
                     assertEquals(nativePoints, goldTest.getPoints());
                     break;
                 case "NOTHING":

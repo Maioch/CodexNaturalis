@@ -1,31 +1,61 @@
 package it.polimi.ingsw.model.client;
 
+import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
+/**
+ * A class representing the remote player (non-client players)
+ */
 public class RemotePlayer extends ClientPlayer {
-    private ArrayList<BasicCard> handCards;
+    private ArrayList<BasicCard> handCards; //Not a cardsides list, in order to obtain an only front cards hand
 
-    public RemotePlayer(String nickname) {
-        super(nickname);
+    /**
+     * A constructor of the class
+     * @param nickname the player's nickname
+     */
+    public RemotePlayer(String nickname, Content color) {
+        super(nickname, color);
         handCards = new ArrayList<>();
     }
 
+    /**
+     * Copy-constructor of the class
+     * @param remotePlayer the instance to be copied
+     */
     public RemotePlayer(RemotePlayer remotePlayer) {
         super(remotePlayer);
         this.handCards = new ArrayList<>(remotePlayer.handCards);
     }
 
+    /**
+     * A setter of the hand cards
+     * @param handCards the list of the hand cards
+     */
     public void setHandCards(ArrayList<BasicCard> handCards) {
         this.handCards = handCards;
     }
 
+    /**
+     * A getter of the hand cards
+     * @return the list of the hand cards
+     */
     public ArrayList<BasicCard> getHandCards() {
         return new ArrayList<>() {{
             for (BasicCard card : handCards) {
                 add(card.copy());
             }
         }};
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof RemotePlayer remotePlayer &&
+                remotePlayer.getNickname().equals(this.getNickname()) &&
+                remotePlayer.getHandCards().equals(this.getHandCards()) &&
+                remotePlayer.getColor().equals(this.getColor());
+
     }
 }

@@ -6,7 +6,6 @@ package it.polimi.ingsw.network.messages;
  * @author Guglielmo Gatti, Andrea Fidanza, Marco Maiocchi
  */
 public enum Status {
-
     /**
      * Client: requests the available matches, Server: the next message will contain the available matches.
      */
@@ -45,12 +44,12 @@ public enum Status {
     /**
      * Client: the next message will contain the chosen username, Server: requests the username.
      */
-    REQUEST_USERNAME(""),
+    REQUEST_USERNAME("The chosen username is taken. Please enter a different one."),
 
     /**
      * Server: requests the color, and so sends the available colors to the client
      */
-    REQUEST_COLOR(""),
+    REQUEST_COLOR("The chosen color is taken. please select a different one."),
 
     /**
      * Client: the message contains the chosen color
@@ -65,19 +64,24 @@ public enum Status {
     /**
      * Server: sends a message to the client, notifying it that the chosen game is already full
      */
-    GAME_FULL(""),
+    GAME_FULL("The game can't be joined because it is full."),
 
     /**
      * Client: the next message will contain the sides of the starter card that the player wants to place
      * Server: the next message will contain the starter card given to the player (front and back)
      * immediately followed by the list of objectives (both personal and global)
      */
-    GAME_STARTED(""),
+    STARTER_CARD(""),
+
+    /**
+     * Server: notifies the player that the starter card placement they supplied is not valid.
+     */
+    INVALID_STARTER_CARD(""),
 
     /**
      * Server: sends the list of objectives to the player (both personal and global)
      */
-    SEND_OBJECTIVES(""),
+    OBJECTIVES(""),
 
     /**
      * Server: the next message will contain the username of the player who is supposed to play the turn.
@@ -88,6 +92,11 @@ public enum Status {
      * Server: the next message will contain the hand of the player
      */
     PLAYER_HAND_CARD(""),
+
+    /**
+     * Server: the next message will contain the back sides of the player's hand
+     */
+    PLAYER_HAND_BACK(""),
 
     /**
      * Server: sends the current board state of the player
@@ -110,7 +119,7 @@ public enum Status {
     /**
      * Server: notifies the player that the placement they supplied is not valid.
      */
-    PLACEMENT_FAILED(""),
+    INVALID_PLACE_CARD(""),
 
     /**
      * Server: the next message will contain a representation of the decks' current state
@@ -122,6 +131,11 @@ public enum Status {
      * Server: notifies that the player has to draw a card (followed by HAND_CARDS message)
      */
     DRAW(""),
+
+    /**
+     * Server: notifies the player that the draw they submitted is not valid
+     */
+    INVALID_DRAW(""),
 
     /**
      * Server: notifies the players that the turn that's about to be played will be their last.
@@ -148,5 +162,13 @@ public enum Status {
      */
     ERROR("");
 
-    Status(String message){}
+    private final String message;
+
+    Status(String message){
+        this.message = message;
+    }
+
+    public String getMessage(){
+        return message;
+    }
 }

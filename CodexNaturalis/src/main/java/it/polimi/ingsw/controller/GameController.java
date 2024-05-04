@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller;
 
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.NetworkHandler;
@@ -33,7 +34,6 @@ public class GameController implements Runnable{
     private final ServerSubject serverSubject;
     private final Queue<LabeledMessage> messageQueue;
     private final Consumer<GameController> endGameProcedure;
-    private boolean isEnded;
 
     /**
      * Constructor for the class
@@ -50,7 +50,6 @@ public class GameController implements Runnable{
         this.serverSubject = serverSubject;
         this.messageQueue = new LinkedList<>();
         this.endGameProcedure = endGameProcedure;
-        this.isEnded = false;
     }
 
     public ArrayList<Content> requestColors(){
@@ -74,23 +73,25 @@ public class GameController implements Runnable{
      * A method that lets every player place their starter card (by doing so, initializing the boards)
      */
     private void initializeGame() {
-        serverSubject.notifyAll(new DrawOptionsMessage(game.getDrawableCards()));
+        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
         for (Player player : game.getAllPlayers()) {
             serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             CardSides starterCard = player.getHandCards().getFirst();
-            serverSubject.notify(player.getNickname(), new CardHandMessage(Status.GAME_STARTED, player.getHandCards()));
+            Status currentStatus = Status.STARTER_CARD;
             BasicCard starterSide = null;
             while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
-                LabeledMessage LabeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
-                if (LabeledMessage.message() instanceof CardPlacementMessage cardPlacementMessage){
+                serverSubject.notify(player.getNickname(), new CardHandMessage(currentStatus, player.getHandCards()));
+                LabeledMessage labeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+                if (labeledMessage.message() instanceof CardPlacementMessage cardPlacementMessage){
                     starterSide = cardPlacementMessage.getCard();
                 }
+                currentStatus = Status.INVALID_STARTER_CARD;
             }
             player.placeStarterCard(starterSide);
             ArrayList<Objective> secretObjectives = player.getObjectives().stream()
                     .filter(o -> !game.getCommonObjectives().contains(o))
                     .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-            serverSubject.notify(player.getNickname(),new ObjectivesMessage(Status.SEND_OBJECTIVES,secretObjectives,game.getCommonObjectives()));
+            serverSubject.notify(player.getNickname(), new ObjectivesMessage(Status.OBJECTIVES, secretObjectives, game.getCommonObjectives()));
         }
     }
 
@@ -107,6 +108,7 @@ public class GameController implements Runnable{
         }
         //last turn of the game
         for (Player player : game.getAllPlayers()) {
+            serverSubject.notifyAll(new Message(Status.LAST_TURN));
             serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             placeCard(player);
         }
@@ -117,7 +119,6 @@ public class GameController implements Runnable{
         }
         List<String> winners = game.getWinningPlayers();
         serverSubject.notifyAll(new WinnersMessage(winners));
-        isEnded = true;
         //ViewUpdater is updated with the winners
     }
 
@@ -127,7 +128,8 @@ public class GameController implements Runnable{
      * @param player the player that plays the card
      */
     private void placeCard(Player player) {
-        serverSubject.notify(player.getNickname(), new Message(Status.PLACE_CARD));
+        serverSubject.notify(player.getNickname(),
+                new ValidPlacementsMessage(Status.PLACE_CARD, player.getAllValidCards(), player.getAllValidCorners()));
         BasicCard cardToPlace = null;
         Corner chosenCorner = null;
         boolean moveValid = false;
@@ -139,7 +141,8 @@ public class GameController implements Runnable{
             }
             moveValid = isMoveValid(player,cardToPlace,chosenCorner);
             if (!moveValid){
-                serverSubject.notify(player.getNickname(), new Message(Status.PLACEMENT_FAILED));
+                serverSubject.notify(player.getNickname(),
+                        new ValidPlacementsMessage(Status.INVALID_PLACE_CARD, player.getAllValidCards(), player.getAllValidCorners()));
             }
         }
         player.placeCard(cardToPlace, chosenCorner);
@@ -161,8 +164,10 @@ public class GameController implements Runnable{
      */
     private void drawCard(Player player) {
         boolean drawSuccess = false;
+        Status currentStatus = Status.DRAW;
         while (!drawSuccess){
-            serverSubject.notify(player.getNickname(),new Message(Status.DRAW));
+            serverSubject.notify(player.getNickname(), new DrawOptionsMessage(currentStatus, game.getDrawableCards()));
+            currentStatus = Status.INVALID_DRAW;
             CardType typeChosen = null;
             int indexChosen = -1;
             do{
@@ -179,11 +184,7 @@ public class GameController implements Runnable{
                 drawSuccess = false;
             }
         }
-        serverSubject.notifyAll(new DrawOptionsMessage(game.getDrawableCards()));
-    }
-
-    public boolean isGameEnded(){
-        return isEnded;
+        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
     }
 
     public boolean isGameFull() {

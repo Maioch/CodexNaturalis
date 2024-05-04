@@ -1,9 +1,8 @@
-package it.polimi.ingsw.network.server;
+package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
+import it.polimi.ingsw.network.server.ServerSubject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

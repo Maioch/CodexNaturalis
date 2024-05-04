@@ -13,8 +13,8 @@ public class PlayerMessage extends Message {
      * @param nickname the player's nickname
      * @param color the player's color
      */
-    public PlayerMessage(String nickname, Content color) {
-        super(Status.NEW_PLAYER_JOINED);
+    public PlayerMessage(Status status, String nickname, Content color) {
+        super(status);
         this.nickname = nickname;
         this.color = color;
     }

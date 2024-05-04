@@ -17,6 +17,7 @@ import it.polimi.ingsw.network.server.ServerSubject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class that represents each one of the 4 possible players in a game, each with his distinctive nickname and color,
@@ -149,8 +150,8 @@ public class Player {
             score += objectiveResult;
         }
         serverSubject.notifyAll(new ObjectivesMessage(Status.PLAYER_SCORE, this.getObjectives(), new ArrayList<>()));
-        serverSubject.notifyAll(new ObjectiveScoresMessage(Status.PLAYER_SCORE,points));
-        serverSubject.notifyAll(new IntegerMessage(Status.PLAYER_SCORE,score));
+        serverSubject.notifyAll(new ObjectiveScoresMessage(Status.PLAYER_SCORE, points));
+        serverSubject.notifyAll(new IntegerMessage(Status.PLAYER_SCORE, score));
         return points;
     }
 
@@ -235,9 +236,9 @@ public class Player {
         cardToPlace.place(corner);
         placedCards.add(cardToPlace);
         score += cardToPlace.getPoints();
-        serverSubject.notifyAll(new PlayerBoardMessage(getPlacedCards(),score));
-        serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_CARD,getBackOnlyCardHand()));
-        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD,getHandCards()));
+        serverSubject.notifyAll(new PlayerBoardMessage(getPlacedCards(), score));
+        serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_BACK, getBackOnlyCardHand()));
+        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD, getHandCards()));
     }
 
     /**
@@ -257,8 +258,8 @@ public class Player {
         startCorner.setY(0);
         starterCard.place(startCorner);
         serverSubject.notifyAll(new PlayerBoardMessage(getPlacedCards(), score));
-        serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_CARD,getBackOnlyCardHand()));
-        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD,getHandCards()));
+        serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_BACK, getBackOnlyCardHand()));
+        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD, getHandCards()));
     }
 
     /**
@@ -270,8 +271,26 @@ public class Player {
         handCards.add(cardSides);
         cardSides.frontSide().setOwner(this);
         cardSides.backSide().setOwner(this);
-        serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_CARD,getBackOnlyCardHand()));
-        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD,getHandCards()));
+        serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_BACK, getBackOnlyCardHand()));
+        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD, getHandCards()));
+    }
+
+    public ArrayList<Corner> getAllValidCorners(){
+        return placedCards.stream()
+                .flatMap(b -> b.getAllCorners().stream())
+                .filter(this::checkIfPlaceable)
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public ArrayList<BasicCard> getAllValidCards(){
+        ArrayList<BasicCard> result = handCards.stream()
+                .map(CardSides::backSide)
+                .collect(Collectors.toCollection(ArrayList::new));
+        result.addAll(handCards.stream()
+                .map(CardSides::frontSide)
+                .filter(this::checkRequirements)
+                .collect(Collectors.toCollection(ArrayList::new)));
+        return result;
     }
 
     /**

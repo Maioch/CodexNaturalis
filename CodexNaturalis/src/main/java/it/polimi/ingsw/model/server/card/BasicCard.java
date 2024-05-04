@@ -143,22 +143,6 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Method used for retrieving all available corners for placing a card
-     * @return the list of visible corners that aren't empty
-     */
-    public ArrayList<Corner> getValidCorners(){
-        ArrayList<Corner> validCorners = this.corners.stream()
-                .filter(x -> !x.getContent().isEmpty())
-                .filter(Corner::getVisibility)
-                .collect(Collectors.toCollection(ArrayList::new));
-        return new ArrayList<>(){{
-            for(Corner corner : validCorners){
-                add(new Corner(corner));
-            }
-        }};
-    }
-
-    /**
      * Method called when a card gets placed onto a corner, hiding it.
      * @param which the corner to cover
      */

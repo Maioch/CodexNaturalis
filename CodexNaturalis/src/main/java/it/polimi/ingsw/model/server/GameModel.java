@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.server;
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
+import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.BasicCard;
@@ -166,11 +167,11 @@ public class GameModel extends ServerSubject {
                 add(objectiveDeck.draw());
             }
         }};
-        Player newPlayer = new Player(nickname, color, handCards, objectives, serverSubject);
-        players.add(newPlayer);
+        players.add(new Player(nickname, color, handCards, objectives, serverSubject));
         availableColors.remove(color);
+        serverSubject.notify(nickname, new PlayerMessage(Status.JOIN_GAME, nickname, color));
         for(Player player : players) {
-            serverSubject.notifyAll(new PlayerMessage(player.getNickname(), player.getColor()));
+            serverSubject.notifyAll(new PlayerMessage(Status.NEW_PLAYER_JOINED, player.getNickname(), player.getColor()));
         }
     }
 

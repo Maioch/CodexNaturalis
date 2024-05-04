@@ -9,8 +9,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class TCPHandler extends NetworkHandler {
-    private final ObjectOutputStream clientOutput;
-    private final ObjectInputStream clientInput;
+    private final ObjectOutputStream socketOutput;
+    private final ObjectInputStream socketInput;
 
     /**
      * Constructor for the class
@@ -19,8 +19,8 @@ public class TCPHandler extends NetworkHandler {
      */
     public TCPHandler(Socket socket, ServerMessageHandler handler) throws IOException{
         super(handler);
-        this.clientOutput = new ObjectOutputStream(socket.getOutputStream());
-        this.clientInput = new ObjectInputStream(socket.getInputStream());
+        this.socketOutput = new ObjectOutputStream(socket.getOutputStream());
+        this.socketInput = new ObjectInputStream(socket.getInputStream());
     }
 
     /**
@@ -31,7 +31,7 @@ public class TCPHandler extends NetworkHandler {
         try{
             while(true){
                 try{
-                    Message message = (Message) clientInput.readObject();
+                    Message message = (Message) socketInput.readObject();
                     handler.addMessageToQueue(message,this);
                 }catch (ClassNotFoundException e){
                     System.out.println("Received an invalid message");
@@ -49,7 +49,7 @@ public class TCPHandler extends NetworkHandler {
     @Override
     public void update(Message message){
         try{
-            clientOutput.writeObject(message);
+            socketOutput.writeObject(message);
         }catch(IOException e){
             //needs a better way to be handled
             System.out.println(e.getMessage());

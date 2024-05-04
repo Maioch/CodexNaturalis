@@ -14,21 +14,32 @@ import java.util.Map;
  */
 
 public class ClientGame {
-    private final LocalPlayer localPlayer;
+    private LocalPlayer localPlayer;
     private final ArrayList<RemotePlayer> remotePlayers;
     private ArrayList<Objective> commonObjectives;
     private HashMap<CardType, ArrayList<BasicCard>> drawableOptions;
 
-    public ClientGame(LocalPlayer localPlayer) {
-        this.localPlayer = localPlayer;
+    /**
+     * Constructor of the client's game instance
+     */
+    public ClientGame(LocalPlayer player) {
+        this.localPlayer = player;
         this.remotePlayers = new ArrayList<>();
         this.commonObjectives = new ArrayList<>();
     }
 
+    /**
+     * Setter of the drawable options (cards which the player can draw)
+     * @param drawableOptions hashmap containing the card type and the relative cards (of
+     */
     public void setDrawableOptions(HashMap<CardType, ArrayList<BasicCard>> drawableOptions) {
         this.drawableOptions = drawableOptions;
     }
 
+    /**
+     * Getter of the drawable cards
+     * @return an hashmap representing the drawable cards
+     */
     public HashMap<CardType, ArrayList<BasicCard>> getDrawableOptions() {
         return new HashMap<>(){{
             for(Map.Entry<CardType,ArrayList<BasicCard>> entry : drawableOptions.entrySet()) {
@@ -42,10 +53,18 @@ public class ClientGame {
         }};
     }
 
+    /**
+     * Getter of the local player attribute
+     * @return the local player
+     */
     public LocalPlayer getLocalPlayer() {
         return this.localPlayer;
     }
 
+    /**
+     * Getter of the remote players
+     * @return an arraylist of the remote players (part of the game)
+     */
     public ArrayList<RemotePlayer> getRemotePlayers() {
         return new ArrayList<>(){{
             for(RemotePlayer remotePlayer : remotePlayers){
@@ -54,15 +73,34 @@ public class ClientGame {
         }};
     }
 
+    /**
+     * A method that updates the vies, showing the avaible colors
+     * @param colors the list of available colors
+     */
     public void updateAvailableColors(ArrayList<Content> colors){
         //Update the view with the currently available colors
     }
 
-    public void addRemotePlayer(String nickname){
-        remotePlayers.add(new RemotePlayer(nickname));
+    /**
+     * A method that adds a player to the remote players' list
+     */
+    public void addRemotePlayer(RemotePlayer player){
+        remotePlayers.add(player);
     }
 
+    /**
+     * Setter of the common objects (the ones that all the players onw)
+     * @param commonObjectives the common objective list
+     */
     public void setCommonObjectives(ArrayList<Objective> commonObjectives) {
         this.commonObjectives = commonObjectives;
+    }
+
+    /**
+     * Setter of the local player (usually used just one time)
+     * @param localPlayer the local player
+     */
+    public void setLocalPlayer(LocalPlayer localPlayer) {
+        this.localPlayer = localPlayer;
     }
 }
