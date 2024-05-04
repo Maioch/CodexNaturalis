@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A class representing the client's game instance (skinnier than the server's game)
+ */
+
 public class ClientGame {
     private final LocalPlayer localPlayer;
     private final ArrayList<RemotePlayer> remotePlayers;
