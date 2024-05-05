@@ -167,11 +167,11 @@ public class GameController implements Runnable{
         boolean drawSuccess = false;
         Status currentStatus = Status.DRAW;
         while (!drawSuccess){
-            serverSubject.notify(player.getNickname(), new DrawOptionsMessage(currentStatus, game.getDrawableCards()));
-            currentStatus = Status.INVALID_DRAW;
             CardType typeChosen = null;
             int indexChosen = -1;
             do{
+                serverSubject.notify(player.getNickname(), new DrawOptionsMessage(currentStatus, game.getDrawableCards()));
+                currentStatus = Status.INVALID_DRAW;
                 LabeledMessage LabeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
                 if (LabeledMessage.message() instanceof DrawChoiceMessage drawChoiceMessage){
                     indexChosen = drawChoiceMessage.getIndex();
