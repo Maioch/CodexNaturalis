@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public class LocalPlayer extends ClientPlayer{
     private ArrayList<CardSides> handCards;
-    private ArrayList<Objective> objectives;
+    private ArrayList<Objective> personalObjectives;
 
     /**
      * Constructor of the class
@@ -41,10 +41,10 @@ public class LocalPlayer extends ClientPlayer{
 
     /**
      * A setter of the player objectives
-     * @param objectives the list of objectives
+     * @param personalObjectives the list of objectives
      */
-    public void setObjectives(ArrayList<Objective> objectives) {
-        this.objectives = objectives;
+    public void setPersonalObjectives(ArrayList<Objective> personalObjectives) {
+        this.personalObjectives = personalObjectives;
     }
 
     /**
@@ -52,6 +52,6 @@ public class LocalPlayer extends ClientPlayer{
      * @return the list of objectives
      */
     public ArrayList<Objective> getObjectives() {
-        return objectives;
+        return personalObjectives;
     }
 }

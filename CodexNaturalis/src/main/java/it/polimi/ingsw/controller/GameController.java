@@ -91,7 +91,8 @@ public class GameController implements Runnable{
             ArrayList<Objective> secretObjectives = player.getObjectives().stream()
                     .filter(o -> !game.getCommonObjectives().contains(o))
                     .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-            serverSubject.notify(player.getNickname(), new ObjectivesMessage(Status.OBJECTIVES, secretObjectives, game.getCommonObjectives()));
+            serverSubject.notify(player.getNickname(),
+                    new ObjectivesMessage(Status.OBJECTIVES, secretObjectives, game.getCommonObjectives()));
         }
     }
 
@@ -184,7 +185,6 @@ public class GameController implements Runnable{
                 drawSuccess = false;
             }
         }
-        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
     }
 
     public boolean isGameFull() {
@@ -222,7 +222,8 @@ public class GameController implements Runnable{
             initializeGame();
             startGame();
             for(Player player : game.getAllPlayers()){
-                serverSubject.getNetworkHandler(player.getNickname()).setCurrentGame(null);
+                game.getNetworkHandler(player.getNickname()).setCurrentGame(null);
+                serverSubject.unsubscribe(player.getNickname());
             }
             endGameProcedure.accept(this);
         }

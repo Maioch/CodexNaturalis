@@ -4,6 +4,7 @@ import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
 import it.polimi.ingsw.network.messages.Status;
+import it.polimi.ingsw.network.messages.game.DrawOptionsMessage;
 import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.BasicCard;
@@ -199,6 +200,7 @@ public class GameModel extends ServerSubject {
         newCard.frontSide().setOwner(player);
         newCard.backSide().setOwner(player);
         player.addCardToHand(newCard);
+        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, getDrawableCards()));
     }
 
     /**

@@ -9,6 +9,7 @@ import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.game.CardHandMessage;
 import it.polimi.ingsw.network.messages.game.DrawOptionsMessage;
+import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.network.messages.generic.ContentMessage;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
@@ -97,12 +98,21 @@ public class ClientMessageHandler extends MessageHandler{
                 }
                 case DRAW_OPTIONS -> {
                     if(labeledMessage.message() instanceof DrawOptionsMessage drawOptionsMessage){
-                        eventSubmitter.submit(() -> gameView.updateDrawableCards(drawOptionsMessage.getDrawableOptions()));
+                        game.setDrawableOptions(drawOptionsMessage.getDrawableOptions());
                     }
                 }
-                case STARTER_CARD -> {
+                case STARTER_CARD, INVALID_STARTER_CARD -> {
                     if(labeledMessage.message() instanceof CardHandMessage cardHandMessage){
-                        eventSubmitter.submit(() -> gameView.requestStarterSide(cardHandMessage.getCardHand()));
+                        game.getLocalPlayer().setHandCards(cardHandMessage.getCardHand());
+                    }
+                    if(labeledMessage.message().getStatus() == Status.INVALID_STARTER_CARD){
+                        eventSubmitter.submit(() -> gameView.showErrorMessage(Status.INVALID_STARTER_CARD.getMessage()));
+                    }
+                }
+                case OBJECTIVES -> {
+                    if(labeledMessage.message() instanceof ObjectivesMessage objectivesMessage){
+                        game.setCommonObjectives(objectivesMessage.getCommonObjectives());
+                        game.getLocalPlayer().setPersonalObjectives(objectivesMessage.getPersonalObjectives());
                     }
                 }
 

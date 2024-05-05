@@ -18,22 +18,20 @@ public class ObjectivesMessage extends Message {
      * @param personalObjectives the player's personal objective
      * @param commonObjectives the common objectives, belonging to all the players
      */
-    public ObjectivesMessage(Status status, ArrayList<Objective> personalObjectives, ArrayList<Objective> commonObjectives) {
+    public ObjectivesMessage(Status status, ArrayList<Objective> personalObjectives, ArrayList<Objective> commonObjectives){
         super(status);
         this.personalObjectives = personalObjectives;
         this.commonObjectives = commonObjectives;
     }
 
     /**
-     * Getter of the personal objective
      * @return the player's personal objective
      */
-    public ArrayList<Objective> getPersonalObjective() {
+    public ArrayList<Objective> getPersonalObjectives(){
         return new ArrayList<Objective>(personalObjectives);
     }
 
     /**
-     * Getter of the common objective
      * @return the game's common objectives, belonging to all the players
      */
     public ArrayList<Objective> getCommonObjectives() {

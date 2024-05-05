@@ -7,10 +7,7 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.network.messages.game.CardHandMessage;
-import it.polimi.ingsw.network.messages.game.ObjectiveScoresMessage;
-import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
-import it.polimi.ingsw.network.messages.game.PlayerBoardMessage;
+import it.polimi.ingsw.network.messages.game.*;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
@@ -143,16 +140,14 @@ public class Player {
      * @return an arraylist with the amount of points given by each objective
      */
     public ArrayList<Integer> awardObjectivePoints(){
-        ArrayList<Integer> points = new ArrayList<>();
+        HashMap<Objective, Integer> objectivePoints = new HashMap<>();
         for(Objective objective : this.objectives) {
             int objectiveResult = objective.checkObjective();
-            points.add(objectiveResult);
+            objectivePoints.put(objective, objectiveResult);
             score += objectiveResult;
         }
-        serverSubject.notifyAll(new ObjectivesMessage(Status.PLAYER_SCORE, this.getObjectives(), new ArrayList<>()));
-        serverSubject.notifyAll(new ObjectiveScoresMessage(Status.PLAYER_SCORE, points));
-        serverSubject.notifyAll(new IntegerMessage(Status.PLAYER_SCORE, score));
-        return points;
+        serverSubject.notifyAll(new PlayerSummaryMessage(objectivePoints, score));
+        return new ArrayList<>(objectivePoints.values());
     }
 
     /**
@@ -238,7 +233,7 @@ public class Player {
         score += cardToPlace.getPoints();
         serverSubject.notifyAll(new PlayerBoardMessage(getPlacedCards(), score));
         serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_BACK, getBackOnlyCardHand()));
-        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD, getHandCards()));
+        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, getHandCards()));
     }
 
     /**
@@ -259,7 +254,7 @@ public class Player {
         starterCard.place(startCorner);
         serverSubject.notifyAll(new PlayerBoardMessage(getPlacedCards(), score));
         serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_BACK, getBackOnlyCardHand()));
-        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD, getHandCards()));
+        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, getHandCards()));
     }
 
     /**
@@ -272,7 +267,7 @@ public class Player {
         cardSides.frontSide().setOwner(this);
         cardSides.backSide().setOwner(this);
         serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_BACK, getBackOnlyCardHand()));
-        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARD, getHandCards()));
+        serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, getHandCards()));
     }
 
     public ArrayList<Corner> getAllValidCorners(){

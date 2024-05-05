@@ -91,7 +91,7 @@ public enum Status {
     /**
      * Server: the next message will contain the hand of the player
      */
-    PLAYER_HAND_CARD(""),
+    PLAYER_HAND_CARDS(""),
 
     /**
      * Server: the next message will contain the back sides of the player's hand
