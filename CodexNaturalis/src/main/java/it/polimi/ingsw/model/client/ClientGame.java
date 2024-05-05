@@ -4,6 +4,8 @@ import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.view.EventSubmitter;
+import it.polimi.ingsw.view.GameView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,14 +20,21 @@ public class ClientGame {
     private final ArrayList<RemotePlayer> remotePlayers;
     private ArrayList<Objective> commonObjectives;
     private HashMap<CardType, ArrayList<BasicCard>> drawableOptions;
+    private ClientPlayer playerWithTurn;
+    private final EventSubmitter eventSubmitter;
+    private final GameView gameView;
+
 
     /**
      * Constructor of the client's game instance
      */
-    public ClientGame(LocalPlayer player) {
+    public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView) {
         this.localPlayer = player;
+        this.gameView = gameView;
+        this.eventSubmitter = eventSubmitter;
         this.remotePlayers = new ArrayList<>();
         this.commonObjectives = new ArrayList<>();
+        this.playerWithTurn = null;
     }
 
     /**
@@ -102,5 +111,17 @@ public class ClientGame {
      */
     public void setLocalPlayer(LocalPlayer localPlayer) {
         this.localPlayer = localPlayer;
+    }
+
+    public void setPlayerWithTurn(String nickname) {
+        ClientPlayer remotePlayerWithTurn = remotePlayers.stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst()
+                .orElse(null);
+        playerWithTurn = remotePlayerWithTurn == null ? localPlayer : remotePlayerWithTurn;
+    }
+
+    public ClientPlayer getPlayerWithTurn(){
+        return playerWithTurn;
     }
 }

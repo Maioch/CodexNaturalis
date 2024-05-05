@@ -16,8 +16,8 @@ public class MatchListMessage extends Message {
      * Constructor for the class
      * @param matchList the list of games already created by other clients
      */
-    public MatchListMessage(HashMap<Integer,String> matchList){
-        super(Status.SHOW_MATCHES);
+    public MatchListMessage(Status status, HashMap<Integer,String> matchList){
+        super(status);
         this.matchList = matchList;
     }
 

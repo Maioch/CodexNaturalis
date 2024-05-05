@@ -16,5 +16,7 @@
   "numberOfCommonObjectives": 2,
   "winThreshold": 20,
   "TCPPort" : 33333,
-  "RMIPort" : 44444
+  "RMIPort" : 44444,
+  "MaxChatMessageLength" : 512,
+  "MaxNicknameLength" : 16
 }

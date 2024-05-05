@@ -6,12 +6,12 @@ import it.polimi.ingsw.exceptions.GameException;
 import it.polimi.ingsw.exceptions.GameFullException;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.exceptions.NicknameTakenException;
+import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.generic.ContentMessage;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
-import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.MatchListMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
@@ -41,57 +41,57 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
     @Override
     public void run(){
         while(true){
-            LabeledMessage messagePair;
-            messagePair = getMessageFromQueue();
-            if(messagePair == null){
+            LabeledMessage labeledMessage = getMessageFromQueue();
+            if(labeledMessage == null){
                 continue;
             }
-            GameController currentClientGame = messagePair.networkHandler().getCurrentGame();
+            GameController currentClientGame = labeledMessage.networkHandler().getCurrentGame();
             if(currentClientGame != null) {
-                messagePair.networkHandler().getCurrentGame().addMessageToQueue(messagePair.message(), messagePair.networkHandler());
+                labeledMessage.networkHandler().getCurrentGame().addMessageToQueue(labeledMessage.message(), labeledMessage.networkHandler());
                 continue;
             }
-            switch(messagePair.message().getStatus()){
-                case SHOW_MATCHES -> {
+            switch(labeledMessage.message().getStatus()){
+                case REQUEST_GAMES -> {
                     HashMap<Integer, String> matches = games.getFormattedAvailableMatches();
-                    messagePair.networkHandler().update(new MatchListMessage(matches));
+                    labeledMessage.networkHandler().update(new MatchListMessage(Status.REQUEST_GAMES, matches));
                 }
                 case NEW_GAME -> {
-                    if (messagePair.message() instanceof NewGameMessage newGameMessage) {
+                    if (labeledMessage.message() instanceof NewGameMessage newGameMessage){
                         try{
-                            int gameId = games.addGame(newGameMessage.getNumberOfPlayers(), newGameMessage.getName());
-                            messagePair.networkHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
+                            int gameId = games.addGame(newGameMessage.getNumberOfPlayers(),
+                                    newGameMessage.getName().substring(0, GameParameters.getMaxNicknameLength()));
+                            labeledMessage.networkHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
                         }catch (IllegalNumberOfPlayers e) {
-                            messagePair.networkHandler().update(new Message(Status.NEW_GAME_FAIL));
+                            HashMap<Integer, String> matches = games.getFormattedAvailableMatches();
+                            labeledMessage.networkHandler().update(new MatchListMessage(Status.INVALID_PLAYERS_NUMBER, matches));
                         }
                     }
                 }
-                case REQUEST_COLOR -> {
-                    if(messagePair.message() instanceof IntegerMessage integerMessage){
+                case REQUEST_COLORS -> {
+                    if(labeledMessage.message() instanceof IntegerMessage integerMessage){
                         GameController game = games.getController(integerMessage.getValue());
-                        messagePair.networkHandler().update(game != null ?
-                                new ContentMessage(Status.REQUEST_COLOR, game.requestColors()) :
-                                new Message(Status.ERROR));
+                        labeledMessage.networkHandler().update(new ContentMessage(Status.REQUEST_COLORS,
+                                game != null ? game.requestColors() : new ArrayList<>()));
                     }
                 }
                 case JOIN_GAME -> {
-                    if(messagePair.message() instanceof JoinGameMessage joinGameMessage){
-                        GameController game = games.getController(joinGameMessage.getRoomId());
-                        if(game == null) {
+                    if(labeledMessage.message() instanceof JoinGameMessage joinGameMessage){
+                        GameController game = games.getController(joinGameMessage.getGameId());
+                        if(game == null){
+                            labeledMessage.networkHandler().update(new Message(Status.ERROR));
                             break;
                         }
                         try{
-                            game.acceptPlayer(joinGameMessage.getNickname(),
+                            game.acceptPlayer(joinGameMessage.getNickname().substring(0, GameParameters.getMaxNicknameLength()),
                                     joinGameMessage.getColor(),
-                                    messagePair.networkHandler());
-                            messagePair.networkHandler().setCurrentGame(game);
-                            messagePair.networkHandler().update(new Message(Status.JOIN_GAME_OK));
+                                    labeledMessage.networkHandler());
+                            labeledMessage.networkHandler().setCurrentGame(game);
                         }catch(GameFullException f){
-                            messagePair.networkHandler().update(new Message(Status.GAME_FULL));
+                            labeledMessage.networkHandler().update(new Message(Status.GAME_FULL));
                         }catch(NicknameTakenException e){
-                            messagePair.networkHandler().update(new Message(Status.REQUEST_USERNAME));
+                            labeledMessage.networkHandler().update(new Message(Status.INVALID_NICKNAME));
                         }catch(GameException e){
-                            messagePair.networkHandler().update(new Message(Status.REQUEST_COLOR));
+                            labeledMessage.networkHandler().update(new Message(Status.INVALID_COLOR));
                         }
                     }
                 }

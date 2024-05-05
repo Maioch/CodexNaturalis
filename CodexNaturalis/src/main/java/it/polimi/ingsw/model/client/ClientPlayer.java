@@ -2,8 +2,12 @@ package it.polimi.ingsw.model.client;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.view.EventSubmitter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Class representing the client-related player model
@@ -13,6 +17,7 @@ public abstract class ClientPlayer {
     private ArrayList<BasicCard> placedCards;
     private final Content color;
     private int score;
+    private EventSubmitter eventSubmitter;
 
     /**
      * Constructor of the class
@@ -75,11 +80,20 @@ public abstract class ClientPlayer {
     }
 
     /**
+     * Setter for the player's hand
+     */
+    public abstract void setHandCards(ArrayList<CardSides> handCards);
+
+    /**
      * Setter of the player's score
      * @param score new score
      */
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public void setFinalScore(HashMap<Objective, Integer> scoresByObjective, Integer finalScore){
+        setScore(finalScore);
     }
 
 }

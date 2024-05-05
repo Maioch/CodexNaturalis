@@ -100,6 +100,10 @@ public class GameParameters {
      */
     public static int getRMIPort() { return getParameter("RMIPort"); }
 
+    public static int getMaxNicknameLength() { return getParameter("MaxNicknameLength"); }
+
+    public static int getMaxChatMessageLength() { return getParameter("MaxChatMessageLength"); }
+
     /**
      * Gets the specified parameter read on the json file
      * @param parameter the parameter to retrieve from the file

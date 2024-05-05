@@ -19,7 +19,7 @@ public class PlayerSummaryMessage extends Message {
      * @param finalScore the final total score of the player
      */
     public PlayerSummaryMessage(HashMap<Objective, Integer> objectiveScores, int finalScore){
-        super(Status.PLAYER_SCORE);
+        super(Status.PLAYER_FINAL_SCORE);
         this.objectiveScores = objectiveScores;
         this.finalScore = finalScore;
     }

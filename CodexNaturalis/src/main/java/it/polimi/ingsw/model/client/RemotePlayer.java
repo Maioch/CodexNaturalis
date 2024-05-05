@@ -2,9 +2,11 @@ package it.polimi.ingsw.model.client;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardSides;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A class representing the remote player (non-client players)
@@ -34,8 +36,11 @@ public class RemotePlayer extends ClientPlayer {
      * A setter of the hand cards
      * @param handCards the list of the hand cards
      */
-    public void setHandCards(ArrayList<BasicCard> handCards) {
-        this.handCards = handCards;
+    @Override
+    public void setHandCards(ArrayList<CardSides> handCards) {
+        this.handCards = handCards.stream()
+                .map(CardSides::backSide)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**

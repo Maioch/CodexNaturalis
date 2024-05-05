@@ -35,6 +35,7 @@ public class LocalPlayer extends ClientPlayer{
      * A setter of the local player's hand cards
      * @param handCards the list of hand cards
      */
+    @Override
     public void setHandCards(ArrayList<CardSides> handCards) {
         this.handCards = handCards;
     }

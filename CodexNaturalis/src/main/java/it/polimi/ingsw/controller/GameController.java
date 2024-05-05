@@ -1,6 +1,5 @@
 package it.polimi.ingsw.controller;
 
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.NetworkHandler;
@@ -200,17 +199,30 @@ public class GameController implements Runnable{
     }
 
     public LabeledMessage readFromQueue(NetworkHandler handler){
-        LabeledMessage LabeledMessage = null;
-        boolean isTimeOut = false; //must implement a timer system
-        while(LabeledMessage == null || isTimeOut){
+        LabeledMessage labeledMessage = null;
+        boolean isTimeOut = false;
+        while(labeledMessage == null || isTimeOut){
             synchronized(messageQueue){
                 if(messageQueue.isEmpty()){
                     continue;
                 }
-                LabeledMessage = messageQueue.peek().networkHandler() == handler ? messageQueue.poll() : null;
+                labeledMessage = messageQueue.poll();
+                Message message = labeledMessage.message();
+                //handle chat messages
+                if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
+                    for(String nickname : chatMessage.getRecipients()){
+                        serverSubject.notify(nickname, new ChatMessage(
+                                chatMessage.getMessage().substring(0, GameParameters.getMaxChatMessageLength()),
+                                chatMessage.getSender(),
+                                chatMessage.getRecipients()));
+                    }
+                }
+                if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
+                    labeledMessage = null;
+                }
             }
         }
-        return LabeledMessage;
+        return labeledMessage;
     }
 
     @Override

@@ -7,148 +7,130 @@ package it.polimi.ingsw.network.messages;
  */
 public enum Status {
     /**
-     * Client: requests the available matches, Server: the next message will contain the available matches.
+     * Client: requests the available matches.
+     * Server: sends the available matches.
      */
-    SHOW_MATCHES(""),
+    REQUEST_GAMES(""),
 
     /**
-     * Client: requests the creation of a new game.
+     * Client: requests the creation of a new game sending the desired number of players and the game name.
+     * Server: sends the game id.
      */
     NEW_GAME(""),
 
     /**
-     * Server: sends a message that sentences an error during the creation of the game
+     * Server: notifies that the game creation failed (caused by an invalid number of players choice).
      */
-    NEW_GAME_FAIL(""),
+    INVALID_PLAYERS_NUMBER("Invalid number of players. Please enter a valid one."),
 
     /**
-     * Client: the next message will contain the chosen number of players, Server: requests the number of players.
+     * Client: requests the available color, sending the game id.
+     * Server: sends the available colors.
      */
-    REQUEST_PLAYER_NUMBER(""),
+    REQUEST_COLORS(""),
 
     /**
-     * Server: the chosen number of players is valid
-     */
-    PLAYER_NUMBER_OK(""),
-
-    /**
-     * Client: the next message will contain the chosen game.
+     * Client: requests to join an existing game, along with the game's id, its chosen color and nickname.
+     * This message is sent also when the game was "created" by the client itself.
+     * Server: sends the nickname and the color of the player.
      */
     JOIN_GAME(""),
 
     /**
-     * Server: the chosen game is not full, the nickname and the color aren't taken
-     */
-    JOIN_GAME_OK(""),
-
-    /**
-     * Client: the next message will contain the chosen username, Server: requests the username.
-     */
-    REQUEST_USERNAME("The chosen username is taken. Please enter a different one."),
-
-    /**
-     * Server: requests the color, and so sends the available colors to the client
-     */
-    REQUEST_COLOR("The chosen color is taken. please select a different one."),
-
-    /**
-     * Client: the message contains the chosen color
-     */
-    SEND_COLOR(""),
-
-    /**
-     * Server: the next message will contain the username of the player that joined the game
-     */
-    NEW_PLAYER_JOINED(""),
-
-    /**
-     * Server: sends a message to the client, notifying it that the chosen game is already full
+     * Server: restarts the game joining process from the start (REQUEST_GAMES).
      */
     GAME_FULL("The game can't be joined because it is full."),
 
     /**
-     * Client: the next message will contain the sides of the starter card that the player wants to place
-     * Server: the next message will contain the starter card given to the player (front and back)
-     * immediately followed by the list of objectives (both personal and global)
+     * Server: requests a new username, as the one chosen before was already taken.
+     */
+    INVALID_NICKNAME("The chosen username is already taken. Please enter a different one."),
+
+    /**
+     * Server: requests a new color, as the one chosen before was already taken.
+     */
+    INVALID_COLOR("The chosen color is already taken. Please enter a different one."),
+
+    /**
+     * Server: notifies every player that a new one joined the match, sending its color and nickname.
+     */
+    NEW_PLAYER_JOINED(""),
+
+    /**
+     * Server: sends all the available draw options.
+     */
+    DRAW_OPTIONS(""),
+
+    /**
+     * Server: sends to every player the username of the player who is supposed to play the turn.
+     */
+    TURN_NOTIFICATION(""),
+
+    /**
+     * Server: sends to the client the player's hand cards.
+     * Client: sends the side of the starter card that the player wants to place.
      */
     STARTER_CARD(""),
 
     /**
      * Server: notifies the player that the starter card placement they supplied is not valid.
      */
-    INVALID_STARTER_CARD(""),
+    INVALID_STARTER_CARD("The chosen starter card is invalid. Please select a different one."),
 
     /**
-     * Server: sends the list of objectives to the player (both personal and global)
-     */
-    OBJECTIVES(""),
-
-    /**
-     * Server: the next message will contain the username of the player who is supposed to play the turn.
-     */
-    TURN_NOTIFICATION(""),
-
-    /**
-     * Server: the next message will contain the hand of the player
-     */
-    PLAYER_HAND_CARDS(""),
-
-    /**
-     * Server: the next message will contain the back sides of the player's hand
-     */
-    PLAYER_HAND_BACK(""),
-
-    /**
-     * Server: sends the current board state of the player
-     */
-    PLAYER_BOARD(""),
-
-    /**
-     * Client: the next message will contain the card chosen by the player along with the corner where
-     * it's going to be placed Server: notifies the player that they have to place a card
-     */
-    PLACE_CARD(""),
-
-    /**
-     * Server: notifies every player about the successful placement of a card.
-     * the next message will contain the nickname of the player who placed the card, the card that has been placed,
-     * and the corner where it has been placed
+     * Server: notifies every player about the successful placement of a card and sends them the updated board and score.
      */
     PLACEMENT_OK(""),
 
     /**
+     * Server: sends to the player his hand cards.
+     */
+    PLAYER_HAND_CARDS(""),
+
+    /**
+     * Server: sends to every player his hand cards back side.
+     */
+    PLAYER_HAND_BACK(""),
+
+    /**
+     * Server: sends to the player his objectives (both common and personal).
+     */
+    OBJECTIVES(""),
+
+    /**
+     * Server: requests the player to place a card, sending each placeable card and corner.
+     * Client: sends to the server the chosen card and corner.
+     */
+    PLACE_CARD(""),
+
+    /**
      * Server: notifies the player that the placement they supplied is not valid.
      */
-    INVALID_PLACE_CARD(""),
+    INVALID_PLACE_CARD("The chosen card is invalid. Please select a different one."),
 
     /**
-     * Server: the next message will contain a representation of the decks' current state
-     */
-    DRAW_OPTIONS(""),
-
-    /**
-     * Client: the next message will contain the index and the deck type from which the user will draw
-     * Server: notifies that the player has to draw a card (followed by HAND_CARDS message)
+     * Server: notifies that the player has to draw a card and sends him all the available options.
+     * Client: sends the index and the deck type from which the user will draw.
      */
     DRAW(""),
 
     /**
-     * Server: notifies the player that the draw they submitted is not valid
+     * Server: notifies the player that the draw they submitted is not valid and sends him the available options.
      */
     INVALID_DRAW(""),
 
     /**
-     * Server: notifies the players that the turn that's about to be played will be their last.
+     * Server: notifies every player that the turn that's about to be played will be their last.
      */
     LAST_TURN(""),
 
     /**
-     *
+     * Server: sends to every player his final score.
      */
-    PLAYER_SCORE(""),
+    PLAYER_FINAL_SCORE(""),
 
     /**
-     * Server: the next message will contain the nickname of the person who won.
+     * Server: sends the nickname of the person who won.
      */
     DECLARE_WINNER(""),
 
@@ -156,6 +138,11 @@ public enum Status {
      * Client: a player left the game voluntarily, Server: the next message will contain the nickname of the player who left
      */
     PLAYER_DISCONNECTED(""),
+
+    /**
+     * Client: sends a chat message (which contains the sender, recipient and, naturally, the content of the message itself)
+     */
+    CHAT(""),
 
     /**
      * Message sent when an error occurs
