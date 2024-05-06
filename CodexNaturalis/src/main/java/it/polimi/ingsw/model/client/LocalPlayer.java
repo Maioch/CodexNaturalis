@@ -1,8 +1,11 @@
 package it.polimi.ingsw.model.client;
 
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.view.EventSubmitter;
 
 import java.util.ArrayList;
 
@@ -38,6 +41,7 @@ public class LocalPlayer extends ClientPlayer{
     @Override
     public void setHandCards(ArrayList<CardSides> handCards) {
         this.handCards = handCards;
+        eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(getHandCards()));
     }
 
     /**
@@ -46,13 +50,28 @@ public class LocalPlayer extends ClientPlayer{
      */
     public void setPersonalObjectives(ArrayList<Objective> personalObjectives) {
         this.personalObjectives = personalObjectives;
+        eventSubmitter.submit(() -> gameView.updatePersonalObjectives(getPersonalObjectives()));
+    }
+
+    public void requestCardPlacement(ArrayList<BasicCard> validCards,
+                                     ArrayList<Corner> validCorners){
+        eventSubmitter.submit(() -> gameView.requestPlacement(getHandCards(),getPlacedCards(),validCards,validCorners));
+    }
+
+    public void requestStarterCardPlacement(){
+        eventSubmitter.submit(() -> gameView.requestStarterSide(getHandCards()));
     }
 
     /**
      * A getter of the player's objectives
      * @return the list of objectives
      */
-    public ArrayList<Objective> getObjectives() {
-        return personalObjectives;
+    public ArrayList<Objective> getPersonalObjectives() {
+        return new ArrayList<>(){{
+            for(Objective obj : personalObjectives){
+                add(new Objective(obj));
+            }
+        }};
+
     }
 }

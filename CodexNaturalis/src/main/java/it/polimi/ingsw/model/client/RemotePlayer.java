@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.client;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.view.EventSubmitter;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -41,6 +42,7 @@ public class RemotePlayer extends ClientPlayer {
         this.handCards = handCards.stream()
                 .map(CardSides::backSide)
                 .collect(Collectors.toCollection(ArrayList::new));
+        eventSubmitter.submit(() -> gameView.updateRemotePlayerHand(getNickname(),getHandCards()));
     }
 
     /**

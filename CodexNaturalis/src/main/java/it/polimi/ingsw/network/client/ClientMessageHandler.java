@@ -9,7 +9,7 @@ import it.polimi.ingsw.network.MessageHandler;
 import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.game.*;
-import it.polimi.ingsw.network.messages.generic.ContentMessage;
+import it.polimi.ingsw.network.messages.setup.GameColorsMessage;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.MatchListMessage;
@@ -19,14 +19,13 @@ import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.SetupView;
 
 public class ClientMessageHandler extends MessageHandler{
-    ClientGame game;
-    SetupView setupView;
-    GameView gameView;
-    NetworkHandler networkHandler;
-    EventSubmitter eventSubmitter;
+    private final SetupView setupView;
+    private ClientGame game;
+    private volatile GameView gameView;
+    private NetworkHandler networkHandler;
+    private final EventSubmitter eventSubmitter;
 
-    public ClientMessageHandler(ClientGame game, SetupView setupView, EventSubmitter eventSubmitter) {
-        this.game = game;
+    public ClientMessageHandler(SetupView setupView, EventSubmitter eventSubmitter) {
         this.setupView = setupView;
         this.eventSubmitter = eventSubmitter;
     }
@@ -37,6 +36,10 @@ public class ClientMessageHandler extends MessageHandler{
 
     public synchronized void setGameView(GameView gameView){
         this.gameView = gameView;
+    }
+
+    public void setNetworkHandler(NetworkHandler networkHandler){
+        this.networkHandler = networkHandler;
     }
 
     @Override
@@ -61,25 +64,35 @@ public class ClientMessageHandler extends MessageHandler{
                     }
                     case INVALID_PLAYERS_NUMBER -> eventSubmitter.submit(() -> setupView.showCriticalError(Status.INVALID_PLAYERS_NUMBER.getMessage()));
                     case REQUEST_COLORS -> {
-                        if(labeledMessage.message() instanceof ContentMessage contentMessage){
-                             eventSubmitter.submit(contentMessage.getContent().isEmpty() ?
+                        if(labeledMessage.message() instanceof GameColorsMessage gameColorsMessage){
+                             eventSubmitter.submit(gameColorsMessage.getContent().isEmpty() ?
                                      () -> setupView.showCriticalError(Status.GAME_FULL.getMessage()) :
-                                     () -> setupView.showJoinGameDialog(contentMessage.getContent()));
+                                     () -> setupView.showJoinGameDialog(gameColorsMessage.getContent(), gameColorsMessage.getGameId()));
                         }
                     }
                     case JOIN_GAME -> {
                         if(labeledMessage.message() instanceof PlayerMessage playerMessage){
-                            eventSubmitter.submit(() -> setupView.showSuccessfulJoin());
+                            eventSubmitter.submit(setupView::showSuccessfulJoin);
+                            while (gameView == null) Thread.onSpinWait();
                             synchronized (this) {
-                                game = new ClientGame(new LocalPlayer(playerMessage.getNickname(), playerMessage.getColor()),
+                                game = new ClientGame(
+                                        new LocalPlayer(playerMessage.getNickname(), playerMessage.getColor()),
                                         eventSubmitter,
                                         gameView);
                             }
                         }
                     }
                     case GAME_FULL -> eventSubmitter.submit(() -> setupView.showCriticalError(Status.GAME_FULL.getMessage()));
-                    case INVALID_NICKNAME -> eventSubmitter.submit(() -> setupView.showUserError(Status.INVALID_NICKNAME.getMessage()));
-                    case INVALID_COLOR -> eventSubmitter.submit(() -> setupView.showUserError(Status.INVALID_COLOR.getMessage()));
+                    case INVALID_NICKNAME -> {
+                        if(labeledMessage.message() instanceof IntegerMessage integerMessage) {
+                            eventSubmitter.submit(() -> setupView.showUserError(Status.INVALID_NICKNAME.getMessage(), integerMessage.getValue()));
+                        }
+                    }
+                    case INVALID_COLOR -> {
+                        if(labeledMessage.message() instanceof IntegerMessage integerMessage) {
+                            eventSubmitter.submit(() -> setupView.showUserError(Status.INVALID_COLOR.getMessage(), integerMessage.getValue()));
+                        }
+                    }
                 }
                 continue;
             }
@@ -91,7 +104,8 @@ public class ClientMessageHandler extends MessageHandler{
                                     .map(RemotePlayer::getNickname)
                                     .noneMatch(n -> n.equals(playerMessage.getNickname()));
                             if (isPlayerMissing) {
-                                game.addRemotePlayer(new RemotePlayer(playerMessage.getNickname(), playerMessage.getColor()));
+                                game.addRemotePlayer(new RemotePlayer(
+                                        playerMessage.getNickname(), playerMessage.getColor()));
                             }
                         }
                     }
@@ -111,6 +125,7 @@ public class ClientMessageHandler extends MessageHandler{
                         }
                         if (labeledMessage.message() instanceof CardHandMessage cardHandMessage) {
                             game.getLocalPlayer().setHandCards(cardHandMessage.getCardHand());
+                            game.getLocalPlayer().requestStarterCardPlacement();
                         }
                     }
                     case OBJECTIVES -> {
@@ -124,16 +139,15 @@ public class ClientMessageHandler extends MessageHandler{
                             eventSubmitter.submit(() -> gameView.showErrorMessage(Status.INVALID_PLACE_CARD.getMessage()));
                         }
                         if (labeledMessage.message() instanceof ValidPlacementsMessage validPlacementsMessage) {
-                            eventSubmitter.submit(() -> gameView.requestPlacement(
+                            game.getLocalPlayer().requestCardPlacement(
                                     validPlacementsMessage.getPlaceableCards(),
-                                    validPlacementsMessage.getPlaceableCorners()));
+                                    validPlacementsMessage.getPlaceableCorners());
                         }
                     }
                     case PLACEMENT_OK -> {
                         if (labeledMessage.message() instanceof PlayerBoardMessage playerBoardMessage) {
                             ClientPlayer playerWithTurn = game.getPlayerWithTurn();
-                            playerWithTurn.setPlacedCards(playerBoardMessage.getBoard());
-                            playerWithTurn.setScore(playerBoardMessage.getPlayerScore());
+                            playerWithTurn.setPlacedCards(playerBoardMessage.getBoard(), playerBoardMessage.getPlayerScore());
                         }
                     }
                     case PLAYER_HAND_CARDS -> {
@@ -151,8 +165,7 @@ public class ClientMessageHandler extends MessageHandler{
                             eventSubmitter.submit(() -> gameView.showErrorMessage(Status.INVALID_DRAW.getMessage()));
                         }
                         if (labeledMessage.message() instanceof DrawOptionsMessage drawOptionsMessage) {
-                            game.setDrawableOptions(drawOptionsMessage.getDrawableOptions());
-                            eventSubmitter.submit(() -> gameView.requestDraw());
+                            game.requestDraw(drawOptionsMessage.getDrawableOptions());
                         }
                     }
                     case LAST_TURN -> eventSubmitter.submit(() -> gameView.notifyLastTurn());
@@ -164,7 +177,7 @@ public class ClientMessageHandler extends MessageHandler{
                     }
                     case DECLARE_WINNER -> {
                         if (labeledMessage.message() instanceof WinnersMessage winnersMessage) {
-                            eventSubmitter.submit(() -> gameView.showGameEndScreen(winnersMessage.getWinners()));
+                            eventSubmitter.submit(() -> gameView.revealWinners(winnersMessage.getWinners()));
                         }
                     }
                     case CHAT -> {

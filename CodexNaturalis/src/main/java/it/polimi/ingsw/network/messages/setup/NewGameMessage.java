@@ -9,14 +9,13 @@ public class NewGameMessage extends Message {
 
     /**
      * Constructor for the class
-     * @param status the message sent
      * @param name of the game, decided by the player creating the match
      * @param numberOfPlayers integer representing the game's number of players
      */
-    public NewGameMessage(Status status, String name, int numberOfPlayers) {
-        super(status);
+    public NewGameMessage(String name, int numberOfPlayers) {
+        super(Status.NEW_GAME);
         this.name = name;
-        this.numberOfPlayers =numberOfPlayers;
+        this.numberOfPlayers = numberOfPlayers;
     }
 
     /**

@@ -43,6 +43,12 @@ public class ClientGame {
      */
     public void setDrawableOptions(HashMap<CardType, ArrayList<BasicCard>> drawableOptions) {
         this.drawableOptions = drawableOptions;
+        eventSubmitter.submit(() -> gameView.updateDecks(drawableOptions));
+    }
+
+    public void requestDraw(HashMap<CardType, ArrayList<BasicCard>> drawableOptions) {
+        this.drawableOptions = drawableOptions;
+        eventSubmitter.submit(() -> gameView.requestDraw(drawableOptions));
     }
 
     /**
@@ -95,6 +101,8 @@ public class ClientGame {
      */
     public void addRemotePlayer(RemotePlayer player){
         remotePlayers.add(player);
+        player.setViewReferences(gameView,eventSubmitter);
+        eventSubmitter.submit(() -> gameView.showUserJoined(player.getNickname(), player.getColor()));
     }
 
     /**
@@ -103,6 +111,7 @@ public class ClientGame {
      */
     public void setCommonObjectives(ArrayList<Objective> commonObjectives) {
         this.commonObjectives = commonObjectives;
+        eventSubmitter.submit(() -> gameView.updateCommonObjectives(getCommonObjectives()));
     }
 
     /**
@@ -119,6 +128,15 @@ public class ClientGame {
                 .findFirst()
                 .orElse(null);
         playerWithTurn = remotePlayerWithTurn == null ? localPlayer : remotePlayerWithTurn;
+        gameView.turnChanged(nickname);
+    }
+
+    public ArrayList<Objective> getCommonObjectives(){
+        return new ArrayList<>(){{
+            for(Objective obj : commonObjectives){
+                add(new Objective(obj));
+            }
+        }};
     }
 
     public ClientPlayer getPlayerWithTurn(){

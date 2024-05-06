@@ -1,4 +1,4 @@
-package it.polimi.ingsw.network.messages.generic;
+package it.polimi.ingsw.network.messages.setup;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.network.messages.Message;
@@ -9,17 +9,19 @@ import java.util.ArrayList;
 /**
  * Message sent by the client along with a content value (e.g. the color chosen by the player)
  */
-public class ContentMessage extends Message {
+public class GameColorsMessage extends Message {
     private final ArrayList<Content> content;
+    private final int gameId;
 
     /**
      * Constructor for the class
      * @param status the message sent
      * @param content the content sent along the message
      */
-    public ContentMessage(Status status, ArrayList<Content> content) {
+    public GameColorsMessage(Status status, ArrayList<Content> content, int gameId) {
         super(status);
         this.content = content;
+        this.gameId = gameId;
     }
 
     /**
@@ -28,5 +30,13 @@ public class ContentMessage extends Message {
      */
     public ArrayList<Content> getContent() {
         return new ArrayList<>(content);
+    }
+
+    /**
+     * Getter method for the game id sent along the message
+     * @return gameID attribute
+     */
+    public int getGameId(){
+        return gameId;
     }
 }

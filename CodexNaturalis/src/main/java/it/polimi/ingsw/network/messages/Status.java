@@ -25,7 +25,7 @@ public enum Status {
 
     /**
      * Client: requests the available color, sending the game id.
-     * Server: sends the available colors.
+     * Server: sends the available colors and the game id.
      */
     REQUEST_COLORS(""),
 
@@ -42,12 +42,14 @@ public enum Status {
     GAME_FULL("The game can't be joined because it is full."),
 
     /**
-     * Server: requests a new username, as the one chosen before was already taken.
+     * Server: requests a new username, as the one chosen before was already taken;
+     * contains the game id of the match that the player is trying to join.
      */
     INVALID_NICKNAME("The chosen username is already taken. Please enter a different one."),
 
     /**
-     * Server: requests a new color, as the one chosen before was already taken.
+     * Server: requests a new color (and sends the game id), as the one chosen before was already taken;
+     * contains the game id of the match that the player is trying to join.
      */
     INVALID_COLOR("The chosen color is already taken. Please enter a different one."),
 

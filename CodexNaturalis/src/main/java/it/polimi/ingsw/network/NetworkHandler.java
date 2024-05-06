@@ -9,7 +9,7 @@ import java.io.*;
  * Class used to handle each client connected to the server
  */
 public abstract class NetworkHandler implements Runnable, Listener {
-    protected final ServerMessageHandler handler;
+    protected final MessageHandler handler;
     private GameController currentGame;
 
     /**
@@ -17,7 +17,7 @@ public abstract class NetworkHandler implements Runnable, Listener {
      *
      * @param handler the message handler to which the client refers to
      */
-    public NetworkHandler(ServerMessageHandler handler) throws IOException{
+    public NetworkHandler(MessageHandler handler) throws IOException{
         this.currentGame = null;
         this.handler = handler;
     }

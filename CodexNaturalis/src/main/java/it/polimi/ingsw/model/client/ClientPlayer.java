@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.view.EventSubmitter;
+import it.polimi.ingsw.view.GameView;
+import jdk.jfr.Event;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +19,8 @@ public abstract class ClientPlayer {
     private ArrayList<BasicCard> placedCards;
     private final Content color;
     private int score;
-    private EventSubmitter eventSubmitter;
+    protected EventSubmitter eventSubmitter;
+    protected GameView gameView;
 
     /**
      * Constructor of the class
@@ -67,8 +70,10 @@ public abstract class ClientPlayer {
      * Setter of the placed cards list
      * @param placedCards the new placed cards list
      */
-    public void setPlacedCards(ArrayList<BasicCard> placedCards) {
+    public void setPlacedCards(ArrayList<BasicCard> placedCards, int score) {
         this.placedCards = placedCards;
+        this.score = score;
+        eventSubmitter.submit(() -> gameView.updateBoard(nickname, getPlacedCards()));
     }
 
     /**
@@ -84,16 +89,14 @@ public abstract class ClientPlayer {
      */
     public abstract void setHandCards(ArrayList<CardSides> handCards);
 
-    /**
-     * Setter of the player's score
-     * @param score new score
-     */
-    public void setScore(int score) {
-        this.score = score;
+    public void setViewReferences(GameView gameView, EventSubmitter eventSubmitter){
+        this.gameView = gameView;
+        this.eventSubmitter = eventSubmitter;
     }
 
     public void setFinalScore(HashMap<Objective, Integer> scoresByObjective, Integer finalScore){
-        setScore(finalScore);
+        this.score = finalScore;
+        eventSubmitter.submit(() -> gameView.revealFinalSummary(getNickname(), scoresByObjective, getScore()));
     }
 
 }

@@ -10,7 +10,7 @@ import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
 import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.network.messages.generic.ContentMessage;
+import it.polimi.ingsw.network.messages.setup.GameColorsMessage;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.MatchListMessage;
@@ -70,8 +70,8 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                 case REQUEST_COLORS -> {
                     if(labeledMessage.message() instanceof IntegerMessage integerMessage){
                         GameController game = games.getController(integerMessage.getValue());
-                        labeledMessage.networkHandler().update(new ContentMessage(Status.REQUEST_COLORS,
-                                game != null ? game.requestColors() : new ArrayList<>()));
+                        labeledMessage.networkHandler().update(new GameColorsMessage(Status.REQUEST_COLORS,
+                                game != null ? game.requestColors() : new ArrayList<>(), integerMessage.getValue()));
                     }
                 }
                 case JOIN_GAME -> {
@@ -89,9 +89,9 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                         }catch(GameFullException f){
                             labeledMessage.networkHandler().update(new Message(Status.GAME_FULL));
                         }catch(NicknameTakenException e){
-                            labeledMessage.networkHandler().update(new Message(Status.INVALID_NICKNAME));
+                            labeledMessage.networkHandler().update(new IntegerMessage(Status.INVALID_NICKNAME, joinGameMessage.getGameId()));
                         }catch(GameException e){
-                            labeledMessage.networkHandler().update(new Message(Status.INVALID_COLOR));
+                            labeledMessage.networkHandler().update(new IntegerMessage(Status.INVALID_COLOR, joinGameMessage.getGameId()));
                         }
                     }
                 }

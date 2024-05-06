@@ -17,7 +17,7 @@ public class TCPHandler extends NetworkHandler {
      * @param socket the socket to which the client is connected
      * @param handler the message handler that will handle the messages received
      */
-    public TCPHandler(Socket socket, ServerMessageHandler handler) throws IOException{
+    public TCPHandler(Socket socket, MessageHandler handler) throws IOException{
         super(handler);
         this.socketOutput = new ObjectOutputStream(socket.getOutputStream());
         this.socketInput = new ObjectInputStream(socket.getInputStream());
@@ -38,6 +38,7 @@ public class TCPHandler extends NetworkHandler {
                 }
             }
         }catch(IOException e){
+            System.out.println("Encountered an IO Exception in TCPHandler");
             System.out.println(e.getMessage());
         }
     }
