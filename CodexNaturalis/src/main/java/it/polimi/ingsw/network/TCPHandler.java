@@ -28,18 +28,19 @@ public class TCPHandler extends NetworkHandler {
      */
     @Override
     public void run(){
-        try{
-            while(true){
-                try{
+        try {
+            while (true) {
+                try {
                     Message message = (Message) socketInput.readObject();
-                    handler.addMessageToQueue(message,this);
-                }catch (ClassNotFoundException e){
+                    System.out.println(message.getStatus());
+                    handler.addMessageToQueue(message, this);
+                } catch (ClassNotFoundException e) {
                     System.out.println("Received an invalid message");
                 }
             }
-        }catch(IOException e){
+        }catch (IOException e){
             System.out.println("Encountered an IO Exception in TCPHandler");
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -49,6 +50,7 @@ public class TCPHandler extends NetworkHandler {
      */
     @Override
     public void update(Message message){
+        System.out.println(message.getStatus());
         try{
             socketOutput.writeObject(message);
         }catch(IOException e){

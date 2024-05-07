@@ -58,8 +58,9 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                 case NEW_GAME -> {
                     if (labeledMessage.message() instanceof NewGameMessage newGameMessage){
                         try{
+                            int nameLength = newGameMessage.getName().length();
                             int gameId = games.addGame(newGameMessage.getNumberOfPlayers(),
-                                    newGameMessage.getName().substring(0, GameParameters.getMaxNicknameLength()));
+                                    newGameMessage.getName().substring(0, Math.min(nameLength,GameParameters.getMaxNicknameLength())));
                             labeledMessage.networkHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
                         }catch (IllegalNumberOfPlayers e) {
                             HashMap<Integer, String> matches = games.getFormattedAvailableMatches();
@@ -82,7 +83,8 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                             break;
                         }
                         try{
-                            game.acceptPlayer(joinGameMessage.getNickname().substring(0, GameParameters.getMaxNicknameLength()),
+                            int nickLength = joinGameMessage.getNickname().length();
+                            game.acceptPlayer(joinGameMessage.getNickname().substring(0, Math.min(nickLength,GameParameters.getMaxNicknameLength())),
                                     joinGameMessage.getColor(),
                                     labeledMessage.networkHandler());
                             labeledMessage.networkHandler().setCurrentGame(game);

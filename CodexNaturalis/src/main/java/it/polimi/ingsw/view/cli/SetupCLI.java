@@ -33,6 +33,7 @@ public class SetupCLI implements SetupView {
 
     public SetupCLI(){
         this.messageHandler = new ClientMessageHandler(this, new TerminalSubmitter());
+        new Thread(messageHandler).start();
         System.out.print("Please enter the IP of the server you want to play on: ");
         String ip = getUserStringChoice(15, "IP address");
         System.out.print("Now enter the Port of the server: ");
@@ -41,8 +42,14 @@ public class SetupCLI implements SetupView {
             socket.getInputStream();
             TCPHandler tcpHandler = new TCPHandler(socket, messageHandler);
             messageHandler.setNetworkHandler(tcpHandler);
-            new Thread(tcpHandler).start();
+            Thread listeningThread = new Thread(tcpHandler);
+            listeningThread.start();
             messageHandler.sendMessage(new Message(Status.REQUEST_GAMES));
+            try {
+                listeningThread.join();
+            }catch (InterruptedException e){
+                e.printStackTrace();
+            }
         }catch (IOException e){
             System.out.println("pippa");
             System.out.println(e.getMessage());
@@ -57,19 +64,22 @@ public class SetupCLI implements SetupView {
         }
         System.out.println();
         System.out.println("Enter the ID of the match you want to join (0 for a new match)");
-        int id = getUserIntChoice(
-                matchList.keySet().stream().min(Integer::compareTo).orElseThrow(),
-                matchList.keySet().stream().max(Integer::compareTo).orElseThrow());
-        if(id == 0){
-            System.out.print("Enter the new match's name: ");
-            String gameName = getUserStringChoice(GameParameters.getMaxNicknameLength(), "match name");
-            int minPlayers = GameParameters.getMinPlayers();
-            int maxPlayers = GameParameters.getMaxPlayers();
-            System.out.printf("Now enter the number of players (between %d and %d inclusive): ", minPlayers, maxPlayers);
-            int numberOfPlayers = getUserIntChoice(minPlayers, maxPlayers);
-            messageHandler.sendMessage(new NewGameMessage(gameName, numberOfPlayers));
-        }else{
-            messageHandler.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, id));
+        int id = -1;
+        while (!matchList.containsKey(id) || id == 0) {
+            id = getUserIntChoice(
+                    0,
+                    matchList.keySet().stream().max(Integer::compareTo).orElse(0));
+            if (id == 0) {
+                System.out.print("Enter the new match's name: ");
+                String gameName = getUserStringChoice(GameParameters.getMaxNicknameLength(), "match name");
+                int minPlayers = GameParameters.getMinPlayers();
+                int maxPlayers = GameParameters.getMaxPlayers();
+                System.out.printf("Now enter the number of players (between %d and %d inclusive): ", minPlayers, maxPlayers);
+                int numberOfPlayers = getUserIntChoice(minPlayers, maxPlayers);
+                messageHandler.sendMessage(new NewGameMessage(gameName, numberOfPlayers));
+            } else {
+                messageHandler.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, id));
+            }
         }
     }
 

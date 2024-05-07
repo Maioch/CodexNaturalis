@@ -59,7 +59,6 @@ public class ClientMessageHandler extends MessageHandler{
                     case NEW_GAME -> {
                         if(labeledMessage.message() instanceof IntegerMessage integerMessage){
                             eventSubmitter.submit(() -> setupView.newGameSuccess(integerMessage.getValue()));
-                            networkHandler.update(new IntegerMessage(Status.REQUEST_COLORS, integerMessage.getValue()));
                         }
                     }
                     case INVALID_PLAYERS_NUMBER -> eventSubmitter.submit(() -> setupView.showCriticalError(Status.INVALID_PLAYERS_NUMBER.getMessage()));

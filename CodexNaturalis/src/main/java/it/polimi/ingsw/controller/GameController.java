@@ -17,6 +17,7 @@ import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -211,8 +212,9 @@ public class GameController implements Runnable{
                 //handle chat messages
                 if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
                     for(String nickname : chatMessage.getRecipients()){
+                        int chatMsgLength = chatMessage.getMessage().length();
                         serverSubject.notify(nickname, new ChatMessage(
-                                chatMessage.getMessage().substring(0, GameParameters.getMaxChatMessageLength()),
+                                chatMessage.getMessage().substring(0, Math.min(chatMsgLength,GameParameters.getMaxChatMessageLength())),
                                 chatMessage.getSender(),
                                 chatMessage.getRecipients()));
                     }
