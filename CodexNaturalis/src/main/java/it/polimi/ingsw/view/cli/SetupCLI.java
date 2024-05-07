@@ -65,7 +65,7 @@ public class SetupCLI implements SetupView {
         System.out.println();
         System.out.println("Enter the ID of the match you want to join (0 for a new match)");
         int id = -1;
-        while (!matchList.containsKey(id) || id == 0) {
+        while (!matchList.containsKey(id)) {
             id = getUserIntChoice(
                     0,
                     matchList.keySet().stream().max(Integer::compareTo).orElse(0));
@@ -77,9 +77,9 @@ public class SetupCLI implements SetupView {
                 System.out.printf("Now enter the number of players (between %d and %d inclusive): ", minPlayers, maxPlayers);
                 int numberOfPlayers = getUserIntChoice(minPlayers, maxPlayers);
                 messageHandler.sendMessage(new NewGameMessage(gameName, numberOfPlayers));
-            } else {
-                messageHandler.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, id));
+                break;
             }
+            messageHandler.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, id));
         }
     }
 

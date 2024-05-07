@@ -18,7 +18,7 @@ public class MatchListMessage extends Message {
      */
     public MatchListMessage(Status status, HashMap<Integer,String> matchList){
         super(status);
-        this.matchList = matchList;
+        this.matchList = new HashMap<>(matchList);
     }
 
     /**

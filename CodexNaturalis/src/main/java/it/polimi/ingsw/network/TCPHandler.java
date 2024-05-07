@@ -32,7 +32,6 @@ public class TCPHandler extends NetworkHandler {
             while (true) {
                 try {
                     Message message = (Message) socketInput.readObject();
-                    System.out.println(message.getStatus());
                     handler.addMessageToQueue(message, this);
                 } catch (ClassNotFoundException e) {
                     System.out.println("Received an invalid message");
@@ -40,7 +39,7 @@ public class TCPHandler extends NetworkHandler {
             }
         }catch (IOException e){
             System.out.println("Encountered an IO Exception in TCPHandler");
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
