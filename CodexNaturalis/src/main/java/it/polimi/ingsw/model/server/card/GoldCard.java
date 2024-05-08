@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.server.Content;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A class that represents a gold card
@@ -14,7 +16,7 @@ import java.util.HashMap;
 
 public class GoldCard extends BasicCard {
 
-    private final ArrayList<Content> requirements;
+    private final List<Content> requirements;
     private transient Bonus bonus;
     
     /**
@@ -24,7 +26,7 @@ public class GoldCard extends BasicCard {
      * @param requirements the resources needed in order to play the card
      * @throws CardException if there are invalid requirements
     */
-    public GoldCard(BasicCard cardTemplate, ArrayList<Content> requirements) throws CardException {
+    public GoldCard(BasicCard cardTemplate, List<Content> requirements) throws CardException {
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
         if(requirements.stream().anyMatch(c -> !c.isResource())){
             throw new CardException(
@@ -53,7 +55,7 @@ public class GoldCard extends BasicCard {
      * @return the requirements needed to play the card
      */
     @Override
-    public HashMap<Content,Integer> getRequirements(){
+    public Map<Content,Integer> getRequirements(){
         return new HashMap<>(){{
             for(Content content : Content.values()){
                 put(content, requirements.stream()

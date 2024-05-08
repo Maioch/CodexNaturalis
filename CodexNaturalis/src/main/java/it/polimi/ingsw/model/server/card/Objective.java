@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.Player;
 
 import java.awt.*;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -97,9 +98,9 @@ public class Objective {
      * @author Guglielmo Gatti
      */
     public class ContentBonus implements Bonus{
-        private final ArrayList<Content> sequence;
+        private final List<Content> sequence;
 
-        public ContentBonus(ArrayList<Content> sequence){
+        public ContentBonus(List<Content> sequence){
             this.sequence = sequence;
         }
 
@@ -110,7 +111,7 @@ public class Objective {
          */
         @Override
         public int calculate(){
-            HashMap<Content, Integer> timesFound = owner.getPlayerContent();
+            Map<Content, Integer> timesFound = owner.getPlayerContent();
             for(Content content : Content.values()){
                 if(sequence.contains(content)){
                     int timesFoundInSequence = sequence.stream()
@@ -149,13 +150,13 @@ public class Objective {
      * @author Guglielmo Gatti, Francesco Nisoli
      */
     public class PatternBonus implements Bonus{
-        private final HashMap<Point, Content> pattern;
+        private final Map<Point, Content> pattern;
 
         /**
          * Constructor for the class
          * @param pattern hashmap describing the required pattern by pairing each color to its relative coordinates
          */
-        public PatternBonus(HashMap<Point, Content> pattern){
+        public PatternBonus(Map<Point, Content> pattern){
             boolean isValidPattern = pattern.values().stream()
                     .filter(x -> x.isObject() || x.isEmpty() || x == Content.WHITE)
                     .findAny()
@@ -177,7 +178,7 @@ public class Objective {
             Point min = new Point(0,0);
             Point max = new Point(0,0);
             //Generate a color hashmap from the player's board
-            HashMap<Point,Content> colorHashMap = new HashMap<>(){{
+            Map<Point,Content> colorHashMap = new HashMap<>(){{
                 for(BasicCard card : owner.getPlacedCards()){
                     Corner cardBLCorner = card.getAllCorners().stream()
                             .filter(c -> c.getLocation() == Location.BL)
@@ -199,7 +200,7 @@ public class Objective {
                 for(int x = min.x; x < max.x; x++){
                     baseOffset.move(x,y);
                     Point offset = new Point(baseOffset);
-                    ArrayList<Point> evaluatedPoints = new ArrayList<>();
+                    List<Point> evaluatedPoints = new ArrayList<>();
                     //Sub-iteration used to check for the pattern itself
                     boolean patternFound = true;
                     for(Map.Entry<Point, Content> patternEntry : pattern.entrySet()){

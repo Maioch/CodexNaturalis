@@ -8,10 +8,8 @@ import it.polimi.ingsw.model.server.Player;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -25,9 +23,9 @@ public class BasicCard implements Serializable {
 
     protected final int cardId;
     protected final Content color;
-    protected final HashSet<Corner> corners;
+    protected final Set<Corner> corners;
     protected final int points;
-    protected final ArrayList<Content> resources;
+    protected final List<Content> resources;
     protected transient Player owner;
 
     /**
@@ -44,9 +42,9 @@ public class BasicCard implements Serializable {
     public BasicCard(
             int cardId,
             Content color,
-            HashSet<Corner> corners,
+            Set<Corner> corners,
             int points,
-            ArrayList<Content> resources)
+            List<Content> resources)
             throws CardException {
         if(!color.isColor() || points < 0){
             throw new CardException(
@@ -111,7 +109,7 @@ public class BasicCard implements Serializable {
     /**
      * @return the corners hashmap
      */
-    public HashSet<Corner> getAllCorners(){
+    public Set<Corner> getAllCorners(){
         return new HashSet<>(){{
             for(Corner corner : corners){
                 add(new Corner(corner));
@@ -125,9 +123,9 @@ public class BasicCard implements Serializable {
      * IMPORTANT: this includes white and empty corners too
      * @return a hashmap with the resource as key and the amount as value
      */
-    public HashMap<Content,Integer> getCardSymbols(){
+    public Map<Content,Integer> getCardSymbols(){
         //Create a list containing all the contents of the card
-        ArrayList<Content> totalContent = this.corners.stream()
+        List<Content> totalContent = this.corners.stream()
                 .filter(Corner::getVisibility)
                 .map(Corner::getContent)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -157,7 +155,7 @@ public class BasicCard implements Serializable {
     /**
      * @return the requirements needed to play the card
      */
-    public HashMap<Content, Integer> getRequirements(){
+    public Map<Content, Integer> getRequirements(){
         return new HashMap<>(){{
             for(Content content : Content.values()){
                 put(content, 0);

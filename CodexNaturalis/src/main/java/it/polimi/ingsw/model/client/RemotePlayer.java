@@ -3,17 +3,16 @@ package it.polimi.ingsw.model.client;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.view.EventSubmitter;
 
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * A class representing the remote player (non-client players)
  */
 public class RemotePlayer extends ClientPlayer {
-    private ArrayList<BasicCard> handCards; //Not a cardsides list, in order to obtain an only front cards hand
+    private List<BasicCard> handCards; //Not a cardsides list, in order to obtain an only front cards hand
 
     /**
      * A constructor of the class
@@ -38,7 +37,7 @@ public class RemotePlayer extends ClientPlayer {
      * @param handCards the list of the hand cards
      */
     @Override
-    public void setHandCards(ArrayList<CardSides> handCards) {
+    public void setHandCards(List<CardSides> handCards) {
         this.handCards = handCards.stream()
                 .map(CardSides::backSide)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -49,7 +48,7 @@ public class RemotePlayer extends ClientPlayer {
      * A getter of the hand cards
      * @return the list of the hand cards
      */
-    public ArrayList<BasicCard> getHandCards() {
+    public List<BasicCard> getHandCards() {
         return new ArrayList<>() {{
             for (BasicCard card : handCards) {
                 add(card.copy());

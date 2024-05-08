@@ -9,6 +9,7 @@ import it.polimi.ingsw.view.GameView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,9 +18,9 @@ import java.util.Map;
 
 public class ClientGame {
     private LocalPlayer localPlayer;
-    private final ArrayList<RemotePlayer> remotePlayers;
-    private ArrayList<Objective> commonObjectives;
-    private HashMap<CardType, ArrayList<BasicCard>> drawableOptions;
+    private final List<RemotePlayer> remotePlayers;
+    private List<Objective> commonObjectives;
+    private Map<CardType, List<BasicCard>> drawableOptions;
     private ClientPlayer playerWithTurn;
     private final EventSubmitter eventSubmitter;
     private final GameView gameView;
@@ -41,13 +42,13 @@ public class ClientGame {
      * Setter of the drawable options (cards which the player can draw)
      * @param drawableOptions hashmap containing the card type and the relative cards (of
      */
-    public void setDrawableOptions(HashMap<CardType, ArrayList<BasicCard>> drawableOptions) {
-        this.drawableOptions = drawableOptions;
+    public void setDrawableOptions(Map<CardType, List<BasicCard>> drawableOptions) {
+        this.drawableOptions = new HashMap<>(drawableOptions);
         eventSubmitter.submit(() -> gameView.updateDecks(drawableOptions));
     }
 
-    public void requestDraw(HashMap<CardType, ArrayList<BasicCard>> drawableOptions) {
-        this.drawableOptions = drawableOptions;
+    public void requestDraw(Map<CardType, List<BasicCard>> drawableOptions) {
+        this.drawableOptions = new HashMap<>(drawableOptions);
         eventSubmitter.submit(() -> gameView.requestDraw(drawableOptions));
     }
 
@@ -55,10 +56,10 @@ public class ClientGame {
      * Getter of the drawable cards
      * @return an hashmap representing the drawable cards
      */
-    public HashMap<CardType, ArrayList<BasicCard>> getDrawableOptions() {
+    public Map<CardType, List<BasicCard>> getDrawableOptions() {
         return new HashMap<>(){{
-            for(Map.Entry<CardType,ArrayList<BasicCard>> entry : drawableOptions.entrySet()) {
-                ArrayList<BasicCard> newValue = new ArrayList<BasicCard>(){{
+            for(Map.Entry<CardType,List<BasicCard>> entry : drawableOptions.entrySet()) {
+                List<BasicCard> newValue = new ArrayList<>(){{
                     for(BasicCard card : entry.getValue()){
                         add(card.copy());
                     }
@@ -80,7 +81,7 @@ public class ClientGame {
      * Getter of the remote players
      * @return an arraylist of the remote players (part of the game)
      */
-    public ArrayList<RemotePlayer> getRemotePlayers() {
+    public List<RemotePlayer> getRemotePlayers() {
         return new ArrayList<>(){{
             for(RemotePlayer remotePlayer : remotePlayers){
                 add(new RemotePlayer(remotePlayer));
@@ -92,7 +93,7 @@ public class ClientGame {
      * A method that updates the vies, showing the avaible colors
      * @param colors the list of available colors
      */
-    public void updateAvailableColors(ArrayList<Content> colors){
+    public void updateAvailableColors(List<Content> colors){
         //Update the view with the currently available colors
     }
 
@@ -109,8 +110,8 @@ public class ClientGame {
      * Setter of the common objects (the ones that all the players onw)
      * @param commonObjectives the common objective list
      */
-    public void setCommonObjectives(ArrayList<Objective> commonObjectives) {
-        this.commonObjectives = commonObjectives;
+    public void setCommonObjectives(List<Objective> commonObjectives) {
+        this.commonObjectives = new ArrayList<>(commonObjectives);
         eventSubmitter.submit(() -> gameView.updateCommonObjectives(getCommonObjectives()));
     }
 
@@ -131,7 +132,7 @@ public class ClientGame {
         gameView.turnChanged(nickname);
     }
 
-    public ArrayList<Objective> getCommonObjectives(){
+    public List<Objective> getCommonObjectives(){
         return new ArrayList<>(){{
             for(Objective obj : commonObjectives){
                 add(new Objective(obj));

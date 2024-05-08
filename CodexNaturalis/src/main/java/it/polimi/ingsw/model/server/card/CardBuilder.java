@@ -8,10 +8,9 @@ import it.polimi.ingsw.model.server.Content;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.awt.*;
+import java.util.List;
 
 /**
  * A class that creates all the cards (starter, resource, gold, objective) that are present in the game, by
@@ -33,8 +32,8 @@ public class CardBuilder {
         BasicCard cardBack;
         JsonNode cardJson = getCardJson(cardId, "placeableCards");
         Content color = getColor(cardJson);
-        HashSet<Corner> frontCornerMap = getCorners(cardJson, "cornersFront");
-        HashSet<Corner> backCornerMap = getCorners(cardJson, "cornersBack");
+        Set<Corner> frontCornerMap = getCorners(cardJson, "cornersFront");
+        Set<Corner> backCornerMap = getCorners(cardJson, "cornersBack");
         int points = getPoints(cardJson);
         switch (cardJson.get("type").asText()) {
 
@@ -45,7 +44,7 @@ public class CardBuilder {
                 }});
             }
             case "GOLD" -> {
-                ArrayList<Content> requirements = getContentFromArray(cardJson, "requirements");
+                List<Content> requirements = getContentFromArray(cardJson, "requirements");
                 GoldCard goldFront = new GoldCard(
                         new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>()), requirements);
                 Bonus bonus = switch (getBonusType(cardJson)) {
@@ -65,7 +64,7 @@ public class CardBuilder {
                 }});
             }
             case "STARTER" -> {
-                ArrayList<Content> resources = getContentFromArray(cardJson, "resources");
+                List<Content> resources = getContentFromArray(cardJson, "resources");
                 cardFront = new BasicCard(cardId, Content.WHITE, frontCornerMap, 0, resources);
                 cardBack = new BasicCard(cardId, Content.WHITE, backCornerMap, 0, new ArrayList<>());
             }
@@ -86,11 +85,11 @@ public class CardBuilder {
         Objective objective = new Objective(id,points);
         Bonus bonus = switch (cardJson.get("bonus").get("type").asText()){
             case "CONTENT" -> {
-                ArrayList<Content> contents = getContentFromArray(cardJson.get("bonus"), "content");
+                List<Content> contents = getContentFromArray(cardJson.get("bonus"), "content");
                 yield objective.new ContentBonus(contents);
             }
             case "PATTERN" -> {
-                HashMap<Point, Content> pattern = new HashMap<>(){{
+                Map<Point, Content> pattern = new HashMap<>(){{
                     for(JsonNode subNode : cardJson.get("bonus").get("pattern")){
                         int x = subNode.get("x").asInt();
                         int y = subNode.get("y").asInt();
@@ -151,7 +150,7 @@ public class CardBuilder {
      * @param fieldName field that we want to read
      * @return the corners HashMap
      */
-    static HashSet<Corner> getCorners(JsonNode cardJson, String fieldName){
+    static Set<Corner> getCorners(JsonNode cardJson, String fieldName){
         JsonNode cornersJson = cardJson.get(fieldName);
         return new HashSet<>() {{
             for (Location loc : Location.values()) {
@@ -166,7 +165,7 @@ public class CardBuilder {
      * @param arrayName the name of the array property
      * @return an ArrayList containing the same elements as the JSON array, converted from string to Content
      */
-    static ArrayList<Content> getContentFromArray(JsonNode cardJson, String arrayName){
+    static List<Content> getContentFromArray(JsonNode cardJson, String arrayName){
         return new ArrayList<>() {{
             for (JsonNode subNode : cardJson.get(arrayName)) {
                 add(Content.valueOf(subNode.asText()));

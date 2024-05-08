@@ -4,6 +4,7 @@ import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A message used when the client wants to chat
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 public class ChatMessage extends Message{
     private final String message;
     private final String sender;
-    private final ArrayList<String> recipients; //might be null
+    private final List<String> recipients; //might be null
 
     /**
      * Constructor of the chat message
@@ -19,11 +20,11 @@ public class ChatMessage extends Message{
      * @param sender the sender's (nick)name
      * @param recipients the recipients' (nick)names
      */
-    public ChatMessage(String message, String sender, ArrayList<String> recipients){
+    public ChatMessage(String message, String sender, List<String> recipients){
         super(Status.CHAT);
         this.message = message;
         this.sender = sender;
-        this.recipients = recipients;
+        this.recipients = new ArrayList<>(recipients);
     }
 
     /**
@@ -43,7 +44,7 @@ public class ChatMessage extends Message{
     /**
      * @return the recipients attribute, if present
      */
-    public ArrayList<String> getRecipients(){
+    public List<String> getRecipients(){
         return new ArrayList<>(recipients);
     }
 }

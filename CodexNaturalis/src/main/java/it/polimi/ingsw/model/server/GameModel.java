@@ -16,6 +16,7 @@ import it.polimi.ingsw.model.server.card.CardType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class that represents a single match of Codex Naturalis
@@ -24,13 +25,13 @@ import java.util.List;
  */
 public class GameModel extends ServerSubject {
     private final ServerSubject serverSubject;
-    private final ArrayList<Player> players;
+    private final List<Player> players;
     private final TurnDeck<CardSides> resourceDeck;
     private final TurnDeck<CardSides> goldDeck;
     private final Deck<CardSides> starterDeck;
     private final Deck<Objective> objectiveDeck;
-    private final ArrayList<Content> availableColors;
-    private final ArrayList<Objective> commonObjectives;
+    private final List<Content> availableColors;
+    private final List<Objective> commonObjectives;
     private final int numberOfPlayers;
 
     /**
@@ -92,7 +93,7 @@ public class GameModel extends ServerSubject {
     /**
      * @return all the players
      */
-    public synchronized ArrayList<Player> getAllPlayers() {
+    public synchronized List<Player> getAllPlayers() {
         return new ArrayList<>(players);
     }
 
@@ -116,7 +117,7 @@ public class GameModel extends ServerSubject {
     /**
      * @return the list of colors that the player can choose from
      */
-    public synchronized ArrayList<Content> getAvailableColors() {
+    public synchronized List<Content> getAvailableColors() {
         return new ArrayList<>(availableColors);
     }
 
@@ -162,7 +163,7 @@ public class GameModel extends ServerSubject {
                 add(resourceDeck.draw());
             }
         }};
-        ArrayList<Objective> objectives = new ArrayList<>() {{
+        List<Objective> objectives = new ArrayList<>() {{
             addAll(commonObjectives);
             for (int i = 0; i < GameParameters.getNumberOfSecretObjectives(); i++) {
                 add(objectiveDeck.draw());
@@ -209,7 +210,7 @@ public class GameModel extends ServerSubject {
      * the deck is empty, while the rest are the visible ones.
      * @return all the cards the player can draw during his draw phase
      */
-    public synchronized HashMap<CardType, ArrayList<BasicCard>> getDrawableCards() {
+    public synchronized Map<CardType, List<BasicCard>> getDrawableCards() {
         return new HashMap<>() {{
             put(CardType.RESOURCE, new ArrayList<>() {{
                 add(resourceDeck.isEmpty() ? null : resourceDeck.getElementOnTop().backSide());
@@ -235,7 +236,7 @@ public class GameModel extends ServerSubject {
      * Getter for the game's common objectives
      * @return a deep copy of the game's common objectives list
      */
-    public ArrayList<Objective> getCommonObjectives() {
+    public List<Objective> getCommonObjectives() {
         return new ArrayList<>(){{
             for(Objective objective : commonObjectives){
                 add(new Objective(objective));

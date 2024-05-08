@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.server.deck;
 import it.polimi.ingsw.exceptions.DeckException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Stack;
 import java.util.function.Function;
 
@@ -39,7 +40,7 @@ public class Deck<T>{
     /**
      * @return ArrayList of cards
      */
-    public ArrayList<T> getDeck(){
+    public List<T> getDeck(){
         return new ArrayList<>(this.deck);
     }
 

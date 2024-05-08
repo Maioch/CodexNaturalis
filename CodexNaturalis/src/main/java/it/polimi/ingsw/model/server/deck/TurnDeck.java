@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.server.deck;
 
 import it.polimi.ingsw.exceptions.DeckException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -14,7 +15,7 @@ import java.util.function.Function;
  * @author Andrea Fidanza, Guglielmo Gatti
  */
 public class TurnDeck<T> extends Deck<T> {
-    private final ArrayList<T> visibleElements;
+    private final List<T> visibleElements;
 
     /**
      * Constructor for TurnDeck
@@ -50,7 +51,7 @@ public class TurnDeck<T> extends Deck<T> {
     /**
      * @return ArrayList of visible cards
      */
-    public ArrayList<T> getVisibleElements(){
+    public List<T> getVisibleElements(){
         return new ArrayList<>(this.visibleElements);
     }
 

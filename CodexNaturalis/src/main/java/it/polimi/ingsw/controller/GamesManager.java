@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GamesManager{
-    private final HashMap<Integer, GameController> games;
+    private final Map<Integer, GameController> games;
 
     public GamesManager(){
         this.games = new HashMap<>();
@@ -39,7 +39,7 @@ public class GamesManager{
         return games.get(gameId);
     }
 
-    public synchronized HashMap<Integer, String> getFormattedAvailableMatches(){
+    public synchronized Map<Integer, String> getFormattedAvailableMatches(){
         return new HashMap<>(){{
             for(Entry<Integer, GameController> entry : games.entrySet()){
                 if(!entry.getValue().isGameFull()){

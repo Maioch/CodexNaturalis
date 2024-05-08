@@ -10,13 +10,15 @@ import jdk.jfr.Event;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Class representing the client-related player model
  */
 public abstract class ClientPlayer {
     private final String nickname;
-    private ArrayList<BasicCard> placedCards;
+    private List<BasicCard> placedCards;
     private final Content color;
     private int score;
     protected EventSubmitter eventSubmitter;
@@ -58,7 +60,7 @@ public abstract class ClientPlayer {
      * Getter of the placed cards list
      * @return the placed card list
      */
-    public ArrayList<BasicCard> getPlacedCards() {
+    public List<BasicCard> getPlacedCards() {
         return new ArrayList<>(){{
             for(BasicCard card : placedCards){
                 add(card.copy());
@@ -70,8 +72,8 @@ public abstract class ClientPlayer {
      * Setter of the placed cards list
      * @param placedCards the new placed cards list
      */
-    public void setPlacedCards(ArrayList<BasicCard> placedCards, int score) {
-        this.placedCards = placedCards;
+    public void setPlacedCards(List<BasicCard> placedCards, int score) {
+        this.placedCards = new ArrayList<>(placedCards);
         this.score = score;
         eventSubmitter.submit(() -> gameView.updateBoard(nickname, getPlacedCards()));
     }
@@ -87,16 +89,15 @@ public abstract class ClientPlayer {
     /**
      * Setter for the player's hand
      */
-    public abstract void setHandCards(ArrayList<CardSides> handCards);
+    public abstract void setHandCards(List<CardSides> handCards);
 
     public void setViewReferences(GameView gameView, EventSubmitter eventSubmitter){
         this.gameView = gameView;
         this.eventSubmitter = eventSubmitter;
     }
 
-    public void setFinalScore(HashMap<Objective, Integer> scoresByObjective, Integer finalScore){
+    public void setFinalScore(Map<Objective, Integer> scoresByObjective, Integer finalScore){
         this.score = finalScore;
         eventSubmitter.submit(() -> gameView.revealFinalSummary(getNickname(), scoresByObjective, getScore()));
     }
-
 }

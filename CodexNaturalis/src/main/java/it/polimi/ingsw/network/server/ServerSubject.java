@@ -4,9 +4,10 @@ import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.Message;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class ServerSubject {
-    private final HashMap<String, NetworkHandler> networkHandlers;
+    private final Map<String, NetworkHandler> networkHandlers;
 
     public ServerSubject(){
         networkHandlers = new HashMap<>();

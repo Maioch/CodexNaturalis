@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 public class GoldCardTest {
     private final int startGold = 41;
@@ -24,7 +25,7 @@ public class GoldCardTest {
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             assertEquals(card.getClass(), GoldCard.class);
             GoldCard gold = (GoldCard) card;
-            ArrayList<Content> actualRequirements = CardBuilder.getContentFromArray(node, "requirements");
+            List<Content> actualRequirements = CardBuilder.getContentFromArray(node, "requirements");
             HashMap<Content,Integer> actualRequirementsMap = new HashMap<>(){{
                 for(Content content : Content.values()){
                     put(content, actualRequirements.stream()
@@ -55,7 +56,7 @@ public class GoldCardTest {
             playerTest.placeCard(card.frontSide(), cornerTest);
             offset += 2;
         }
-        ArrayList<BasicCard> placedCard = playerTest.getPlacedCards();
+        List<BasicCard> placedCard = playerTest.getPlacedCards();
         Iterator<BasicCard> iterator = placedCard.iterator();
         BasicCard currentCard = iterator.next();
         for(int id = startGold; id <= endGold; id++, currentCard = iterator.hasNext() ? iterator.next() : currentCard){

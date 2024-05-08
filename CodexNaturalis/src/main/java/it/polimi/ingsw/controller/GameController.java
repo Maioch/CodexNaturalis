@@ -88,9 +88,9 @@ public class GameController implements Runnable{
                 currentStatus = Status.INVALID_STARTER_CARD;
             }
             player.placeStarterCard(starterSide);
-            ArrayList<Objective> secretObjectives = player.getObjectives().stream()
+            List<Objective> secretObjectives = player.getObjectives().stream()
                     .filter(o -> !game.getCommonObjectives().contains(o))
-                    .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+                    .collect(ArrayList::new, List::add, List::addAll);
             serverSubject.notify(player.getNickname(),
                     new ObjectivesMessage(Status.OBJECTIVES, secretObjectives, game.getCommonObjectives()));
         }
@@ -149,6 +149,14 @@ public class GameController implements Runnable{
         player.placeCard(cardToPlace, chosenCorner);
     }
 
+    /**
+     * A method that checks if the player's chosen move is valid.
+     *
+     * @param player the player who's doing the move.
+     * @param card the card chosen by the player.
+     * @param corner the corner chosen by the player.
+     * @return true if the move is valid, false if it isn't.
+     */
     private boolean isMoveValid(Player player, BasicCard card, Corner corner){
         return (card != null &&
                 player.checkRequirements(card) &&
@@ -187,22 +195,45 @@ public class GameController implements Runnable{
         }
     }
 
+    /**
+     * A method that checks if the game is full.
+     * @return true if it is, false if it isn't.
+     */
     public boolean isGameFull() {
         return game.isGameFull();
     }
 
+    /**
+     * A getter method of game's name
+     * @return the game's method
+     */
     public String getName(){
         return name;
     }
 
+    /**
+     * A method that adds a message to the message queue.
+     *
+     * @param message the message to add.
+     * @param handler the handler that sent the message.
+     */
     public synchronized void addMessageToQueue(Message message, NetworkHandler handler){
         messageQueue.add(new LabeledMessage(handler, message));
     }
 
+    /**
+     * A method that polls a message for the message queue.
+     * If it's a chat message, it sends it to the corresponding recipients, and then polls another message.
+     * This method implements a timer.
+     *
+     * @param handler the NetworkHandler from which the server expects a message.
+     * @return the polled message.
+     */
     public LabeledMessage readFromQueue(NetworkHandler handler){
         LabeledMessage labeledMessage = null;
         boolean isTimeOut = false;
         while(labeledMessage == null || isTimeOut){
+            //TODO: TIMER IMPLEMENTATION
             synchronized(messageQueue){
                 if(messageQueue.isEmpty()){
                     continue;
@@ -211,11 +242,17 @@ public class GameController implements Runnable{
                 Message message = labeledMessage.message();
                 //handle chat messages
                 if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
-                    for(String nickname : chatMessage.getRecipients()){
-                        int chatMsgLength = chatMessage.getMessage().length();
+                    String senderNickname = game.getAllPlayers().stream()
+                            .map(Player::getNickname)
+                            .filter(n -> serverSubject.getNetworkHandler(n) == handler)
+                            .findFirst().orElse("Missing Sender");
+                    int chatMsgLength = chatMessage.getMessage().length();
+                    List<String> recipients = chatMessage.getRecipients();
+                    recipients.add(senderNickname);
+                    for(String nickname : recipients){
                         serverSubject.notify(nickname, new ChatMessage(
-                                chatMessage.getMessage().substring(0, Math.min(chatMsgLength,GameParameters.getMaxChatMessageLength())),
-                                chatMessage.getSender(),
+                                chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
+                                senderNickname,
                                 chatMessage.getRecipients()));
                     }
                 }

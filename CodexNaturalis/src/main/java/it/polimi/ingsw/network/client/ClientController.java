@@ -19,7 +19,6 @@ import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.SetupView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ClientController extends MessageHandler{
@@ -46,11 +45,19 @@ public class ClientController extends MessageHandler{
         this.networkHandler = networkHandler;
     }
 
-    public List<String> getPlayers(){
+    public String getLocalPlayerName(){
+        return game.getLocalPlayer().getNickname();
+    }
+
+    public List<String> getRemotePlayerNames(){
         return game.getRemotePlayers().stream().map(RemotePlayer::getNickname).toList();
     }
 
-    public List<BasicCard> getBoard(String nickname){
+    public List<BasicCard> getLocalPlayerBoard(){
+        return game.getLocalPlayer().getPlacedCards();
+    }
+
+    public List<BasicCard> getRemotePlayerBoard(String nickname){
         return game.getRemotePlayers().stream()
                 .filter(p -> p.getNickname()
                         .equals(nickname)).findFirst().orElseThrow().getPlacedCards();
@@ -86,6 +93,7 @@ public class ClientController extends MessageHandler{
                     case JOIN_GAME -> {
                         if(labeledMessage.message() instanceof PlayerMessage playerMessage){
                             eventSubmitter.submit(setupView::showSuccessfulJoin);
+                            //TODO: PREVENT RACE CONDITION BY ADDING VIEWREADY MESSAGE
                             while (gameView == null) Thread.onSpinWait();
                             synchronized (this) {
                                 game = new ClientGame(

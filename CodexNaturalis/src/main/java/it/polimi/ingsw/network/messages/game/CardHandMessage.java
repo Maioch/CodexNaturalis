@@ -5,28 +5,29 @@ import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Message sent by the client along with a list of card sides (e.g. everytime the server shows to the player his hand)
  */
 public class CardHandMessage extends Message {
-    private final ArrayList<CardSides> cardHand;
+    private final List<CardSides> cardHand;
 
     /**
      * Constructor for the class
      * @param status the message sent
      * @param CardHand the cards sent along the message
      */
-    public CardHandMessage(Status status, ArrayList<CardSides> CardHand) {
+    public CardHandMessage(Status status, List<CardSides> CardHand) {
         super(status);
-        this.cardHand = CardHand;
+        this.cardHand = new ArrayList<>(CardHand);
     }
 
     /**
      * Getter method for the cards list
      * @return cardHand attribute
      */
-    public ArrayList<CardSides> getCardHand() {
+    public List<CardSides> getCardHand() {
         return new ArrayList<>(){{
             for(CardSides cardSides : cardHand){
                 add(new CardSides(

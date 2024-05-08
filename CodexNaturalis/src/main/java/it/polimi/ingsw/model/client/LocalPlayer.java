@@ -5,16 +5,16 @@ import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
-import it.polimi.ingsw.view.EventSubmitter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class representing the local player (the one "controlled" by the client)
  */
 public class LocalPlayer extends ClientPlayer{
-    private ArrayList<CardSides> handCards;
-    private ArrayList<Objective> personalObjectives;
+    private List<CardSides> handCards;
+    private List<Objective> personalObjectives;
 
     /**
      * Constructor of the class
@@ -24,7 +24,7 @@ public class LocalPlayer extends ClientPlayer{
         super(nickname, color);
     }
 
-    public ArrayList<CardSides> getHandCards() {
+    public List<CardSides> getHandCards() {
         return new ArrayList<>(){{
             for(CardSides cardSides : handCards){
                 add(new CardSides(
@@ -39,7 +39,7 @@ public class LocalPlayer extends ClientPlayer{
      * @param handCards the list of hand cards
      */
     @Override
-    public void setHandCards(ArrayList<CardSides> handCards) {
+    public void setHandCards(List<CardSides> handCards) {
         this.handCards = handCards;
         eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(getHandCards()));
     }
@@ -48,13 +48,13 @@ public class LocalPlayer extends ClientPlayer{
      * A setter of the player objectives
      * @param personalObjectives the list of objectives
      */
-    public void setPersonalObjectives(ArrayList<Objective> personalObjectives) {
-        this.personalObjectives = personalObjectives;
+    public void setPersonalObjectives(List<Objective> personalObjectives) {
+        this.personalObjectives = new ArrayList<>(personalObjectives);
         eventSubmitter.submit(() -> gameView.updatePersonalObjectives(getPersonalObjectives()));
     }
 
-    public void requestCardPlacement(ArrayList<BasicCard> validCards,
-                                     ArrayList<Corner> validCorners){
+    public void requestCardPlacement(List<BasicCard> validCards,
+                                     List<Corner> validCorners){
         eventSubmitter.submit(() -> gameView.requestPlacement(getHandCards(),getPlacedCards(),validCards,validCorners));
     }
 
@@ -66,7 +66,7 @@ public class LocalPlayer extends ClientPlayer{
      * A getter of the player's objectives
      * @return the list of objectives
      */
-    public ArrayList<Objective> getPersonalObjectives() {
+    public List<Objective> getPersonalObjectives() {
         return new ArrayList<>(){{
             for(Objective obj : personalObjectives){
                 add(new Objective(obj));

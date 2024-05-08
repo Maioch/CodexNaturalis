@@ -9,10 +9,7 @@ import it.polimi.ingsw.network.messages.Status;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,10 +50,10 @@ public class BasicCardTest {
         for(int id = startResource; id <= endStarter; id++){
             JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
             BasicCard card = CardBuilder.buildCard(id).frontSide();
-            ArrayList<Content> resources = (id >= startStarter) ?
+            List<Content> resources = (id >= startStarter) ?
                     CardBuilder.getContentFromArray(node, "resources") :
                     new ArrayList<>();
-            HashMap<Content, Integer> actualSymbols = getCorrectSymbols(resources, CardBuilder.getCorners(node, "cornersFront"));
+            Map<Content, Integer> actualSymbols = getCorrectSymbols(resources, CardBuilder.getCorners(node, "cornersFront"));
             assertEquals(actualSymbols, card.getCardSymbols());
 
             for(Corner corner : card.getAllCorners()){
@@ -67,7 +64,7 @@ public class BasicCardTest {
             }
         }
     }
-    private HashMap<Content, Integer> getCorrectSymbols(ArrayList<Content> permResources, HashSet<Corner> corners){
+    private Map<Content, Integer> getCorrectSymbols(List<Content> permResources, Set<Corner> corners){
         return new HashMap<>(){{
             for(Content content : Content.values())
                 put(content, 0);
@@ -87,7 +84,7 @@ public class BasicCardTest {
         for(int id = startResource; id <= endStarter; id++){
             JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
             BasicCard card = CardBuilder.buildCard(id).frontSide();
-            HashSet<Corner> allCorners = CardBuilder.getCorners(node, "cornersFront");
+            Set<Corner> allCorners = CardBuilder.getCorners(node, "cornersFront");
             ArrayList<Corner> actualCorners = allCorners.stream().
                     filter(Corner::getVisibility).
                     filter(c -> !c.getContent().isEmpty()).
@@ -108,7 +105,7 @@ public class BasicCardTest {
         for(int id = startResource; id <= endStarter; id++){
             JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
             BasicCard card = CardBuilder.buildCard(id).frontSide();
-            HashSet<Corner> actualCorners = CardBuilder.getCorners(node, "cornersFront");
+            Set<Corner> actualCorners = CardBuilder.getCorners(node, "cornersFront");
             assertEquals(actualCorners, card.getAllCorners());
         }
     }

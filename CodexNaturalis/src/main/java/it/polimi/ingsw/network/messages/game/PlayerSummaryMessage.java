@@ -5,12 +5,13 @@ import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Message sent at the end of the game to inform the players about their objectives results and final score
  */
 public class PlayerSummaryMessage extends Message {
-    private final HashMap<Objective, Integer> objectiveScores;
+    private final Map<Objective, Integer> objectiveScores;
     private final int finalScore;
 
     /**
@@ -18,9 +19,9 @@ public class PlayerSummaryMessage extends Message {
      * @param objectiveScores a map with each player's objective and the associated score
      * @param finalScore the final total score of the player
      */
-    public PlayerSummaryMessage(HashMap<Objective, Integer> objectiveScores, int finalScore){
+    public PlayerSummaryMessage(Map<Objective, Integer> objectiveScores, int finalScore){
         super(Status.PLAYER_FINAL_SCORE);
-        this.objectiveScores = objectiveScores;
+        this.objectiveScores = new HashMap<>(objectiveScores);
         this.finalScore = finalScore;
     }
 
@@ -34,7 +35,7 @@ public class PlayerSummaryMessage extends Message {
     /**
      * @return the objectiveScores attribute
      */
-    public HashMap<Objective, Integer> getObjectiveScores(){
+    public Map<Objective, Integer> getObjectiveScores(){
         return new HashMap<>(objectiveScores);
     }
 }

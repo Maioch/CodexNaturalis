@@ -6,13 +6,14 @@ import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A message containing the player's placeable corners and cards
  */
 public class ValidPlacementsMessage extends Message {
-    ArrayList<Corner> corners;
-    ArrayList<BasicCard> cards;
+    private final List<Corner> corners;
+    private final List<BasicCard> cards;
 
     /**
      * Constructor of the message
@@ -20,17 +21,17 @@ public class ValidPlacementsMessage extends Message {
      * @param cards placeable cards
      * @param corners placeable corners
      */
-    public ValidPlacementsMessage(Status status, ArrayList<BasicCard> cards, ArrayList<Corner> corners) {
+    public ValidPlacementsMessage(Status status, List<BasicCard> cards, List<Corner> corners) {
         super(status);
-        this.corners = corners;
-        this.cards = cards;
+        this.corners = new ArrayList<>(corners);
+        this.cards = new ArrayList<>(cards);
     }
 
     /**
      * Getter of the placeable corners
      * @return a list of the placeable corners
      */
-    public ArrayList<Corner> getPlaceableCorners(){
+    public List<Corner> getPlaceableCorners(){
         return new ArrayList<>(corners);
     }
 
@@ -38,7 +39,7 @@ public class ValidPlacementsMessage extends Message {
      * Getter of the placeable cards
      * @return a list of the placeable cards
      */
-    public ArrayList<BasicCard> getPlaceableCards(){
+    public List<BasicCard> getPlaceableCards(){
         return new ArrayList<>(cards);
     }
 }

@@ -8,12 +8,12 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.game.*;
-import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -26,9 +26,9 @@ public class Player {
     private final ServerSubject serverSubject;
     private final String nickname;
     private final Content color;
-    private final ArrayList<BasicCard> placedCards;
-    private final ArrayList<CardSides> handCards;
-    private final ArrayList<Objective> objectives;
+    private final List<BasicCard> placedCards;
+    private final List<CardSides> handCards;
+    private final List<Objective> objectives;
     private int score;
 
     /**
@@ -41,8 +41,8 @@ public class Player {
      */
     public Player(String nickname,
                   Content color,
-                  ArrayList<CardSides> handCards,
-                  ArrayList<Objective> objectives,
+                  List<CardSides> handCards,
+                  List<Objective> objectives,
                   ServerSubject serverSubject){
         this.nickname = nickname;
         this.color = color;
@@ -85,7 +85,7 @@ public class Player {
     /**
      * @return a deep copy of the player's objectives list
      */
-    public ArrayList<Objective> getObjectives(){
+    public List<Objective> getObjectives(){
         return new ArrayList<>(){{
             for(Objective objective : objectives){
                 add(new Objective(objective));
@@ -96,7 +96,7 @@ public class Player {
     /**
      * @return a deep copy of the player's hand
      */
-    public ArrayList<CardSides> getHandCards(){
+    public List<CardSides> getHandCards(){
         return new ArrayList<>(){{
             for(CardSides cardSides : handCards){
                 add(new CardSides(
@@ -109,7 +109,7 @@ public class Player {
     /**
      * @return a deep copy of the player's placed cards
      */
-    public ArrayList<BasicCard> getPlacedCards(){
+    public List<BasicCard> getPlacedCards(){
         return new ArrayList<>(){{
             for(BasicCard card : placedCards){
                 add(card.copy());
@@ -121,7 +121,7 @@ public class Player {
      * @return a hash map with every possible content as key, and the corresponding quantity that is
      * visible in the player's board
      */
-    public HashMap<Content,Integer> getPlayerContent(){
+    public Map<Content,Integer> getPlayerContent(){
         return new HashMap<>(){{
         for(Content content : Content.values()){
             put(content, getPlacedCards().stream()
@@ -139,8 +139,8 @@ public class Player {
      * Finally, it notifies through the server subject the updated score
      * @return an arraylist with the amount of points given by each objective
      */
-    public ArrayList<Integer> awardObjectivePoints(){
-        HashMap<Objective, Integer> objectivePoints = new HashMap<>();
+    public List<Integer> awardObjectivePoints(){
+        Map<Objective, Integer> objectivePoints = new HashMap<>();
         for(Objective objective : this.objectives) {
             int objectiveResult = objective.checkObjective();
             objectivePoints.put(objective, objectiveResult);
@@ -157,8 +157,8 @@ public class Player {
      * @return true if the card can be placed
      */
     public boolean checkRequirements(BasicCard cardToPlace){
-        HashMap<Content,Integer> requirements = cardToPlace.getRequirements();
-        HashMap<Content,Integer> playerSymbols = getPlayerContent();
+        Map<Content,Integer> requirements = cardToPlace.getRequirements();
+        Map<Content,Integer> playerSymbols = getPlayerContent();
         return requirements.entrySet().stream().allMatch(e -> playerSymbols.get(e.getKey()) >= e.getValue());
     }
 
@@ -270,15 +270,15 @@ public class Player {
         serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, getHandCards()));
     }
 
-    public ArrayList<Corner> getAllValidCorners(){
+    public List<Corner> getAllValidCorners(){
         return placedCards.stream()
                 .flatMap(b -> b.getAllCorners().stream())
                 .filter(this::checkIfPlaceable)
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public ArrayList<BasicCard> getAllValidCards(){
-        ArrayList<BasicCard> result = handCards.stream()
+    public List<BasicCard> getAllValidCards(){
+        List<BasicCard> result = handCards.stream()
                 .map(CardSides::backSide)
                 .collect(Collectors.toCollection(ArrayList::new));
         result.addAll(handCards.stream()
@@ -292,7 +292,7 @@ public class Player {
      * Method that gets the backside of the cards in the player's hand
      * @return the list of backsides
      */
-    private ArrayList<CardSides> getBackOnlyCardHand(){
+    private List<CardSides> getBackOnlyCardHand(){
         return new ArrayList<>(){{
             for(CardSides cardSides : Player.this.getHandCards()){
                 add(new CardSides(null, cardSides.backSide()));
