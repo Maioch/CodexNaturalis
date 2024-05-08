@@ -11,6 +11,7 @@ import it.polimi.ingsw.view.GameView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 public class GameCLI implements GameView {
     public GameCLI(){
@@ -45,7 +46,12 @@ public class GameCLI implements GameView {
     public void revealFinalSummary(String nickname, HashMap<Objective,Integer> objectivePoints, int finalScore){}
     public void revealWinners(List<String> winners){}
 
-    private String readFromInput(){
-        return "temp";
+    private String readFromInput(String prompt){
+        Scanner userInput = new Scanner(System.in);
+        boolean isCommand = true;
+        while(isCommand){
+
+        }
+        return "";
     }
 }

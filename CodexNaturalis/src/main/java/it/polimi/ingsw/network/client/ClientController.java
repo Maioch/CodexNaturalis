@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.client.ClientGame;
 import it.polimi.ingsw.model.client.ClientPlayer;
 import it.polimi.ingsw.model.client.LocalPlayer;
 import it.polimi.ingsw.model.client.RemotePlayer;
+import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
 import it.polimi.ingsw.network.NetworkHandler;
@@ -18,14 +19,17 @@ import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.SetupView;
 
-public class ClientMessageHandler extends MessageHandler{
+import java.util.ArrayList;
+import java.util.List;
+
+public class ClientController extends MessageHandler{
     private final SetupView setupView;
     private ClientGame game;
     private volatile GameView gameView;
     private NetworkHandler networkHandler;
     private final EventSubmitter eventSubmitter;
 
-    public ClientMessageHandler(SetupView setupView, EventSubmitter eventSubmitter) {
+    public ClientController(SetupView setupView, EventSubmitter eventSubmitter) {
         this.setupView = setupView;
         this.eventSubmitter = eventSubmitter;
     }
@@ -40,6 +44,16 @@ public class ClientMessageHandler extends MessageHandler{
 
     public void setNetworkHandler(NetworkHandler networkHandler){
         this.networkHandler = networkHandler;
+    }
+
+    public List<String> getPlayers(){
+        return game.getRemotePlayers().stream().map(RemotePlayer::getNickname).toList();
+    }
+
+    public List<BasicCard> getBoard(String nickname){
+        return game.getRemotePlayers().stream()
+                .filter(p -> p.getNickname()
+                        .equals(nickname)).findFirst().orElseThrow().getPlacedCards();
     }
 
     @Override

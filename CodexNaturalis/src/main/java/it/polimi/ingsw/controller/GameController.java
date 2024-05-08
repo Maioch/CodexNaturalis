@@ -52,7 +52,7 @@ public class GameController implements Runnable{
         this.endGameProcedure = endGameProcedure;
     }
 
-    public ArrayList<Content> requestColors(){
+    public List<Content> requestColors(){
         return new ArrayList<>(game.getAvailableColors());
     }
 
@@ -149,7 +149,7 @@ public class GameController implements Runnable{
         player.placeCard(cardToPlace, chosenCorner);
     }
 
-    private boolean isMoveValid(Player player,BasicCard card, Corner corner){
+    private boolean isMoveValid(Player player, BasicCard card, Corner corner){
         return (card != null &&
                 player.checkRequirements(card) &&
                 player.isCardInHand(card) &&

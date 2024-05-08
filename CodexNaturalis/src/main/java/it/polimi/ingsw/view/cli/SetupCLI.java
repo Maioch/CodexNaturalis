@@ -2,10 +2,8 @@ package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.network.NetworkHandler;
-import it.polimi.ingsw.network.RMIHandler;
 import it.polimi.ingsw.network.TCPHandler;
-import it.polimi.ingsw.network.client.ClientMessageHandler;
+import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
@@ -15,7 +13,6 @@ import it.polimi.ingsw.view.SetupView;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +26,10 @@ public class SetupCLI implements SetupView {
         put(Content.PURPLE, "\\u001B[35mPurple\\u001B[0m");
     }};
 
-    private final ClientMessageHandler messageHandler;
+    private final ClientController messageHandler;
 
     public SetupCLI(){
-        this.messageHandler = new ClientMessageHandler(this, new TerminalSubmitter());
+        this.messageHandler = new ClientController(this, new TerminalSubmitter());
         new Thread(messageHandler).start();
         System.out.print("Please enter the IP of the server you want to play on: ");
         String ip = getUserStringChoice(15, "IP address");
