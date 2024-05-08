@@ -16,7 +16,11 @@
   "numberOfCommonObjectives": 2,
   "winThreshold": 20,
   "TCPPort" : 23435,
-  "RMIPort" : 44444,
+  "RMIPort" : 1099,
   "MaxChatMessageLength" : 512,
-  "MaxNicknameLength" : 16
+  "MaxNicknameLength" : 16,
+  "CommandChar" : "/",
+  "Delimiter" : "/",
+  "HelpBody" : "Here's a list of all the available commands:\n/CHAT rec1/rec2/... message : send a message to one or more players\n/BOARD x, y : get a view of your currently placed cards, centered on the x and y coordinates\n",
+  "GameTitle" : "\n   ___          _                 __      _                   _ _     \n  / __\\___   __| | _____  __   /\\ \\ \\__ _| |_ _   _ _ __ __ _| (_)___ \n / /  / _ \\ / _` |/ _ \\ \\/ /  /  \\/ / _` | __| | | | '__/ _` | | / __|\n/ /__| (_) | (_| |  __/>  <  / /\\  / (_| | |_| |_| | | | (_| | | \\__ \\\n\\____/\\___/ \\__,_|\\___/_/\\_\\ \\_\\ \\/ \\__,_|\\__|\\__,_|_|  \\__,_|_|_|___/\n                                                                      \n"
 }

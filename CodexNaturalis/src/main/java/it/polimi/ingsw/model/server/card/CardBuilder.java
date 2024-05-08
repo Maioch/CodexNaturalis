@@ -36,7 +36,6 @@ public class CardBuilder {
         Set<Corner> backCornerMap = getCorners(cardJson, "cornersBack");
         int points = getPoints(cardJson);
         switch (cardJson.get("type").asText()) {
-
             case "RESOURCE" -> {
                 cardFront = new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>());
                 cardBack = new BasicCard(cardId, color, backCornerMap, 0, new ArrayList<>() {{

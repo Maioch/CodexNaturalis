@@ -118,6 +118,13 @@ public class BasicCard implements Serializable {
     }
 
     /**
+     * @return the resources array list
+     */
+    public List<Content> getResources(){
+        return new ArrayList<>(this.resources);
+    }
+
+    /**
      * Returns a hashmap that associates each resource type with the amount present in the card by pulling
      * from both the corners and the permanent resources
      * IMPORTANT: this includes white and empty corners too

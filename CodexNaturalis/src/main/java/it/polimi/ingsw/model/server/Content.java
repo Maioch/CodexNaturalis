@@ -8,7 +8,9 @@ package it.polimi.ingsw.model.server;
  * @author Marco Maiocchi
  */
 public enum Content {
-    RED, GREEN, BLUE, PURPLE, WHITE, PEN, PAPER, INK, EMPTY;
+    RED(""), GREEN(""), BLUE(""), PURPLE(""), WHITE(""), PEN(""), PAPER(""), INK(""), EMPTY("");
+
+    private final String symbol;
 
     /**
      * @return true if this is a color
@@ -36,5 +38,16 @@ public enum Content {
      */
     public boolean isEmpty(){
         return this == EMPTY;
+    }
+
+    /**
+     * @return the symbol
+     */
+    public String getSymbol(){
+        return symbol;
+    }
+
+    Content(String symbol){
+        this.symbol = symbol;
     }
 }

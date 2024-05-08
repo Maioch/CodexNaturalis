@@ -29,9 +29,9 @@ public class SetupCLI implements SetupView {
         this.clientController = new ClientController(this, new TerminalSubmitter());
         new Thread(clientController).start();
         System.out.print("Please enter the IP of the server you want to play on: ");
-        String ip = getUserStringChoice(15, "IP address");
+        String ip = UtilitiesCLI.getUserStringChoice(15, "IP address");
         System.out.print("Now enter the Port of the server: ");
-        int port = getUserIntChoice(0, 65535);
+        int port = UtilitiesCLI.getUserIntChoice(0, 65535);
         try (Socket socket = new Socket(ip, port)){
             socket.getInputStream();
             TCPHandler tcpHandler = new TCPHandler(socket, clientController);
@@ -60,16 +60,16 @@ public class SetupCLI implements SetupView {
         System.out.println("Enter the ID of the match you want to join (0 for a new match)");
         int id = -1;
         while (!matchList.containsKey(id)) {
-            id = getUserIntChoice(
+            id = UtilitiesCLI.getUserIntChoice(
                     0,
                     matchList.keySet().stream().max(Integer::compareTo).orElse(0));
             if (id == 0) {
                 System.out.print("Enter the new match's name: ");
-                String gameName = getUserStringChoice(GameParameters.getMaxNicknameLength(), "match name");
+                String gameName = UtilitiesCLI.getUserStringChoice(GameParameters.getMaxNicknameLength(), "match name");
                 int minPlayers = GameParameters.getMinPlayers();
                 int maxPlayers = GameParameters.getMaxPlayers();
                 System.out.printf("Now enter the number of players (between %d and %d inclusive): ", minPlayers, maxPlayers);
-                int numberOfPlayers = getUserIntChoice(minPlayers, maxPlayers);
+                int numberOfPlayers = UtilitiesCLI.getUserIntChoice(minPlayers, maxPlayers);
                 clientController.sendMessage(new NewGameMessage(gameName, numberOfPlayers));
                 break;
             }
@@ -94,9 +94,9 @@ public class SetupCLI implements SetupView {
             System.out.print((i + 1) + ". " + textColors.get(colors.get(i)));
             System.out.println(colors.get(i) != colors.getLast() ? ", " : ".");
         }
-        int colorIndex = getUserIntChoice(1, colors.size()) - 1;
+        int colorIndex = UtilitiesCLI.getUserIntChoice(1, colors.size()) - 1;
         System.out.print("Now enter your nickname: ");
-        String nickname = getUserStringChoice(GameParameters.getMaxNicknameLength(), "nickname");
+        String nickname = UtilitiesCLI.getUserStringChoice(GameParameters.getMaxNicknameLength(), "nickname");
         clientController.sendMessage(new JoinGameMessage(nickname, colors.get(colorIndex), gameId));
     }
 
@@ -109,34 +109,5 @@ public class SetupCLI implements SetupView {
         System.out.println("You have successfully joined the game!");
         GameCLI gameCLI = new GameCLI(clientController);
         clientController.setGameView(gameCLI);
-    }
-
-    private int getUserIntChoice(int min, int max){
-        Scanner userInput = new Scanner(System.in);
-        int userChoice;
-        while(true){
-            if(!userInput.hasNextInt()){
-                userInput.next();
-                System.out.println("Please, write an integer value among those you see above: ");
-                continue;
-            }
-            userChoice = userInput.nextInt();
-            if(userChoice >= min && userChoice <= max) {
-                return userChoice;
-            }
-            System.out.println("The choice you have made isn't correct, please try again!");
-        }
-    }
-
-    private String getUserStringChoice(int maxLength, String subject){
-        Scanner userInput = new Scanner(System.in);
-        String userChoice;
-        while(true){
-            userChoice = userInput.nextLine();
-            if(userChoice.length() <= maxLength){
-                return userChoice;
-            }
-            System.out.println("The " + subject + " can't be longer than " + maxLength + " characters!");
-        }
     }
 }

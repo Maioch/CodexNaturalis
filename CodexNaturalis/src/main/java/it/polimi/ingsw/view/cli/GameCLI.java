@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
@@ -10,6 +11,7 @@ import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.view.GameView;
 
+import java.lang.reflect.Parameter;
 import java.util.*;
 
 public class GameCLI implements GameView {
@@ -49,26 +51,30 @@ public class GameCLI implements GameView {
     public void revealWinners(List<String> winners){}
 
     /**
-     * A method that scans the terminal input of the payer.
+     * A method that scans the terminal input of the player.
      * If the player writes a specific command, the method satisfies it, but loops until it reads
      * a non-command input.
      * @param prompt a string representing the message prompt to print
      * @return the input read.
      */
     private String readFromInput(String prompt){
-        Scanner userInput = new Scanner(System.in);
-        boolean isCommand = true;
-        while(isCommand){
-            if(userInput.hasNext("/")){
-                String inputString = userInput.nextLine();
-                String[] splitString = inputString.split(" ", 2);
-                switch (splitString[0].toUpperCase()){
-                    case "/CHAT" -> sendChatMessage(splitString[1]);
-                    case "/BOARD" -> showBoard(splitString[1]);
-                }
+        String commandChar = GameParameters.getCommandChar();
+        while(true){
+            System.out.println(prompt);
+            String inputString = UtilitiesCLI.getUserStringChoice();
+            if(inputString.indexOf(commandChar) != 0){
+                return inputString;
+            }
+            String[] splitString = inputString.split(" ", 2);
+            String command = splitString[0];
+            String argument = (splitString.length > 1) ? splitString[1] : "";
+            switch (command.toUpperCase().substring(commandChar.length())){
+                case "/HELP" -> System.out.println(GameParameters.getHelpBody());
+                case "/CHAT" -> sendChatMessage(argument);
+                case "/BOARD" -> showBoard(argument);
+                default -> System.out.println("Command not recognized, type /HELP for a list of all commands!");
             }
         }
-        return "";
     }
 
     /**
@@ -83,8 +89,9 @@ public class GameCLI implements GameView {
     @SuppressWarnings("SlowListContainsAll")
     private void sendChatMessage(String arguments){
         String[] splitString = arguments.split(" ", 2);
-        List<String> recipients = Arrays.stream(splitString[0].split("/", 2)).toList();
-        if(splitString[0].contains("/")){
+        String delimiter = GameParameters.getDelimiter();
+        List<String> recipients = Arrays.stream(splitString[0].split(delimiter, 2)).toList();
+        if(!splitString[0].contains(delimiter)){
             recipients = controller.getRemotePlayerNames();
         }
         if(controller.getRemotePlayerNames().containsAll(recipients)){
