@@ -111,7 +111,7 @@ public class CardBuilder {
      * @param cardType the card type
      * @return the json node
      */
-    static JsonNode getCardJson(int cardId, String cardType){
+    public static JsonNode getCardJson(int cardId, String cardType){
         File cardsJson = new File(filePath + fileName);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node;

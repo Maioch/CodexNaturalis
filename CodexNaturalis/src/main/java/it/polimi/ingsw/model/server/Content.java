@@ -8,7 +8,7 @@ package it.polimi.ingsw.model.server;
  * @author Marco Maiocchi
  */
 public enum Content {
-    RED(""), GREEN(""), BLUE(""), PURPLE(""), WHITE(""), PEN(""), PAPER(""), INK(""), EMPTY("");
+    RED("??"), GREEN("??"), BLUE("??"), PURPLE("??"), WHITE("??"), PEN("??"), PAPER("??"), INK("??"), EMPTY("  ");
 
     private final String symbol;
 
