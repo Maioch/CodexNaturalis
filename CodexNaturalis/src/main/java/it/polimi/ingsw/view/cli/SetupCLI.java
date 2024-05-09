@@ -12,7 +12,11 @@ import it.polimi.ingsw.network.messages.setup.NewGameMessage;
 import it.polimi.ingsw.view.SetupView;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.*;
 
 public class SetupCLI implements SetupView {
@@ -28,25 +32,36 @@ public class SetupCLI implements SetupView {
     public SetupCLI(){
         this.clientController = new ClientController(this, new TerminalSubmitter());
         new Thread(clientController).start();
-        System.out.print("Please enter the IP of the server you want to play on: ");
-        String ip = UtilitiesCLI.getUserStringChoice(15, "IP address");
-        System.out.print("Now enter the Port of the server: ");
-        int port = UtilitiesCLI.getUserIntChoice(0, 65535);
-        try (Socket socket = new Socket(ip, port)){
-            socket.getInputStream();
-            TCPHandler tcpHandler = new TCPHandler(socket, clientController);
-            clientController.setNetworkHandler(tcpHandler);
-            Thread listeningThread = new Thread(tcpHandler);
-            listeningThread.start();
-            clientController.sendMessage(new Message(Status.REQUEST_GAMES));
-            try {
-                listeningThread.join();
-            }catch (InterruptedException e){
-                e.printStackTrace();
+        System.out.println("Which protocol would you like to use? Enter 1 for TCP or 2 for RMI.");
+        int protocol = UtilitiesCLI.getUserIntChoice(1,2);
+        switch(protocol){
+            case 1 -> {
+                System.out.print("Please enter the IP of the server you want to play on: ");
+                String ip = UtilitiesCLI.getUserStringChoice(15, "IP address");
+                System.out.print("Now enter the Port of the server: ");
+                int port = UtilitiesCLI.getUserIntChoice(0, 65535);
+                try (Socket socket = new Socket(ip, port)){
+                    socket.getInputStream();
+                    TCPHandler tcpHandler = new TCPHandler(socket, clientController);
+                    clientController.setNetworkHandler(tcpHandler);
+                    new Thread(tcpHandler).start();
+                    clientController.sendMessage(new Message(Status.REQUEST_GAMES));
+                }catch (IOException e){
+                    System.out.println(e.getMessage());
+                }
             }
-        }catch (IOException e){
-            System.out.println("pippa");
-            System.out.println(e.getMessage());
+            case 2 -> {
+                try {
+                    Naming.lookup("//localhost/RMIManager");
+                }catch (MalformedURLException e) {
+                    throw new RuntimeException("The RMI URL is malformed");
+                } catch (NotBoundException e) {
+                    throw new RuntimeException("The requested object isn't bound");
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e.getMessage());
+                }
+            }
+
         }
     }
 

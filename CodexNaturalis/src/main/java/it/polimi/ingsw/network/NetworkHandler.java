@@ -8,7 +8,7 @@ import java.io.*;
 /**
  * Class used to handle each client connected to the server
  */
-public abstract class NetworkHandler implements Runnable, Listener {
+public abstract class NetworkHandler implements Listener {
     protected final MessageHandler handler;
     private GameController currentGame;
 

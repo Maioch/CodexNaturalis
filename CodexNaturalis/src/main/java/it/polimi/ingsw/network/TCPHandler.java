@@ -1,14 +1,13 @@
 package it.polimi.ingsw.network;
 
 import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.server.ServerMessageHandler;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class TCPHandler extends NetworkHandler {
+public class TCPHandler extends NetworkHandler implements Runnable{
     private final ObjectOutputStream socketOutput;
     private final ObjectInputStream socketInput;
 
@@ -26,6 +25,7 @@ public class TCPHandler extends NetworkHandler {
     /**
      * Main method run by the thread
      */
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run(){
         try {
