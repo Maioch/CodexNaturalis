@@ -89,6 +89,15 @@ public class ClientGame {
         }};
     }
 
+    public Map<String, Content> getPlayersColors(){
+        HashMap<String, Content> playersColors = new HashMap<>();
+        playersColors.put(getLocalPlayer().getNickname(), getLocalPlayer().getColor());
+        for(RemotePlayer remotePlayer : getRemotePlayers()){
+            playersColors.put(remotePlayer.getNickname(), remotePlayer.getColor());
+        }
+        return playersColors;
+    }
+
     /**
      * A method that updates the vies, showing the avaible colors
      * @param colors the list of available colors

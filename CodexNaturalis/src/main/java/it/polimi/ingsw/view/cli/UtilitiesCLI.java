@@ -61,7 +61,7 @@ public class UtilitiesCLI {
     /**
      * A method that gets a certain card bonus infos
      * @param card the card to get the infos from
-     * @param cardType the card's type (GOLD, RESOURCE, STARTER or OBJECTIVE)
+     * @param cardType the card's type (PLACEABLE or OBJECTIVE)
      * @return a formatted string of the bonus infos
      */
     public static String getBonusInfo(BasicCard card, String cardType){
@@ -75,5 +75,15 @@ public class UtilitiesCLI {
             case "PATTERN" -> "b";
             default -> "no bonus.";
         };
+    }
+
+    /**
+     * A method that gets a certain card native points
+     * @param card the card to get the infos from
+     * @param cardType the card's type (PLACEABLE or OBJECTIVE)
+     * @return the native points
+     */
+    public static int getNativePoints(BasicCard card, String cardType){
+        return CardBuilder.getPoints(CardBuilder.getCardJson(card.getCardId(), cardType));
     }
 }

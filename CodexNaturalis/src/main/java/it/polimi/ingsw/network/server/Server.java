@@ -31,8 +31,9 @@ public class Server {
         GamesManager games = new GamesManager();
         ServerMessageHandler serverMessageHandler = new ServerMessageHandler(games);
         RMIManager rmiManager = new RMIManager(serverMessageHandler);
+
         try {
-            Naming.rebind("//localhost/RMIManager", rmiManager);
+            Naming.rebind("/RMIManager", rmiManager);
         }catch(MalformedURLException e){
             System.out.println("Couldn't bind RMIManager because the URL it was supposed to bind to is malformed");
             System.out.println(e.getMessage());

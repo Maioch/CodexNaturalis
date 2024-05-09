@@ -19,28 +19,32 @@ public class CardFormatter {
     }};
 
     /**
-     * Gets the textual representation of a card
-     * @param cards list of the hand cards
+     * Gets the textual representation of a card's list
+     * @param cards list of the card's list
      * @return the string representing the formatted card
      */
-    public static String getHandView(List<BasicCard> cards){
+    public static String getCardsInfoString(List<BasicCard> cards){
         StringBuilder sb = new StringBuilder();
+        int formatSpaceLength = -45;
         for(int i = 0; i < cardHeight; i++) {
             for (BasicCard card : cards) {
-                sb.append(getCardView(card).split("\n")[i]).append("\t");
+                sb.append(String.format("%" + formatSpaceLength + "s", getCardString(card).split("\n")[i]));
             }
             sb.append("\n");
         }
         for(BasicCard card : cards){
-            sb.append("Points: ").append(card.getPoints()).append("\t");
+            sb.append(String.format("%" + formatSpaceLength + "s", "Points: " +
+                    UtilitiesCLI.getNativePoints(card, "placeableCards")));
         }
         sb.append("\n");
         for(BasicCard card : cards){
-            sb.append("Requirements: ").append(card.getRequirements()).append("\t");
+            sb.append(String.format("%" + formatSpaceLength + "s", "Requirements: " +
+                    card.getRequirements().entrySet().stream().filter(e -> e.getValue() != 0).toList()));
         }
         sb.append("\n");
         for(BasicCard card : cards){
-            sb.append("Bonus type: ").append(UtilitiesCLI.getBonusInfo(card, "placeableCards")).append("\t");
+            sb.append(String.format("%" + formatSpaceLength + "s", "Bonus type: " +
+                    UtilitiesCLI.getBonusInfo(card, "placeableCards")));
         }
         sb.append("\n");
         return sb.toString();
@@ -51,7 +55,7 @@ public class CardFormatter {
      * @param card the card to format
      * @return the string representing the formatted card
      */
-    public static String getCardView(BasicCard card){
+    private static String getCardString(BasicCard card){
         StringBuilder sb = new StringBuilder();
         String empty = Content.EMPTY.getSymbol();
         sb.append(empty).append("__".repeat(cardLength - 2)).append(empty).append("\n");

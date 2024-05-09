@@ -139,7 +139,7 @@ public class CardBuilder {
      * @param cardJson json node that represents the card
      * @return the read points
      */
-    static int getPoints(JsonNode cardJson){
+    public static int getPoints(JsonNode cardJson){
         return cardJson.get("points").asInt();
     }
 

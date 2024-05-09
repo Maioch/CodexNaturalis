@@ -4,6 +4,7 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.network.server.ServerMessageHandler;
 
 import java.io.*;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Class used to handle each client connected to the server

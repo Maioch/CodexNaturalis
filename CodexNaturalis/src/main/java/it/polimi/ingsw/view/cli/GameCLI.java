@@ -9,29 +9,89 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
+import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.view.GameView;
 
 import java.util.*;
 
 public class GameCLI implements GameView {
-    ClientController controller;
+    private final ClientController controller;
+
+    private static final Map<Content, String> textColors = new HashMap<>(){{
+        put(Content.RED, "\\u001B[31m");
+        put(Content.BLUE, "\\u001B[34m");
+        put(Content.GREEN, "\\u001B[32m");
+        put(Content.PURPLE, "\\u001B[35m");
+        put(Content.EMPTY, "\\u001B[0m");
+    }};
+
 
     public GameCLI(ClientController controller){
         this.controller = controller;
-
     }
 
+    /**
+     * Method that asks for a draw choice
+     * @param drawableCards the list of drawable options
+     */
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards){
         System.out.println();
-        //CardFormatter.getDeckView();
+        for(Map.Entry<CardType, List<BasicCard>> entry : drawableCards.entrySet()){
+            System.out.print(CardFormatter.getCardsInfoString(entry.getValue()));
+        }
+        System.out.println();
+        System.out.print("Type what card you want to draw (as coordinates separated by spaces, starting from 0): ");
+        String choice = UtilitiesCLI.getUserStringChoice(3, "choice");
+        if(choice.split(" ", 2).length != 2){
+            controller.sendMessage(new DrawChoiceMessage(-1, null));
+            return;
+        }
+        int cardType;
+        int index;
+        try{
+            cardType = Integer.parseInt(choice.split(" ", 2)[0]);
+            index = Integer.parseInt(choice.split(" ", 2)[1]);
+        }catch(NumberFormatException e){
+            controller.sendMessage(new DrawChoiceMessage(-1, null));
+            return;
+        }
+        if(cardType != 0 && cardType != 1){
+            controller.sendMessage(new DrawChoiceMessage(-1, null));
+            return;
+        }
+        controller.sendMessage(new DrawChoiceMessage(index, cardType == 0 ? CardType.RESOURCE : CardType.GOLD));
     }
 
-    public void showChatMessage(String message, String sender, List<String> recipients){}
+    /**
+     * A method that shows (prints) a message
+     * @param message the content of the message
+     * @param sender the sender of the message
+     * @param recipients the recipients of the message
+     */
+    public void showChatMessage(String message, String sender, List<String> recipients, Map<String, Content> playersColors){
+        StringBuilder sb = new StringBuilder();
+        System.out.println();
+        sb.append(textColors.get(playersColors.get(sender))).append(sender).append(textColors.get(Content.EMPTY));
+        if(recipients.size() != 1) {
+            sb.append(" says to ");
+            for (String recipient : recipients) {
+                if (recipients.indexOf(recipient) != recipients.size() - 1) {
+                    sb.append(textColors.get(playersColors.get(recipient))).append(recipient).append(textColors.get(Content.EMPTY)).append(", ");
+                }
+            }
+        }
+        System.out.println(sb.append(": ").append(message));
+    }
+
     public void requestPlacement(List<CardSides> cardHand,
                           List<BasicCard> placedCards,
                           List<BasicCard> validCards,
                           List<Corner> validCorners){}
-    public void turnChanged(String turnOwner){}
+
+    public void turnChanged(String turnOwner){
+        System.out.println("It is now the turn of " + turnOwner);
+    }
+
     public void showErrorMessage(String message){}
     public void showUserJoined(String player, Content Color){}
     public void updateRemotePlayerHand(String player, List<BasicCard> handCards){}

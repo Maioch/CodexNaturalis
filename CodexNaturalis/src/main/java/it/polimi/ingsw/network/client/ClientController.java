@@ -206,7 +206,8 @@ public class ClientController extends MessageHandler{
                             eventSubmitter.submit(() -> gameView.showChatMessage(
                                     chatMessage.getMessage(),
                                     chatMessage.getSender(),
-                                    chatMessage.getRecipients()));
+                                    chatMessage.getRecipients(),
+                                    game.getPlayersColors()));
                         }
                     }
                 }

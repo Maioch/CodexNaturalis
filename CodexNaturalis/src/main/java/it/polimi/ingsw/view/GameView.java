@@ -15,7 +15,7 @@ import java.util.Map;
 public interface GameView {
     void notifyLastTurn();
     void requestDraw(Map<CardType, List<BasicCard>> drawableCards);
-    void showChatMessage(String message, String sender, List<String> recipients);
+    void showChatMessage(String message, String sender, List<String> recipients, Map<String, Content> playersColors);
     void requestPlacement(List<CardSides> cardHand,
                           List<BasicCard> placedCards,
                           List<BasicCard> validCards,
