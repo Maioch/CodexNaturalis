@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
@@ -31,7 +33,7 @@ public class Server {
         GamesManager games = new GamesManager();
         ServerMessageHandler serverMessageHandler = new ServerMessageHandler(games);
         RMIManager rmiManager = new RMIManager(serverMessageHandler);
-
+        LocateRegistry.createRegistry(GameParameters.getRMIPort());
         try {
             Naming.rebind("/RMIManager", rmiManager);
         }catch(MalformedURLException e){

@@ -4,12 +4,13 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.network.server.ServerMessageHandler;
 
 import java.io.*;
+import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * Class used to handle each client connected to the server
+ * Protocol independent class used to handle each client connected to the server
  */
-public abstract class NetworkHandler implements Listener {
+public abstract class NetworkHandler extends UnicastRemoteObject implements Listener {
     protected final MessageHandler handler;
     private GameController currentGame;
 
@@ -18,7 +19,7 @@ public abstract class NetworkHandler implements Listener {
      *
      * @param handler the message handler to which the client refers to
      */
-    public NetworkHandler(MessageHandler handler) throws IOException{
+    public NetworkHandler(MessageHandler handler) throws RemoteException {
         this.currentGame = null;
         this.handler = handler;
     }

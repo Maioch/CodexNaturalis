@@ -7,6 +7,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/**
+ * TCP-based NetworkHandler implementation
+ */
+
 public class TCPHandler extends NetworkHandler implements Runnable{
     private final ObjectOutputStream socketOutput;
     private final ObjectInputStream socketInput;
@@ -32,6 +36,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
             while (true) {
                 try {
                     Message message = (Message) socketInput.readObject();
+                    System.out.println(message.getStatus());
                     handler.addMessageToQueue(message, this);
                 } catch (ClassNotFoundException e) {
                     System.out.println("Received an invalid message");
