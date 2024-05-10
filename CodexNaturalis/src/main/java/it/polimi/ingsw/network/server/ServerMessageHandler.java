@@ -47,7 +47,8 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
             }
             GameController currentClientGame = labeledMessage.networkHandler().getCurrentGame();
             if(currentClientGame != null) {
-                labeledMessage.networkHandler().getCurrentGame().addMessageToQueue(labeledMessage.message(), labeledMessage.networkHandler());
+                labeledMessage.networkHandler().getCurrentGame().addMessageToQueue(
+                        labeledMessage.message(), labeledMessage.networkHandler());
                 continue;
             }
             switch(labeledMessage.message().getStatus()){
@@ -84,16 +85,19 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                         }
                         try{
                             int nickLength = joinGameMessage.getNickname().length();
-                            game.acceptPlayer(joinGameMessage.getNickname().substring(0, Math.min(nickLength,GameParameters.getMaxNicknameLength())),
+                            game.acceptPlayer(
+                                    joinGameMessage.getNickname().substring(0, Math.min(nickLength,GameParameters.getMaxNicknameLength())),
                                     joinGameMessage.getColor(),
                                     labeledMessage.networkHandler());
                             labeledMessage.networkHandler().setCurrentGame(game);
                         }catch(GameFullException f){
                             labeledMessage.networkHandler().update(new Message(Status.GAME_FULL));
                         }catch(NicknameTakenException e){
-                            labeledMessage.networkHandler().update(new IntegerMessage(Status.INVALID_NICKNAME, joinGameMessage.getGameId()));
+                            labeledMessage.networkHandler().update(
+                                    new IntegerMessage(Status.INVALID_NICKNAME, joinGameMessage.getGameId()));
                         }catch(GameException e){
-                            labeledMessage.networkHandler().update(new IntegerMessage(Status.INVALID_COLOR, joinGameMessage.getGameId()));
+                            labeledMessage.networkHandler().update(
+                                    new IntegerMessage(Status.INVALID_COLOR, joinGameMessage.getGameId()));
                         }
                     }
                 }

@@ -33,47 +33,52 @@ public class SetupCLI implements SetupView {
 
     public SetupCLI(){
         //TODO:handle connection failures more gracefully
+        boolean isConnected = false;
         this.clientController = new ClientController(this, new TerminalSubmitter());
-        new Thread(clientController).start();
-        System.out.print("Please enter the IP of the server you want to play on: ");
-        String ip = UtilitiesCLI.getUserStringChoice(15, "IP address");
-        System.out.print("Now enter the Port of the server: ");
-        int port = UtilitiesCLI.getUserIntChoice(0, 65535);
-        System.out.println("Which protocol would you like to use? Enter 1 for TCP or 2 for RMI.");
-        int protocol = UtilitiesCLI.getUserIntChoice(1,2);
-        switch(protocol){
-            case 1 -> {
-                try {
-                    Socket socket = new Socket(ip, port);
-                    socket.getInputStream();
-                    TCPHandler tcpHandler = new TCPHandler(socket, clientController);
-                    clientController.setNetworkHandler(tcpHandler);
-                    new Thread(tcpHandler).start();
-                    clientController.sendMessage(new Message(Status.REQUEST_GAMES));
-                }catch (IOException e){
-                    System.out.println(e.getMessage());
-                }
-            }
-            case 2 -> {
-                try {
-                    RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager",ip,port));
-                    try{
-                        RMIHandler rmiHandler = new RMIHandler(clientController);
-                        clientController.setNetworkHandler(rmiHandler);
-                        rmiSetup.register(rmiHandler);
+        while (!isConnected) {
+            new Thread(clientController).start();
+            System.out.print("Please enter the IP of the server you want to play on: ");
+            String ip = UtilitiesCLI.getUserStringChoice(15, "IP address");
+            System.out.print("Now enter the Port of the server: ");
+            int port = UtilitiesCLI.getUserIntChoice(0, 65535);
+            System.out.println("Which protocol would you like to use? Enter 1 for TCP or 2 for RMI.");
+            int protocol = UtilitiesCLI.getUserIntChoice(1, 2);
+            switch (protocol) {
+                case 1 -> {
+                    try {
+                        Socket socket = new Socket(ip, port);
+                        socket.getInputStream();
+                        TCPHandler tcpHandler = new TCPHandler(socket, clientController);
+                        clientController.setNetworkHandler(tcpHandler);
+                        new Thread(tcpHandler).start();
                         clientController.sendMessage(new Message(Status.REQUEST_GAMES));
-                    }catch (IOException e){
+                        isConnected = true;
+                    } catch (IOException e) {
                         System.out.println(e.getMessage());
                     }
-                }catch (MalformedURLException e) {
-                    throw new RuntimeException("The RMI URL is malformed");
-                } catch (NotBoundException e) {
-                    throw new RuntimeException("The requested object isn't bound");
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e.getMessage());
                 }
-            }
+                case 2 -> {
+                    try {
+                        RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager", ip, port));
+                        try {
+                            RMIHandler rmiHandler = new RMIHandler(clientController);
+                            clientController.setNetworkHandler(rmiHandler);
+                            rmiSetup.register(rmiHandler);
+                            clientController.sendMessage(new Message(Status.REQUEST_GAMES));
+                            isConnected = true;
+                        } catch (IOException e) {
+                            System.out.println(e.getMessage());
+                        }
+                    } catch (MalformedURLException e) {
+                        System.out.println("No RMI Server was found at the supplied address");
+                    } catch (NotBoundException e) {
+                        System.out.println("The requested object isn't bound");
+                    } catch (RemoteException e) {
+                        System.out.println("Couldn't connect to the RMI server");
+                    }
+                }
 
+            }
         }
     }
 
