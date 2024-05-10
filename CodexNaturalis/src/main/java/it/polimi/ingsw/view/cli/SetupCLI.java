@@ -3,7 +3,6 @@ package it.polimi.ingsw.view.cli;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.RMIHandler;
-import it.polimi.ingsw.network.RMIInterface;
 import it.polimi.ingsw.network.TCPHandler;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.Message;
@@ -11,7 +10,7 @@ import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
-import it.polimi.ingsw.network.server.RMIHandlerProvider;
+import it.polimi.ingsw.network.server.RMISetup;
 import it.polimi.ingsw.view.SetupView;
 
 import java.io.IOException;
@@ -57,13 +56,11 @@ public class SetupCLI implements SetupView {
             }
             case 2 -> {
                 try {
-                    RMIHandlerProvider rmiHandlerProvider = (RMIHandlerProvider) Naming.lookup(String.format("//%s:%d/RMIManager",ip,port));
+                    RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager",ip,port));
                     try{
                         RMIHandler rmiHandler = new RMIHandler(clientController);
                         clientController.setNetworkHandler(rmiHandler);
-                        RMIInterface remoteHandler = rmiHandlerProvider.getRemoteHandler();
-                        rmiHandler.setReceiver(remoteHandler);
-                        remoteHandler.setReceiver(rmiHandler);
+                        rmiSetup.register(rmiHandler);
                         clientController.sendMessage(new Message(Status.REQUEST_GAMES));
                     }catch (IOException e){
                         System.out.println(e.getMessage());
