@@ -9,14 +9,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A class representing the remote player (non-client players)
+ * A class representing the remote player (non-client players).
  */
 public class RemotePlayer extends ClientPlayer {
     private List<BasicCard> handCards; //Not a cardsides list, in order to obtain an only front cards hand
 
     /**
-     * A constructor of the class
-     * @param nickname the player's nickname
+     * Constructor for the class.
+     * @param nickname hte player's nickname.
+     * @param color the player's color.
      */
     public RemotePlayer(String nickname, Content color) {
         super(nickname, color);
@@ -24,8 +25,8 @@ public class RemotePlayer extends ClientPlayer {
     }
 
     /**
-     * Copy-constructor of the class
-     * @param remotePlayer the instance to be copied
+     * Copy-constructor for the class.
+     * @param remotePlayer the instance to be copied.
      */
     public RemotePlayer(RemotePlayer remotePlayer) {
         super(remotePlayer);
@@ -33,8 +34,8 @@ public class RemotePlayer extends ClientPlayer {
     }
 
     /**
-     * A setter of the hand cards
-     * @param handCards the list of the hand cards
+     * Setter for the player's hand cards.
+     * @param handCards the current player's hand.
      */
     @Override
     public void setHandCards(List<CardSides> handCards) {
@@ -45,8 +46,7 @@ public class RemotePlayer extends ClientPlayer {
     }
 
     /**
-     * A getter of the hand cards
-     * @return the list of the hand cards
+     * @return the list of the player's hand cards.
      */
     public List<BasicCard> getHandCards() {
         return new ArrayList<>() {{
@@ -56,6 +56,11 @@ public class RemotePlayer extends ClientPlayer {
         }};
     }
 
+    /**
+     * Method that checks if two remote players are equal.
+     * @param obj the remote player to check.
+     * @return true if this and the other remote player are equal.
+     */
     @Override
     public boolean equals(Object obj) {
         return obj instanceof RemotePlayer remotePlayer &&

@@ -1,7 +1,9 @@
 package it.polimi.ingsw.view.cli;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardBuilder;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 
@@ -34,7 +36,7 @@ public class CardFormatter {
         }
         for(BasicCard card : cards){
             sb.append(String.format("%" + formatSpaceLength + "s", "Points: " +
-                    UtilitiesCLI.getNativePoints(card, "placeableCards")));
+                    getNativePoints(card, "placeableCards")));
         }
         sb.append("\n");
         for(BasicCard card : cards){
@@ -44,7 +46,7 @@ public class CardFormatter {
         sb.append("\n");
         for(BasicCard card : cards){
             sb.append(String.format("%" + formatSpaceLength + "s", "Bonus type: " +
-                    UtilitiesCLI.getBonusInfo(card, "placeableCards")));
+                    getBonusInfo(card, "placeableCards")));
         }
         sb.append("\n");
         return sb.toString();
@@ -75,5 +77,34 @@ public class CardFormatter {
         }
         sb.append(empty).append("‾‾".repeat(cardLength - 2)).append(empty).append("\n");
         return sb.toString();
+    }
+
+    /**
+     * A method that gets a certain card bonus infos
+     * @param card the card to get the infos from
+     * @param cardType the card's type (PLACEABLE or OBJECTIVE)
+     * @return a formatted string of the bonus infos
+     */
+    private static String getBonusInfo(BasicCard card, String cardType){
+        JsonNode bonusNode = CardBuilder.getCardJson(card.getCardId(), cardType).get("bonus");
+        if(bonusNode == null)
+            return "no bonus.";
+        return switch (bonusNode.get("type").asText()){
+            case "CORNER" -> "corner.";
+            case "OBJECT" -> "object -> " + bonusNode.get("object").asText();
+            case "CONTENT" -> "a";
+            case "PATTERN" -> "b";
+            default -> "no bonus.";
+        };
+    }
+
+    /**
+     * A method that gets a certain card native points
+     * @param card the card to get the infos from
+     * @param cardType the card's type (PLACEABLE or OBJECTIVE)
+     * @return the native points
+     */
+    private static int getNativePoints(BasicCard card, String cardType){
+        return CardBuilder.getPoints(CardBuilder.getCardJson(card.getCardId(), cardType));
     }
 }

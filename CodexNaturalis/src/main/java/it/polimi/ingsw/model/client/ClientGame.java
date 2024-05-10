@@ -13,9 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A class representing the client's game instance (skinnier than the server's game)
+ * A class representing the client's game instance (skinnier than the server's game).
  */
-
 public class ClientGame {
     private LocalPlayer localPlayer;
     private final List<RemotePlayer> remotePlayers;
@@ -25,9 +24,11 @@ public class ClientGame {
     private final EventSubmitter eventSubmitter;
     private final GameView gameView;
 
-
     /**
-     * Constructor of the client's game instance
+     * Constructor for the class.
+     * @param player the player associated with the client.
+     * @param eventSubmitter the medium used to send the player's requests to the server.
+     * @param gameView the object containing all the methods used by the player to interact with the game.
      */
     public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView) {
         this.localPlayer = player;
@@ -39,22 +40,25 @@ public class ClientGame {
     }
 
     /**
-     * Setter of the drawable options (cards which the player can draw)
-     * @param drawableOptions hashmap containing the card type and the relative cards (of
+     * Setter for the drawable options (cards that the player can draw).
+     * @param drawableOptions hashmap containing all the drawable cards.
      */
     public void setDrawableOptions(Map<CardType, List<BasicCard>> drawableOptions) {
         this.drawableOptions = new HashMap<>(drawableOptions);
         eventSubmitter.submit(() -> gameView.updateDecks(drawableOptions));
     }
 
+    /**
+     * Method that requests a new draw move.
+     * @param drawableOptions the cards the player can choose from.
+     */
     public void requestDraw(Map<CardType, List<BasicCard>> drawableOptions) {
         this.drawableOptions = new HashMap<>(drawableOptions);
         eventSubmitter.submit(() -> gameView.requestDraw(drawableOptions));
     }
 
     /**
-     * Getter of the drawable cards
-     * @return an hashmap representing the drawable cards
+     * @return a map that contains all the drawable cards.
      */
     public Map<CardType, List<BasicCard>> getDrawableOptions() {
         return new HashMap<>(){{
@@ -70,16 +74,14 @@ public class ClientGame {
     }
 
     /**
-     * Getter of the local player attribute
-     * @return the local player
+     * @return the local player.
      */
     public LocalPlayer getLocalPlayer() {
         return this.localPlayer;
     }
 
     /**
-     * Getter of the remote players
-     * @return an arraylist of the remote players (part of the game)
+     * @return a list of the remote players (part of the game).
      */
     public List<RemotePlayer> getRemotePlayers() {
         return new ArrayList<>(){{
@@ -89,6 +91,9 @@ public class ClientGame {
         }};
     }
 
+    /**
+     * @return a map that contains each player's nickname and his associated color.
+     */
     public Map<String, Content> getPlayersColors(){
         HashMap<String, Content> playersColors = new HashMap<>();
         playersColors.put(getLocalPlayer().getNickname(), getLocalPlayer().getColor());
@@ -99,15 +104,15 @@ public class ClientGame {
     }
 
     /**
-     * A method that updates the vies, showing the avaible colors
-     * @param colors the list of available colors
+     * A method that updates the views, showing the available colors.
+     * @param colors the list of available colors.
      */
     public void updateAvailableColors(List<Content> colors){
         //Update the view with the currently available colors
     }
 
     /**
-     * A method that adds a player to the remote players' list
+     * A method that adds a player to the remote players list.
      */
     public void addRemotePlayer(RemotePlayer player){
         remotePlayers.add(player);
@@ -116,8 +121,8 @@ public class ClientGame {
     }
 
     /**
-     * Setter of the common objects (the ones that all the players onw)
-     * @param commonObjectives the common objective list
+     * Setter for the common objectives (the ones that all the players own).
+     * @param commonObjectives the common objective list.
      */
     public void setCommonObjectives(List<Objective> commonObjectives) {
         this.commonObjectives = new ArrayList<>(commonObjectives);
@@ -125,13 +130,17 @@ public class ClientGame {
     }
 
     /**
-     * Setter of the local player (usually used just one time)
-     * @param localPlayer the local player
+     * Setter of the local player (usually used just one time).
+     * @param localPlayer the local player.
      */
     public void setLocalPlayer(LocalPlayer localPlayer) {
         this.localPlayer = localPlayer;
     }
 
+    /**
+     * Method the manages the game's turns.
+     * @param nickname the nickname that should have the turn.
+     */
     public void setPlayerWithTurn(String nickname) {
         ClientPlayer remotePlayerWithTurn = remotePlayers.stream()
                 .filter(p -> p.getNickname().equals(nickname))
@@ -141,6 +150,9 @@ public class ClientGame {
         gameView.turnChanged(nickname);
     }
 
+    /**
+     * @return the player's common objectives.
+     */
     public List<Objective> getCommonObjectives(){
         return new ArrayList<>(){{
             for(Objective obj : commonObjectives){
@@ -149,6 +161,9 @@ public class ClientGame {
         }};
     }
 
+    /**
+     * @return the player that has the turn.
+     */
     public ClientPlayer getPlayerWithTurn(){
         return playerWithTurn;
     }

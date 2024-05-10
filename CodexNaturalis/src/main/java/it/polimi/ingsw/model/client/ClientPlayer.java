@@ -6,15 +6,13 @@ import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
-import jdk.jfr.Event;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Class representing the client-related player model
+ * Class representing the client-related player model.
  */
 public abstract class ClientPlayer {
     private final String nickname;
@@ -25,8 +23,9 @@ public abstract class ClientPlayer {
     protected GameView gameView;
 
     /**
-     * Constructor of the class
-     * @param nickname the player's nickname
+     * Constructor for the class.
+     * @param nickname hte player's nickname.
+     * @param color    the player's color.
      */
     public ClientPlayer(String nickname, Content color) {
         this.nickname = nickname;
@@ -37,7 +36,7 @@ public abstract class ClientPlayer {
 
     /**
      * Copy-constructor of the class
-     * @param clientPlayer the instance to copy
+     * @param clientPlayer the instance to copy.
      */
     public ClientPlayer(ClientPlayer clientPlayer) {
         this.nickname = clientPlayer.nickname;
@@ -47,18 +46,19 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Getter of the nickname attribute
-     * @return the player's nickname
+     * @return the player's nickname.
      */
     public String getNickname() {
         return nickname;
     }
 
+    /**
+     * @return the player's color.
+     */
     public Content getColor() { return color; }
 
     /**
-     * Getter of the placed cards list
-     * @return the placed card list
+     * @return the placed card list.
      */
     public List<BasicCard> getPlacedCards() {
         return new ArrayList<>(){{
@@ -69,8 +69,9 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Setter of the placed cards list
-     * @param placedCards the new placed cards list
+     * Setter for placed cards list and the player's score.
+     * @param placedCards the current placed cards layout.
+     * @param score the current player's score.
      */
     public void setPlacedCards(List<BasicCard> placedCards, int score) {
         this.placedCards = new ArrayList<>(placedCards);
@@ -79,23 +80,33 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Getter of the player's score
-     * @return it's score
+     * @return the player's score.
      */
     public int getScore() {
         return score;
     }
 
     /**
-     * Setter for the player's hand
+     * Setter for the player's hand cards.
+     * @param handCards the current player's hand.
      */
     public abstract void setHandCards(List<CardSides> handCards);
 
+    /**
+     * Setter for the client's game view, and it's associated event submitter.
+     * @param gameView the client's game view.
+     * @param eventSubmitter the medium used to send the player's requests to the server.
+     */
     public void setViewReferences(GameView gameView, EventSubmitter eventSubmitter){
         this.gameView = gameView;
         this.eventSubmitter = eventSubmitter;
     }
 
+    /**
+     * Setter for the final score of the player.
+     * @param scoresByObjective the map containing each objective with the associated gathered points.
+     * @param finalScore the final score to set.
+     */
     public void setFinalScore(Map<Objective, Integer> scoresByObjective, Integer finalScore){
         this.score = finalScore;
         eventSubmitter.submit(() -> gameView.revealFinalSummary(getNickname(), scoresByObjective, getScore()));

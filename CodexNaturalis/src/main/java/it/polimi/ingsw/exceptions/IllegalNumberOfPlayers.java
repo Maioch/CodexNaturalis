@@ -6,7 +6,6 @@ package it.polimi.ingsw.exceptions;
 
 public class IllegalNumberOfPlayers extends Exception{
     public IllegalNumberOfPlayers(){
-
     }
 
     @Override

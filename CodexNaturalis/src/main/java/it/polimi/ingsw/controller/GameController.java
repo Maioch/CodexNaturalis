@@ -17,7 +17,6 @@ import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 
-import java.io.Serializable;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -36,10 +35,12 @@ public class GameController implements Runnable{
     private final Consumer<GameController> endGameProcedure;
 
     /**
-     * Constructor for the class
-     *
-     * @param numberOfPlayers the number of players allowed to enter the game and needed for it to start
-     * @throws IllegalNumberOfPlayers when the number of players chosen exceeds the limit
+     * Constructor for the class.
+     * @param numberOfPlayers the maximum number of players that can join the game.
+     * @param serverSubject the object used to notify the serverListeners.
+     * @param name the name of the game.
+     * @param endGameProcedure the consumer for the class; it's used to delete the game controller when the match ends.
+     * @throws IllegalNumberOfPlayers exception thrown if the player entered an invalid players number parameter.
      */
     public GameController(int numberOfPlayers,
                           ServerSubject serverSubject,
@@ -52,17 +53,21 @@ public class GameController implements Runnable{
         this.endGameProcedure = endGameProcedure;
     }
 
+    /**
+     * @return the list of the game's available colors.
+     */
     public List<Content> requestColors(){
         return new ArrayList<>(game.getAvailableColors());
     }
 
     /**
-     * Method that adds a new player to the game, places his starter card and, if the game is full, it starts
-     *
-     * @param nickname the username of the new player
-     * @throws GameException          when the color chosen by the new player was already taken
-     * @throws GameFullException      when the game is full
-     * @throws NicknameTakenException when the username of the new player already exists in the game
+     * Method used to add a player to a game, and it subscribes him to the notification system.
+     * @param nickname the nickname of the player that is joining the game.
+     * @param color the color chosen by the player.
+     * @param handler the TCP/RMI handler for the new player, that allows him to interact with the controller.
+     * @throws GameFullException exception thrown if the game the player is trying to join is full.
+     * @throws NicknameTakenException exception thrown if the nickname chosen by the player is already present in the game.
+     * @throws GameException exception thrown if the color chosen by the player is already taken.
      */
     public void acceptPlayer(String nickname, Content color, NetworkHandler handler) throws GameFullException, NicknameTakenException, GameException{
         game.addPlayer(nickname, color);
@@ -70,7 +75,8 @@ public class GameController implements Runnable{
     }
 
     /**
-     * A method that lets every player place their starter card (by doing so, initializing the boards)
+     * Method that handles the first phase of the game: it makes the player place his starter card (after the card's side
+     * is chosen) and informs the player about his objectives.
      */
     private void initializeGame() {
         serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
@@ -97,7 +103,7 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Core method that runs the match
+     * Method that handles most of the phases of the game, making each player play his turn correctly.
      */
     private void startGame() {
         while (!game.isLastTurn()) {
@@ -124,9 +130,8 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Method used to place a card for a player
-     *
-     * @param player the player that plays the card
+     * Method that lets a player place a chosen card: it also checks if the placement is correct.
+     * @param player the player that needs to place a card.
      */
     private void placeCard(Player player) {
         serverSubject.notify(player.getNickname(),
@@ -150,7 +155,7 @@ public class GameController implements Runnable{
     }
 
     /**
-     * A method that checks if the player's chosen move is valid.
+     * Method that checks if the player's chosen move is valid.
      *
      * @param player the player who's doing the move.
      * @param card the card chosen by the player.
@@ -167,9 +172,8 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Method used to give the player a new card
-     *
-     * @param player the player that is drawing
+     * Method that lets a player draw a new card.
+     * @param player the player that is drawing.
      */
     private void drawCard(Player player) {
         boolean drawSuccess = false;
@@ -196,7 +200,7 @@ public class GameController implements Runnable{
     }
 
     /**
-     * A method that checks if the game is full.
+     * A method that checks if a game is full.
      * @return true if it is, false if it isn't.
      */
     public boolean isGameFull() {
@@ -204,8 +208,7 @@ public class GameController implements Runnable{
     }
 
     /**
-     * A getter method of game's name
-     * @return the game's method
+     * @return the game's name.
      */
     public String getName(){
         return name;
@@ -213,7 +216,6 @@ public class GameController implements Runnable{
 
     /**
      * A method that adds a message to the message queue.
-     *
      * @param message the message to add.
      * @param handler the handler that sent the message.
      */
@@ -222,10 +224,8 @@ public class GameController implements Runnable{
     }
 
     /**
-     * A method that polls a message for the message queue.
-     * If it's a chat message, it sends it to the corresponding recipients, and then polls another message.
-     * This method implements a timer.
-     *
+     * A method that polls a message from the message queue; if it's a chat message, it sends it to the corresponding
+     * recipients, and then polls another message. This method implements a timer.
      * @param handler the NetworkHandler from which the server expects a message.
      * @return the polled message.
      */
@@ -264,6 +264,10 @@ public class GameController implements Runnable{
         return labeledMessage;
     }
 
+    /**
+     * The main method of the class that calls all the above methods to correctly run a game. At the end of it,
+     * it deletes the controller.
+     */
     @Override
     public void run(){
         while(true){
