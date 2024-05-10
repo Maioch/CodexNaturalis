@@ -45,8 +45,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             int port = readFromInput("Now enter the Port of the server: ",
                     (s -> s >= 0 && s <= 65535),
                     this::stringToInt);
-            System.out.println("Which protocol would you like to use? Enter 1 for TCP or 2 for RMI.");
-            int protocol = readFromInput("Now enter the Port of the server: ",
+            int protocol = readFromInput("Which protocol would you like to use? Enter 1 for TCP or 2 for RMI.",
                     (s -> s >= 1 && s <= 2),
                     this::stringToInt);
             switch (protocol) {
@@ -105,7 +104,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 (i -> !matchList.containsKey(i) || i == 0),
                 this::stringToInt);
         Message messageToSend = new IntegerMessage(Status.REQUEST_COLORS, id);
-        if(id == 0){
+        if (id == 0) {
             System.out.print("Enter the new match's name: ");
             String gameName = readFromInput("Enter the new match's name: ",
                     (s -> s.length() <= GameParameters.getMaxNicknameLength()),
@@ -197,6 +196,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         if(!isConnected){
             return;
         }
+        //TODO:FIX REFRESH BUG
         switch (command.toUpperCase()){
             case "REFRESH" -> clientController.sendMessage(new Message(Status.REQUEST_GAMES));
             default -> System.out.println("Command not recognized, type /HELP for a list of all commands!");

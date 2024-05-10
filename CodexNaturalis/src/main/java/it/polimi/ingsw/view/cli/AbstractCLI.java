@@ -19,11 +19,11 @@ public abstract class AbstractCLI {
 
     protected <T> T readFromInput (String prompt, Predicate<T> checker, Mapper<String, T> mapper){
         String commandChar = GameParameters.getCommandChar();
+        Scanner scanner = new Scanner(System.in);
         while(true) {
             System.out.println(prompt);
-            Scanner scanner = new Scanner(System.in);
-            boolean isCommand = scanner.hasNext("/");
             String inputString = scanner.nextLine();
+            boolean isCommand = inputString.indexOf(GameParameters.getCommandChar()) == 0;
             if(!isCommand){
                 try{
                     T mappedInput = mapper.apply(inputString);
