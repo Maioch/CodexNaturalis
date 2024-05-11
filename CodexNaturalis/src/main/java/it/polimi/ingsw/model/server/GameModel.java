@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class that represents a single match of Codex Naturalis
+ * Class that represents a single match of Codex Naturalis.
  *
  * @author Guglielmo Gatti, Andrea Fidanza, Francesco Nisoli, Marco Maiocchi
  */
@@ -35,12 +35,11 @@ public class GameModel extends ServerSubject {
     private final int numberOfPlayers;
 
     /**
-     * Constructor for the class. It constructs the decks and gets the available colors
-     *
-     * @param numberOfPlayers the number of players requested by the creator of the game
-     * @param serverSubject the object used to notify the serverListeners
+     * Constructor for the class.
+     * @param numberOfPlayers the number of players requested by the creator of the game.
+     * @param serverSubject the object used to notify the serverListeners.
      * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number
-     *                                players allowed
+     *                                players allowed.
      */
     public GameModel(int numberOfPlayers, ServerSubject serverSubject) throws IllegalNumberOfPlayers {
         if (numberOfPlayers < GameParameters.getMinPlayers() || numberOfPlayers > GameParameters.getMaxPlayers())
@@ -82,40 +81,39 @@ public class GameModel extends ServerSubject {
     }
 
     /**
-     * Gets the player with the specified nickname
-     * @param nickname the specified nickname
-     * @return the player or null if there are no players with that nickname
+     * @param nickname a player's nickname.
+     * @return the player in this game associated to the nickname.
      */
     public synchronized Player getPlayer(String nickname) {
         return players.stream().filter(p -> p.getNickname().equals(nickname)).findFirst().orElse(null);
     }
 
     /**
-     * @return all the players
+     * @return all the in-game players.
      */
     public synchronized List<Player> getAllPlayers() {
         return new ArrayList<>(players);
     }
 
     /**
-     * Method that the checks if the maximum number of players is reached
-     * @return true if the game is full
+     * Method that the checks if the maximum number of players is reached.
+     * @return true if the game is full.
      */
     public synchronized boolean isGameFull() {
         return players.size() == numberOfPlayers;
     }
 
     /**
-     * Method that checks if there's a user with the same username of the new player that is joining the game
-     * @param nickname the nickname to check
-     * @return false if there's a duplicate username
+     * Method that checks if there's a user with the same username of the new player that is joining the game.
+     * @param nickname the nickname to check.
+     * @return false if there's a duplicate username.
      */
     public synchronized boolean checkNickname(String nickname) {
         return players.stream().noneMatch(p -> p.getNickname().equals(nickname));
     }
 
     /**
-     * @return the list of colors that the player can choose from
+     * @return the list of colors that the player can choose from.
      */
     public synchronized List<Content> getAvailableColors() {
         return new ArrayList<>(availableColors);
@@ -123,8 +121,8 @@ public class GameModel extends ServerSubject {
 
     /**
      * Method that checks if it's the last game's turn, condition met if one of the players reaches the points cap or
-     * if both decks are empty
-     * @return true if it's the last turn
+     * if both decks are empty.
+     * @return true if it's the last turn.
      */
     public synchronized boolean isLastTurn() {
         return (goldDeck.isEmpty() &&
@@ -135,14 +133,14 @@ public class GameModel extends ServerSubject {
     }
 
     /**
-     * Method that adds a player to the game and gives him the needed cards
-     * The first card given to the player is the starterCard
-     * Finally, it notifies through the server subject the addition of the player
-     * @param nickname the nickname of the player
-     * @param color    player's color
-     * @throws GameException          if the color or the nickname are already taken or if the game is full
-     * @throws GameFullException      if the game is full
-     * @throws NicknameTakenException if the nickname is already chosen by another player
+     * Method that adds a player to the game and gives him the needed cards.
+     * The first card given to the player is the starterCard.
+     * Finally, it notifies through the server subject the addition of the player.
+     * @param nickname the nickname of the player.
+     * @param color player's color.
+     * @throws GameException if the color or the nickname are already taken or if the game is full.
+     * @throws GameFullException if the game is full.
+     * @throws NicknameTakenException if the nickname is already chosen by another player.
      */
     public synchronized void addPlayer(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
         if (isGameFull()) {
@@ -179,11 +177,12 @@ public class GameModel extends ServerSubject {
 
     /**
      * Method that draws a card from a deck and adds it to the player's hand.
-     * @param type      the type of card deck to draw from, which is either the Gold Card deck or the Resource Card deck
-     * @param drawIndex the deck has a number of visible cards which the player can see. this index lets
-     *                  the player choose whether to draw a hidden card (if the index is 0)
-     *                  or to take one of the visible ones (if the index is higher than 0).
-     * @throws GameException if the given card type doesn't match any deck and if the given index is invalid
+     * @param player the player that is drawing a new card.
+     * @param type the type of card deck to draw from, which is either the Gold Card deck or the Resource Card deck
+     * @param drawIndex the deck has a number of visible cards which the player can see. This index lets  the player
+     *                  choose whether to draw a hidden card (if the index is 0) or to take one of the visible
+     *                  ones (if the index is higher than 0).
+     * @throws GameException if the given card type doesn't match any deck and if the given index is invalid.
      */
     public synchronized void drawCard(Player player, CardType type, int drawIndex) throws GameException {
         TurnDeck<CardSides> deck = switch (type) {
@@ -224,8 +223,7 @@ public class GameModel extends ServerSubject {
     }
 
     /**
-     * Method that returns the player/s with the most points
-     * @return a list of said players
+     * @return a list that contains the player/s that gathered the most points.
      */
     public synchronized List<String> getWinningPlayers() {
         int max = players.stream().map(Player::getScore).max(Integer::compareTo).orElse(0);
@@ -233,8 +231,7 @@ public class GameModel extends ServerSubject {
     }
 
     /**
-     * Getter for the game's common objectives
-     * @return a deep copy of the game's common objectives list
+     * @return a deep copy of the game's common objectives list.
      */
     public List<Objective> getCommonObjectives() {
         return new ArrayList<>(){{

@@ -24,7 +24,7 @@ public class BasicCardTest {
     @Test
     void getPointsTest(){
         for(int id = startResource; id <= endResource; id++){
-            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            JsonNode node = CardBuilder.getCardJson(id);
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             int actualPoints = CardBuilder.getPoints(node);
             assertEquals(actualPoints, card.getPoints());
@@ -38,7 +38,7 @@ public class BasicCardTest {
     @Test
     void getColorTest(){
         for(int id = startResource; id <= endStarter; id++){
-            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            JsonNode node = CardBuilder.getCardJson(id);
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             Content color = CardBuilder.getColor(node);
             assertEquals(color, card.getColor());
@@ -48,7 +48,7 @@ public class BasicCardTest {
     @Test
     void getCardSymbolsTest(){
         for(int id = startResource; id <= endStarter; id++){
-            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            JsonNode node = CardBuilder.getCardJson(id);
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             List<Content> resources = (id >= startStarter) ?
                     CardBuilder.getContentFromArray(node, "resources") :
@@ -82,7 +82,7 @@ public class BasicCardTest {
     @Test
     void getValidCornersTest(){
         for(int id = startResource; id <= endStarter; id++){
-            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            JsonNode node = CardBuilder.getCardJson(id);
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             Set<Corner> allCorners = CardBuilder.getCorners(node, "cornersFront");
             ArrayList<Corner> actualCorners = allCorners.stream().
@@ -103,7 +103,7 @@ public class BasicCardTest {
     @Test
     void getAllCornersTest(){
         for(int id = startResource; id <= endStarter; id++){
-            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            JsonNode node = CardBuilder.getCardJson(id);
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             Set<Corner> actualCorners = CardBuilder.getCorners(node, "cornersFront");
             assertEquals(actualCorners, card.getAllCorners());

@@ -70,8 +70,13 @@ public class GameController implements Runnable{
      * @throws GameException exception thrown if the color chosen by the player is already taken.
      */
     public void acceptPlayer(String nickname, Content color, NetworkHandler handler) throws GameFullException, NicknameTakenException, GameException{
-        game.addPlayer(nickname, color);
         serverSubject.subscribe(nickname, handler);
+        try {
+            game.addPlayer(nickname, color);
+        }catch(GameFullException | NicknameTakenException | GameException e) {
+            serverSubject.unsubscribe(nickname);
+            throw e;
+        }
     }
 
     /**
@@ -274,6 +279,12 @@ public class GameController implements Runnable{
             if(!game.isGameFull()){
                 continue;
             }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e){
+
+            }
+            System.out.println("A new game started");
             initializeGame();
             startGame();
             for(Player player : game.getAllPlayers()){

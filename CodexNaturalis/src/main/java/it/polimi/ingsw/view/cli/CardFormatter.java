@@ -4,21 +4,71 @@ import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardBuilder;
+import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class CardFormatter {
     private final static int cardLength = 7;
     private final static int cardHeight = 5; //DO NOT CHANGE
+    private final static int boardRadius = 4;
     private final static Map<Content, String> contentRepresentation = new HashMap<>(){{
         for(Content c : Content.values()){
             put(c, c.getSymbol());
         }
     }};
+
+    public static String getPlayerBoardString(List<BasicCard> placedCards, int viewX, int viewY){
+        StringBuilder sb = new StringBuilder();
+        int minX = viewX - boardRadius;
+        int minY = viewY - boardRadius;
+        int maxX = viewX + boardRadius;
+        int maxY = viewY + boardRadius;
+        int coordinateNumberWidth = 2;
+        sb.append(" ".repeat(coordinateNumberWidth));
+        for(int i = minX; i < maxX; i++){
+            sb.append(String.format("%" + coordinateNumberWidth + "d", i))
+                    .append("  ".repeat(cardLength - coordinateNumberWidth));
+        }
+        sb.append("\n");
+        for(int y = minY; y <= maxY; y++){
+            sb.append(String.format("%" + coordinateNumberWidth + "d", y));
+            int currentY = y;
+            List<BasicCard> currentCards = placedCards.stream()
+                    .filter(b -> b.getCorner(Location.BL).getY() == currentY &&
+                            b.getCorner(Location.BL).getX() >= minX &&
+                            b.getCorner(Location.BL).getX() <= maxX)
+                    .toList();
+            List<String[]> cardStrings = new ArrayList<>();
+            for (BasicCard card : currentCards){
+                cardStrings.add(getCardString(card).split("\n"));
+            }
+            for(int i = 0; i < cardHeight; i++){
+                for(int x = minX; x <= maxX; x++){
+                    int currentX = x;
+                    Optional<BasicCard> currentCard = currentCards.stream()
+                            .filter(b -> b.getCorner(Location.BL).getX() == currentX)
+                            .findFirst();
+                    String cardToAppend = "  ".repeat(cardLength);
+                    if(currentCard.isPresent()){
+                        cardToAppend = cardStrings.get(currentCards.indexOf(currentCard.get()))[i];
+                    }
+                    sb.append(cardToAppend);
+                }
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String getObjectiveInfoString(Objective objective){
+        return String.format("objective card that awards %d points every time %s",
+                objective.getPoints(),
+                getBonusInfo(objective.getObjectiveId()));
+    }
 
     /**
      * Gets the textual representation of a card's list
@@ -36,7 +86,7 @@ public class CardFormatter {
         }
         for(BasicCard card : cards){
             sb.append(String.format("%" + formatSpaceLength + "s", "Points: " +
-                    getNativePoints(card, "placeableCards")));
+                    getNativePoints(card.getCardId())));
         }
         sb.append("\n");
         for(BasicCard card : cards){
@@ -46,7 +96,7 @@ public class CardFormatter {
         sb.append("\n");
         for(BasicCard card : cards){
             sb.append(String.format("%" + formatSpaceLength + "s", "Bonus type: " +
-                    getBonusInfo(card, "placeableCards")));
+                    getBonusInfo(card.getCardId())));
         }
         sb.append("\n");
         return sb.toString();
@@ -81,30 +131,37 @@ public class CardFormatter {
 
     /**
      * A method that gets a certain card bonus infos
-     * @param card the card to get the infos from
-     * @param cardType the card's type (PLACEABLE or OBJECTIVE)
+     * @param cardId the id of the card we want to get the infos from
      * @return a formatted string of the bonus infos
      */
-    private static String getBonusInfo(BasicCard card, String cardType){
-        JsonNode bonusNode = CardBuilder.getCardJson(card.getCardId(), cardType).get("bonus");
+    private static String getBonusInfo(int cardId){
+        JsonNode bonusNode = CardBuilder.getCardJson(cardId).get("bonus");
         if(bonusNode == null)
             return "no bonus.";
         return switch (bonusNode.get("type").asText()){
             case "CORNER" -> "corner.";
             case "OBJECT" -> "object -> " + bonusNode.get("object").asText();
-            case "CONTENT" -> "a";
-            case "PATTERN" -> "b";
+            case "CONTENT" -> "*all* of the following content types appear -> " + bonusNode.get("content").asText();
+            case "PATTERN" -> {
+                StringBuilder sb = new StringBuilder();
+                sb.append("the following pattern appears ->");
+                for(JsonNode subNode : bonusNode.get("pattern")){
+                    sb.append("  ".repeat(subNode.get("x").asInt()));
+                    sb.append("\n".repeat(subNode.get("y").asInt()));
+                    sb.append(Content.valueOf(subNode.get("color").asText()).getSymbol());
+                }
+                yield sb.toString();
+            }
             default -> "no bonus.";
         };
     }
 
     /**
      * A method that gets a certain card native points
-     * @param card the card to get the infos from
-     * @param cardType the card's type (PLACEABLE or OBJECTIVE)
+     * @param cardId the id of the card we want to get the infos from
      * @return the native points
      */
-    private static int getNativePoints(BasicCard card, String cardType){
-        return CardBuilder.getPoints(CardBuilder.getCardJson(card.getCardId(), cardType));
+    private static int getNativePoints(int cardId){
+        return CardBuilder.getPoints(CardBuilder.getCardJson(cardId));
     }
 }

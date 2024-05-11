@@ -23,10 +23,10 @@ public class Objective {
     private transient Player owner;
 
     /**
-     * Class constructor
+     * The constructor for the class.
      *
-     * @param objectiveId the card's id
-     * @param points the base amount of points awarded by the card
+     * @param objectiveId the card's id.
+     * @param points the base amount of points awarded by the card.
      */
     public Objective(int objectiveId, int points){
         this.objectiveId = objectiveId;
@@ -36,8 +36,8 @@ public class Objective {
     }
 
     /**
-     * Copy constructor for the class
-     * @param objective the objective to duplicate
+     * Copy constructor for the class.
+     * @param objective the objective to duplicate.
      */
     public Objective(Objective objective){
         this.objectiveId = objective.objectiveId;
@@ -48,36 +48,36 @@ public class Objective {
 
     /**
      * Calculates the amount of points gained by satisfying the objective's requirements.
-     * @return the amount of points gained
+     * @return the amount of points gained.
      */
     public int checkObjective(){
         return this.bonus.calculate();
     }
 
     /**
-     * @return the id
+     * @return the card's id.
      */
     public int getObjectiveId() { return this.objectiveId; }
 
     /**
-     * @return the points
+     * @return the card's points.
      */
     public int getPoints() { return this.points; }
 
     /**
-     * @param bonus the bonus
+     * @param bonus the card's bonus type.
      */
     public void setBonus(Bonus bonus) { this.bonus = bonus; }
 
     /**
-     * @param owner the player that owns the card, used to obtain the player's board to calculate the multiplier
+     * @param owner the player that owns the card, used to obtain the player's board to calculate the multiplier.
      */
     public void setOwner(Player owner) { this.owner = owner; }
 
     /**
      * Equals method.
-     * @param object Object to check
-     * @return true if each field is equals to each field of object
+     * @param object Object to check.
+     * @return true if each field is equals to each field of object.
      */
     @Override
     public boolean equals(Object object) {
@@ -94,7 +94,8 @@ public class Objective {
     }
 
     /**
-     * Strategy class used to handle the bonuses given out by objective cards
+     * Strategy class used to handle the bonuses given out by objective cards.
+     *
      * @author Guglielmo Gatti
      */
     public class ContentBonus implements Bonus{
@@ -106,8 +107,8 @@ public class Objective {
 
         /**
          * Calculate the number of instances a pattern of objects occurs on the player's board
-         * and multiply it by the card's base points value
-         * @return the amount of points that the card should award on placement
+         * and multiply it by the card's base points value.
+         * @return the amount of points that the card awards on placement.
          */
         @Override
         public int calculate(){
@@ -129,8 +130,8 @@ public class Objective {
 
         /**
          * Equals method.
-         * @param object Object to check
-         * @return true if each field is equals to each field of object
+         * @param object Object to check.
+         * @return true if each field is equals to each field of object.
          */
         @Override
         public boolean equals(Object object) {
@@ -145,7 +146,7 @@ public class Objective {
 
     /**
      * Class that represents the objective which consists in having on the board a defined pattern of
-     * correctly colored cards; each card can only be used once to calculate this particular bonus
+     * correctly colored cards; each card can only be used once to calculate this particular bonus.
      *
      * @author Guglielmo Gatti, Francesco Nisoli
      */
@@ -153,8 +154,8 @@ public class Objective {
         private final Map<Point, Content> pattern;
 
         /**
-         * Constructor for the class
-         * @param pattern hashmap describing the required pattern by pairing each color to its relative coordinates
+         * Constructor for the class.
+         * @param pattern hashmap describing the required pattern by pairing each color to its relative coordinates.
          */
         public PatternBonus(Map<Point, Content> pattern){
             boolean isValidPattern = pattern.values().stream()
@@ -171,7 +172,7 @@ public class Objective {
         /**
          * Find out how many times a specific pattern is present without counting the same card twice and calculate
          * the points awarded to the player.
-         * @return the base number of points awarded by the card multiplied by the amount of times the pattern appears
+         * @return the base number of points awarded by the card multiplied by the amount of times the pattern appears.
          */
         @Override
         public int calculate(){
@@ -226,8 +227,8 @@ public class Objective {
 
         /**
          * Equals method.
-         * @param object Object to check
-         * @return true if each field is equals to each field of object
+         * @param object Object to check.
+         * @return true if each field is equals to each field of object.
          */
         @Override
         public boolean equals(Object object) {

@@ -19,12 +19,11 @@ public class Deck<T>{
     Stack<T> deck;
 
     /**
-     * Constructor for Deck
-     *
-     * @param factoryMethod a method that takes an id and creates the corresponding object
-     * @param rangeStart the id to start generating the deck's objects from
-     * @param rangeEnd the id to end generating the deck's objects at
-     * @exception DeckException if the given range is illegal
+     * Constructor for the class.
+     * @param factoryMethod a method that takes an id and creates the corresponding object.
+     * @param rangeStart the id to start generating the deck's objects from.
+     * @param rangeEnd the id to end generating the deck's objects at.
+     * @exception DeckException if the given range is illegal.
      */
     public Deck(Function<Integer,T> factoryMethod, int rangeStart, int rangeEnd) throws DeckException{
         if (rangeStart > rangeEnd || rangeStart < 0){
@@ -38,23 +37,23 @@ public class Deck<T>{
     }
 
     /**
-     * @return ArrayList of cards
+     * @return the list of cards in a specified deck.
      */
     public List<T> getDeck(){
         return new ArrayList<>(this.deck);
     }
 
     /**
-     * Check whether the deck is empty
-     * @return a boolean representing if the deck is empty
+     * Check whether the deck is empty.
+     * @return true if the deck is empty.
      */
     public boolean isEmpty(){
         return this.deck.isEmpty();
     }
 
     /**
-     * Draws a random integer present in the deck and removes it.
-     * @return a random integer from the deck
+     * Draws the last card of a specified deck.
+     * @return the last card of the deck.
      * @exception DeckException if the deck is empty when the user tries to draw.
      */
     public T draw() throws DeckException{

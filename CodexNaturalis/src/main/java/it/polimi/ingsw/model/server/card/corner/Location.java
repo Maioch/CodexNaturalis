@@ -9,7 +9,7 @@ public enum Location {
     BL, BR, TL, TR;
 
     /**
-     * @return the opposite location (symmetrical with respect to the diagonal of the card)
+     * @return the opposite location (symmetrical with respect to the diagonal of the card).
      */
     public Location getOppositeLocation(){
         return switch(this){

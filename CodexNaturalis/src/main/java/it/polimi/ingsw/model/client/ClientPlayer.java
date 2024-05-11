@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class representing the client-related player model.
+ * Class that represents a simplified version of the local client, used to store a player's basic information.
  */
 public abstract class ClientPlayer {
     private final String nickname;
@@ -24,8 +24,8 @@ public abstract class ClientPlayer {
 
     /**
      * Constructor for the class.
-     * @param nickname hte player's nickname.
-     * @param color    the player's color.
+     * @param nickname the player's nickname.
+     * @param color the player's color.
      */
     public ClientPlayer(String nickname, Content color) {
         this.nickname = nickname;
@@ -35,7 +35,7 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Copy-constructor of the class
+     * Copy-constructor for the class
      * @param clientPlayer the instance to copy.
      */
     public ClientPlayer(ClientPlayer clientPlayer) {
@@ -48,7 +48,7 @@ public abstract class ClientPlayer {
     /**
      * @return the player's nickname.
      */
-    public String getNickname() {
+    public String getNickname(){
         return nickname;
     }
 
@@ -69,9 +69,9 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Setter for placed cards list and the player's score.
-     * @param placedCards the current placed cards layout.
-     * @param score the current player's score.
+     * Setter for the placed cards and score attributes.
+     * @param placedCards the player's placed cards layout.
+     * @param score the player's score.
      */
     public void setPlacedCards(List<BasicCard> placedCards, int score) {
         this.placedCards = new ArrayList<>(placedCards);
@@ -87,8 +87,8 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Setter for the player's hand cards.
-     * @param handCards the current player's hand.
+     * Setter for the hand cards attribute.
+     * @param handCards the player's hand.
      */
     public abstract void setHandCards(List<CardSides> handCards);
 

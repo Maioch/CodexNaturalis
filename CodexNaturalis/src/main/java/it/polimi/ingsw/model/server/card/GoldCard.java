@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A class that represents a gold card
- * Used to extend (and so, specify) BasicCard
+ * A class that represents a gold card.
+ *
  * @author Francesco Saverio Nisoli, Andrea Fidanza, Guglielmo Gatti, Marco Maiocchi
  */
 
@@ -20,11 +20,11 @@ public class GoldCard extends BasicCard {
     private transient Bonus bonus;
     
     /**
-     * Class constructor
+     * Constructor for the class.
      *
-     * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated
-     * @param requirements the resources needed in order to play the card
-     * @throws CardException if there are invalid requirements
+     * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated.
+     * @param requirements the resources needed in order to play the card.
+     * @throws CardException if there are invalid requirements.
     */
     public GoldCard(BasicCard cardTemplate, List<Content> requirements) throws CardException {
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
@@ -41,8 +41,8 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Copy-Constructor method for the GoldCard
-     * @param card the GoldCard to be copied
+     * Copy-Constructor method for the GoldCard.
+     * @param card the GoldCard to be copied.
      */
 
     public GoldCard(GoldCard card){
@@ -52,7 +52,7 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * @return the requirements needed to play the card
+     * @return the requirements needed to play the card.
      */
     @Override
     public Map<Content,Integer> getRequirements(){
@@ -67,15 +67,15 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * @param bonus the bonus to set
+     * Setter for the bonus attribute.
+     * @param bonus the bonus related to the card.
      */
     public void setBonus(Bonus bonus){
         this.bonus = bonus;
     }
 
     /**
-     * Method that calculates the total points value that the card gives when played (by the owner of it)
-     * @return points value gained by playing the card
+     * @return points gained by placing the card.
      */
     @Override
     public int getPoints(){
@@ -84,8 +84,8 @@ public class GoldCard extends BasicCard {
 
     /**
     * Equals method.
-    * @param object Object to check
-    * @return true if each field is equals to each field of object
+    * @param object Object to check.
+    * @return true if each field is equal to each field of object.
     */
     @Override
     public boolean equals(Object object){
@@ -99,8 +99,8 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Copy method that Guarantees that the card will be copied using the right constructor
-     * @return a copy of the card
+     * Copy method that Guarantees that the card will be copied using the right constructor.
+     * @return a copy of the card.
      */
     @Override
     public GoldCard copy(){
@@ -108,15 +108,14 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Class that calculates the bonus given by a gold card that gives points per corner covered by the card itself
+     * Class that calculates the bonus given by a gold card that gives points per corner covered by the card itself.
      *
      * @author Andera Fidanza
      */
     public class CornerBonus implements Bonus{
 
         /**
-         * Calculates the total points
-         * @return total points
+         * @return points gained by placing the card.
          */
         @Override
         public int calculate(){
@@ -129,9 +128,9 @@ public class GoldCard extends BasicCard {
         }
 
         /**
-        * Equals method
-        * @param object Object to check
-        * @return true if object is of class CornerBonus
+        * Equals method.
+        * @param object Object to check.
+        * @return true if object is of class CornerBonus.
         */
         @Override
         public boolean equals(Object object){
@@ -141,7 +140,7 @@ public class GoldCard extends BasicCard {
 
     /**
      * Class that calculates the bonus given by a gold card that gives points per visible object in the board of the
-     * player, including card itself
+     * player, including the card itself.
      *
      * @author Marco Maiocchi
      */
@@ -149,16 +148,16 @@ public class GoldCard extends BasicCard {
         private final Content object;
 
         /**
-         * Constructor for the class
-         * @param object object used for the points multiplier
+         * Constructor for the class.
+         * @param object object used for the points' multiplier.
          */
         public ObjectBonus(Content object){
             this.object = object;
         }
 
         /**
-         * Method that calculates the points given to the player by the gold card he plays
-         * @return points given to the player
+         * Method that calculates the points given to the player by the gold card he plays.
+         * @return points given to the player.
          */
         @Override
         public int calculate(){
@@ -167,8 +166,8 @@ public class GoldCard extends BasicCard {
 
         /**
         * Equals method.
-        * @param object Object to check
-        * @return true if each field is equals to each field of object
+        * @param object Object to check.
+        * @return true if each field is equals to each field of object.
         */
         @Override
         public boolean equals(Object object){

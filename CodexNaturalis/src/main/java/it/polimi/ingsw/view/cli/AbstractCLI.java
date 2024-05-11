@@ -21,7 +21,7 @@ public abstract class AbstractCLI {
         String commandChar = GameParameters.getCommandChar();
         Scanner scanner = new Scanner(System.in);
         while(true) {
-            System.out.println(prompt);
+            System.out.print(prompt);
             String inputString = scanner.nextLine();
             boolean isCommand = inputString.indexOf(GameParameters.getCommandChar()) == 0;
             if(!isCommand){

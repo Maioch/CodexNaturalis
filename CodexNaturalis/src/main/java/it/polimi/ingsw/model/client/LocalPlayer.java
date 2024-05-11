@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class representing the local player (the one "controlled" by the client)
+ * A class representing the local player.
  */
 public class LocalPlayer extends ClientPlayer{
     private List<CardSides> handCards;
@@ -18,7 +18,7 @@ public class LocalPlayer extends ClientPlayer{
 
     /**
      * Constructor for the class.
-     * @param nickname hte player's nickname.
+     * @param nickname the player's nickname.
      * @param color the player's color.
      */
     public LocalPlayer(String nickname, Content color) {
@@ -39,8 +39,8 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * A setter of the local player's hand cards.
-     * @param handCards the list of the new hand cards.
+     * Setter for the hand cards attribute.
+     * @param handCards the list of the player's hand cards.
      */
     @Override
     public void setHandCards(List<CardSides> handCards) {
@@ -49,12 +49,12 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * A setter for the player's objectives.
-     * @param personalObjectives the list of objectives.
+     * Setter for the personal objectives attribute.
+     * @param personalObjectives the list of the player's personal objectives.
      */
     public void setPersonalObjectives(List<Objective> personalObjectives) {
         this.personalObjectives = new ArrayList<>(personalObjectives);
-        eventSubmitter.submit(() -> gameView.updatePersonalObjectives(getPersonalObjectives()));
+        eventSubmitter.submit(() -> gameView.showPersonalObjectives(getPersonalObjectives()));
     }
 
     /**
@@ -74,8 +74,7 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * A getter for the player's objectives.
-     * @return the list of objectives.
+     * @return the list of the player's personal objectives.
      */
     public List<Objective> getPersonalObjectives() {
         return new ArrayList<>(){{

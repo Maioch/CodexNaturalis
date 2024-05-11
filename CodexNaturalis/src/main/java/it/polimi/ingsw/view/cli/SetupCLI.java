@@ -13,13 +13,17 @@ import it.polimi.ingsw.network.messages.setup.NewGameMessage;
 import it.polimi.ingsw.network.server.RMISetup;
 import it.polimi.ingsw.view.SetupView;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.List;
 
 /**
  * Class used when the client chooses to play the TUI version of the game; this class represents the CLI for the player
@@ -28,14 +32,12 @@ import java.util.*;
 public class SetupCLI extends AbstractCLI implements SetupView {
 
     private final ClientController clientController;
-    private boolean isConnected;
-
     /**
      * Constructor for the class. The method asks the player the ip address and the port of the server, then it makes
      * him choose if he wants to connect using socket or RMI protocol: the method then handles the connection.
      */
     public SetupCLI(){
-        isConnected = false;
+        boolean isConnected = false;
         this.clientController = new ClientController(this, new TerminalSubmitter());
         while (!isConnected) {
             new Thread(clientController).start();
@@ -100,12 +102,11 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             System.out.printf("Match %7d: %s\n", entry.getKey(), entry.getValue());
         }
         System.out.println();
-        int id = readFromInput("Enter the ID of the match you want to join (0 for a new match)",
-                (i -> !matchList.containsKey(i) || i == 0),
+        int id = readFromInput("Enter the ID of the match you want to join (0 for a new match, -1 to refresh the match list)",
+                (i -> matchList.containsKey(i) || i == 0 || i == -1),
                 this::stringToInt);
-        Message messageToSend = new IntegerMessage(Status.REQUEST_COLORS, id);
+        Message messageToSend = id == -1 ? new Message(Status.REQUEST_GAMES) : new IntegerMessage(Status.REQUEST_COLORS, id);
         if (id == 0) {
-            System.out.print("Enter the new match's name: ");
             String gameName = readFromInput("Enter the new match's name: ",
                     (s -> s.length() <= GameParameters.getMaxNicknameLength()),
                     this::stringIdentity);
@@ -113,7 +114,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             int maxPlayers = GameParameters.getMaxPlayers();
             int numberOfPlayers = readFromInput(
                     String.format("Now enter the number of players (between %d and %d inclusive): ", minPlayers, maxPlayers),
-                    (n -> n < GameParameters.getMaxPlayers() && n > GameParameters.getMinPlayers()),
+                    (n -> n <= GameParameters.getMaxPlayers() && n >= GameParameters.getMinPlayers()),
                     this::stringToInt);
             messageToSend = new NewGameMessage(gameName, numberOfPlayers);
         }
@@ -149,13 +150,13 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     @Override
     public void showJoinGameDialog(List<Content> colors, int gameId){
-        System.out.println("You are trying to join a match");
+        System.out.println("You are trying to join a match.");
         for(int i = 0; i < colors.size(); i++){
             System.out.print((i + 1) + ". " + textColors.get(colors.get(i)));
             System.out.println(colors.get(i) != colors.getLast() ? ", " : ".");
         }
         int colorIndex = readFromInput("First, choose a color from the list above by entering the corresponding index: ",
-                (i -> i > 1 && i < colors.size()),
+                (i -> i >= 1 && i <= colors.size()),
                 this::stringToInt) - 1;
         String nickname = readFromInput("Now enter your nickname: ",
                 (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength()),
@@ -193,12 +194,20 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     @Override
     protected void checkCommand(String command, String argument){
-        if(!isConnected){
-            return;
-        }
         //TODO:FIX REFRESH BUG
         switch (command.toUpperCase()){
-            case "REFRESH" -> clientController.sendMessage(new Message(Status.REQUEST_GAMES));
+            case "GETRULES" -> {
+                try {
+                    URI url = new URI(GameParameters.getRulesURL());
+                    Desktop.getDesktop().browse(url);
+                }catch(URISyntaxException | IOException e){
+                    System.out.printf(
+                            "Couldn't launch the browser. please open it yourself and navigate to %s \n",GameParameters.getRulesURL());
+                }
+            }
+            case "ABOUT" ->  System.out.println(
+                    "Original game by Cranio Creations. Developed by Fidanza, Gatti, Nisoli, and Maiocchi.");
+            case "HELP" -> System.out.println(GameParameters.getSetupHelpBody());
             default -> System.out.println("Command not recognized, type /HELP for a list of all commands!");
         }
     }

@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A class representing the remote player (non-client players).
+ * A class representing the remote player.
  */
 public class RemotePlayer extends ClientPlayer {
     private List<BasicCard> handCards; //Not a cardsides list, in order to obtain an only front cards hand
 
     /**
      * Constructor for the class.
-     * @param nickname hte player's nickname.
+     * @param nickname the player's nickname.
      * @param color the player's color.
      */
     public RemotePlayer(String nickname, Content color) {
@@ -34,8 +34,8 @@ public class RemotePlayer extends ClientPlayer {
     }
 
     /**
-     * Setter for the player's hand cards.
-     * @param handCards the current player's hand.
+     * Setter for the hand cards attribute.
+     * @param handCards the player's hand.
      */
     @Override
     public void setHandCards(List<CardSides> handCards) {

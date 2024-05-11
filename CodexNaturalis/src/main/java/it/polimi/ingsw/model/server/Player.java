@@ -32,12 +32,12 @@ public class Player {
     private int score;
 
     /**
-     * Constructor for the player
-     * @param nickname in-game name for the player
-     * @param color color chosen by the player
-     * @param handCards cards held by the player (max 3), that they can play during his turn
-     * @param objectives two objectives shared by the player and a personal one
-     * @param serverSubject the object used to notify the serverListeners
+     * Constructor for the class.
+     * @param nickname in-game name for the player.
+     * @param color color chosen by the player.
+     * @param handCards cards held by the player (max 3), that they can play during his turn.
+     * @param objectives two objectives shared by the player and a personal one.
+     * @param serverSubject the object used to notify the serverListeners.
      */
     public Player(String nickname,
                   Content color,
@@ -62,28 +62,28 @@ public class Player {
     }
 
     /**
-     * @return player's nickname
+     * @return the player's nickname.
      */
     public String getNickname(){
         return this.nickname;
     }
 
     /**
-     * @return player's color
+     * @return the player's color.
      */
     public Content getColor(){
         return this.color;
     }
 
     /**
-     * @return player's score
+     * @return the player's score.
      */
     public int getScore(){
         return this.score;
     }
 
     /**
-     * @return a deep copy of the player's objectives list
+     * @return a deep copy of the player's objectives list.
      */
     public List<Objective> getObjectives(){
         return new ArrayList<>(){{
@@ -94,7 +94,7 @@ public class Player {
     }
 
     /**
-     * @return a deep copy of the player's hand
+     * @return a deep copy of the player's hand.
      */
     public List<CardSides> getHandCards(){
         return new ArrayList<>(){{
@@ -107,7 +107,7 @@ public class Player {
     }
 
     /**
-     * @return a deep copy of the player's placed cards
+     * @return a deep copy of the player's placed cards.
      */
     public List<BasicCard> getPlacedCards(){
         return new ArrayList<>(){{
@@ -118,8 +118,8 @@ public class Player {
     }
 
     /**
-     * @return a hash map with every possible content as key, and the corresponding quantity that is
-     * visible in the player's board
+     * @return a map with every possible content as key, and the corresponding quantity that is
+     * visible in the player's board.
      */
     public Map<Content,Integer> getPlayerContent(){
         return new HashMap<>(){{
@@ -136,8 +136,8 @@ public class Player {
      * Updates the player's score by adding the points awarded by the objectives
      * and returns an array where each element is the amount of points given by
      * each objective.
-     * Finally, it notifies through the server subject the updated score
-     * @return an arraylist with the amount of points given by each objective
+     * Finally, it notifies through the server subject the updated score.
+     * @return a list with the amount of points given by each objective.
      */
     public List<Integer> awardObjectivePoints(){
         Map<Objective, Integer> objectivePoints = new HashMap<>();
@@ -152,9 +152,9 @@ public class Player {
 
     /**
      * Method that checks if a card is placeable by checking if the resources required
-     * are present on the player's board
-     * @param cardToPlace card to check
-     * @return true if the card can be placed
+     * are present on the player's board.
+     * @param cardToPlace card to check.
+     * @return true if the card can be placed.
      */
     public boolean checkRequirements(BasicCard cardToPlace){
         Map<Content,Integer> requirements = cardToPlace.getRequirements();
@@ -165,9 +165,9 @@ public class Player {
     /**
      * Method that checks if the position chosen by the player for a new card is correct,
      * assuming that the corner that has been passed is part of the player's board
-     * and that the player already has the card
-     * @param corner the card's corner where the new card is going to be placed
-     * @return true if the card is placeable on the corner
+     * and that the player already has the card.
+     * @param corner the card's corner where the new card is going to be placed.
+     * @return true if the card is placeable on the corner.
      */
     public boolean checkIfPlaceable(Corner corner){
         //Finds all the corners where a card can't be placed and tests
@@ -196,9 +196,9 @@ public class Player {
     }
 
     /**
-     * Method that checks if a certain corner is present in the player's board
-     * @param corner the corner to check
-     * @return true if it is present, false otherwise
+     * Method that checks if a certain corner is present in the player's board.
+     * @param corner the corner to check.
+     * @return true if it is present, false otherwise.
      */
     public boolean isCornerPartOfBoard(Corner corner){
         return placedCards.stream()
@@ -207,19 +207,19 @@ public class Player {
     }
 
     /**
-     * Method that checks if a BasicCard is present in the player's hand
-     * @param card the card to check
-     * @return true if present, false otherwise
+     * Method that checks if a BasicCard is present in the player's hand.
+     * @param card the card to check.
+     * @return true if present, false otherwise.
      */
     public boolean isCardInHand(BasicCard card){
         return handCards.stream().anyMatch(c -> c.frontSide().equals(card) || c.backSide().equals(card));
     }
 
     /**
-     * Method that lets the player place a card on his board
-     * Finally, it notifies through the server subject the updated player's placed cards
-     * @param cardToPlace the card the player chose to place
-     * @param corner the corner on the card where the card is placed
+     * Method that lets the player place a card on his board and notifies through the server subject the updated
+     * player's placed cards.
+     * @param cardToPlace the card the player chose to place.
+     * @param corner the corner on the card where the card is placed.
      */
     public void placeCard(BasicCard cardToPlace, Corner corner){
         if(!checkRequirements(cardToPlace) || !checkIfPlaceable(corner))
@@ -239,9 +239,9 @@ public class Player {
     /**
      * Method that initializes each player's board by placing a starter card in the centre; throws an exception
      * if the board is already initialized.
-     * Finally, it notifies through the server subject the updated player's placed cards
-     * @param starterCard the starter card chosen randomly for the player
-     * @exception PlayerException if there is already a placed starter card
+     * Finally, it notifies through the server subject the updated player's placed cards.
+     * @param starterCard the starter card chosen randomly for the player.
+     * @throws PlayerException if there is already a placed starter card.
      */
     public void placeStarterCard(BasicCard starterCard) throws PlayerException {
         if(!placedCards.isEmpty()){
@@ -258,9 +258,8 @@ public class Player {
     }
 
     /**
-     * Method that adds a card to the player's hand.
-     * Finally, it notifies through the server subject the updated player's hand
-     * @param cardSides the card to add to the player's hand
+     * Method that adds a card to the player's hand and notifies through the server subject the updated player's hand.
+     * @param cardSides the card to add to the player's hand.
      */
     public void addCardToHand(CardSides cardSides){
         handCards.add(cardSides);
@@ -270,6 +269,9 @@ public class Player {
         serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, getHandCards()));
     }
 
+    /**
+     * @return all the corners the player can place a card on.
+     */
     public List<Corner> getAllValidCorners(){
         return placedCards.stream()
                 .flatMap(b -> b.getAllCorners().stream())
@@ -277,6 +279,9 @@ public class Player {
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
+    /**
+     * @return all the cards n the player's hand that he can place.
+     */
     public List<BasicCard> getAllValidCards(){
         List<BasicCard> result = handCards.stream()
                 .map(CardSides::backSide)
@@ -289,8 +294,7 @@ public class Player {
     }
 
     /**
-     * Method that gets the backside of the cards in the player's hand
-     * @return the list of backsides
+     * @return the list of the back sides of the player's hand.
      */
     private List<CardSides> getBackOnlyCardHand(){
         return new ArrayList<>(){{
@@ -302,8 +306,8 @@ public class Player {
 
     /**
      * Equals method.
-     * @param object Object to check
-     * @return true if each field is equals to each field of object
+     * @param object Object to check.
+     * @return true if each field is equals to each field of object.
      */
     @Override
     public boolean equals(Object object){

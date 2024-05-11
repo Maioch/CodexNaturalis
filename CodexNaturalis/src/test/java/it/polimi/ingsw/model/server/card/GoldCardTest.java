@@ -21,7 +21,7 @@ public class GoldCardTest {
     @Test
     void getRequirementsTest(){
         for(int id = startGold; id <= endGold; id++){
-            JsonNode node = CardBuilder.getCardJson(id, "placeableCards");
+            JsonNode node = CardBuilder.getCardJson(id);
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             assertEquals(card.getClass(), GoldCard.class);
             GoldCard gold = (GoldCard) card;
@@ -63,7 +63,7 @@ public class GoldCardTest {
 
             GoldCard goldTest = (GoldCard) CardBuilder.buildCard(id).frontSide();
             goldTest.setOwner(playerTest);
-            JsonNode cardJson = CardBuilder.getCardJson(id, "placeableCards");
+            JsonNode cardJson = CardBuilder.getCardJson(id);
             String bonusType = CardBuilder.getBonusType(cardJson);
             int nativePoints = CardBuilder.getPoints(cardJson);
 

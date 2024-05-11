@@ -21,6 +21,9 @@ import it.polimi.ingsw.view.SetupView;
 
 import java.util.List;
 
+/**
+ * Class that handles every possible message the client can send to the server.
+ */
 public class ClientController extends MessageHandler{
     private final SetupView setupView;
     private ClientGame game;
@@ -28,6 +31,11 @@ public class ClientController extends MessageHandler{
     private NetworkHandler networkHandler;
     private final EventSubmitter eventSubmitter;
 
+    /**
+     * Constructor for the class.
+     * @param setupView the object containing all the methods used by the player to access or create a game.
+     * @param eventSubmitter the medium used to send the player's requests to the server.
+     */
     public ClientController(SetupView setupView, EventSubmitter eventSubmitter) {
         this.setupView = setupView;
         this.eventSubmitter = eventSubmitter;

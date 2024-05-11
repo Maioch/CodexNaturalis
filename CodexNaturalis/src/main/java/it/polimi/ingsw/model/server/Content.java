@@ -34,19 +34,23 @@ public enum Content {
     }
 
     /**
-     * @return true if a corner can't be overlapped
+     * @return true if a corner can't be overlapped.
      */
     public boolean isEmpty(){
         return this == EMPTY;
     }
 
     /**
-     * @return the symbol
+     * @return the symbol.
      */
     public String getSymbol(){
         return symbol;
     }
 
+    /**
+     * Constructor for the enum.
+     * @param symbol the textual representation for each value of the enum.
+     */
     Content(String symbol){
         this.symbol = symbol;
     }

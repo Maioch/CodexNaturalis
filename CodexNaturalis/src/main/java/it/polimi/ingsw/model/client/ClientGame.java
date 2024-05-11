@@ -13,7 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A class representing the client's game instance (skinnier than the server's game).
+ * Class that represents a simplified version of the game's state for the local client perspective, used
+ * to handle some functionalities in an easier way.
  */
 public class ClientGame {
     private LocalPlayer localPlayer;
@@ -40,8 +41,8 @@ public class ClientGame {
     }
 
     /**
-     * Setter for the drawable options (cards that the player can draw).
-     * @param drawableOptions hashmap containing all the drawable cards.
+     * Setter for the drawable options attribute.
+     * @param drawableOptions a map containing all the drawable cards.
      */
     public void setDrawableOptions(Map<CardType, List<BasicCard>> drawableOptions) {
         this.drawableOptions = new HashMap<>(drawableOptions);
@@ -49,8 +50,8 @@ public class ClientGame {
     }
 
     /**
-     * Method that requests a new draw move.
-     * @param drawableOptions the cards the player can choose from.
+     * Method used to enable the draw phase for the player.
+     * @param drawableOptions the cards the player can draw from.
      */
     public void requestDraw(Map<CardType, List<BasicCard>> drawableOptions) {
         this.drawableOptions = new HashMap<>(drawableOptions);
@@ -76,14 +77,14 @@ public class ClientGame {
     /**
      * @return the local player.
      */
-    public LocalPlayer getLocalPlayer() {
+    public LocalPlayer getLocalPlayer(){
         return this.localPlayer;
     }
 
     /**
-     * @return a list of the remote players (part of the game).
+     * @return a list of the remote players (all the players in the same game other than the local player).
      */
-    public List<RemotePlayer> getRemotePlayers() {
+    public List<RemotePlayer> getRemotePlayers(){
         return new ArrayList<>(){{
             for(RemotePlayer remotePlayer : remotePlayers){
                 add(new RemotePlayer(remotePlayer));
@@ -92,7 +93,7 @@ public class ClientGame {
     }
 
     /**
-     * @return a map that contains each player's nickname and his associated color.
+     * @return a map that contains each player's nickname and its color.
      */
     public Map<String, Content> getPlayersColors(){
         HashMap<String, Content> playersColors = new HashMap<>();
@@ -104,7 +105,7 @@ public class ClientGame {
     }
 
     /**
-     * A method that updates the views, showing the available colors.
+     * Method that updates the available colors for the local player's game.
      * @param colors the list of available colors.
      */
     public void updateAvailableColors(List<Content> colors){
@@ -112,7 +113,7 @@ public class ClientGame {
     }
 
     /**
-     * A method that adds a player to the remote players list.
+     * Method that adds a player to the remote players list.
      */
     public void addRemotePlayer(RemotePlayer player){
         remotePlayers.add(player);
@@ -121,24 +122,24 @@ public class ClientGame {
     }
 
     /**
-     * Setter for the common objectives (the ones that all the players own).
-     * @param commonObjectives the common objective list.
+     * Setter for the common objectives attribute.
+     * @param commonObjectives a list containing the objectives shared by each player in the game.
      */
     public void setCommonObjectives(List<Objective> commonObjectives) {
         this.commonObjectives = new ArrayList<>(commonObjectives);
-        eventSubmitter.submit(() -> gameView.updateCommonObjectives(getCommonObjectives()));
+        eventSubmitter.submit(() -> gameView.showCommonObjectives(getCommonObjectives()));
     }
 
     /**
-     * Setter of the local player (usually used just one time).
-     * @param localPlayer the local player.
+     * Setter for the local player attribute.
+     * @param localPlayer the local player bound to the client.
      */
     public void setLocalPlayer(LocalPlayer localPlayer) {
         this.localPlayer = localPlayer;
     }
 
     /**
-     * Method the manages the game's turns.
+     * Method that updates the turn cycle between players.
      * @param nickname the nickname that should have the turn.
      */
     public void setPlayerWithTurn(String nickname) {

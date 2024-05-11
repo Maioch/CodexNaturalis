@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.server.card;
 
 /**
-* Enum that represents the type of the card
+* Enum that represents the type of cards.
 *
 * @author Andrea Fidanza
 */
