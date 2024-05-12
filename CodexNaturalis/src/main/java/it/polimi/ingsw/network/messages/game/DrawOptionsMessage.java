@@ -5,10 +5,7 @@ import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Message sent by the server, containing all the possible draw options
@@ -22,7 +19,9 @@ public class DrawOptionsMessage extends Message {
      */
     public DrawOptionsMessage(Status status, Map<CardType, List<BasicCard>> drawableOptions) {
         super(status);
-        this.drawableOptions = new HashMap<>(drawableOptions);
+        this.drawableOptions = new HashMap<>();
+        drawableOptions.replaceAll((t, v) -> new ArrayList<>(drawableOptions.get(t)));
+
     }
 
     /**

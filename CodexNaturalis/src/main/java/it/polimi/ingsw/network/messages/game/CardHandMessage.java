@@ -31,8 +31,8 @@ public class CardHandMessage extends Message {
         return new ArrayList<>(){{
             for(CardSides cardSides : cardHand){
                 add(new CardSides(
-                        cardSides.frontSide().copy(),
-                        cardSides.backSide().copy()));
+                        cardSides.frontSide() != null ? cardSides.frontSide().copy() : null,
+                        cardSides.backSide() != null ? cardSides.backSide().copy() : null));
             }
         }};
     }

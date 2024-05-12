@@ -84,7 +84,8 @@ public class GameController implements Runnable{
      * is chosen) and informs the player about his objectives.
      */
     private void initializeGame() {
-        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
+        Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
+        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards));
         for (Player player : game.getAllPlayers()) {
             serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             CardSides starterCard = player.getHandCards().getFirst();
@@ -275,15 +276,11 @@ public class GameController implements Runnable{
      */
     @Override
     public void run(){
+        while(!game.isGameFull());
         while(true){
-            if(!game.isGameFull()){
-                continue;
-            }
             try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e){
-
-            }
+                Thread.sleep(5000);
+            } catch (InterruptedException e){}
             System.out.println("A new game started");
             initializeGame();
             startGame();

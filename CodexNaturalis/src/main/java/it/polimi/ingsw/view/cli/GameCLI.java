@@ -76,6 +76,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                           List<BasicCard> validCards,
                           List<Corner> validCorners){
         System.out.println("These are your placed card:");
+        System.out.println(placedCards);
         int x = placedCards.getLast().getCorner(Location.BL).getX();
         int y = placedCards.getLast().getCorner(Location.BL).getY();
         System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
@@ -116,7 +117,9 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void showUserJoined(String player, Content color){
-        System.out.println(player + " joined your game and his chosen color is " + color.toString().toLowerCase());
+        if (!player.equals(controller.getLocalPlayerName())) {
+            System.out.println(player + " joined your game and their chosen color is " + color.toString().toLowerCase());
+        }
     }
 
     @Override

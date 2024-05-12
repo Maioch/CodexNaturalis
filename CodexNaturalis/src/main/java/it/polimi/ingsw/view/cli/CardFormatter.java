@@ -65,7 +65,7 @@ public class CardFormatter {
     }
 
     public static String getObjectiveInfoString(Objective objective){
-        return String.format("objective card that awards %d points every time %s",
+        return String.format("objective card that awards %d points every time %s\n",
                 objective.getPoints(),
                 getBonusInfo(objective.getObjectiveId()));
     }
@@ -141,15 +141,33 @@ public class CardFormatter {
         return switch (bonusNode.get("type").asText()){
             case "CORNER" -> "corner.";
             case "OBJECT" -> "object -> " + bonusNode.get("object").asText();
-            case "CONTENT" -> "*all* of the following content types appear -> " + bonusNode.get("content").asText();
+            case "CONTENT" -> {
+                List<Content> contents = new ArrayList<>() {{
+                    for (JsonNode subNode : bonusNode.get("content")) {
+                        add(Content.valueOf(subNode.asText()));
+                    }
+                }};
+                yield "*all* of the following content types appear -> " + contents.toString();
+            }
             case "PATTERN" -> {
                 StringBuilder sb = new StringBuilder();
-                sb.append("the following pattern appears ->");
+                sb.append("the following pattern appears -> \n");
+                int minX = bonusNode.get("pattern").get(0).get("x").asInt();
+                int minY = bonusNode.get("pattern").get(0).get("y").asInt();
                 for(JsonNode subNode : bonusNode.get("pattern")){
-                    sb.append("  ".repeat(subNode.get("x").asInt()));
-                    sb.append("\n".repeat(subNode.get("y").asInt()));
-                    sb.append(Content.valueOf(subNode.get("color").asText()).getSymbol());
+                    minX = Math.min(subNode.get("x").asInt(), minX);
+                    minY = Math.min(subNode.get("y").asInt(), minY);
                 }
+                int prevX = 0;
+                int prevY = 0;
+                for(JsonNode subNode : bonusNode.get("pattern")){
+                    sb.append("\n".repeat(-minY + prevY + subNode.get("y").asInt()));
+                    sb.append("  ".repeat(-minX + prevX + subNode.get("x").asInt()));
+                    sb.append(Content.valueOf(subNode.get("color").asText()).getSymbol());
+                    prevY = -minY + prevY + subNode.get("y").asInt();
+                    prevX = -minX + prevX + subNode.get("x").asInt();
+                }
+                sb.append("\n");
                 yield sb.toString();
             }
             default -> "no bonus.";

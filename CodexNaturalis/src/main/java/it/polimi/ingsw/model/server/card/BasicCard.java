@@ -228,7 +228,7 @@ public class BasicCard implements Serializable {
      */
     @Override
     public boolean equals(Object object){
-        if(this.getClass() != object.getClass())
+        if(object == null || this.getClass() != object.getClass())
             return false;
         BasicCard other = (BasicCard) object;
         other.resources.sort(Comparator.comparingInt(Enum::ordinal));

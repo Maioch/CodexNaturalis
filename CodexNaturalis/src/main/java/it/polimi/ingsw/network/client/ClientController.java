@@ -153,7 +153,7 @@ public class ClientController extends MessageHandler{
                             eventSubmitter.submit(() -> gameView.showErrorMessage(Status.INVALID_STARTER_CARD.getMessage()));
                         }
                         if (labeledMessage.message() instanceof CardHandMessage cardHandMessage) {
-                            game.getLocalPlayer().setHandCards(cardHandMessage.getCardHand());
+                            game.getLocalPlayer().setHandCards(cardHandMessage.getCardHand(), false);
                             game.getLocalPlayer().requestStarterCardPlacement();
                         }
                     }
@@ -181,12 +181,12 @@ public class ClientController extends MessageHandler{
                     }
                     case PLAYER_HAND_CARDS -> {
                         if (labeledMessage.message() instanceof CardHandMessage cardHandMessage) {
-                            game.getLocalPlayer().setHandCards(cardHandMessage.getCardHand());
+                            game.getLocalPlayer().setHandCards(cardHandMessage.getCardHand(), true);
                         }
                     }
                     case PLAYER_HAND_BACK -> {
                         if (labeledMessage.message() instanceof CardHandMessage cardHandMessage) {
-                            game.getPlayerWithTurn().setHandCards(cardHandMessage.getCardHand());
+                            game.getPlayerWithTurn().setHandCards(cardHandMessage.getCardHand(), true);
                         }
                     }
                     case DRAW, INVALID_DRAW -> {

@@ -38,11 +38,13 @@ public class RemotePlayer extends ClientPlayer {
      * @param handCards the player's hand.
      */
     @Override
-    public void setHandCards(List<CardSides> handCards) {
+    public void setHandCards(List<CardSides> handCards, boolean show) {
         this.handCards = handCards.stream()
                 .map(CardSides::backSide)
                 .collect(Collectors.toCollection(ArrayList::new));
-        eventSubmitter.submit(() -> gameView.updateRemotePlayerHand(getNickname(),getHandCards()));
+        if(show){
+            eventSubmitter.submit(() -> gameView.updateRemotePlayerHand(getNickname(), getHandCards()));
+        }
     }
 
     /**

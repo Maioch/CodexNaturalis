@@ -194,13 +194,12 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     @Override
     protected void checkCommand(String command, String argument){
-        //TODO:FIX REFRESH BUG
         switch (command.toUpperCase()){
             case "GETRULES" -> {
                 try {
                     URI url = new URI(GameParameters.getRulesURL());
                     Desktop.getDesktop().browse(url);
-                }catch(URISyntaxException | IOException e){
+                }catch(URISyntaxException | IOException | UnsupportedOperationException e){
                     System.out.printf(
                             "Couldn't launch the browser. please open it yourself and navigate to %s \n",GameParameters.getRulesURL());
                 }

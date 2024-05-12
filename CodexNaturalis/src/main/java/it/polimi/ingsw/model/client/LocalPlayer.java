@@ -43,9 +43,11 @@ public class LocalPlayer extends ClientPlayer{
      * @param handCards the list of the player's hand cards.
      */
     @Override
-    public void setHandCards(List<CardSides> handCards) {
+    public void setHandCards(List<CardSides> handCards, boolean show) {
         this.handCards = handCards;
-        eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(getHandCards()));
+        if(show){
+            eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(getHandCards()));
+        }
     }
 
     /**

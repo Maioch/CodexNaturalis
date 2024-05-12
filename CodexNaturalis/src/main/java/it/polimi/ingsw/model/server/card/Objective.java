@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.Player;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Map;
  *
  * @author Guglielmo Gatti, Francesco Saverio Nisoli, Marco Maiocchi, Andrea Fidanza
  */
-public class Objective {
+public class Objective implements Serializable {
     private final int objectiveId;
     private final int points;
     private transient Bonus bonus;

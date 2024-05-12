@@ -33,6 +33,7 @@ public class ClientGame {
      */
     public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView) {
         this.localPlayer = player;
+        this.localPlayer.setViewReferences(gameView,eventSubmitter);
         this.gameView = gameView;
         this.eventSubmitter = eventSubmitter;
         this.remotePlayers = new ArrayList<>();

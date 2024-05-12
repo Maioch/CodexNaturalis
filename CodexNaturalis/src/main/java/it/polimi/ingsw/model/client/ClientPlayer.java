@@ -61,11 +61,11 @@ public abstract class ClientPlayer {
      * @return the placed card list.
      */
     public List<BasicCard> getPlacedCards() {
-        return new ArrayList<>(){{
-            for(BasicCard card : placedCards){
-                add(card.copy());
-            }
-        }};
+        List<BasicCard> result = new ArrayList<>();
+        for(BasicCard card : placedCards){
+            result.add(card.copy());
+        }
+        return result;
     }
 
     /**
@@ -90,7 +90,7 @@ public abstract class ClientPlayer {
      * Setter for the hand cards attribute.
      * @param handCards the player's hand.
      */
-    public abstract void setHandCards(List<CardSides> handCards);
+    public abstract void setHandCards(List<CardSides> handCards, boolean show);
 
     /**
      * Setter for the client's game view, and it's associated event submitter.
