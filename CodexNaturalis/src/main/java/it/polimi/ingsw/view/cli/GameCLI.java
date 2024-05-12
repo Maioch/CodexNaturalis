@@ -32,13 +32,17 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards){
         System.out.println();
+        System.out.println("These are the cards you can draw:");
+        int i = 0;
         for(Map.Entry<CardType, List<BasicCard>> entry : drawableCards.entrySet()){
+            System.out.println(i);
             System.out.print(CardFormatter.getCardsInfoString(entry.getValue()));
+            i++;
         }
         System.out.println();
         List<Integer> choice = readFromInput(
                 "Type what card you want to draw (as coordinates separated by spaces, starting from 0): ",
-                (list -> list.size() != 2 &&
+                (list -> list.size() == 2 &&
                         list.getFirst() >= 0 && list.getFirst() <= 1 &&
                         list.getLast() >= 0 && list.getLast() <= GameParameters.getNumberOfVisibleCards()),
                 this::stringToListInt);
@@ -52,18 +56,24 @@ public class GameCLI extends AbstractCLI implements GameView {
      * @param recipients the recipients of the message
      */
     @Override
-    public void showChatMessage(String message, String sender, List<String> recipients, Map<String, Content> playersColors){
+    public void showChatMessage(String message, String sender, List<String> recipients){
+        if(!sender.equals(controller.getLocalPlayerName())){
+            printChatMessage(message,sender,recipients);
+        }
+    }
+
+    private void printChatMessage(String message, String sender, List<String> recipients){
         StringBuilder sb = new StringBuilder();
-        System.out.println();
-        sb.append(textColors.get(playersColors.get(sender))).append(sender).append(textColors.get(Content.EMPTY));
-        if(recipients.size() != 1) {
+        Map<String, Content> playerColors = controller.getPlayerColors();
+        sb.append(textColors.get(playerColors.get(sender))).append(sender).append(textColors.get(Content.EMPTY));
+        if(recipients.size() != controller.getRemotePlayerNames().size()) {
             sb.append(" says to ");
             for (String recipient : recipients) {
-                if (recipients.indexOf(recipient) != recipients.size() - 1) {
-                    sb.append(textColors.get(playersColors.get(recipient)))
-                            .append(recipient)
-                            .append(textColors.get(Content.EMPTY))
-                            .append(", ");
+                sb.append(textColors.get(playerColors.get(recipient)))
+                        .append(recipient)
+                        .append(textColors.get(Content.EMPTY));
+                if(!recipient.equals(recipients.getLast())){
+                    sb.append(", ");
                 }
             }
         }
@@ -226,14 +236,26 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @SuppressWarnings("SlowListContainsAll")
     private void sendChatMessage(String arguments){
-        String[] splitString = arguments.split(" ", 2);
-        String delimiter = GameParameters.getDelimiter();
-        List<String> recipients = Arrays.stream(splitString[0].split(delimiter, 2)).toList();
-        if(!splitString[0].contains(delimiter)){
+        List<String> recipients = new ArrayList<>();
+        int indexOfDelimiter = 0;
+        while(indexOfDelimiter != -1){
+            indexOfDelimiter = arguments.indexOf(GameParameters.getDelimiter(),indexOfDelimiter);
+            if(indexOfDelimiter != -1){
+                int indexOfNextDelimiter = arguments.indexOf(GameParameters.getDelimiter(),indexOfDelimiter + 1);
+                if(indexOfNextDelimiter != -1){
+                    recipients.add(arguments.substring(indexOfDelimiter + 1,indexOfNextDelimiter));
+                }
+                indexOfDelimiter = indexOfNextDelimiter;
+            }
+        }
+        String[] splitArgs = arguments.split(" ",2);
+        String chatMessage = splitArgs.length > 1 ? splitArgs[1] : splitArgs[0];
+        if(recipients.isEmpty()){
             recipients = controller.getRemotePlayerNames();
         }
         if(controller.getRemotePlayerNames().containsAll(recipients)){
-            controller.sendMessage(new ChatMessage(splitString[1],null, recipients));
+            controller.sendMessage(new ChatMessage(chatMessage,null, recipients));
+            printChatMessage(chatMessage, controller.getLocalPlayerName(), recipients);
         }else{
             System.out.println("Some of the recipients couldn't be found. The message wasn't sent.");
         }

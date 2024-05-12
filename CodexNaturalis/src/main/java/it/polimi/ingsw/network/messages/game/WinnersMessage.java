@@ -6,12 +6,15 @@ import it.polimi.ingsw.network.messages.Status;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Message that contains the winner/s of a game.
+ */
 public class WinnersMessage extends Message {
     private final List<String> winners;
 
     /**
-     * Constructor for the class
-     * @param winners list of the wnners' name
+     * Constructor for the class.
+     * @param winners a list of the winners name.
      */
     public WinnersMessage(List<String> winners) {
         super(Status.DECLARE_WINNER);
@@ -19,10 +22,9 @@ public class WinnersMessage extends Message {
     }
 
     /**
-     * Getter method for the string sent along the message
-     * @return string attribute
+     * @return a list containing all the winners nicknames.
      */
     public List<String> getWinners() {
-        return new ArrayList<String>(winners);
+        return new ArrayList<>(winners);
     }
 }

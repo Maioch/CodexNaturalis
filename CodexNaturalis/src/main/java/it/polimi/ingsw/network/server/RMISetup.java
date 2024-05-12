@@ -11,7 +11,7 @@ import java.rmi.RemoteException;
 public interface RMISetup extends Remote {
     /**
      * Remote method that registers an RMI Interface to enable two-way communication between the server and the client.
-     * @throws RemoteException whenever the method is unable to create a new RMIInterface
+     * @throws RemoteException whenever the method is unable to create a new RMIInterface.
      */
     void register(RMIInterface remoteInterface) throws RemoteException;
 }

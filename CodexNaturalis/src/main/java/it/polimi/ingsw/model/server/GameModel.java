@@ -109,7 +109,10 @@ public class GameModel extends ServerSubject {
      * @return false if there's a duplicate username.
      */
     public synchronized boolean checkNickname(String nickname) {
-        return players.stream().noneMatch(p -> p.getNickname().equals(nickname));
+        return players.stream().noneMatch(p -> p.getNickname().equals(nickname)) &&
+                !nickname.contains(" ") &&
+                !nickname.contains(GameParameters.getDelimiter()) &&
+                !nickname.contains(GameParameters.getCommandChar());
     }
 
     /**
@@ -210,16 +213,16 @@ public class GameModel extends ServerSubject {
      * @return all the cards the player can draw during his draw phase
      */
     public synchronized Map<CardType, List<BasicCard>> getDrawableCards() {
-        return new HashMap<>() {{
-            put(CardType.RESOURCE, new ArrayList<>() {{
-                add(resourceDeck.isEmpty() ? null : resourceDeck.getElementOnTop().backSide());
-                addAll(resourceDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
-            }});
-            put(CardType.GOLD, new ArrayList<>() {{
-                add(goldDeck.isEmpty() ? null : goldDeck.getElementOnTop().backSide());
-                addAll(goldDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
-            }});
-        }};
+        Map<CardType, List<BasicCard>> result = new HashMap<>();
+        result.put(CardType.RESOURCE, new ArrayList<>() {{
+            add(resourceDeck.isEmpty() ? null : resourceDeck.getElementOnTop().backSide());
+            addAll(resourceDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
+        }});
+        result.put(CardType.GOLD, new ArrayList<>() {{
+            add(goldDeck.isEmpty() ? null : goldDeck.getElementOnTop().backSide());
+            addAll(goldDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
+        }});
+        return result;
     }
 
     /**

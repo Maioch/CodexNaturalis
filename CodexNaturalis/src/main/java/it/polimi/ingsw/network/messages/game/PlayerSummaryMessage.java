@@ -8,16 +8,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Message sent at the end of the game to inform the players about their objectives results and final score
+ * Message sent along with all the scores used to compute the winner.
  */
 public class PlayerSummaryMessage extends Message {
     private final Map<Objective, Integer> objectiveScores;
     private final int finalScore;
 
     /**
-     * Constructor for the class
-     * @param objectiveScores a map with each player's objective and the associated score
-     * @param finalScore the final total score of the player
+     * Constructor for the class.
+     * @param objectiveScores a map with each player's objective and the associated score.
+     * @param finalScore the final total score of the player.
      */
     public PlayerSummaryMessage(Map<Objective, Integer> objectiveScores, int finalScore){
         super(Status.PLAYER_FINAL_SCORE);
@@ -26,14 +26,14 @@ public class PlayerSummaryMessage extends Message {
     }
 
     /**
-     * @return the finalScore attribute
+     * @return the final score of a player.
      */
     public int getFinalScore(){
         return finalScore;
     }
 
     /**
-     * @return the objectiveScores attribute
+     * @return the objective scores of a player.
      */
     public Map<Objective, Integer> getObjectiveScores(){
         return new HashMap<>(objectiveScores);

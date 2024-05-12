@@ -86,12 +86,7 @@ public class Objective implements Serializable {
             return false;
         }
         Objective objective = (Objective) object;
-        boolean isSameBonus = (this.bonus == null) ?
-                objective.bonus == null :
-                objective.bonus != null && this.bonus.equals(objective.bonus);
-        return objective.objectiveId == this.objectiveId &&
-                objective.points == this.points &&
-                isSameBonus;
+        return objective.objectiveId == this.objectiveId;
     }
 
     /**
@@ -128,21 +123,6 @@ public class Objective implements Serializable {
             }
             return points * timesFound.values().stream().min(Integer::compareTo).orElse(0);
         }
-
-        /**
-         * Equals method.
-         * @param object Object to check.
-         * @return true if each field is equals to each field of object.
-         */
-        @Override
-        public boolean equals(Object object) {
-            if(object.getClass() != this.getClass()){
-                return false;
-            }
-            ContentBonus objective = (ContentBonus) object;
-            return objective.sequence.equals(this.sequence);
-        }
-
     }
 
     /**
@@ -224,20 +204,6 @@ public class Objective implements Serializable {
                 }
             }
             return points * timesAppeared;
-        }
-
-        /**
-         * Equals method.
-         * @param object Object to check.
-         * @return true if each field is equals to each field of object.
-         */
-        @Override
-        public boolean equals(Object object) {
-            if(object.getClass() != this.getClass()){
-                return false;
-            }
-            PatternBonus objective = (PatternBonus) object;
-            return objective.pattern.equals(this.pattern);
         }
     }
 }

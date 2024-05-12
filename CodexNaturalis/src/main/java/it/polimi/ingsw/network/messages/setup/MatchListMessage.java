@@ -7,15 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Client: requests the available matches.
- * Server: in response, will in the next message, send the available matches.
+ * Message used to handle a show game request.
  */
 public class MatchListMessage extends Message {
     private final Map<Integer,String> matchList;
 
     /**
-     * Constructor for the class
-     * @param matchList the list of games already created by other clients
+     * Constructor for the class.
+     * @param status the status of the message.
+     * @param matchList the list of games already created by other clients.
      */
     public MatchListMessage(Status status, Map<Integer,String> matchList){
         super(status);
@@ -23,8 +23,8 @@ public class MatchListMessage extends Message {
     }
 
     /**
-     * Getter method of the match list
-     * @return hashmap of the match list (where the integer represents its id, and the string is the nickname of the player who created the match)
+     * @return a map of the match list (where the integer represents its id, and the string is the nickname
+     * of the player who created the match).
      */
     public Map<Integer,String> getMatchList(){
         return matchList;

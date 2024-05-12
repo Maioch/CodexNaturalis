@@ -252,6 +252,7 @@ public class Player {
         startCorner.setX(0);
         startCorner.setY(0);
         starterCard.place(startCorner);
+        handCards.removeIf(c -> c.frontSide().equals(starterCard) || c.backSide().equals(starterCard));
         serverSubject.notifyAll(new PlayerBoardMessage(getPlacedCards(), score));
         serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_BACK, getBackOnlyCardHand()));
         serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, getHandCards()));

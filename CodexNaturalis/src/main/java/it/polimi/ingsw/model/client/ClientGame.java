@@ -17,7 +17,7 @@ import java.util.Map;
  * to handle some functionalities in an easier way.
  */
 public class ClientGame {
-    private LocalPlayer localPlayer;
+    private final LocalPlayer localPlayer;
     private final List<RemotePlayer> remotePlayers;
     private List<Objective> commonObjectives;
     private Map<CardType, List<BasicCard>> drawableOptions;
@@ -129,14 +129,6 @@ public class ClientGame {
     public void setCommonObjectives(List<Objective> commonObjectives) {
         this.commonObjectives = new ArrayList<>(commonObjectives);
         eventSubmitter.submit(() -> gameView.showCommonObjectives(getCommonObjectives()));
-    }
-
-    /**
-     * Setter for the local player attribute.
-     * @param localPlayer the local player bound to the client.
-     */
-    public void setLocalPlayer(LocalPlayer localPlayer) {
-        this.localPlayer = localPlayer;
     }
 
     /**

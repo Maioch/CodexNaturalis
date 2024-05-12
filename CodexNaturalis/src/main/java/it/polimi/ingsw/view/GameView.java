@@ -13,7 +13,7 @@ import java.util.Map;
 public interface GameView {
     void notifyLastTurn();
     void requestDraw(Map<CardType, List<BasicCard>> drawableCards);
-    void showChatMessage(String message, String sender, List<String> recipients, Map<String, Content> playersColors);
+    void showChatMessage(String message, String sender, List<String> recipients);
     void requestPlacement(List<CardSides> handCards,
                           List<BasicCard> placedCards,
                           List<BasicCard> validCards,

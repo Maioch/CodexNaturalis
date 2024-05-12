@@ -92,10 +92,7 @@ public class GoldCard extends BasicCard {
         if(this.getClass() != object.getClass())
             return false;
         GoldCard other = (GoldCard) object;
-        boolean isSameBonus = (this.bonus == null) ? other.bonus == null : other.bonus != null && this.bonus.equals(other.bonus);
-        return super.equals(other) &&
-                this.requirements.equals(other.requirements) &&
-                isSameBonus;
+        return super.equals(other);
     }
 
     /**
@@ -126,16 +123,6 @@ public class GoldCard extends BasicCard {
                 .mapToInt(c -> 1)
                 .reduce(0, Integer::sum);
         }
-
-        /**
-        * Equals method.
-        * @param object Object to check.
-        * @return true if object is of class CornerBonus.
-        */
-        @Override
-        public boolean equals(Object object){
-            return this.getClass() == object.getClass();
-        }
     }
 
     /**
@@ -162,19 +149,6 @@ public class GoldCard extends BasicCard {
         @Override
         public int calculate(){
             return points * owner.getPlayerContent().get(object);
-        }
-
-        /**
-        * Equals method.
-        * @param object Object to check.
-        * @return true if each field is equals to each field of object.
-        */
-        @Override
-        public boolean equals(Object object){
-            if(this.getClass() != object.getClass())
-                return false;
-            ObjectBonus other = (ObjectBonus) object;
-            return this.object == other.object;
         }
     }
 }

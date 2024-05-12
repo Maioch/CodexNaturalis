@@ -158,8 +158,10 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         int colorIndex = readFromInput("First, choose a color from the list above by entering the corresponding index: ",
                 (i -> i >= 1 && i <= colors.size()),
                 this::stringToInt) - 1;
-        String nickname = readFromInput("Now enter your nickname: ",
-                (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength()),
+        String nickname = readFromInput(String.format("Now enter your nickname, without including neither '%s' nor '%s': ",
+                        GameParameters.getCommandChar(), GameParameters.getDelimiter()),
+                (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength()
+                        && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
                 this::stringIdentity);
         clientController.sendMessage(new JoinGameMessage(nickname, colors.get(colorIndex), gameId));
     }

@@ -9,17 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A message containing the player's placeable corners and cards
+ * Message containing the player's placeable corners and cards.
  */
 public class ValidPlacementsMessage extends Message {
     private final List<Corner> corners;
     private final List<BasicCard> cards;
 
     /**
-     * Constructor of the message
-     * @param status status of the message
-     * @param cards placeable cards
-     * @param corners placeable corners
+     * Constructor for the message.
+     * @param status status of the message.
+     * @param cards placeable cards.
+     * @param corners placeable corners.
      */
     public ValidPlacementsMessage(Status status, List<BasicCard> cards, List<Corner> corners) {
         super(status);
@@ -28,16 +28,14 @@ public class ValidPlacementsMessage extends Message {
     }
 
     /**
-     * Getter of the placeable corners
-     * @return a list of the placeable corners
+     * @return a list of the placeable corners.
      */
     public List<Corner> getPlaceableCorners(){
         return new ArrayList<>(corners);
     }
 
     /**
-     * Getter of the placeable cards
-     * @return a list of the placeable cards
+     * @return a list of the placeable cards.
      */
     public List<BasicCard> getPlaceableCards(){
         return new ArrayList<>(cards);

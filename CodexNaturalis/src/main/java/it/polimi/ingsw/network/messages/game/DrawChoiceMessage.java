@@ -5,16 +5,16 @@ import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
 /**
- * A message sent by the client, containing the infos regarding the draw choice
+ * Message sent during the draw phase of the game.
  */
 public class DrawChoiceMessage extends Message {
     private final int index;
     private final CardType cardType;
 
     /**
-     * A constructor of the class
-     * @param index integer representing which of the deck's drawable cars is chosen
-     * @param cardType the chosen card deck type
+     * Constructor for the class.
+     * @param index integer representing which of the deck's drawable cars is chosen.
+     * @param cardType the chosen card deck type.
      */
     public DrawChoiceMessage(int index, CardType cardType) {
         super(Status.DRAW);
@@ -23,16 +23,14 @@ public class DrawChoiceMessage extends Message {
     }
 
     /**
-     * Getter of the index
-     * @return the index of the chosen card
+     * @return the index of the chosen card.
      */
     public int getIndex() {
         return index;
     }
 
     /**
-     * Getter of the card type
-     * @return the card type of the chosen card
+     * @return the card type of the chosen card.
      */
     public CardType getCardType() {
         return cardType;

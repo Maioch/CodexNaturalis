@@ -8,15 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A message that sends a certain player's board (placed cards)
+ * Message sent to handle a show board request.
  */
 public class PlayerBoardMessage extends Message {
     private final List<BasicCard> board;
     private final int playerScore;
 
     /**
-     * Constructor of the class
-     * @param board the placed cards of the player
+     * Constructor for the class.
+     * @param board the placed cards of the player.
      */
     public PlayerBoardMessage(List<BasicCard> board, int playerScore){
         super(Status.PLACEMENT_OK);
@@ -25,8 +25,7 @@ public class PlayerBoardMessage extends Message {
     }
 
     /**
-     * A getter method for the board attribute
-     * @return the player's board, as an ArrayList of BasicCards
+     * @return the player's board, as a list of BasicCards.
      */
     public List<BasicCard> getBoard() {
         return new ArrayList<>(board);

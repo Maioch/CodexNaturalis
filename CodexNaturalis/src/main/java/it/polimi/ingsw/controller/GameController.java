@@ -254,13 +254,14 @@ public class GameController implements Runnable{
                             .findFirst().orElse("Missing Sender");
                     int chatMsgLength = chatMessage.getMessage().length();
                     List<String> recipients = chatMessage.getRecipients();
-                    recipients.add(senderNickname);
+                    Message messageToSendBack = new ChatMessage(
+                            chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
+                            senderNickname,
+                            chatMessage.getRecipients());
                     for(String nickname : recipients){
-                        serverSubject.notify(nickname, new ChatMessage(
-                                chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
-                                senderNickname,
-                                chatMessage.getRecipients()));
+                        serverSubject.notify(nickname, messageToSendBack);
                     }
+                    serverSubject.notify(senderNickname, messageToSendBack);
                 }
                 if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
                     labeledMessage = null;

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A message used when the client wants to chat
+ * Message used for a chat usage request.
  */
 public class ChatMessage extends Message{
     private final String message;
@@ -15,10 +15,10 @@ public class ChatMessage extends Message{
     private final List<String> recipients; //might be null
 
     /**
-     * Constructor of the chat message
-     * @param message the string content
-     * @param sender the sender's (nick)name
-     * @param recipients the recipients' (nick)names
+     * Constructor for the class.
+     * @param message the string content.
+     * @param sender the sender's (nick)name.
+     * @param recipients the recipients' (nick)names.
      */
     public ChatMessage(String message, String sender, List<String> recipients){
         super(Status.CHAT);
@@ -28,21 +28,21 @@ public class ChatMessage extends Message{
     }
 
     /**
-     * @return the message attribute
+     * @return the chat message.
      */
     public String getMessage(){
         return message;
     }
 
     /**
-     * @return the sender attribute
+     * @return the message sender.
      */
     public String getSender(){
         return sender;
     }
 
     /**
-     * @return the recipients attribute, if present
+     * @return the recipients attribute, if present.
      */
     public List<String> getRecipients(){
         return new ArrayList<>(recipients);

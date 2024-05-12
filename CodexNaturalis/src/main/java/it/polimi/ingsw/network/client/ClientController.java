@@ -4,6 +4,7 @@ import it.polimi.ingsw.model.client.ClientGame;
 import it.polimi.ingsw.model.client.ClientPlayer;
 import it.polimi.ingsw.model.client.LocalPlayer;
 import it.polimi.ingsw.model.client.RemotePlayer;
+import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
@@ -19,6 +20,7 @@ import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.SetupView;
 
+import java.util.Map;
 import java.util.List;
 
 /**
@@ -41,36 +43,68 @@ public class ClientController extends MessageHandler{
         this.eventSubmitter = eventSubmitter;
     }
 
+    /**
+     * Method that lets the client handler send a specified message.
+     * @param message the message the client is sending.
+     */
     public void sendMessage(Message message){
         networkHandler.update(message);
     }
 
+    /**
+     * Setter for the game view attribute.
+     * @param gameView the interface associated to the client.
+     */
     public synchronized void setGameView(GameView gameView){
         this.gameView = gameView;
     }
 
+    /**
+     * Setter for the network handler attribute.
+     * @param networkHandler the handler associated to the client.
+     */
     public void setNetworkHandler(NetworkHandler networkHandler){
         this.networkHandler = networkHandler;
     }
 
+    /**
+     * @return the client's player nickname.
+     */
     public String getLocalPlayerName(){
         return game.getLocalPlayer().getNickname();
     }
 
+    /**
+     * @return all other player's nicknames.
+     */
     public List<String> getRemotePlayerNames(){
         return game.getRemotePlayers().stream().map(RemotePlayer::getNickname).toList();
     }
 
+    /**
+     * @return the client's player current board.
+     */
     public List<BasicCard> getLocalPlayerBoard(){
         return game.getLocalPlayer().getPlacedCards();
     }
 
+    /**
+     * @param nickname the nickname of a remote player.
+     * @return the specified player's board.
+     */
     public List<BasicCard> getRemotePlayerBoard(String nickname){
         return game.getRemotePlayers().stream()
                 .filter(p -> p.getNickname()
                         .equals(nickname)).findFirst().orElseThrow().getPlacedCards();
     }
 
+    public Map<String, Content> getPlayerColors(){
+        return game.getPlayersColors();
+    }
+
+    /**
+     * Main method of the class, used to differentiate between all the possible messages the client can send.
+     */
     @Override
     public void run(){
         while(true){
@@ -131,7 +165,8 @@ public class ClientController extends MessageHandler{
                         if (labeledMessage.message() instanceof PlayerMessage playerMessage) {
                             boolean isPlayerMissing = game.getRemotePlayers().stream()
                                     .map(RemotePlayer::getNickname)
-                                    .noneMatch(n -> n.equals(playerMessage.getNickname()));
+                                    .noneMatch(n -> n.equals(playerMessage.getNickname())) &&
+                                    !getLocalPlayerName().equals(playerMessage.getNickname());
                             if (isPlayerMissing) {
                                 game.addRemotePlayer(new RemotePlayer(
                                         playerMessage.getNickname(), playerMessage.getColor()));
@@ -186,7 +221,9 @@ public class ClientController extends MessageHandler{
                     }
                     case PLAYER_HAND_BACK -> {
                         if (labeledMessage.message() instanceof CardHandMessage cardHandMessage) {
-                            game.getPlayerWithTurn().setHandCards(cardHandMessage.getCardHand(), true);
+                            if(game.getPlayerWithTurn() != game.getLocalPlayer()){
+                                game.getPlayerWithTurn().setHandCards(cardHandMessage.getCardHand(), true);
+                            }
                         }
                     }
                     case DRAW, INVALID_DRAW -> {
@@ -214,8 +251,7 @@ public class ClientController extends MessageHandler{
                             eventSubmitter.submit(() -> gameView.showChatMessage(
                                     chatMessage.getMessage(),
                                     chatMessage.getSender(),
-                                    chatMessage.getRecipients(),
-                                    game.getPlayersColors()));
+                                    chatMessage.getRecipients()));
                         }
                     }
                 }

@@ -1,8 +1,8 @@
 package it.polimi.ingsw.network.messages;
 
 /**
- * Enum that represents every possible message. Each message is sent by both the server and the client
- * Each value notifies the receiver about the next message's contents
+ * Enum that represents every possible message. Each message is sent by both the server and the client.
+ *
  * @author Guglielmo Gatti, Andrea Fidanza, Marco Maiocchi
  */
 public enum Status {
@@ -137,17 +137,17 @@ public enum Status {
     DECLARE_WINNER(""),
 
     /**
-     * Client: a player left the game voluntarily, Server: the next message will contain the nickname of the player who left
+     * Client: a player left the game voluntarily, Server: the next message will contain the nickname of the player who left.
      */
     PLAYER_DISCONNECTED(""),
 
     /**
-     * Client: sends a chat message (which contains the sender, recipient and, naturally, the content of the message itself)
+     * Client: sends a chat message (which contains the sender, recipient and, naturally, the content of the message itself).
      */
     CHAT(""),
 
     /**
-     * Message sent when an error occurs
+     * Message sent when an error occurs.
      */
     ERROR("");
 

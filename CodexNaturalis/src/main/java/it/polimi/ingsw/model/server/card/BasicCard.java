@@ -231,13 +231,6 @@ public class BasicCard implements Serializable {
         if(object == null || this.getClass() != object.getClass())
             return false;
         BasicCard other = (BasicCard) object;
-        other.resources.sort(Comparator.comparingInt(Enum::ordinal));
-        return this.cardId == other.cardId &&
-                this.color == other.color &&
-                this.points == other.points &&
-                this.resources.stream()
-                        .sorted(Comparator.comparingInt(Enum::ordinal)).toList()
-                        .equals(other.resources) &&
-                this.corners.equals(other.corners);
+        return this.cardId == other.cardId;
     }
 }

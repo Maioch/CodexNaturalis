@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
-import it.polimi.ingsw.network.messages.Status;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

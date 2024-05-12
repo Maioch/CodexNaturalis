@@ -8,15 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Message sent by the client along with a list of card sides (e.g. everytime the server shows to the player his hand)
+ * Message sent for a player's hand cards request.
  */
 public class CardHandMessage extends Message {
     private final List<CardSides> cardHand;
 
     /**
-     * Constructor for the class
-     * @param status the message sent
-     * @param CardHand the cards sent along the message
+     * Constructor for the class.
+     * @param status the message sent.
+     * @param CardHand the cards sent along the message.
      */
     public CardHandMessage(Status status, List<CardSides> CardHand) {
         super(status);
@@ -24,8 +24,7 @@ public class CardHandMessage extends Message {
     }
 
     /**
-     * Getter method for the cards list
-     * @return cardHand attribute
+     * @return the player's hand cards.
      */
     public List<CardSides> getCardHand() {
         return new ArrayList<>(){{

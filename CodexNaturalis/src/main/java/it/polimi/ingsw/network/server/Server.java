@@ -18,16 +18,15 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
-* Class that acts as interface on the internet. It contains the main method for the server
+* Class that acts as interface on the internet. It contains the main method for the server.
 *
 * @author Andrea Fidanza E NESSUN ALTRO
 */
 public class Server {
 
     /**
-     * Main method, entry point for the server. It sets up the message handler
-     * and starts listening on the two sockets corresponding to the tcp and rmi connections.
-     * Each accepted connection is handled by a network handler
+     * Main method, entry point for the server. It sets up the message handler and starts listening on the two sockets
+     * corresponding to the tcp and rmi connections. Each accepted connection is handled by a network handler.
      */
     public static void main(String[] args) throws RemoteException{
         GamesManager games = new GamesManager();
