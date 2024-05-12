@@ -82,14 +82,9 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void requestPlacement(List<CardSides> handCards,
-                          List<BasicCard> placedCards,
-                          List<BasicCard> validCards,
-                          List<Corner> validCorners){
-        System.out.println("These are your placed card:");
-        System.out.println(placedCards);
-        int x = placedCards.getLast().getCorner(Location.BL).getX();
-        int y = placedCards.getLast().getCorner(Location.BL).getY();
-        System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
+                                 List<BasicCard> placedCards,
+                                 List<BasicCard> validCards,
+                                 List<Corner> validCorners){
         System.out.println("These are your cards:");
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList()));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList()));
@@ -100,15 +95,20 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(validCards.stream()
                 .limit(GameParameters.getNumberOfResourceCardsInHand() + GameParameters.getNumberOfGoldCardsInHand())
                 .toList()));
+        int cardIndex = readFromInput("Type which card you want to place (number starting from 1): ",
+                (i -> i >= 1 && i <= validCards.size()),
+                this::stringToInt) - 1;
+        System.out.println("These are your placed card:");
+        System.out.println(placedCards);
+        int x = placedCards.getLast().getCorner(Location.BL).getX();
+        int y = placedCards.getLast().getCorner(Location.BL).getY();
+        System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
         System.out.println("These are the valid corner's coordinates that you can choose:");
         List<Point> validPositions = validCorners.stream().map(c -> new Point(c.getX(), c.getY())).toList();
         for(int i = 0; i < validPositions.size(); i++){
             System.out.printf("%d (%f, %f)\n", i + 1, validPositions.get(i).getX(),validPositions.get(i).getY());
         }
         System.out.println();
-        int cardIndex = readFromInput("Type which card you want to place (number starting from 1): ",
-                (i -> i >= 1 && i <= validCards.size()),
-                this::stringToInt) - 1;
         int cornerIndex = readFromInput("Type the index of the coordinates where you want to place the card: ",
                 (i -> i >= 1 && i <= validPositions.size()),
                 this::stringToInt) - 1;
@@ -151,7 +151,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         CardSides starterCard = playerCards.getFirst();
         System.out.printf("These are your %d cards\n",
                 GameParameters.getNumberOfResourceCardsInHand()
-                + GameParameters.getNumberOfGoldCardsInHand());
+                        + GameParameters.getNumberOfGoldCardsInHand());
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList()));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList()));
         System.out.println("This is your starter card");

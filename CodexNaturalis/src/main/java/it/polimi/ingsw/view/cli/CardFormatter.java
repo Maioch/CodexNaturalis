@@ -27,15 +27,8 @@ public class CardFormatter {
         int minY = viewY - boardRadius;
         int maxX = viewX + boardRadius;
         int maxY = viewY + boardRadius;
-        int coordinateNumberWidth = 2;
-        sb.append(" ".repeat(coordinateNumberWidth));
-        for(int i = minX; i < maxX; i++){
-            sb.append(String.format("%" + coordinateNumberWidth + "d", i))
-                    .append("  ".repeat(cardLength - coordinateNumberWidth));
-        }
-        sb.append("\n");
-        for(int y = minY; y <= maxY; y++){
-            sb.append(String.format("%" + coordinateNumberWidth + "d", y));
+        int coordinateNumberWidth = 3;
+        for(int y = maxY; y >= minY; y--){
             int currentY = y;
             List<BasicCard> currentCards = placedCards.stream()
                     .filter(b -> b.getCorner(Location.BL).getY() == currentY &&
@@ -47,6 +40,12 @@ public class CardFormatter {
                 cardStrings.add(getCardString(card).split("\n"));
             }
             for(int i = 0; i < cardHeight; i++){
+                if(i + 1 == cardHeight * 4 / 5){
+                    sb.append(String.format("%" + coordinateNumberWidth + "d", y));
+                }
+                else{
+                    sb.append(" ".repeat(coordinateNumberWidth));
+                }
                 for(int x = minX; x <= maxX; x++){
                     int currentX = x;
                     Optional<BasicCard> currentCard = currentCards.stream()
@@ -61,6 +60,12 @@ public class CardFormatter {
                 sb.append("\n");
             }
         }
+        sb.append(" ".repeat(coordinateNumberWidth));
+        for(int i = minX; i <= maxX; i++){
+            sb.append(String.format("%" + coordinateNumberWidth + "d", i))
+                    .append(" ".repeat(cardLength * 2 - coordinateNumberWidth));
+        }
+        sb.append("\n");
         return sb.toString();
     }
 
