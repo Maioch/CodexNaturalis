@@ -72,6 +72,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                             RMIHandler rmiHandler = new RMIHandler(clientController);
                             clientController.setNetworkHandler(rmiHandler);
                             rmiSetup.register(rmiHandler);
+                            System.out.println(GameParameters.getTitle());
                             clientController.sendMessage(new Message(Status.REQUEST_GAMES));
                             isConnected = true;
                         } catch (IOException e) {

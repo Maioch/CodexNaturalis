@@ -14,8 +14,8 @@ public enum Content {
     PURPLE("\u001b[45m  \u001b[m"),
     WHITE("\u001b[47;1m  \u001b[m"),
     PEN("^^"),
-    PAPER("^^"),
-    INK("^^"),
+    PAPER("[]"),
+    INK("()"),
     EMPTY("\u001b[m  \u001b[m");
 
     private final String symbol;

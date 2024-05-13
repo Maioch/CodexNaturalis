@@ -164,11 +164,11 @@ public class CardFormatter {
             return "no bonus.";
         return switch (bonusNode.get("type").asText()){
             case "CORNER" -> "corner.";
-            case "OBJECT" -> "object -> " + bonusNode.get("object").asText();
+            case "OBJECT" -> "object -> " + Content.valueOf(bonusNode.get("object").asText()).getSymbol();
             case "CONTENT" -> {
-                List<Content> contents = new ArrayList<>() {{
+                List<String> contents = new ArrayList<>() {{
                     for (JsonNode subNode : bonusNode.get("content")) {
-                        add(Content.valueOf(subNode.asText()));
+                        add(Content.valueOf(subNode.asText()).getSymbol());
                     }
                 }};
                 yield "*all* of the following content types appear -> " + contents;
