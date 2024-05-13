@@ -246,6 +246,21 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @SuppressWarnings("SlowListContainsAll")
     private void sendChatMessage(String arguments){
+        List<String> recipients = extractRecipients(arguments);
+        String[] splitArgs = arguments.split(" ",2);
+        String chatMessage = !recipients.isEmpty() ? splitArgs[1] : arguments;
+        if(recipients.isEmpty()){
+            recipients = controller.getRemotePlayerNames();
+        }
+        if(controller.getRemotePlayerNames().containsAll(recipients)){
+            controller.sendMessage(new ChatMessage(chatMessage,null, recipients));
+            printChatMessage(chatMessage, controller.getLocalPlayerName(), recipients);
+        }else{
+            System.out.println("Some of the recipients couldn't be found. The message wasn't sent.");
+        }
+    }
+
+    private List<String> extractRecipients(String arguments){
         List<String> recipients = new ArrayList<>();
         int indexOfDelimiter = 0;
         while(indexOfDelimiter != -1){
@@ -258,17 +273,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                 indexOfDelimiter = indexOfNextDelimiter;
             }
         }
-        String[] splitArgs = arguments.split(" ",2);
-        String chatMessage = splitArgs.length > 1 ? splitArgs[1] : splitArgs[0];
-        if(recipients.isEmpty()){
-            recipients = controller.getRemotePlayerNames();
-        }
-        if(controller.getRemotePlayerNames().containsAll(recipients)){
-            controller.sendMessage(new ChatMessage(chatMessage,null, recipients));
-            printChatMessage(chatMessage, controller.getLocalPlayerName(), recipients);
-        }else{
-            System.out.println("Some of the recipients couldn't be found. The message wasn't sent.");
-        }
+        return recipients;
     }
 
     private void showBoard(String arguments){
@@ -297,6 +302,5 @@ public class GameCLI extends AbstractCLI implements GameView {
             }
             default -> System.out.println("You've entered too many arguments for this command!");
         }
-
     }
 }

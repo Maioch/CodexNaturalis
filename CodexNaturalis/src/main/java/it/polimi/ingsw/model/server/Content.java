@@ -8,7 +8,15 @@ package it.polimi.ingsw.model.server;
  * @author Marco Maiocchi
  */
 public enum Content {
-    RED("??"), GREEN("??"), BLUE("??"), PURPLE("??"), WHITE("??"), PEN("??"), PAPER("??"), INK("??"), EMPTY("  ");
+    RED("\u001B[41m  \u001B[m"),
+    GREEN("\u001b[42m  \u001b[m"),
+    BLUE("\u001b[44m  \u001b[m"),
+    PURPLE("\u001b[45m  \u001b[m"),
+    WHITE("\u001b[47;1m  \u001b[m"),
+    PEN("^^"),
+    PAPER("^^"),
+    INK("^^"),
+    EMPTY("\u001b[m  \u001b[m");
 
     private final String symbol;
 

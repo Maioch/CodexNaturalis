@@ -47,7 +47,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             int port = readFromInput("Now enter the Port of the server: ",
                     (s -> s >= 0 && s <= 65535),
                     this::stringToInt);
-            int protocol = readFromInput("Which protocol would you like to use? Enter 1 for TCP or 2 for RMI.",
+            int protocol = readFromInput("Enter the protocol you would like to use (1 for TCP, 2 for RMI): ",
                     (s -> s >= 1 && s <= 2),
                     this::stringToInt);
             switch (protocol) {
@@ -58,6 +58,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                         TCPHandler tcpHandler = new TCPHandler(socket, clientController);
                         clientController.setNetworkHandler(tcpHandler);
                         new Thread(tcpHandler).start();
+                        System.out.println(GameParameters.getTitle());
                         clientController.sendMessage(new Message(Status.REQUEST_GAMES));
                         isConnected = true;
                     } catch (IOException e) {
@@ -102,7 +103,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             System.out.printf("Match %7d: %s\n", entry.getKey(), entry.getValue());
         }
         System.out.println();
-        int id = readFromInput("Enter the ID of the match you want to join (0 for a new match, -1 to refresh the match list)",
+        int id = readFromInput("Enter the ID of the match you want to join (0 for a new match, -1 to refresh the match list): ",
                 (i -> matchList.containsKey(i) || i == 0 || i == -1),
                 this::stringToInt);
         Message messageToSend = id == -1 ? new Message(Status.REQUEST_GAMES) : new IntegerMessage(Status.REQUEST_COLORS, id);
@@ -152,7 +153,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     public void showJoinGameDialog(List<Content> colors, int gameId){
         System.out.println("You are trying to join a match.");
         for(int i = 0; i < colors.size(); i++){
-            System.out.print((i + 1) + ". " + textColors.get(colors.get(i)));
+            System.out.printf("%d. %s%s%s", (i + 1), textColors.get(colors.get(i)),
+                    colors.get(i).toString().toLowerCase(), textColors.get(Content.EMPTY));
             System.out.println(colors.get(i) != colors.getLast() ? ", " : ".");
         }
         int colorIndex = readFromInput("First, choose a color from the list above by entering the corresponding index: ",
@@ -203,7 +205,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                     Desktop.getDesktop().browse(url);
                 }catch(URISyntaxException | IOException | UnsupportedOperationException e){
                     System.out.printf(
-                            "Couldn't launch the browser. please open it yourself and navigate to %s \n",GameParameters.getRulesURL());
+                            "Couldn't launch the browser. Please open it yourself and navigate to %s \n",GameParameters.getRulesURL());
                 }
             }
             case "ABOUT" ->  System.out.println(

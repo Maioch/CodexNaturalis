@@ -1297,8 +1297,8 @@
         "type" : "PATTERN",
         "pattern" : [
           {"color": "RED","x" : 0,"y" : 0},
-          {"color": "RED","x" : 0,"y" : -1},
-          {"color": "GREEN","x" : 1,"y" : -2}
+          {"color": "RED","x" : 0,"y" : -2},
+          {"color": "GREEN","x" : 1,"y" : -3}
         ]
       }
     },
@@ -1310,7 +1310,7 @@
         "pattern" : [
           {"color": "PURPLE","x" : 0,"y" : 0},
           {"color": "GREEN","x" : 1,"y" : 1},
-          {"color": "GREEN","x" : 1,"y" : 2}
+          {"color": "GREEN","x" : 1,"y" : 3}
         ]
       }
     },
@@ -1321,8 +1321,8 @@
         "type" : "PATTERN",
         "pattern" : [
           {"color": "BLUE","x" : 0,"y" : 0},
-          {"color": "BLUE","x" : 0,"y" : 1},
-          {"color": "RED","x" : 1,"y" : 2}
+          {"color": "BLUE","x" : 0,"y" : 2},
+          {"color": "RED","x" : 1,"y" : 3}
         ]
       }
     },
@@ -1334,7 +1334,7 @@
         "pattern" : [
           {"color": "BLUE","x" : 0,"y" : 0},
           {"color": "PURPLE","x" : 1,"y" : -1},
-          {"color": "PURPLE","x" : 1,"y" : -2}
+          {"color": "PURPLE","x" : 1,"y" : -3}
         ]
       }
     },

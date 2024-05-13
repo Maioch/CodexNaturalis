@@ -11,16 +11,12 @@ import it.polimi.ingsw.model.server.card.corner.Location;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CardFormatter {
     private final static int cardLength = 7;
     private final static int cardHeight = 5; //DO NOT CHANGE
     private final static int boardRadius = 4;
-    private final static Map<Content, String> contentRepresentation = new HashMap<>(){{
-        for(Content c : Content.values()){
-            put(c, c.getSymbol());
-        }
-    }};
 
     public static String getPlayerBoardString(List<BasicCard> placedCards, int viewX, int viewY){
         StringBuilder sb = new StringBuilder();
@@ -83,12 +79,47 @@ public class CardFormatter {
      */
     public static String getCardsInfoString(List<BasicCard> cards, boolean areBackSides){
         StringBuilder sb = new StringBuilder();
-        int formatSpaceLength = -45;
-        for(int i = 0; i < cardHeight; i++) {
-            for (BasicCard card : cards) {
-                sb.append(String.format("%" + formatSpaceLength + "s", getCardString(card).split("\n")[i]));
+        int printedContentLength = Content.EMPTY.getSymbol().length() - 2;
+        int formatSpaceLength = 45;
+        List<List<String>> cardStrings = new ArrayList<>(){{
+            for(BasicCard card : cards){
+                List<String> cardInfo = Arrays.stream(getCardString(card)
+                        .split("\n"))
+                        .collect(Collectors.toCollection(ArrayList::new));
+                cardInfo.add(String.format("%" + (-formatSpaceLength) + "s", "Points: " +
+                        (areBackSides ? 0 : getNativePoints(card.getCardId()))));
+                cardInfo.add(String.format("%" + (-formatSpaceLength) + "s", "Requirements: " +
+                        (areBackSides ? "[]" : card.getRequirements().entrySet().stream().filter(e -> e.getValue() != 0).toList())));
+                cardInfo.add(String.format("%" + (-formatSpaceLength) + "s", "Bonus type: " +
+                        (areBackSides ? "no bonus." : getBonusInfo(card.getCardId()))));
+                add(cardInfo);
+            }
+        }};
+        for(int i = 0; i < cardStrings.getFirst().size(); i++){
+            for(List<String> stringList : cardStrings){
+                String string = stringList.get(i);
+                StringBuilder realLengthStringBuilder = new StringBuilder(string);
+                for(Content content : Content.values()){
+                    realLengthStringBuilder.append(string.replaceAll("/" + content.getSymbol() + "/g", ""))
+                            .append("  ");//TODO: PARAMETRIZZAREEEEEEEE
+                }
+                sb.append(string);
+                sb.append(" ".repeat(Math.max(formatSpaceLength - realLengthStringBuilder.toString().length(), 0)));
             }
             sb.append("\n");
+        }
+        /*
+        for(BasicCard card : cards){
+            sb.append(String.format("%" + (formatSpaceLength - printedContentLength * 2) + "s", getCardString(card).split("\n")[0]));
+        }
+        for(int i = 0; i < cardHeight - 2; i++){
+            for(BasicCard card : cards){
+                sb.append(String.format("%" + (formatSpaceLength - printedContentLength * (cardLength - 2))+ "s", getCardString(card).split("\n")[i]));
+            }
+            sb.append("\n");
+        }
+        for(BasicCard card : cards){
+            sb.append(String.format("%" + (formatSpaceLength - printedContentLength * 2) + "s", getCardString(card).split("\n")[cardHeight - 1]));
         }
         for(BasicCard card : cards){
             sb.append(String.format("%" + formatSpaceLength + "s", "Points: " +
@@ -104,7 +135,7 @@ public class CardFormatter {
             sb.append(String.format("%" + formatSpaceLength + "s", "Bonus type: " +
                     (areBackSides ? "no bonus." : getBonusInfo(card.getCardId()))));
         }
-        sb.append("\n");
+        sb.append("\n");*/
         return sb.toString();
     }
 
@@ -120,17 +151,35 @@ public class CardFormatter {
         Map<Location, String> cornerString = new HashMap<>(){{
             for(Location loc : Location.values()){
                 Corner currentCorner = card.getAllCorners().stream().filter(c -> c.getLocation() == loc).findFirst().orElseThrow();
-                put(loc, contentRepresentation.get((currentCorner.getVisibility()) ? currentCorner.getContent() : Content.EMPTY));
+                put(loc, currentCorner.getVisibility() ? currentCorner.getContent().getSymbol() : Content.EMPTY.getSymbol());
             }
         }};
-        sb.append(String.format(" |%s%s%s| \n", cornerString.get(Location.TL), empty.repeat(cardLength - 4 - 1), cornerString.get(Location.TR)))
-                .append(String.format(" |%s| \n", empty.repeat(cardLength - 2 - 1)))
-                .append(String.format(" |%s%s%s| \n", cornerString.get(Location.BL), empty.repeat(cardLength - 4 - 1), cornerString.get(Location.BR)));
-        int offset = cardLength * 2 + cardLength;
-        for(int i = 0; i < cardHeight - 2; i++){
-            sb.insert(offset, (i < card.getResources().size()) ? contentRepresentation.get(card.getResources().get(i)) : empty);
-            offset += cardLength * 2 + 1;
+        List<String> resources = new ArrayList<>(){{
+            List<Content> cardResources = card.getResources();
+            for(int i = 0; i < cardHeight - 2; i++){
+                add(i < cardResources.size() ? cardResources.get(i).getSymbol() : empty);
+            }
+        }};
+        int emptyLengthWithCorners = (cardLength - 5) / 2;
+        int emptyLengthWithoutCorners = (cardLength - 3) / 2;
+        sb.append(String.format(" |%s%s%s%s%s| \n",
+                cornerString.get(Location.TL),
+                empty.repeat(emptyLengthWithCorners),
+                resources.getFirst(),
+                empty.repeat(emptyLengthWithCorners),
+                cornerString.get(Location.TR)));
+        for(int i = 0; i < cardHeight - 4; i++) {
+            sb.append(String.format(" |%s%s%s| \n",
+                    empty.repeat(emptyLengthWithoutCorners),
+                    resources.get(i + 1),
+                    empty.repeat(emptyLengthWithoutCorners)));
         }
+        sb.append(String.format(" |%s%s%s%s%s| \n",
+                cornerString.get(Location.BL),
+                empty.repeat(emptyLengthWithCorners),
+                resources.getLast(),
+                empty.repeat(emptyLengthWithCorners),
+                cornerString.get(Location.BR)));
         sb.append(empty).append("‾‾".repeat(cardLength - 2)).append(empty).append("\n");
         return sb.toString();
     }
@@ -153,30 +202,39 @@ public class CardFormatter {
                         add(Content.valueOf(subNode.asText()));
                     }
                 }};
-                yield "*all* of the following content types appear -> " + contents.toString();
+                yield "*all* of the following content types appear -> " + contents;
             }
             case "PATTERN" -> {
                 StringBuilder sb = new StringBuilder();
-                /*sb.append("the following pattern appears -> \n");
+                sb.append("the following pattern appears -> \n");
                 int minX = bonusNode.get("pattern").get(0).get("x").asInt();
+                int maxX = bonusNode.get("pattern").get(0).get("x").asInt();
+                int minY = bonusNode.get("pattern").get(0).get("y").asInt();
                 int maxY = bonusNode.get("pattern").get(0).get("y").asInt();
-                LinkedHashMap<Point, Content> = new LinkedHashMap<>();
-                for(JsonNode subNode : bonusNode.get("pattern")){
+                for(JsonNode subNode : bonusNode.get("pattern")) {
                     minX = Math.min(subNode.get("x").asInt(), minX);
-                    maxY = Math.max(subNode.get("y").asInt(), minY);
+                    maxX = Math.max(subNode.get("x").asInt(), maxX);
+                    minY = Math.min(subNode.get("y").asInt(), minY);
+                    maxY = Math.max(subNode.get("y").asInt(), maxY);
                 }
-                int prevX = - minX;
-                int prevY = maxY;
-                for(JsonNode subNode : bonusNode.get("pattern")){
-                    int curY = prevY - subNode.get("y").asInt();
-                    int curX = prevX - subNode.get("x").asInt();
-                    sb.append("\n".repeat(curY));
-                    sb.append("  ".repeat(curX));
-                    sb.append(Content.valueOf(subNode.get("color").asText()).getSymbol());
-                    prevY = curY;
-                    prevX = curX;
+                Map<Point, Content> patternMap = new HashMap<>();
+                for(JsonNode subNode : bonusNode.get("pattern")) {
+                    patternMap.put(new Point(subNode.get("x").asInt(),subNode.get("y").asInt()),
+                            Content.valueOf(subNode.get("color").asText()));
                 }
-                sb.append("\n");*/
+                Point prevPoint = new Point(minX,maxY);
+                for(int y = maxY; y >= minY; y--){
+                    for(int x = minX; x <= maxX; x++){
+                        Point curPoint = new Point(x, y);
+                        if(patternMap.containsKey(curPoint)){
+                            Point relativePoint = new Point(curPoint.x - prevPoint.x, prevPoint.y - curPoint.y);
+                            sb.append("\n".repeat(relativePoint.y));
+                            sb.append("  ".repeat(curPoint.x - minX));
+                            sb.append(patternMap.get(curPoint).getSymbol());
+                            prevPoint = curPoint;
+                        }
+                    }
+                }
                 yield sb.toString();
             }
             default -> "no bonus.";

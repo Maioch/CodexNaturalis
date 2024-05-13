@@ -140,6 +140,10 @@ public class GameParameters {
     public static String getRulesURL() { return getParameter("RulesURL").asText(); }
 
 
+    public static String getTitle(){
+        return getParameter("GameTitle").asText();
+    }
+
     /**
      * Gets the specified parameter read on the json file.
      * @param parameter the parameter to retrieve from the file.
