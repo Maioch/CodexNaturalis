@@ -80,7 +80,7 @@ public class CardFormatter {
     public static String getCardsInfoString(List<BasicCard> cards, boolean areBackSides){
         StringBuilder sb = new StringBuilder();
         int printedContentLength = Content.EMPTY.getSymbol().length() - 2;
-        int formatSpaceLength = 45;
+        int formatSpaceLength = 70;
         List<List<String>> cardStrings = new ArrayList<>(){{
             for(BasicCard card : cards){
                 List<String> cardInfo = Arrays.stream(getCardString(card)
@@ -98,44 +98,13 @@ public class CardFormatter {
         for(int i = 0; i < cardStrings.getFirst().size(); i++){
             for(List<String> stringList : cardStrings){
                 String string = stringList.get(i);
-                StringBuilder realLengthStringBuilder = new StringBuilder(string);
-                for(Content content : Content.values()){
-                    realLengthStringBuilder.append(string.replaceAll("/" + content.getSymbol() + "/g", ""))
-                            .append("  ");//TODO: PARAMETRIZZAREEEEEEEE
-                }
                 sb.append(string);
-                sb.append(" ".repeat(Math.max(formatSpaceLength - realLengthStringBuilder.toString().length(), 0)));
+                sb.append(" ".repeat(i < cardHeight ?
+                         formatSpaceLength - cardLength * 2 :
+                         Math.max(formatSpaceLength - string.length(), 0)));
             }
             sb.append("\n");
         }
-        /*
-        for(BasicCard card : cards){
-            sb.append(String.format("%" + (formatSpaceLength - printedContentLength * 2) + "s", getCardString(card).split("\n")[0]));
-        }
-        for(int i = 0; i < cardHeight - 2; i++){
-            for(BasicCard card : cards){
-                sb.append(String.format("%" + (formatSpaceLength - printedContentLength * (cardLength - 2))+ "s", getCardString(card).split("\n")[i]));
-            }
-            sb.append("\n");
-        }
-        for(BasicCard card : cards){
-            sb.append(String.format("%" + (formatSpaceLength - printedContentLength * 2) + "s", getCardString(card).split("\n")[cardHeight - 1]));
-        }
-        for(BasicCard card : cards){
-            sb.append(String.format("%" + formatSpaceLength + "s", "Points: " +
-                    (areBackSides ? 0 : getNativePoints(card.getCardId()))));
-        }
-        sb.append("\n");
-        for(BasicCard card : cards){
-            sb.append(String.format("%" + formatSpaceLength + "s", "Requirements: " +
-                    (areBackSides ? "[]" : card.getRequirements().entrySet().stream().filter(e -> e.getValue() != 0).toList())));
-        }
-        sb.append("\n");
-        for(BasicCard card : cards){
-            sb.append(String.format("%" + formatSpaceLength + "s", "Bonus type: " +
-                    (areBackSides ? "no bonus." : getBonusInfo(card.getCardId()))));
-        }
-        sb.append("\n");*/
         return sb.toString();
     }
 
