@@ -108,10 +108,16 @@ public class PlayerTest {
                 new ServerSubject()
         );
 
-        Corner fakeCorner = new Corner(Content.WHITE, Location.TR);
+        int x = 0;
+        int y = 0;
 
         for(int i = GameParameters.getStartCardIndex(CardType.RESOURCE); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
+            Corner fakeCorner = new Corner(Content.WHITE, Location.TR);
+            fakeCorner.setX(x);
+            fakeCorner.setY(y);
             playerTest.placeCard(CardBuilder.buildCard(i).backSide(), fakeCorner);
+            x++;
+            y++;
         }
 
         assertEquals(12, playerTest.awardObjectivePoints().get(0));
@@ -140,8 +146,15 @@ public class PlayerTest {
         for(BasicCard card : resourceCards){
             assertTrue(playerTest.checkRequirements(card));
         }
+        int x = 0;
+        int y = 0;
         for(BasicCard redCard : resourceCards.stream().filter(c -> c.getColor() == Content.RED).toList()){
-            playerTest.placeCard(redCard, new Corner(Content.WHITE, Location.TR));
+            Corner corner = new Corner(Content.WHITE, Location.TR);
+            corner.setX(x);
+            corner.setY(y);
+            playerTest.placeCard(redCard, corner);
+            x++;
+            y++;
         }
         for(BasicCard redGold : goldCards.stream().filter(c -> {
             for(Content content : c.getRequirements().keySet()){

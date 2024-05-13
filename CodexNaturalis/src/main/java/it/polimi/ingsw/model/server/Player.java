@@ -178,6 +178,11 @@ public class Player {
                 .toList();
         //checking that the corners in which the card will be placed aren't empty
         //(and, by doing that, checking that there aren't already two cards placed over the same coordinates)
+        return getAllCoveredCorners(corner, cornersToCheck).isEmpty();
+    }
+
+    public List<Corner> getAllCoveredCorners(Corner corner, List<Corner> cornersToCheck){
+        List<Corner> corners = new ArrayList<>();
         int offsetX = corner.getLocation() == Location.TR || corner.getLocation() == Location.BR ? 1 : -1;
         int offsetY = corner.getLocation() == Location.TR || corner.getLocation() == Location.TL ? 1 : -1;
         for(int x = 0; x < 2; x++){
@@ -185,15 +190,16 @@ public class Player {
                 //we have to save the values into separate variables because we need them to be final
                 int currentX = x;
                 int currentY = y;
-                if(cornersToCheck.stream()
-                        .anyMatch(c -> c.getX() == corner.getX() + currentX * offsetX &&
-                                c.getY() == corner.getY() + currentY * offsetY)){
-                    return false;
-                }
+                cornersToCheck.stream()
+                        .filter(c -> c.getX() == corner.getX() + currentX * offsetX &&
+                                c.getY() == corner.getY() + currentY * offsetY)
+                        .findFirst()
+                        .ifPresent(corners::add);
             }
         }
-        return true;
+        return corners;
     }
+
 
     /**
      * Method that checks if a certain corner is present in the player's board.
@@ -225,8 +231,10 @@ public class Player {
         if(!checkRequirements(cardToPlace) || !checkIfPlaceable(corner))
             return;
         handCards.removeIf(c -> c.frontSide().equals(cardToPlace) || c.backSide().equals(cardToPlace));
-        for(BasicCard card : placedCards){
-            card.coverCornerIfPresent(corner);
+        for(Corner c : getAllCoveredCorners(corner, placedCards.stream().flatMap(b -> b.getAllCorners().stream()).toList())) {
+            for (BasicCard card : placedCards) {
+                card.coverCornerIfPresent(c);
+            }
         }
         cardToPlace.place(corner);
         placedCards.add(cardToPlace);
@@ -285,11 +293,11 @@ public class Player {
      */
     public List<BasicCard> getAllValidCards(){
         List<BasicCard> result = handCards.stream()
-                .map(CardSides::backSide)
-                .collect(Collectors.toCollection(ArrayList::new));
-        result.addAll(handCards.stream()
                 .map(CardSides::frontSide)
                 .filter(this::checkRequirements)
+                .collect(Collectors.toCollection(ArrayList::new));
+        result.addAll(handCards.stream()
+                .map(CardSides::backSide)
                 .collect(Collectors.toCollection(ArrayList::new)));
         return result;
     }

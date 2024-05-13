@@ -76,7 +76,7 @@ public abstract class ClientPlayer {
     public void setPlacedCards(List<BasicCard> placedCards, int score) {
         this.placedCards = new ArrayList<>(placedCards);
         this.score = score;
-        eventSubmitter.submit(() -> gameView.updateBoard(nickname, getPlacedCards()));
+        eventSubmitter.submit(() -> gameView.updateBoard(nickname, getPlacedCards(), score));
     }
 
     /**

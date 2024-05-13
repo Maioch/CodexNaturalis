@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 
+import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -80,7 +81,7 @@ public class CardFormatter {
      * @param cards list of the card's list
      * @return the string representing the formatted card
      */
-    public static String getCardsInfoString(List<BasicCard> cards){
+    public static String getCardsInfoString(List<BasicCard> cards, boolean areBackSides){
         StringBuilder sb = new StringBuilder();
         int formatSpaceLength = -45;
         for(int i = 0; i < cardHeight; i++) {
@@ -91,17 +92,17 @@ public class CardFormatter {
         }
         for(BasicCard card : cards){
             sb.append(String.format("%" + formatSpaceLength + "s", "Points: " +
-                    getNativePoints(card.getCardId())));
+                    (areBackSides ? 0 : getNativePoints(card.getCardId()))));
         }
         sb.append("\n");
         for(BasicCard card : cards){
             sb.append(String.format("%" + formatSpaceLength + "s", "Requirements: " +
-                    card.getRequirements().entrySet().stream().filter(e -> e.getValue() != 0).toList()));
+                    (areBackSides ? "[]" : card.getRequirements().entrySet().stream().filter(e -> e.getValue() != 0).toList())));
         }
         sb.append("\n");
         for(BasicCard card : cards){
             sb.append(String.format("%" + formatSpaceLength + "s", "Bonus type: " +
-                    getBonusInfo(card.getCardId())));
+                    (areBackSides ? "no bonus." : getBonusInfo(card.getCardId()))));
         }
         sb.append("\n");
         return sb.toString();
@@ -156,23 +157,26 @@ public class CardFormatter {
             }
             case "PATTERN" -> {
                 StringBuilder sb = new StringBuilder();
-                sb.append("the following pattern appears -> \n");
+                /*sb.append("the following pattern appears -> \n");
                 int minX = bonusNode.get("pattern").get(0).get("x").asInt();
-                int minY = bonusNode.get("pattern").get(0).get("y").asInt();
+                int maxY = bonusNode.get("pattern").get(0).get("y").asInt();
+                LinkedHashMap<Point, Content> = new LinkedHashMap<>();
                 for(JsonNode subNode : bonusNode.get("pattern")){
                     minX = Math.min(subNode.get("x").asInt(), minX);
-                    minY = Math.min(subNode.get("y").asInt(), minY);
+                    maxY = Math.max(subNode.get("y").asInt(), minY);
                 }
-                int prevX = 0;
-                int prevY = 0;
+                int prevX = - minX;
+                int prevY = maxY;
                 for(JsonNode subNode : bonusNode.get("pattern")){
-                    sb.append("\n".repeat(-minY + prevY + subNode.get("y").asInt()));
-                    sb.append("  ".repeat(-minX + prevX + subNode.get("x").asInt()));
+                    int curY = prevY - subNode.get("y").asInt();
+                    int curX = prevX - subNode.get("x").asInt();
+                    sb.append("\n".repeat(curY));
+                    sb.append("  ".repeat(curX));
                     sb.append(Content.valueOf(subNode.get("color").asText()).getSymbol());
-                    prevY = -minY + prevY + subNode.get("y").asInt();
-                    prevX = -minX + prevX + subNode.get("x").asInt();
+                    prevY = curY;
+                    prevX = curX;
                 }
-                sb.append("\n");
+                sb.append("\n");*/
                 yield sb.toString();
             }
             default -> "no bonus.";

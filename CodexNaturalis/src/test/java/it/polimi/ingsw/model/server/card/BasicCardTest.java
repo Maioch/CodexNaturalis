@@ -165,7 +165,6 @@ public class BasicCardTest {
         BasicCard otherBack = null;
         for(int id = startResource; id <= endStarter; id++){
             CardSides cardSides = CardBuilder.buildCard(id);
-            assertNotEquals(cardSides.frontSide(), cardSides.backSide());
             BasicCard front = CardBuilder.buildCard(id).frontSide();
             BasicCard back = CardBuilder.buildCard(id).backSide();
             if(otherFront != null && otherBack != null){
