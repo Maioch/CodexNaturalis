@@ -95,7 +95,7 @@ public class CardFormatter {
                 add(cardInfo);
             }
         }};
-        for(int i = 0; i < cardStrings.getFirst().size(); i++){
+        for(int i = 0; !cardStrings.isEmpty() && i < cardStrings.getFirst().size(); i++){
             for(List<String> stringList : cardStrings){
                 String string = stringList.get(i);
                 sb.append(string);
