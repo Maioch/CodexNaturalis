@@ -80,7 +80,7 @@ public class CardFormatter {
     public static String getCardsInfoString(List<BasicCard> cards, boolean areBackSides){
         StringBuilder sb = new StringBuilder();
         int printedContentLength = Content.EMPTY.getSymbol().length() - 2;
-        int formatSpaceLength = 70;
+        int formatSpaceLength = 45;
         List<List<String>> cardStrings = new ArrayList<>(){{
             for(BasicCard card : cards){
                 List<String> cardInfo = Arrays.stream(getCardString(card)

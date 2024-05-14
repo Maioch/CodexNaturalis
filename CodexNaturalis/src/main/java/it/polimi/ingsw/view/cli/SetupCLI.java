@@ -25,6 +25,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * Class used when the client chooses to play the TUI version of the game; this class represents the CLI for the player
@@ -35,7 +36,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     private final ClientController clientController;
     /**
      * Constructor for the class. The method asks the player the ip address and the port of the server, then it makes
-     * him choose if he wants to connect using socket or RMI protocol: the method then handles the connection.
+     * them choose if they want to connect using socket or RMI protocol: the method then handles the connection.
      */
     public SetupCLI(){
         boolean isConnected = false;
@@ -43,7 +44,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         while (!isConnected) {
             new Thread(clientController).start();
             String ip = readFromInput("Please enter the IP of the server you want to play on: ",
-                    (s -> s.length() <= 15),
+                    (s -> s.length() <= 15 && Pattern.compile("[0-9]{0,3}\\.[0-9]{0,3}\\.[0-9]{0,3}\\.[0.9]{0,3}").matcher(s).find()),
                     this::stringIdentity);
             int port = readFromInput("Now enter the Port of the server: ",
                     (s -> s >= 0 && s <= 65535),

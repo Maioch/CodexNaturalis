@@ -126,7 +126,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void turnChanged(String turnOwner){
-        System.out.println("It is now the turn of " + turnOwner);
+        System.out.printf("%s is playing their turn...\n",turnOwner);
     }
 
     @Override
@@ -223,7 +223,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore){
-        System.out.printf("Here's a recap of %s match:\n", nickname);
+        System.out.printf("Here's a recap of %s's match:\n", nickname);
         for(Map.Entry<Objective, Integer> entry : objectivePoints.entrySet()){
             System.out.print(CardFormatter.getObjectiveInfoString(entry.getKey()));
             System.out.println("Points scored: " + entry.getValue());
