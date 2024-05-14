@@ -24,6 +24,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Class used when the client chooses to play the TUI version of the game; this class represents the CLI for the player

@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * @author Guglielmo Gatti, Andrea Fidanza, Francesco Nisoli, Marco Maiocchi
  */
-public class GameModel extends ServerSubject {
+public class GameModel{
     private final ServerSubject serverSubject;
     private final List<Player> players;
     private final TurnDeck<CardSides> resourceDeck;

@@ -148,7 +148,11 @@ public class GameController implements Runnable{
         while (!moveValid) {
             LabeledMessage LabeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
             if (LabeledMessage.message() instanceof CardPlacementMessage cardPlacementMessage) {
-                cardToPlace = cardPlacementMessage.getCard();
+                BasicCard cardToLookFor = cardPlacementMessage.getCard();
+                cardToPlace = player.getAllValidCards().stream()
+                        .filter(c -> c.equals(cardToLookFor))
+                        .findFirst()
+                        .orElse(null);
                 chosenCorner = cardPlacementMessage.getCorner();
             }
             moveValid = isMoveValid(player,cardToPlace,chosenCorner);
@@ -286,7 +290,7 @@ public class GameController implements Runnable{
             initializeGame();
             startGame();
             for(Player player : game.getAllPlayers()){
-                game.getNetworkHandler(player.getNickname()).setCurrentGame(null);
+                serverSubject.getNetworkHandler(player.getNickname()).setCurrentGame(null);
                 serverSubject.unsubscribe(player.getNickname());
             }
             endGameProcedure.accept(this);

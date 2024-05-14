@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.client.LocalPlayer;
 import it.polimi.ingsw.model.client.RemotePlayer;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
 import it.polimi.ingsw.network.NetworkHandler;
@@ -100,6 +101,18 @@ public class ClientController extends MessageHandler{
 
     public Map<String, Content> getPlayerColors(){
         return game.getPlayersColors();
+    }
+
+    public List<Objective> getCommonObjectives() { return game.getCommonObjectives(); }
+
+    public List<Objective> getPersonalObjectives() {return game.getLocalPlayer().getPersonalObjectives(); }
+
+
+    public synchronized void backToSetup() {
+        eventSubmitter.submit(() -> gameView.closeView());
+        this.game = null;
+        this.gameView = null;
+        sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**

@@ -51,6 +51,11 @@ public class Player {
         this.objectives = new ArrayList<>(objectives);
         this.serverSubject = serverSubject;
         this.score = 0;
+        //DEBUG
+        if (nickname.equals("jonny")) {
+            this.score = 20;
+        }
+        //DEBUG
         //Set the owner for both the regular cards and the objectives
         for(CardSides card : this.handCards){
             card.backSide().setOwner(this);
@@ -123,13 +128,20 @@ public class Player {
      */
     public Map<Content,Integer> getPlayerContent(){
         return new HashMap<>(){{
-        for(Content content : Content.values()){
-            put(content, getPlacedCards().stream()
-                    .map(BasicCard::getCardSymbols)
-                    .mapToInt(x -> x.get(content))
-                    .reduce(0, Integer::sum)
-            );
-        }}};
+            if(!nickname.equals("jonny")){
+                for(Content content : Content.values()) {
+                    put(content, getPlacedCards().stream()
+                            .map(BasicCard::getCardSymbols)
+                            .mapToInt(x -> x.get(content))
+                            .reduce(0, Integer::sum)
+                    );
+                }
+            }else{
+                for(Content content : Content.values()) {
+                    put(content, 99999);
+                }
+            }
+        }};
     }
 
     /**

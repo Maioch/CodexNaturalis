@@ -35,6 +35,7 @@ public class Server {
         LocateRegistry.createRegistry(GameParameters.getRMIPort());
         try {
             Naming.rebind("/RMIManager", rmiManager);
+            System.out.println("RMI server started on port: " + GameParameters.getRMIPort());
         }catch(MalformedURLException e){
             System.out.println("Couldn't bind RMIManager because the URL it was supposed to bind to is malformed");
             System.out.println(e.getMessage());

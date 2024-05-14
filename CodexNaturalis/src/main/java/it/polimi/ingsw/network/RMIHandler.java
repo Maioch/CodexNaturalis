@@ -28,7 +28,7 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      */
     @Override
     public void receiveUpdate(Message message) throws RemoteException {
-        System.out.println(message.getStatus());
+        //System.out.println(message.getStatus());
         handler.addMessageToQueue(message,this);
     }
 
@@ -50,7 +50,7 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
     @Override
     public void update(Message message){
         try {
-            System.out.println(message.getStatus());
+            //System.out.println(message.getStatus());
             receiverInterface.receiveUpdate(message);
         }catch (RemoteException e){
             System.out.println(e.getMessage());

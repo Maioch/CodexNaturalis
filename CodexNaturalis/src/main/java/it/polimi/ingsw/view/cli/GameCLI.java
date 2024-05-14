@@ -208,6 +208,19 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("The next turn will be the last.");
     }
 
+    private void showSymbols(){
+        for(Content content : Content.values()){
+            if(content != Content.EMPTY){
+                System.out.printf("%s : %s\n", content.getSymbol(), content.name());
+            }
+        }
+    }
+
+    private void showObjectives(){
+        showCommonObjectives(controller.getCommonObjectives());
+        showPersonalObjectives(controller.getPersonalObjectives());
+    }
+
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore){
         System.out.printf("Here's a recap of %s match:\n", nickname);
@@ -221,8 +234,12 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void revealWinners(List<String> winners){
-        System.out.println("The game is over! The winner are:");
+        System.out.println("The game is over! The winners are:");
         winners.forEach(System.out::println);
+        String back = readFromInput("Type BACK when you're ready to return to the main menu: ",
+                s -> s.equalsIgnoreCase("back"),
+                this::stringIdentity);
+        controller.backToSetup();
     }
 
     @Override
@@ -231,6 +248,8 @@ public class GameCLI extends AbstractCLI implements GameView {
             case "HELP" -> System.out.println(GameParameters.getGameHelpBody());
             case "CHAT" -> sendChatMessage(argument);
             case "BOARD" -> showBoard(argument);
+            case "SYMBOLS" -> showSymbols();
+            case "OBJECTIVES" -> showObjectives();
             default -> System.out.println("Command not recognized, type /HELP for a list of all commands!");
         }
     }
@@ -303,4 +322,10 @@ public class GameCLI extends AbstractCLI implements GameView {
             default -> System.out.println("You've entered too many arguments for this command!");
         }
     }
+
+    @Override
+    public void closeView() {
+
+    }
+
 }

@@ -36,8 +36,9 @@ public class TCPHandler extends NetworkHandler implements Runnable{
             while (true) {
                 try {
                     Message message = (Message) socketInput.readObject();
-                    System.out.println(message.getStatus());
+                    //System.out.println(message.getStatus());
                     handler.addMessageToQueue(message, this);
+                    //System.out.printf("Received %s%n",message.getStatus().toString());
                 } catch (ClassNotFoundException e) {
                     System.out.println("Received an invalid message");
                 }
@@ -45,7 +46,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
         }catch (IOException e){
             System.out.println("Encountered an IO Exception in TCPHandler");
             e.printStackTrace();
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
         }
     }
 
@@ -55,7 +56,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
      */
     @Override
     public void update(Message message){
-        System.out.println(message.getStatus());
+        //System.out.printf("Sent %s%n",message.getStatus().toString());
         try{
             socketOutput.writeObject(message);
         }catch(IOException e){
