@@ -33,7 +33,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards){
         System.out.println();
         System.out.println("These are the cards you can draw:");
-        int i = 0;
+        int i = 1;
         for(CardType cardType : CardType.values()){
             List<BasicCard> deckCardList = drawableCards.get(cardType);
             if(deckCardList != null && !deckCardList.isEmpty()) {
@@ -48,12 +48,12 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
         System.out.println();
         List<Integer> choice = readFromInput(
-                "Type what card you want to draw (as coordinates separated by spaces, starting from 0): ",
+                "Type what card you want to draw (as coordinates separated by spaces, starting from 1): ",
                 (list -> list.size() == 2 &&
-                        list.getFirst() >= 0 && list.getFirst() <= 1 &&
-                        list.getLast() >= 0 && list.getLast() <= GameParameters.getNumberOfVisibleCards()),
+                        list.getFirst() >= 1 && list.getFirst() <= 2 &&
+                        list.getLast() >= 1 && list.getLast() <= GameParameters.getNumberOfVisibleCards() + 1),
                 this::stringToListInt);
-        controller.sendMessage(new DrawChoiceMessage(choice.getLast(), CardType.values()[choice.getFirst()]));
+        controller.sendMessage(new DrawChoiceMessage(choice.getLast() - 1, CardType.values()[choice.getFirst() - 1]));
     }
 
     /**
@@ -72,13 +72,15 @@ public class GameCLI extends AbstractCLI implements GameView {
     private void printChatMessage(String message, String sender, List<String> recipients){
         StringBuilder sb = new StringBuilder();
         Map<String, Content> playerColors = controller.getPlayerColors();
-        sb.append(textColors.get(playerColors.get(sender))).append(sender).append(textColors.get(Content.EMPTY));
+        sb.append(playerColors.get(sender).getTextColorString())
+                .append(sender)
+                .append(Content.EMPTY.getTextColorString());
         if(recipients.size() != controller.getRemotePlayerNames().size()) {
             sb.append(" says to ");
             for (String recipient : recipients) {
-                sb.append(textColors.get(playerColors.get(recipient)))
+                sb.append(playerColors.get(sender).getTextColorString())
                         .append(recipient)
-                        .append(textColors.get(Content.EMPTY));
+                        .append(Content.EMPTY.getTextColorString());
                 if(!recipient.equals(recipients.getLast())){
                     sb.append(", ");
                 }
@@ -115,7 +117,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("These are the valid corner's coordinates that you can choose:");
         List<Point> validPositions = validCorners.stream().map(c -> new Point(c.getX(), c.getY())).toList();
         for(int i = 0; i < validPositions.size(); i++){
-            System.out.printf("%d (%f, %f)\n", i + 1, validPositions.get(i).getX(),validPositions.get(i).getY());
+            System.out.printf("%d (%.0f, %.0f)\n", i + 1, validPositions.get(i).getX(),validPositions.get(i).getY());
         }
         System.out.println();
         int cornerIndex = readFromInput("Type the index of the coordinates where you want to place the card: ",
@@ -126,7 +128,11 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void turnChanged(String turnOwner){
-        System.out.printf("%s is playing their turn...\n",turnOwner);
+        if(turnOwner.equals(controller.getLocalPlayerName())){
+            System.out.println("It's your turn!");
+        }else{
+            System.out.printf("%s is playing their turn...\n",turnOwner);
+        }
     }
 
     @Override
@@ -166,7 +172,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("This is your starter card");
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.frontSide()), false));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.backSide()), true));
-        int chosenSide = readFromInput("Choose which side you want to place (1 for front, 2 for back)",
+        int chosenSide = readFromInput("Choose which side you want to place (1 for front, 2 for back) ",
                 n -> n >= 1 && n <= 2,
                 this::stringToInt);
         BasicCard chosenStarter = chosenSide == 1 ? starterCard.frontSide() : starterCard.backSide();

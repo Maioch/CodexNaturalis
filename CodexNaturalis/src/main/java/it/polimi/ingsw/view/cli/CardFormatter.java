@@ -100,7 +100,7 @@ public class CardFormatter {
                 String string = stringList.get(i);
                 sb.append(string);
                 sb.append(" ".repeat(i < cardHeight ?
-                         formatSpaceLength - cardLength * 2 :
+                         formatSpaceLength + 2 - cardLength * 2 :
                          Math.max(formatSpaceLength - string.length(), 0)));
             }
             sb.append("\n");
@@ -116,7 +116,12 @@ public class CardFormatter {
     private static String getCardString(BasicCard card){
         StringBuilder sb = new StringBuilder();
         String empty = Content.EMPTY.getSymbol();
-        sb.append(empty).append("__".repeat(cardLength - 2)).append(empty).append("\n");
+        sb.append(card.getColor().getTextColorString())
+                .append(" ")
+                .append("__".repeat(cardLength - 2))
+                .append(" ")
+                .append(Content.EMPTY.getTextColorString())
+                .append("\n");
         Map<Location, String> cornerString = new HashMap<>(){{
             for(Location loc : Location.values()){
                 Corner currentCorner = card.getAllCorners().stream().filter(c -> c.getLocation() == loc).findFirst().orElseThrow();
@@ -131,25 +136,39 @@ public class CardFormatter {
         }};
         int emptyLengthWithCorners = (cardLength - 5) / 2;
         int emptyLengthWithoutCorners = (cardLength - 3) / 2;
-        sb.append(String.format(" |%s%s%s%s%s| \n",
+        sb.append(String.format("%s|%s%s%s%s%s%s|%s\n",
+                card.getColor().getTextColorString(),
                 cornerString.get(Location.TL),
                 empty.repeat(emptyLengthWithCorners),
                 resources.getFirst(),
                 empty.repeat(emptyLengthWithCorners),
-                cornerString.get(Location.TR)));
+                cornerString.get(Location.TR),
+                card.getColor().getTextColorString(),
+                Content.EMPTY.getTextColorString()));
         for(int i = 0; i < cardHeight - 4; i++) {
-            sb.append(String.format(" |%s%s%s| \n",
+            sb.append(String.format("%s|%s%s%s%s|%s\n",
+                    card.getColor().getTextColorString(),
                     empty.repeat(emptyLengthWithoutCorners),
                     resources.get(i + 1),
-                    empty.repeat(emptyLengthWithoutCorners)));
+                    empty.repeat(emptyLengthWithoutCorners),
+                    card.getColor().getTextColorString(),
+                    Content.EMPTY.getTextColorString()));
         }
-        sb.append(String.format(" |%s%s%s%s%s| \n",
+        sb.append(String.format("%s|%s%s%s%s%s%s|%s\n",
+                card.getColor().getTextColorString(),
                 cornerString.get(Location.BL),
                 empty.repeat(emptyLengthWithCorners),
                 resources.getLast(),
                 empty.repeat(emptyLengthWithCorners),
-                cornerString.get(Location.BR)));
-        sb.append(empty).append("‾‾".repeat(cardLength - 2)).append(empty).append("\n");
+                cornerString.get(Location.BR),
+                card.getColor().getTextColorString(),
+                Content.EMPTY.getTextColorString()));
+        sb.append(card.getColor().getTextColorString())
+                .append(" ")
+                .append("‾‾".repeat(cardLength - 2))
+                .append(" ")
+                .append(Content.EMPTY.getTextColorString())
+                .append("\n");
         return sb.toString();
     }
 

@@ -156,16 +156,16 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     public void showJoinGameDialog(List<Content> colors, int gameId){
         System.out.println("You are trying to join a match.");
         for(int i = 0; i < colors.size(); i++){
-            System.out.printf("%d. %s%s%s", (i + 1), textColors.get(colors.get(i)),
-                    colors.get(i).toString().toLowerCase(), textColors.get(Content.EMPTY));
+            System.out.printf("%d. %s%s%s", (i + 1), colors.get(i).getTextColorString(),
+                    colors.get(i).toString().toLowerCase(), Content.EMPTY.getTextColorString());
             System.out.println(colors.get(i) != colors.getLast() ? ", " : ".");
         }
         int colorIndex = readFromInput("First, choose a color from the list above by entering the corresponding index: ",
                 (i -> i >= 1 && i <= colors.size()),
                 this::stringToInt) - 1;
-        String nickname = readFromInput(String.format("Now enter your nickname, without including neither '%s' nor '%s': ",
+        String nickname = readFromInput(String.format("Now enter your nickname, without including '%s','%s', or spaces: ",
                         GameParameters.getCommandChar(), GameParameters.getDelimiter()),
-                (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength()
+                (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength() && !s.contains(" ")
                         && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
                 this::stringIdentity);
         clientController.sendMessage(new JoinGameMessage(nickname, colors.get(colorIndex), gameId));

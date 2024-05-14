@@ -8,15 +8,6 @@ import java.util.*;
 import java.util.function.Predicate;
 
 public abstract class AbstractCLI {
-
-    protected static final Map<Content, String> textColors = new HashMap<>(){{
-        put(Content.RED, "\u001B[31m");
-        put(Content.BLUE, "\u001B[34m");
-        put(Content.GREEN, "\u001B[32m");
-        put(Content.PURPLE, "\u001B[35m");
-        put(Content.EMPTY, "\u001B[0m");
-    }};
-
     protected <T> T readFromInput (String prompt, Predicate<T> checker, Mapper<String, T> mapper){
         String commandChar = GameParameters.getCommandChar();
         Scanner scanner = new Scanner(System.in);
