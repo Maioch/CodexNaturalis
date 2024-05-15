@@ -42,7 +42,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards){
         System.out.println();
-        System.out.println("These are the cards you can draw:");
+        System.out.println("Here are the cards you can draw: ");
         int i = 1;
         for(CardType cardType : CardType.values()){
             List<BasicCard> deckCardList = drawableCards.get(cardType);
@@ -56,19 +56,19 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
         System.out.println();
         List<Integer> choice = readFromInput(
-                "Type what card you want to draw (as coordinates separated by spaces, starting from 1): ",
+                "Choose which card you want to draw by writing its coordinates separated by a space (starting from 1): ",
                 (list -> list.size() == 2 &&
                         list.getFirst() >= 1 && list.getFirst() <= 2 &&
                         list.getLast() >= 1 && list.getLast() <= GameParameters.getNumberOfVisibleCards() + 1),
                 this::stringToListInt);
         controller.sendMessage(new DrawChoiceMessage(choice.getLast() - 1, CardType.values()[choice.getFirst() - 1]));
-        readInputThread = new Thread(() -> readFromInput(">", ((c) -> false), this::stringIdentity));
+        readInputThread = new Thread(() -> readFromInput("", ((c) -> false), this::stringIdentity));
         readInputThread.start();
     }
 
     /**
      * A method that shows (prints) a message.
-     * @param chatMessage contains the sender, the recipients and the message
+     * @param chatMessage contains the sender, the recipients and the message.bbbbbbbbbbb
      */
     @Override
     public void showChatMessage(ChatMessage chatMessage){
@@ -83,7 +83,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Method that builds the default message string, used by the method above to print a message.
-     * @param message hte client's message
+     * @param message the client's message
      * @param sender the sender of the message.
      * @param recipients the recipients of the message.
      */
@@ -119,10 +119,10 @@ public class GameCLI extends AbstractCLI implements GameView {
                                  List<BasicCard> placedCards,
                                  List<BasicCard> validCards,
                                  List<Corner> validCorners){
-        System.out.println("These are your cards:");
+        System.out.println("These are the cards in your hand: ");
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList(), false));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList(),true));
-        System.out.println("These are your placeable cards:");
+        System.out.println("Here are the ones you can place: ");
         int numberOfBackSides = GameParameters.getNumberOfResourceCardsInHand() + GameParameters.getNumberOfGoldCardsInHand();
         int maxCardsInHand = (numberOfBackSides) * 2;
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(validCards.stream()
@@ -131,20 +131,20 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(validCards.stream()
                 .skip(numberOfBackSides - maxCardsInHand + validCards.size())
                 .toList(), true));
-        int cardIndex = readFromInput("Type which card you want to place (number starting from 1): ",
+        int cardIndex = readFromInput("Choose which card you want to place by writing its index (starting from 1): ",
                 (i -> i >= 1 && i <= validCards.size()),
                 this::stringToInt) - 1;
-        System.out.println("These are your placed card:");
+        System.out.println("These are the cards placed on your board: ");
         int x = placedCards.getLast().getCorner(Location.BL).getX();
         int y = placedCards.getLast().getCorner(Location.BL).getY();
         System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
-        System.out.println("These are the valid corner's coordinates that you can choose:");
+        System.out.println("Here are the coordinates of all the corners where you can place the card: ");
         List<Point> validPositions = validCorners.stream().map(c -> new Point(c.getX(), c.getY())).toList();
         for(int i = 0; i < validPositions.size(); i++){
             System.out.printf("%d (%.0f, %.0f)\n", i + 1, validPositions.get(i).getX(),validPositions.get(i).getY());
         }
         System.out.println();
-        int cornerIndex = readFromInput("Type the index of the coordinates where you want to place the card: ",
+        int cornerIndex = readFromInput("Choose the coordinates you prefer by typing their index: ",
                 (i -> i >= 1 && i <= validPositions.size()),
                 this::stringToInt) - 1;
         controller.sendMessage(new CardPlacementMessage(validCards.get(cardIndex), validCorners.get(cornerIndex)));
@@ -156,7 +156,8 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void turnChanged(String turnOwner){
-        for(ChatMessage chatMessage : chatMessageQueue){
+        while(!chatMessageQueue.isEmpty()){
+            ChatMessage chatMessage = chatMessageQueue.poll();
             printChatMessage(chatMessage.getMessage(),chatMessage.getSender(),chatMessage.getRecipients());
         }
         Map<String, Content> playerColors = controller.getPlayerColors();
@@ -202,40 +203,50 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * 
-     * @param handCards
+     * Method used to update the client about its current hand.
+     * @param handCards the player's hand cards.
      */
     @Override
     public void updateLocalPlayerHand(List<CardSides> handCards){
-        System.out.println("These are your cards");
+        System.out.println("These are the cards in your hand: ");
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(
                 handCards.stream().map(CardSides::frontSide).toList(), false));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(
                 handCards.stream().map(CardSides::backSide).toList(), true));
     }
 
+    /**
+     * Method used to request the starter card's placement at the start of the match.
+     * @param playerCards the list of cards owned by the player.
+     */
     @Override
     public void requestStarterSide(List<CardSides> playerCards){
         List<CardSides> handCards = playerCards.stream().skip(1).toList();
         CardSides starterCard = playerCards.getFirst();
-        System.out.printf("These are your %d cards\n",
+        System.out.printf("These are the %d cards in your hand: \n",
                 GameParameters.getNumberOfResourceCardsInHand()
                         + GameParameters.getNumberOfGoldCardsInHand());
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList(), false));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList(), true));
-        System.out.println("This is your starter card");
+        System.out.println("This is your starter card: ");
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.frontSide()), false));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.backSide()), true));
-        int chosenSide = readFromInput("Choose which side you want to place (1 for front, 2 for back) ",
+        int chosenSide = readFromInput("Choose which side of your starter you want to place (1 for front, 2 for back): ",
                 n -> n >= 1 && n <= 2,
                 this::stringToInt);
         BasicCard chosenStarter = chosenSide == 1 ? starterCard.frontSide() : starterCard.backSide();
         controller.sendMessage(new CardPlacementMessage(chosenStarter, null));
     }
 
+    /**
+     * Method used to update the client about another player's board and score.
+     * @param nickname the player's nickname.
+     * @param placedCards the players board.
+     * @param moveScore the player's score.
+     */
     @Override
     public void updateBoard(String nickname, List<BasicCard> placedCards, int moveScore){
-        System.out.printf("Here's the current placed cards by %s (centered on his last placed card):\n",
+        System.out.printf("Here are %s's current placed cards (centered on his last placed card): \n",
                 controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         int x = placedCards.getLast().getCorner(Location.BL).getX();
         int y = placedCards.getLast().getCorner(Location.BL).getY();
@@ -243,32 +254,48 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.printf("Their new score is: %d\n", moveScore);
     }
 
+    /**
+     * Method used to show the client its personal objectives.
+     * @param objectives the player's personal objectives.
+     */
     @Override
     public void showPersonalObjectives(List<Objective> objectives){
-        System.out.println("Personal objectives:");
+        System.out.println("These are your personal objectives: ");
         for(Objective objective : objectives){
             System.out.print(CardFormatter.getObjectiveInfoString(objective));
         }
     }
 
+    /**
+     * Method used to show the client the common objectives.
+     * @param objectives the common objectives.
+     */
     @Override
     public void showCommonObjectives(List<Objective> objectives){
-        System.out.println("Common objectives:");
+        System.out.println("These are the objectives shared by you and the other players: ");
         for(Objective objective : objectives){
             System.out.print(CardFormatter.getObjectiveInfoString(objective));
         }
     }
 
+    /**
+     * Method not implemented for the TUI to prevent message flooding.
+     * @param drawableCards //
+     */
     @Override
-    public void updateDecks(Map<CardType, List<BasicCard>> drawableCards){
-        //not implemented for the TUI to prevent message flooding
-    }
+    public void updateDecks(Map<CardType, List<BasicCard>> drawableCards){}
 
+    /**
+     * Method used to notify the players that it's time for the last game's turn.
+     */
     @Override
     public void notifyLastTurn(){
         System.out.println("The next turn will be the last.");
     }
 
+    /**
+     * Method used to show the client a legend of the symbols printed in the CLI.
+     */
     private void showSymbols(){
         for(Content content : Content.values()){
             if(content != Content.EMPTY){
@@ -277,26 +304,39 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    /**
+     * Method used to show the client all the objectives, both common and personal.
+     */
     private void showObjectives(){
         showCommonObjectives(controller.getCommonObjectives());
         showPersonalObjectives(controller.getPersonalObjectives());
     }
 
+    /**
+     * Method used to show the client a player's game recap.
+     * @param nickname the player's nickname.
+     * @param objectivePoints a map containing all the player's objectives and related scores.
+     * @param finalScore the player's final score.
+     */
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore){
-        System.out.printf("Here's a recap of %s's match:\n",
+        System.out.printf("Here's a recap of %s's match: \n",
                 controller.getPlayerColors().get(nickname) + nickname + Content.EMPTY.getTextColorString());
         for(Map.Entry<Objective, Integer> entry : objectivePoints.entrySet()){
             System.out.print(CardFormatter.getObjectiveInfoString(entry.getKey()));
-            System.out.println("Points scored: " + entry.getValue());
+            System.out.println("Points gained through this objective: " + entry.getValue());
             System.out.println();
         }
         System.out.println("Final score: " + finalScore);
     }
 
+    /**
+     * Method used to show game's winners to the client; it also enables the client to return to the main menu.
+     * @param winners the list of winners.
+     */
     @Override
     public void revealWinners(List<String> winners){
-        System.out.println("The game is over! The winners are:");
+        System.out.println("The game is over! The winner is:");
         winners.forEach(System.out::println);
         String back = readFromInput("Type BACK when you're ready to return to the main menu: ",
                 s -> s.equalsIgnoreCase("back"),
@@ -304,6 +344,11 @@ public class GameCLI extends AbstractCLI implements GameView {
         controller.backToSetup();
     }
 
+    /**
+     * Method used to handle all the possible client's commands.
+     * @param command the command to handle.
+     * @param argument the arguments associated to the command.
+     */
     @Override
     protected void checkCommand(String command, String argument){
         switch (command.toUpperCase()){
@@ -317,16 +362,19 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    /**
+     * Method used to notify the client that someone is out of moves.
+     */
     @Override
     public void showNoMovesAvailable() {
         Map<String, Content> playerColors = controller.getPlayerColors();
         String localPlayerName = controller.getLocalPlayerName();
         String turnOwner = controller.getPlayerWithTurn();
         if(turnOwner.equals(localPlayerName)){
-            System.out.printf("%s, you can't do any more moves ;(\n",
+            System.out.printf("%s, you can no longer make any more moves ;(\n",
                     playerColors.get(localPlayerName).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString());
         }else{
-            System.out.printf("%s can't do any more moves ;)\n",
+            System.out.printf("%s cannot make any more moves ;)\n",
                     playerColors.get(turnOwner).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString());
         }
     }
@@ -342,13 +390,12 @@ public class GameCLI extends AbstractCLI implements GameView {
      * The "nicks", are the nicknames of the players to which the message will be sent.
      * If the nicknames aren't specified, the message will be sent to all the players.
      * The nicks MUST be interspersed by "/" slashes.
-     *
-     * @param arguments the entire string input that comes after "/CHAT" label-command
+     * @param arguments the entire string input that comes after "/CHAT" label-command.
      */
     @SuppressWarnings("SlowListContainsAll")
     private void sendChatMessage(String arguments){
         if(controller.getPlayerWithTurn().equals(controller.getLocalPlayerName())){
-            System.out.println("please complete your turn before submitting any chat messages. >:/");
+            System.out.println("You cannot send chat messages while your turn is in progress >:/");
             return;
         }
         List<String> recipients = extractRecipients(arguments);
@@ -364,7 +411,7 @@ public class GameCLI extends AbstractCLI implements GameView {
             System.out.println("Some of the recipients couldn't be found. The message wasn't sent.");
         }
     }
-
+    
     private List<String> extractRecipients(String arguments){
         List<String> recipients = new ArrayList<>();
         int indexOfDelimiter = 0;
@@ -384,7 +431,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     private void showBoard(String arguments){
         String[] splitArgs = arguments.split(" ");
         switch(splitArgs.length){
-            case 0,2 -> System.out.println("Invalid number of arguments. remember that you must at least specify whose board you want to view");
+            case 0,2 -> System.out.println("Invalid number of arguments: remember that you must at least specify whose board you want to view!");
             case 1,3 -> {
                 int viewX = 0;
                 int viewY = 0;
@@ -402,7 +449,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                 }else if(controller.getLocalPlayerName().equals(splitArgs[0])){
                     System.out.println(CardFormatter.getPlayerBoardString(controller.getLocalPlayerBoard(), viewX, viewY));
                 }else{
-                    System.out.printf("%s is not a player in the current game.\n", splitArgs[0]);
+                    System.out.printf("User %s couldn't be found...\n", splitArgs[0]);
                 }
             }
             default -> System.out.println("You've entered too many arguments for this command!");
@@ -415,10 +462,10 @@ public class GameCLI extends AbstractCLI implements GameView {
             updateLocalPlayerHand(hand);
         }else if(controller.getRemotePlayerNames().contains(argument)){
             List<BasicCard> hand = controller.getRemotePlayerHand(argument);
-            System.out.printf("These are %s's cards\n", argument);
+            System.out.printf("These are %s's cards: \n", argument);
             System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(hand.stream().toList(), true));
         }else{
-            System.out.printf("The user %s couldn't be found\n",argument);
+            System.out.printf("User %s couldn't be found...\n",argument);
         }
     }
 }

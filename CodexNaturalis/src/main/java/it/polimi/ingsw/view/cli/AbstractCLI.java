@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.cli;
 import it.polimi.ingsw.exceptions.MapperException;
 import it.polimi.ingsw.model.server.GameParameters;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -22,8 +23,19 @@ public abstract class AbstractCLI {
     protected <T> T readFromInput (String prompt, Predicate<T> checker, Mapper<String, T> mapper){
         String commandChar = GameParameters.getCommandChar();
         Scanner scanner = new Scanner(System.in);
-        while(true) {
+        while(true){
             System.out.print(prompt);
+            boolean isInputAvailable = false;
+            while(!isInputAvailable){
+                try {
+                    isInputAvailable = System.in.available() > 0;
+                }catch (IOException e){
+                    System.out.println(e.getMessage());
+                }
+            }
+            if(Thread.interrupted()){
+                return null;
+            }
             String inputString = scanner.nextLine();
             boolean isCommand = inputString.indexOf(GameParameters.getCommandChar()) == 0;
             if(!isCommand){
