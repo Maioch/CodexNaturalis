@@ -79,7 +79,6 @@ public class CardFormatter {
      */
     public static String getCardsInfoString(List<BasicCard> cards, boolean areBackSides){
         StringBuilder sb = new StringBuilder();
-        int printedContentLength = Content.EMPTY.getSymbol().length() - 2;
         int formatSpaceLength = 45;
         List<List<String>> cardStrings = new ArrayList<>(){{
             for(BasicCard card : cards){
@@ -113,7 +112,10 @@ public class CardFormatter {
      * @param card the card to format
      * @return the string representing the formatted card
      */
-    private static String getCardString(BasicCard card){
+    public static String getCardString(BasicCard card){
+        if(card == null){
+            return "";
+        }
         StringBuilder sb = new StringBuilder();
         String empty = Content.EMPTY.getSymbol();
         sb.append(card.getColor().getTextColorString())

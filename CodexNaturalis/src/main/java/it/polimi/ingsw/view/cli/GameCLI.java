@@ -38,10 +38,8 @@ public class GameCLI extends AbstractCLI implements GameView {
             List<BasicCard> deckCardList = drawableCards.get(cardType);
             if(deckCardList != null && !deckCardList.isEmpty()) {
                 System.out.println(i);
-                BasicCard cardOnTop = deckCardList.getFirst();
-                List<BasicCard> cardOnTopList = new ArrayList<>();
-                cardOnTopList.add(cardOnTop);
-                System.out.print(CardFormatter.getCardsInfoString(cardOnTopList, true));
+                String cardOnTop = CardFormatter.getCardString(deckCardList.getFirst());
+                System.out.print(cardOnTop.isEmpty() ? "\n\nThe deck is empty\n\n" : cardOnTop);
                 System.out.print(CardFormatter.getCardsInfoString(deckCardList.subList(1,deckCardList.size()),false));
             }
             i++;
@@ -110,7 +108,6 @@ public class GameCLI extends AbstractCLI implements GameView {
                 (i -> i >= 1 && i <= validCards.size()),
                 this::stringToInt) - 1;
         System.out.println("These are your placed card:");
-        System.out.println(placedCards);
         int x = placedCards.getLast().getCorner(Location.BL).getX();
         int y = placedCards.getLast().getCorner(Location.BL).getY();
         System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
