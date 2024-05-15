@@ -62,8 +62,6 @@ public class GameCLI extends AbstractCLI implements GameView {
                         list.getLast() >= 1 && list.getLast() <= GameParameters.getNumberOfVisibleCards() + 1),
                 this::stringToListInt);
         controller.sendMessage(new DrawChoiceMessage(choice.getLast() - 1, CardType.values()[choice.getFirst() - 1]));
-        readInputThread = new Thread(() -> readFromInput("", ((c) -> false), this::stringIdentity));
-        readInputThread.start();
     }
 
     /**
@@ -164,6 +162,10 @@ public class GameCLI extends AbstractCLI implements GameView {
         String coloredTurnOwner =  playerColors.get(turnOwner).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString();
         if(!turnOwner.equals(controller.getLocalPlayerName())) {
             System.out.printf("%s is playing their turn...\n", coloredTurnOwner);
+            if(readInputThread == null || !readInputThread.isAlive()) {
+                readInputThread = new Thread(() -> readFromInput("", ((c) -> false), this::stringIdentity));
+                readInputThread.start();
+            }
             return;
         }
         System.out.printf("It's your turn, %s!\n", coloredTurnOwner);

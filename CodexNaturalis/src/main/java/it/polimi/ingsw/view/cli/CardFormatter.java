@@ -59,7 +59,7 @@ public class CardFormatter {
                     Optional<BasicCard> currentCard = currentCards.stream()
                             .filter(b -> b.getCorner(Location.BL).getX() == currentX)
                             .findFirst();
-                    String cardToAppend = "  ".repeat(cardLength);
+                    String cardToAppend = " ".repeat(cardLength * 2 - 2);
                     if(currentCard.isPresent()){
                         cardToAppend = cardStrings.get(currentCards.indexOf(currentCard.get()))[i];
                     }
@@ -71,7 +71,7 @@ public class CardFormatter {
         sb.append(" ".repeat(coordinateNumberWidth));
         for(int i = minX; i <= maxX; i++){
             sb.append(String.format("%" + coordinateNumberWidth + "d", i))
-                    .append(" ".repeat(cardLength * 2 - coordinateNumberWidth));
+                    .append(" ".repeat(cardLength * 2 - 2 - coordinateNumberWidth));
         }
         sb.append("\n");
         return sb.toString();
