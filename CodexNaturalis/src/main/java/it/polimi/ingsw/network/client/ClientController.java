@@ -107,6 +107,8 @@ public class ClientController extends MessageHandler{
 
     public List<Objective> getPersonalObjectives() {return game.getLocalPlayer().getPersonalObjectives(); }
 
+    public String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
+
 
     public synchronized void backToSetup() {
         eventSubmitter.submit(() -> gameView.closeView());
@@ -220,6 +222,9 @@ public class ClientController extends MessageHandler{
                                     validPlacementsMessage.getPlaceableCards(),
                                     validPlacementsMessage.getPlaceableCorners());
                         }
+                    }
+                    case NO_MOVES -> {
+                        eventSubmitter.submit(() -> gameView.showNoMovesAvailable());
                     }
                     case PLACEMENT_OK -> {
                         if (labeledMessage.message() instanceof PlayerBoardMessage playerBoardMessage) {

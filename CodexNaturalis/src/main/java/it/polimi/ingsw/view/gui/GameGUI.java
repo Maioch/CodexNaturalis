@@ -93,6 +93,11 @@ public class GameGUI implements GameView {
     }
 
     @Override
+    public void showNoMovesAvailable() {
+
+    }
+
+    @Override
     public void closeView() {
 
     }

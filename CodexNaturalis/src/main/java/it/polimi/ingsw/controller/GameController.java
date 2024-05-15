@@ -112,17 +112,28 @@ public class GameController implements Runnable{
      * Method that handles most of the phases of the game, making each player play his turn correctly.
      */
     private void startGame() {
-        while (!game.isLastTurn()) {
+        while (!game.isLastTurn() && !game.isGameStuck()) {
             for (Player player : game.getAllPlayers()) {
                 serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+                if(player.isPlayerStuck()){
+                    serverSubject.notifyAll(new Message(Status.NO_MOVES));
+                    continue;
+                }
                 placeCard(player);
                 drawCard(player);
             }
         }
         //last turn of the game
         for (Player player : game.getAllPlayers()) {
+            if(game.isGameStuck()){
+                break;
+            }
             serverSubject.notifyAll(new Message(Status.LAST_TURN));
             serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            if(player.isPlayerStuck()){
+                serverSubject.notifyAll(new Message(Status.NO_MOVES));
+                continue;
+            }
             placeCard(player);
         }
         //calculate the final score
@@ -132,7 +143,6 @@ public class GameController implements Runnable{
         }
         List<String> winners = game.getWinningPlayers();
         serverSubject.notifyAll(new WinnersMessage(winners));
-        //ViewUpdater is updated with the winners
     }
 
     /**
@@ -140,8 +150,9 @@ public class GameController implements Runnable{
      * @param player the player that needs to place a card.
      */
     private void placeCard(Player player) {
+        List<Corner> validPlacements = player.getAllValidCorners();
         serverSubject.notify(player.getNickname(),
-                new ValidPlacementsMessage(Status.PLACE_CARD, player.getAllValidCards(), player.getAllValidCorners()));
+                new ValidPlacementsMessage(Status.PLACE_CARD, player.getAllValidCards(), validPlacements));
         BasicCard cardToPlace = null;
         Corner chosenCorner = null;
         boolean moveValid = false;
@@ -158,7 +169,7 @@ public class GameController implements Runnable{
             moveValid = isMoveValid(player,cardToPlace,chosenCorner);
             if (!moveValid){
                 serverSubject.notify(player.getNickname(),
-                        new ValidPlacementsMessage(Status.INVALID_PLACE_CARD, player.getAllValidCards(), player.getAllValidCorners()));
+                        new ValidPlacementsMessage(Status.INVALID_PLACE_CARD, player.getAllValidCards(), validPlacements));
             }
         }
         player.placeCard(cardToPlace, chosenCorner);
@@ -280,20 +291,19 @@ public class GameController implements Runnable{
      * it deletes the controller.
      */
     @Override
-    public void run(){
+    public void run() {
         while(!game.isGameFull());
-        while(true){
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e){}
-            System.out.println("A new game started");
-            initializeGame();
-            startGame();
-            for(Player player : game.getAllPlayers()){
-                serverSubject.getNetworkHandler(player.getNickname()).setCurrentGame(null);
-                serverSubject.unsubscribe(player.getNickname());
-            }
-            endGameProcedure.accept(this);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
         }
+        System.out.println("A new game started");
+        initializeGame();
+        startGame();
+        for (Player player : game.getAllPlayers()) {
+            serverSubject.getNetworkHandler(player.getNickname()).setCurrentGame(null);
+            serverSubject.unsubscribe(player.getNickname());
+        }
+        endGameProcedure.accept(this);
     }
 }

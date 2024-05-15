@@ -149,7 +149,12 @@ public enum Status {
     /**
      * Message sent when an error occurs.
      */
-    ERROR("");
+    ERROR(""),
+
+    /**
+     * Message sent if a player has no moves.
+     */
+    NO_MOVES("");
 
     private final String message;
 

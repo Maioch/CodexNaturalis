@@ -128,7 +128,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         if(turnOwner.equals(controller.getLocalPlayerName())){
             System.out.println("It's your turn!");
         }else{
-            System.out.printf("%s is playing their turn...\n",turnOwner);
+            System.out.printf("%s is playing their turn...\n", turnOwner);
         }
     }
 
@@ -324,6 +324,11 @@ public class GameCLI extends AbstractCLI implements GameView {
             }
             default -> System.out.println("You've entered too many arguments for this command!");
         }
+    }
+
+    @Override
+    public void showNoMovesAvailable(){
+        System.out.printf("%s can't do any more moves ;(", controller.getPlayerWithTurn());
     }
 
     @Override

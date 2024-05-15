@@ -243,4 +243,17 @@ public class GameModel{
             }
         }};
     }
+
+    /**
+     * Checks if all players have no moves available.
+     * @return true if the game is in deadlock.
+     */
+    public synchronized boolean isGameStuck(){
+        for(Player player : players){
+            if(!player.isPlayerStuck()){
+                return false;
+            }
+        }
+        return true;
+    }
 }

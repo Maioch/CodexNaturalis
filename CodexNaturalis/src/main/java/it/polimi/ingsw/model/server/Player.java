@@ -315,6 +315,13 @@ public class Player {
     }
 
     /**
+     * @return true if the player has no moves available.
+     */
+    public boolean isPlayerStuck(){
+        return getAllValidCorners().isEmpty();
+    }
+
+    /**
      * @return the list of the back sides of the player's hand.
      */
     private List<CardSides> getBackOnlyCardHand(){
@@ -324,6 +331,7 @@ public class Player {
             }
         }};
     }
+
 
     /**
      * Equals method.
