@@ -13,11 +13,22 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Class that implements all the methods to format a card or the player's board, necessary operation to print
+ * them in the CLI.
+ */
 public class CardFormatter {
     private final static int cardLength = 7;
     private final static int cardHeight = 5; //DO NOT CHANGE
     private final static int boardRadius = 4;
 
+    /**
+     * Method used to format a player's board.
+     * @param placedCards the player's placed cards.
+     * @param viewX the X coordinate to which the board is centered.
+     * @param viewY the Y coordinate to which the board is centered.
+     * @return the formatted board.
+     */
     public static String getPlayerBoardString(List<BasicCard> placedCards, int viewX, int viewY){
         StringBuilder sb = new StringBuilder();
         int minX = viewX - boardRadius;
@@ -66,6 +77,11 @@ public class CardFormatter {
         return sb.toString();
     }
 
+    /**
+     * Method that formats the message sent to explain an objective.
+     * @param objective the objective to explain.
+     * @return the message that represents the objective.
+     */
     public static String getObjectiveInfoString(Objective objective){
         return String.format("objective card that awards %d points every time %s\n",
                 objective.getPoints(),
@@ -73,9 +89,10 @@ public class CardFormatter {
     }
 
     /**
-     * Gets the textual representation of a card's list
-     * @param cards list of the card's list
-     * @return the string representing the formatted card
+     * Method that formats the card info printed under its visual representation.
+     * @param cards all the cards that need to be printed.
+     * @param areBackSides boolean used to identify card backsides.
+     * @return the formatted card's description.
      */
     public static String getCardsInfoString(List<BasicCard> cards, boolean areBackSides){
         StringBuilder sb = new StringBuilder();
@@ -108,9 +125,9 @@ public class CardFormatter {
     }
 
     /**
-     * Gets the textual representation of a card
-     * @param card the card to format
-     * @return the string representing the formatted card
+     * Gets the textual representation of a card.
+     * @param card the card to format.
+     * @return the string representing the formatted card.
      */
     public static String getCardString(BasicCard card){
         if(card == null){
@@ -175,9 +192,9 @@ public class CardFormatter {
     }
 
     /**
-     * A method that gets a certain card bonus infos
-     * @param cardId the id of the card we want to get the infos from
-     * @return a formatted string of the bonus infos
+     * A method that gets a certain card bonus info.
+     * @param cardId the id of the card we want to get the info from.
+     * @return a formatted string of the bonus info.
      */
     private static String getBonusInfo(int cardId){
         JsonNode bonusNode = CardBuilder.getCardJson(cardId).get("bonus");
@@ -232,9 +249,9 @@ public class CardFormatter {
     }
 
     /**
-     * A method that gets a certain card native points
-     * @param cardId the id of the card we want to get the infos from
-     * @return the native points
+     * A method that gets a certain card native points.
+     * @param cardId the id of the card we want to get the infos from.
+     * @return the native points of the card.
      */
     private static int getNativePoints(int cardId){
         return CardBuilder.getPoints(CardBuilder.getCardJson(cardId));

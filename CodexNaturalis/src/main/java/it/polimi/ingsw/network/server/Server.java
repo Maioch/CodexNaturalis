@@ -54,7 +54,7 @@ public class Server {
                         TCPHandler tcpHandler = new TCPHandler(clientSocket, serverMessageHandler);
                         new Thread(tcpHandler).start();
                     }catch (IOException e){
-                        System.out.println("Encountered an IO exception when creating a TCP handler");
+                        System.out.println("Encountered an IO exception when creating the TCP handler");
                         System.out.println(e.getMessage());
                     }
                 }

@@ -1,13 +1,24 @@
 package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.exceptions.MapperException;
-import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 
 import java.util.*;
 import java.util.function.Predicate;
 
+/**
+ * Abstract class that contains all the methods used to handle the client's inputs.
+ */
 public abstract class AbstractCLI {
+
+    /**
+     * Method used to read the client's inputs.
+     * @param prompt the message printed to ask the client to input something.
+     * @param checker predicate that checks if the client's input is valid.
+     * @param mapper mapper that converts the client's input into the correct requested type.
+     * @return the converted client's input.
+     * @param <T> generic used to return different types of converted inputs.
+     */
     protected <T> T readFromInput (String prompt, Predicate<T> checker, Mapper<String, T> mapper){
         String commandChar = GameParameters.getCommandChar();
         Scanner scanner = new Scanner(System.in);
@@ -34,12 +45,16 @@ public abstract class AbstractCLI {
         }
     }
 
+    /**
+     * Method used to handle a client's command.
+     * @param command the command to handle.
+     * @param argument the arguments associated to the command.
+     */
     protected abstract void checkCommand(String command, String argument);
 
     /**
-     * Interface for mappers used in readInput
-     * If the conversion doesn't happen successfully,
-     * MapperException is thrown
+     * Interface for mappers used in readFromInput.
+     * If the conversion doesn't happen successfully, MapperException is thrown.
      * @param <T> the argument type
      * @param <U> the return type
      */
@@ -48,6 +63,12 @@ public abstract class AbstractCLI {
         U apply(T t) throws MapperException;
     }
 
+    /**
+     * Method that converts a string to an integer.
+     * @param input the string to convert.
+     * @return the converted input.
+     * @throws MapperException if the conversion isn't successful.
+     */
     protected int stringToInt(String input) throws MapperException{
         try{
             return Integer.parseInt(input);
@@ -56,6 +77,12 @@ public abstract class AbstractCLI {
         }
     }
 
+    /**
+     * Method that converts a string to an integer list.
+     * @param input the string to convert.
+     * @return the converted input.
+     * @throws MapperException if the conversion isn't successful.
+     */
     protected List<Integer> stringToListInt(String input) throws MapperException{
         try{
             List<Integer> result = new ArrayList<>();
@@ -69,6 +96,11 @@ public abstract class AbstractCLI {
         }
     }
 
+    /**
+     * Method used to enable a string type return in the radFromInput method.
+     * @param input the string to return.
+     * @return the same string as the inputted one.
+     */
     protected String stringIdentity(String input){
         return input;
     }

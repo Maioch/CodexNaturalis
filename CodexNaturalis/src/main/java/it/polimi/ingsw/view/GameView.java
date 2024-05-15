@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.network.messages.game.ChatMessage;
 
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
 public interface GameView {
     void notifyLastTurn();
     void requestDraw(Map<CardType, List<BasicCard>> drawableCards);
-    void showChatMessage(String message, String sender, List<String> recipients);
+    void showChatMessage(ChatMessage chatMessage);
     void requestPlacement(List<CardSides> handCards,
                           List<BasicCard> placedCards,
                           List<BasicCard> validCards,

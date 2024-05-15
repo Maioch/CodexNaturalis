@@ -263,9 +263,10 @@ public class GameController implements Runnable{
                 Message message = labeledMessage.message();
                 //handle chat messages
                 if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
+                    LabeledMessage finalLabeledMessage = labeledMessage;
                     String senderNickname = game.getAllPlayers().stream()
                             .map(Player::getNickname)
-                            .filter(n -> serverSubject.getNetworkHandler(n) == handler)
+                            .filter(n -> serverSubject.getNetworkHandler(n) == finalLabeledMessage.networkHandler())
                             .findFirst().orElse("Missing Sender");
                     int chatMsgLength = chatMessage.getMessage().length();
                     List<String> recipients = chatMessage.getRecipients();

@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
- * TCP-based NetworkHandler implementation
+ * TCP-based NetworkHandler implementation.
  */
 
 public class TCPHandler extends NetworkHandler implements Runnable{
@@ -16,9 +16,9 @@ public class TCPHandler extends NetworkHandler implements Runnable{
     private final ObjectInputStream socketInput;
 
     /**
-     * Constructor for the class
-     * @param socket the socket to which the client is connected
-     * @param handler the message handler that will handle the messages received
+     * Constructor for the class.
+     * @param socket the socket to which the client is connected.
+     * @param handler the message handler that will handle the messages received.
      */
     public TCPHandler(Socket socket, MessageHandler handler) throws IOException{
         super(handler);
@@ -27,7 +27,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
     }
 
     /**
-     * Main method run by the thread
+     * Main method run by the thread.
      */
     @SuppressWarnings("InfiniteLoopStatement")
     @Override
@@ -51,8 +51,8 @@ public class TCPHandler extends NetworkHandler implements Runnable{
     }
 
     /**
-     * Implemented update method. It writes the message on the output stream
-     * @param message the message to write
+     * Method used to write a message on the output stream.
+     * @param message the message to write.
      */
     @Override
     public void update(Message message){

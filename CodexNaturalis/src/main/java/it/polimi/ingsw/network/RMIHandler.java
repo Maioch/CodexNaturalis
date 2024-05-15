@@ -2,7 +2,6 @@ package it.polimi.ingsw.network;
 
 import it.polimi.ingsw.network.messages.Message;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -12,7 +11,7 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
     private RMIInterface receiverInterface;
 
     /**
-     * Constructor for RMIHandler.
+     * Constructor for the class.
      * @param handler the message handler to send the received messages to.
      * @throws RemoteException whenever the remote invocation of this method fails.
      */
@@ -43,8 +42,8 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
     }
 
     /**
-     * Method used by local classes (for example, ClientController on
-     * the client's side or ServerMessageHandler on the server's) to send messages through the network.
+     * Method used by local classes (for example, ClientController on the client's side or ServerMessageHandler
+     * on the server's) to send messages through the network.
      * @param message the message to send.
      */
     @Override

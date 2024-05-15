@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.client.LocalPlayer;
 import it.polimi.ingsw.model.client.RemotePlayer;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
@@ -21,6 +22,7 @@ import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.SetupView;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 
@@ -108,6 +110,17 @@ public class ClientController extends MessageHandler{
     public List<Objective> getPersonalObjectives() {return game.getLocalPlayer().getPersonalObjectives(); }
 
     public String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
+
+    public List<BasicCard> getRemotePlayerHand(String nickname) {
+        return game.getRemotePlayers().stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst().map(RemotePlayer::getHandCards)
+                .orElse(new ArrayList<>());
+    }
+
+    public List<CardSides> getLocalPlayerHand() {
+        return game.getLocalPlayer().getHandCards();
+    }
 
 
     public synchronized void backToSetup() {
@@ -266,10 +279,7 @@ public class ClientController extends MessageHandler{
                     }
                     case CHAT -> {
                         if (labeledMessage.message() instanceof ChatMessage chatMessage) {
-                            eventSubmitter.submit(() -> gameView.showChatMessage(
-                                    chatMessage.getMessage(),
-                                    chatMessage.getSender(),
-                                    chatMessage.getRecipients()));
+                            eventSubmitter.submit(() -> gameView.showChatMessage(chatMessage));
                         }
                     }
                 }

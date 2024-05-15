@@ -19,7 +19,7 @@ import it.polimi.ingsw.network.messages.setup.NewGameMessage;
 import java.util.*;
 
 /**
-* Class that handles the messages received by the server
+* Class that handles the messages sent by the clients and received by the server.
 *
 * @author Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli, Marco Maiocchi
 */
@@ -27,8 +27,8 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
     private final GamesManager games;
 
     /**
-     * Class constructor.
-     * @param games represents the current list of games
+     * Constructor for the class.
+     * @param games the current list of games.
      */
     public ServerMessageHandler(GamesManager games){
         super();
@@ -36,7 +36,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
     }
 
     /**
-     * Overridden run method. It reads the message queue and handles the message according to its status
+     * Overridden run method. It reads the message queue and handles the message according to its status.
      */
     @Override
     public void run(){

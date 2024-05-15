@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
  * Remote interface used by the client and the server to send messages to each other through the RMI protocol.
  */
 public interface RMIInterface extends Remote {
+
     /**
      * Remote method used to send messages to a previously set receiver that implements this interface.
      * @param message the message to send.

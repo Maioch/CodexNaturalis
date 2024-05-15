@@ -6,6 +6,7 @@ import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.view.GameView;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class GameGUI implements GameView {
     }
 
     @Override
-    public void showChatMessage(String message, String sender, List<String> recipients) {
+    public void showChatMessage(ChatMessage chatMessage) {
 
     }
 

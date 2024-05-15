@@ -1,23 +1,20 @@
 package it.polimi.ingsw.network;
 
 import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.network.server.ServerMessageHandler;
 
-import java.io.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 /**
- * Protocol independent class used to handle each client connected to the server
+ * Class that represents the objects that handle each client connected to the server.
  */
 public abstract class NetworkHandler extends UnicastRemoteObject implements Listener {
     protected final MessageHandler handler;
     private GameController currentGame;
 
     /**
-     * Constructor for the class
-     *
-     * @param handler the message handler to which the client refers to
+     * Constructor for the class.
+     * @param handler the message handler associated to the client.
      */
     public NetworkHandler(MessageHandler handler) throws RemoteException {
         this.currentGame = null;
@@ -25,14 +22,15 @@ public abstract class NetworkHandler extends UnicastRemoteObject implements List
     }
 
     /**
-     * @return the game that the player associated to this handler is playing
+     * @return the game that the player associated to this handler is in.
      */
     public GameController getCurrentGame(){
         return currentGame;
     }
 
     /**
-     * @param currentGame the game to set
+     * Setter fot eh currentGame attribute.
+     * @param currentGame the game associated to the hanlder.
      */
     public void setCurrentGame(GameController currentGame){
         this.currentGame = currentGame;

@@ -18,16 +18,26 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * The CLI associated to the gameplay phase.
+ */
 public class GameCLI extends AbstractCLI implements GameView {
     private final ClientController controller;
+    private Thread readInputThread;
+    private final Queue<ChatMessage> chatMessageQueue;
 
-    public GameCLI(ClientController controller){
+    /**
+     * Constructor for the class.
+     * @param controller the controller for the client that will be using the CLI.
+     */
+    public GameCLI(ClientController controller) {
         this.controller = controller;
+        chatMessageQueue = new LinkedList<>();
     }
 
     /**
-     * Method that asks for a draw choice
-     * @param drawableCards the list of drawable options
+     * Method that asks for a draw choice.
+     * @param drawableCards the list of drawable options.
      */
     @Override
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards){
@@ -52,21 +62,31 @@ public class GameCLI extends AbstractCLI implements GameView {
                         list.getLast() >= 1 && list.getLast() <= GameParameters.getNumberOfVisibleCards() + 1),
                 this::stringToListInt);
         controller.sendMessage(new DrawChoiceMessage(choice.getLast() - 1, CardType.values()[choice.getFirst() - 1]));
+        readInputThread = new Thread(() -> readFromInput(">", ((c) -> false), this::stringIdentity));
+        readInputThread.start();
     }
 
     /**
-     * A method that shows (prints) a message
-     * @param message the content of the message
-     * @param sender the sender of the message
-     * @param recipients the recipients of the message
+     * A method that shows (prints) a message.
+     * @param chatMessage contains the sender, the recipients and the message
      */
     @Override
-    public void showChatMessage(String message, String sender, List<String> recipients){
-        if(!sender.equals(controller.getLocalPlayerName())){
-            printChatMessage(message,sender,recipients);
+    public void showChatMessage(ChatMessage chatMessage){
+        if(!chatMessage.getSender().equals(controller.getLocalPlayerName())){
+            if(controller.getPlayerWithTurn().equals(controller.getLocalPlayerName())){
+                chatMessageQueue.add(chatMessage);
+            }else{
+                printChatMessage(chatMessage.getMessage(), chatMessage.getSender(), chatMessage.getRecipients());
+            }
         }
     }
 
+    /**
+     * Method that builds the default message string, used by the method above to print a message.
+     * @param message hte client's message
+     * @param sender the sender of the message.
+     * @param recipients the recipients of the message.
+     */
     private void printChatMessage(String message, String sender, List<String> recipients){
         StringBuilder sb = new StringBuilder();
         Map<String, Content> playerColors = controller.getPlayerColors();
@@ -87,6 +107,13 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println(sb.append(": ").append(message));
     }
 
+    /**
+     * Method that requests the client to place a card.
+     * @param handCards the client's hand cards.
+     * @param placedCards the client's placed cards.
+     * @param validCards the cards that can be placed.
+     * @param validCorners the corners where the new card can be placed.
+     */
     @Override
     public void requestPlacement(List<CardSides> handCards,
                                  List<BasicCard> placedCards,
@@ -123,38 +150,68 @@ public class GameCLI extends AbstractCLI implements GameView {
         controller.sendMessage(new CardPlacementMessage(validCards.get(cardIndex), validCorners.get(cornerIndex)));
     }
 
+    /**
+     * Method that notifies the client about a turn change.
+     * @param turnOwner the client that is playing its turn.
+     */
     @Override
     public void turnChanged(String turnOwner){
-        if(turnOwner.equals(controller.getLocalPlayerName())){
-            System.out.println("It's your turn!");
-        }else{
-            System.out.printf("%s is playing their turn...\n", turnOwner);
+        for(ChatMessage chatMessage : chatMessageQueue){
+            printChatMessage(chatMessage.getMessage(),chatMessage.getSender(),chatMessage.getRecipients());
+        }
+        Map<String, Content> playerColors = controller.getPlayerColors();
+        String coloredTurnOwner =  playerColors.get(turnOwner).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString();
+        if(!turnOwner.equals(controller.getLocalPlayerName())) {
+            System.out.printf("%s is playing their turn...\n", coloredTurnOwner);
+            return;
+        }
+        System.out.printf("It's your turn, %s!\n", coloredTurnOwner);
+        if (readInputThread != null) {
+            readInputThread.interrupt();
         }
     }
 
+    /**
+     * Method that prints an error message.
+     * @param message the message to print.
+     */
     @Override
     public void showErrorMessage(String message){
         System.out.println(message);
     }
 
+    /**
+     * Method that notifies the client about a new player that joined its game.
+     * @param player the new player's nickname.
+     * @param color the new player's color.
+     */
     @Override
     public void showUserJoined(String player, Content color){
         if (!player.equals(controller.getLocalPlayerName())) {
-            System.out.println(player + " joined your game and their chosen color is " + color.toString().toLowerCase());
+            System.out.println(color.getTextColorString() + player + Content.EMPTY.getTextColorString() + " joined your game!");
         }
     }
 
+    /**
+     * Method not implemented for the TUI to prevent message flooding.
+     * @param nickname //
+     * @param handCards //
+     */
     @Override
     public void updateRemotePlayerHand(String nickname, List<BasicCard> handCards){
-        System.out.printf("These are %s's new cards\n", nickname);
-        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().toList(), true));
     }
 
+    /**
+     * 
+     * @param handCards
+     */
     @Override
     public void updateLocalPlayerHand(List<CardSides> handCards){
-        System.out.println("These are your new cards");
-        System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList(), false));
-        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList(), true));
+        System.out.println("These are your cards");
+        System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(
+                handCards.stream().map(CardSides::frontSide).toList(), false));
+        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(
+                handCards.stream().map(CardSides::backSide).toList(), true));
     }
 
     @Override
@@ -178,7 +235,8 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void updateBoard(String nickname, List<BasicCard> placedCards, int moveScore){
-        System.out.printf("Here's the current placed cards by %s (centered on his last placed card):\n", nickname);
+        System.out.printf("Here's the current placed cards by %s (centered on his last placed card):\n",
+                controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         int x = placedCards.getLast().getCorner(Location.BL).getX();
         int y = placedCards.getLast().getCorner(Location.BL).getY();
         System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
@@ -226,7 +284,8 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore){
-        System.out.printf("Here's a recap of %s's match:\n", nickname);
+        System.out.printf("Here's a recap of %s's match:\n",
+                controller.getPlayerColors().get(nickname) + nickname + Content.EMPTY.getTextColorString());
         for(Map.Entry<Objective, Integer> entry : objectivePoints.entrySet()){
             System.out.print(CardFormatter.getObjectiveInfoString(entry.getKey()));
             System.out.println("Points scored: " + entry.getValue());
@@ -251,10 +310,30 @@ public class GameCLI extends AbstractCLI implements GameView {
             case "HELP" -> System.out.println(GameParameters.getGameHelpBody());
             case "CHAT" -> sendChatMessage(argument);
             case "BOARD" -> showBoard(argument);
+            case "HAND" -> showHandCards(argument);
             case "SYMBOLS" -> showSymbols();
             case "OBJECTIVES" -> showObjectives();
             default -> System.out.println("Command not recognized, type /HELP for a list of all commands!");
         }
+    }
+
+    @Override
+    public void showNoMovesAvailable() {
+        Map<String, Content> playerColors = controller.getPlayerColors();
+        String localPlayerName = controller.getLocalPlayerName();
+        String turnOwner = controller.getPlayerWithTurn();
+        if(turnOwner.equals(localPlayerName)){
+            System.out.printf("%s, you can't do any more moves ;(\n",
+                    playerColors.get(localPlayerName).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString());
+        }else{
+            System.out.printf("%s can't do any more moves ;)\n",
+                    playerColors.get(turnOwner).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString());
+        }
+    }
+
+    @Override
+    public void closeView() {
+
     }
 
     /**
@@ -268,6 +347,10 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @SuppressWarnings("SlowListContainsAll")
     private void sendChatMessage(String arguments){
+        if(controller.getPlayerWithTurn().equals(controller.getLocalPlayerName())){
+            System.out.println("please complete your turn before submitting any chat messages. >:/");
+            return;
+        }
         List<String> recipients = extractRecipients(arguments);
         String[] splitArgs = arguments.split(" ",2);
         String chatMessage = !recipients.isEmpty() ? splitArgs[1] : arguments;
@@ -300,40 +383,42 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     private void showBoard(String arguments){
         String[] splitArgs = arguments.split(" ");
-        switch (splitArgs.length){
+        switch(splitArgs.length){
             case 0,2 -> System.out.println("Invalid number of arguments. remember that you must at least specify whose board you want to view");
             case 1,3 -> {
                 int viewX = 0;
                 int viewY = 0;
                 if(splitArgs.length == 3){
-                    try {
+                    try{
                         viewX = Integer.parseInt(splitArgs[1]);
                         viewY = Integer.parseInt(splitArgs[2]);
-                    } catch (NumberFormatException e){
+                    }catch(NumberFormatException e){
                         System.out.println("One or more of the supplied coordinates is not a number");
                         break;
                     }
                 }
                 if(controller.getRemotePlayerNames().contains(splitArgs[0])){
-                    System.out.println(CardFormatter.getPlayerBoardString(controller.getRemotePlayerBoard(splitArgs[0]),viewX,viewY));
-                } else if (controller.getLocalPlayerName().equals(splitArgs[0])) {
-                    System.out.println(CardFormatter.getPlayerBoardString(controller.getLocalPlayerBoard(),viewX,viewY));
-                } else{
-                    System.out.printf("%s is not a player in the current game.\n",splitArgs[0]);
+                    System.out.println(CardFormatter.getPlayerBoardString(controller.getRemotePlayerBoard(splitArgs[0]), viewX, viewY));
+                }else if(controller.getLocalPlayerName().equals(splitArgs[0])){
+                    System.out.println(CardFormatter.getPlayerBoardString(controller.getLocalPlayerBoard(), viewX, viewY));
+                }else{
+                    System.out.printf("%s is not a player in the current game.\n", splitArgs[0]);
                 }
             }
             default -> System.out.println("You've entered too many arguments for this command!");
         }
     }
 
-    @Override
-    public void showNoMovesAvailable(){
-        System.out.printf("%s can't do any more moves ;(", controller.getPlayerWithTurn());
+    private void showHandCards(String argument){
+        if(argument.equals(controller.getLocalPlayerName())){
+            List<CardSides> hand = controller.getLocalPlayerHand();
+            updateLocalPlayerHand(hand);
+        }else if(controller.getRemotePlayerNames().contains(argument)){
+            List<BasicCard> hand = controller.getRemotePlayerHand(argument);
+            System.out.printf("These are %s's cards\n", argument);
+            System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(hand.stream().toList(), true));
+        }else{
+            System.out.printf("The user %s couldn't be found\n",argument);
+        }
     }
-
-    @Override
-    public void closeView() {
-
-    }
-
 }
