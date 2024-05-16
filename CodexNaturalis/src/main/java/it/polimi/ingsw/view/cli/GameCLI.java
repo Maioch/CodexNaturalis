@@ -50,7 +50,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                 System.out.println(i);
                 String cardOnTop = CardFormatter.getCardString(deckCardList.getFirst());
                 System.out.print(cardOnTop.isEmpty() ? "\n\nThe deck is empty\n\n" : cardOnTop);
-                System.out.print(CardFormatter.getCardsInfoString(deckCardList.subList(1,deckCardList.size()),false));
+                System.out.print(CardFormatter.getCardsInfoString(deckCardList.subList(1,deckCardList.size())));
             }
             i++;
         }
@@ -118,17 +118,17 @@ public class GameCLI extends AbstractCLI implements GameView {
                                  List<BasicCard> validCards,
                                  List<Corner> validCorners){
         System.out.println("These are the cards in your hand: ");
-        System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList(), false));
-        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList(),true));
+        System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList()));
+        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList()));
         System.out.println("Here are the ones you can place: ");
         int numberOfBackSides = GameParameters.getNumberOfResourceCardsInHand() + GameParameters.getNumberOfGoldCardsInHand();
         int maxCardsInHand = (numberOfBackSides) * 2;
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(validCards.stream()
                 .limit( numberOfBackSides - maxCardsInHand + validCards.size())
-                .toList(), false));
+                .toList()));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(validCards.stream()
                 .skip(numberOfBackSides - maxCardsInHand + validCards.size())
-                .toList(), true));
+                .toList()));
         int cardIndex = readFromInput("Choose which card you want to place by writing its index (starting from 1): ",
                 (i -> i >= 1 && i <= validCards.size()),
                 this::stringToInt) - 1;
@@ -212,9 +212,9 @@ public class GameCLI extends AbstractCLI implements GameView {
     public void updateLocalPlayerHand(List<CardSides> handCards){
         System.out.println("These are the cards in your hand: ");
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(
-                handCards.stream().map(CardSides::frontSide).toList(), false));
+                handCards.stream().map(CardSides::frontSide).toList()));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(
-                handCards.stream().map(CardSides::backSide).toList(), true));
+                handCards.stream().map(CardSides::backSide).toList()));
     }
 
     /**
@@ -228,11 +228,11 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.printf("These are the %d cards in your hand: \n",
                 GameParameters.getNumberOfResourceCardsInHand()
                         + GameParameters.getNumberOfGoldCardsInHand());
-        System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList(), false));
-        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList(), true));
+        System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList()));
+        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList()));
         System.out.println("This is your starter card: ");
-        System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.frontSide()), false));
-        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.backSide()), true));
+        System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.frontSide())));
+        System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.backSide())));
         int chosenSide = readFromInput("Choose which side of your starter you want to place (1 for front, 2 for back): ",
                 n -> n >= 1 && n <= 2,
                 this::stringToInt);
@@ -323,7 +323,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore){
         System.out.printf("Here's a recap of %s's match: \n",
-                controller.getPlayerColors().get(nickname) + nickname + Content.EMPTY.getTextColorString());
+                controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         for(Map.Entry<Objective, Integer> entry : objectivePoints.entrySet()){
             System.out.print(CardFormatter.getObjectiveInfoString(entry.getKey()));
             System.out.println("Points gained through this objective: " + entry.getValue());
@@ -465,7 +465,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         }else if(controller.getRemotePlayerNames().contains(argument)){
             List<BasicCard> hand = controller.getRemotePlayerHand(argument);
             System.out.printf("These are %s's cards: \n", argument);
-            System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(hand.stream().toList(), true));
+            System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(hand.stream().toList()));
         }else{
             System.out.printf("User %s couldn't be found...\n",argument);
         }

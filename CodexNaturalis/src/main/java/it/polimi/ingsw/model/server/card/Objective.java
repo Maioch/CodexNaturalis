@@ -43,7 +43,7 @@ public class Objective implements Serializable {
     public Objective(Objective objective){
         this.objectiveId = objective.objectiveId;
         this.points = objective.points;
-        this.owner = objective.owner;
+        this.owner = null;
         this.bonus = objective.bonus;
     }
 
@@ -52,7 +52,7 @@ public class Objective implements Serializable {
      * @return the amount of points gained.
      */
     public int checkObjective(){
-        return this.bonus.calculate();
+       return this.bonus.calculate(owner);
     }
 
     /**
@@ -97,6 +97,10 @@ public class Objective implements Serializable {
     public class ContentBonus implements Bonus{
         private final List<Content> sequence;
 
+        /**
+         * Constructor for the class.
+         * @param sequence list of the bonus's required content
+         */
         public ContentBonus(List<Content> sequence){
             this.sequence = sequence;
         }
@@ -107,8 +111,8 @@ public class Objective implements Serializable {
          * @return the amount of points that the card awards on placement.
          */
         @Override
-        public int calculate(){
-            Map<Content, Integer> timesFound = owner.getPlayerContent();
+        public int calculate(Player cardOwner){
+            Map<Content, Integer> timesFound = cardOwner.getPlayerContent();
             for(Content content : Content.values()){
                 if(sequence.contains(content)){
                     int timesFoundInSequence = sequence.stream()
@@ -156,12 +160,12 @@ public class Objective implements Serializable {
          * @return the base number of points awarded by the card multiplied by the amount of times the pattern appears.
          */
         @Override
-        public int calculate(){
+        public int calculate(Player cardOwner){
             Point min = new Point(0,0);
             Point max = new Point(0,0);
             //Generate a color hashmap from the player's board
             Map<Point,Content> colorHashMap = new HashMap<>(){{
-                for(BasicCard card : owner.getPlacedCards()){
+                for(BasicCard card : cardOwner.getPlacedCards()){
                     Corner cardBLCorner = card.getAllCorners().stream()
                             .filter(c -> c.getLocation() == Location.BL)
                             .findAny().orElseThrow();
@@ -178,8 +182,8 @@ public class Objective implements Serializable {
             //the search starts from the bottom left and ends at the top right.
             int timesAppeared = 0;
             Point baseOffset = new Point();
-            for(int y = min.y; y < max.y; y++){
-                for(int x = min.x; x < max.x; x++){
+            for(int y = min.y; y <= max.y; y++){
+                for(int x = min.x; x <= max.x; x++){
                     baseOffset.move(x,y);
                     Point offset = new Point(baseOffset);
                     List<Point> evaluatedPoints = new ArrayList<>();
@@ -188,7 +192,7 @@ public class Objective implements Serializable {
                     for(Map.Entry<Point, Content> patternEntry : pattern.entrySet()){
                         offset.move( baseOffset.x + patternEntry.getKey().x,
                                 baseOffset.y + patternEntry.getKey().y);
-                        evaluatedPoints.add(offset);
+                        evaluatedPoints.add(new Point(offset));
                         if(colorHashMap.get(offset) != patternEntry.getValue()){
                             patternFound = false;
                             break;

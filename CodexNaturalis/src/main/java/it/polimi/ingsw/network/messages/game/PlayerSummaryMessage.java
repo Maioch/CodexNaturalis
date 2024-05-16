@@ -5,6 +5,7 @@ import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -21,7 +22,7 @@ public class PlayerSummaryMessage extends Message {
      */
     public PlayerSummaryMessage(Map<Objective, Integer> objectiveScores, int finalScore){
         super(Status.PLAYER_FINAL_SCORE);
-        this.objectiveScores = new HashMap<>(objectiveScores);
+        this.objectiveScores = new LinkedHashMap<>(objectiveScores);
         this.finalScore = finalScore;
     }
 
@@ -36,6 +37,6 @@ public class PlayerSummaryMessage extends Message {
      * @return the objective scores of a player.
      */
     public Map<Objective, Integer> getObjectiveScores(){
-        return new HashMap<>(objectiveScores);
+        return new LinkedHashMap<>(objectiveScores);
     }
 }

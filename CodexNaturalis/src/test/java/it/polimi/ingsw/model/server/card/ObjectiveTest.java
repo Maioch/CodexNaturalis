@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.TestUtilities;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.model.server.Player;
+import it.polimi.ingsw.view.cli.CardFormatter;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -25,6 +26,7 @@ public class ObjectiveTest {
     void checkObjectiveTest(){
         Objective referenceContentObjective = CardBuilder.buildObjective(95);
         Objective referencePatternObjective = CardBuilder.buildObjective(87);
+        Objective referencePatternObjective2 = CardBuilder.buildObjective(94);
 
         Player referencePlayer = new Player(
                 "test",
@@ -63,6 +65,57 @@ public class ObjectiveTest {
 
         assertEquals(4, referenceContentObjective.checkObjective());
         assertEquals(4, referencePatternObjective.checkObjective());
+
+        referencePlayer = new Player("test",
+                Content.RED,
+                new ArrayList<>(),
+                new ArrayList<>(List.of(
+                        referencePatternObjective2
+                )),
+                new ServerSubject());
+
+        starter = CardBuilder.buildCard(81).frontSide();
+        starter.setOwner(referencePlayer);
+        referencePlayer.placeStarterCard(starter);
+
+        LinkedHashMap<Integer,Location> placements2 = new LinkedHashMap<>(){{
+            put(21,Location.TR);
+            put(31,Location.BR);
+            put(2, Location.BR);
+            put(32, Location.BL);
+            put(22, Location.BR);
+            put(33, Location.BR);
+            put(3, Location.BR);
+            put(34, Location.BL);
+        }};
+        TestUtilities.createTestBoard(referencePlayer, placements2, starter,true);
+
+        assertEquals(6, referencePatternObjective2.checkObjective());
+        Objective referencePatternObjective3 = CardBuilder.buildObjective(88);
+
+        referencePlayer = new Player("test",
+                Content.RED,
+                new ArrayList<>(),
+                new ArrayList<>(List.of(
+                        referencePatternObjective3
+                )),
+                new ServerSubject());
+
+        starter = CardBuilder.buildCard(81).frontSide();
+        starter.setOwner(referencePlayer);
+        referencePlayer.placeStarterCard(starter);
+
+        LinkedHashMap<Integer,Location> placements3 = new LinkedHashMap<>(){{
+            put(11,Location.TL);
+            put(12,Location.TL);
+            put(13, Location.TL);
+            put(14, Location.TL);
+            put(15, Location.TL);
+            put(16, Location.TL);
+        }};
+        TestUtilities.createTestBoard(referencePlayer, placements3, starter,true);
+
+        assertEquals(4, referencePatternObjective3.checkObjective());
     }
 
 

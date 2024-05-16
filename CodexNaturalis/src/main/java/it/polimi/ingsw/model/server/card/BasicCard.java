@@ -26,6 +26,7 @@ public class BasicCard implements Serializable {
     protected final Set<Corner> corners;
     protected final int points;
     protected final List<Content> resources;
+    protected final boolean isFront;
     protected transient Player owner;
 
     /**
@@ -35,6 +36,7 @@ public class BasicCard implements Serializable {
      * @param corners the card's corners.
      * @param points the card's points, that will be added to the player's score when he places the card on his board.
      * @param resources the card's central resources.
+     * @param isFront boolean attribute (true if it's a front side, false otherwise)
      * @exception CardException if the given parameters are invalid.
      */
     public BasicCard(
@@ -42,7 +44,8 @@ public class BasicCard implements Serializable {
             Content color,
             Set<Corner> corners,
             int points,
-            List<Content> resources)
+            List<Content> resources,
+            boolean isFront)
             throws CardException {
         if(!color.isColor() || points < 0){
             throw new CardException(
@@ -64,6 +67,7 @@ public class BasicCard implements Serializable {
         this.corners = new HashSet<>(corners);
         this.points = points;
         this.resources = new ArrayList<>(resources);
+        this.isFront = isFront;
     }
 
     /**
@@ -81,6 +85,7 @@ public class BasicCard implements Serializable {
         this.points = card.points;
         this.resources = new ArrayList<>(card.resources);
         this.owner = card.owner;
+        this.isFront = card.isFront;
     }
 
     /**
@@ -204,6 +209,10 @@ public class BasicCard implements Serializable {
         }
     }
 
+    public boolean isFront(){
+        return isFront;
+    }
+
     /**
      * Setter of the "owner" attribute, which represents the player owning the card.
      * @param owner player who owns the card.
@@ -231,6 +240,6 @@ public class BasicCard implements Serializable {
         if(object == null || this.getClass() != object.getClass())
             return false;
         BasicCard other = (BasicCard) object;
-        return this.cardId == other.cardId;
+        return this.cardId == other.cardId && this.isFront == other.isFront;
     }
 }

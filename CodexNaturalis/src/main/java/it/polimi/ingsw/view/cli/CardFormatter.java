@@ -91,10 +91,9 @@ public class CardFormatter {
     /**
      * Method that formats the card info printed under its visual representation.
      * @param cards all the cards that need to be printed.
-     * @param areBackSides boolean used to identify card backsides.
      * @return the formatted card's description.
      */
-    public static String getCardsInfoString(List<BasicCard> cards, boolean areBackSides){
+    public static String getCardsInfoString(List<BasicCard> cards){
         StringBuilder sb = new StringBuilder();
         int formatSpaceLength = 45;
         List<List<String>> cardStrings = new ArrayList<>(){{
@@ -103,11 +102,11 @@ public class CardFormatter {
                         .split("\n"))
                         .collect(Collectors.toCollection(ArrayList::new));
                 cardInfo.add(String.format("%" + (-formatSpaceLength) + "s", "Points: " +
-                        (areBackSides ? 0 : getNativePoints(card.getCardId()))));
+                        (card.isFront() ? getNativePoints(card.getCardId()) : 0)));
                 cardInfo.add(String.format("%" + (-formatSpaceLength) + "s", "Requirements: " +
-                        (areBackSides ? "[]" : card.getRequirements().entrySet().stream().filter(e -> e.getValue() != 0).toList())));
+                        (card.isFront() ? card.getRequirements().entrySet().stream().filter(e -> e.getValue() != 0).toList() : "[]" )));
                 cardInfo.add(String.format("%" + (-formatSpaceLength) + "s", "Bonus type: " +
-                        (areBackSides ? "no bonus." : getBonusInfo(card.getCardId()))));
+                        (card.isFront() ? getBonusInfo(card.getCardId()) : "no bonus.")));
                 add(cardInfo);
             }
         }};

@@ -98,10 +98,10 @@ public class CardBuilderTest {
         BasicCard testBack = testCardSides.backSide();
         BasicCard correctFront = new BasicCard(testIds.getFirst(),
                 testColors.getFirst(), resourceFrontCorners, testPoints.getFirst(),
-                new ArrayList<>());
+                new ArrayList<>(), true);
         BasicCard correctBack = new BasicCard(testIds.getFirst(),
                 testColors.getFirst(), resourceBackCorners, 0,
-                new ArrayList<>(){{add(testColors.getFirst());}});
+                new ArrayList<>(){{add(testColors.getFirst());}}, false);
         assertEquals(correctBack,testBack);
         assertEquals(correctFront,testFront);
     }
@@ -116,10 +116,10 @@ public class CardBuilderTest {
         BasicCard testBack = testCardSides.backSide();
         BasicCard basicFront = new BasicCard(testIds.get(1),
                 testColors.get(1), goldFrontCorners, testPoints.get(1),
-                new ArrayList<>());
+                new ArrayList<>(), true);
         BasicCard correctBack = new BasicCard(testIds.get(1),
                 testColors.get(1), resourceBackCorners, 0,
-                new ArrayList<>(){{add(testColors.get(1));}});
+                new ArrayList<>(){{add(testColors.get(1));}}, false);
         GoldCard correctFront = new GoldCard(basicFront,goldRequirements);
         correctFront.setBonus(correctFront.new ObjectBonus(Content.PEN));
         assertEquals(correctBack,testBack);
@@ -136,10 +136,10 @@ public class CardBuilderTest {
         BasicCard testBack = testCardSides.backSide();
         BasicCard correctFront = new BasicCard(testIds.get(2),
                 testColors.get(2), starterFrontCorners, testPoints.get(2),
-                starterResources);
+                starterResources, true);
         BasicCard correctBack = new BasicCard(testIds.get(2),
                 testColors.get(2), starterBackCorners, testPoints.get(2),
-                new ArrayList<>());
+                new ArrayList<>(), false);
         assertEquals(correctBack,testBack);
         assertEquals(correctFront,testFront);
     }

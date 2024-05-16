@@ -165,7 +165,11 @@ public class GameModel{
             }
         }};
         List<Objective> objectives = new ArrayList<>() {{
-            addAll(commonObjectives);
+            List<Objective> commonObjectiveClones = new ArrayList<>();
+            for(Objective objective : commonObjectives) {
+                commonObjectiveClones.add(new Objective(objective));
+            }
+            addAll(commonObjectiveClones);
             for (int i = 0; i < GameParameters.getNumberOfSecretObjectives(); i++) {
                 add(objectiveDeck.draw());
             }

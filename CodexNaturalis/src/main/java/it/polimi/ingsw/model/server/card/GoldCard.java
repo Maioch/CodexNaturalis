@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.server.card;
 
 import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class GoldCard extends BasicCard {
      * @throws CardException if there are invalid requirements.
     */
     public GoldCard(BasicCard cardTemplate, List<Content> requirements) throws CardException {
-        super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources);
+        super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources, cardTemplate.isFront());
         if(requirements.stream().anyMatch(c -> !c.isResource())){
             throw new CardException(
                     String.format(
@@ -44,7 +45,6 @@ public class GoldCard extends BasicCard {
      * Copy-Constructor method for the GoldCard.
      * @param card the GoldCard to be copied.
      */
-
     public GoldCard(GoldCard card){
         super(card);
         this.requirements = new ArrayList<>(card.requirements);
@@ -56,14 +56,14 @@ public class GoldCard extends BasicCard {
      */
     @Override
     public Map<Content,Integer> getRequirements(){
-        return new HashMap<>(){{
-            for(Content content : Content.values()){
-                put(content, requirements.stream()
-                        .filter(x -> x == content)
-                        .mapToInt(x -> 1)
-                        .reduce(0,Integer::sum));
-            }
-        }};
+        Map<Content,Integer> result = new HashMap<>();
+        for(Content content : Content.values()){
+            result.put(content, requirements.stream()
+                    .filter(x -> x == content)
+                    .mapToInt(x -> 1)
+                    .reduce(0,Integer::sum));
+        }
+        return result;
     }
 
     /**
@@ -79,7 +79,7 @@ public class GoldCard extends BasicCard {
      */
     @Override
     public int getPoints(){
-        return bonus != null ? bonus.calculate() : points;
+        return bonus != null ? bonus.calculate(owner) : points;
     }
 
     /**
@@ -96,7 +96,7 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Copy method that Guarantees that the card will be copied using the right constructor.
+     * Copy method that guarantees that the card will be copied using the right constructor.
      * @return a copy of the card.
      */
     @Override
@@ -110,13 +110,12 @@ public class GoldCard extends BasicCard {
      * @author Andera Fidanza
      */
     public class CornerBonus implements Bonus{
-
         /**
          * @return points gained by placing the card.
          */
         @Override
-        public int calculate(){
-            return points * owner.getPlacedCards().stream()
+        public int calculate(Player cardOwner){
+            return points * cardOwner.getPlacedCards().stream()
                 .filter(card -> !card.equals(GoldCard.this))
                 .flatMap(card -> card.getAllCorners().stream())
                 .filter(corner -> corners.stream().anyMatch(c -> c.isSamePosition(corner)))
@@ -147,8 +146,8 @@ public class GoldCard extends BasicCard {
          * @return points given to the player.
          */
         @Override
-        public int calculate(){
-            return points * owner.getPlayerContent().get(object);
+        public int calculate(Player cardOwner){
+            return points * cardOwner.getPlayerContent().get(object);
         }
     }
 }

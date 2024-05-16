@@ -166,7 +166,7 @@ public class GameController implements Runnable{
                         .orElse(null);
                 chosenCorner = cardPlacementMessage.getCorner();
             }
-            moveValid = isMoveValid(player,cardToPlace,chosenCorner);
+            moveValid = isMoveValid(player, cardToPlace, chosenCorner);
             if (!moveValid){
                 serverSubject.notify(player.getNickname(),
                         new ValidPlacementsMessage(Status.INVALID_PLACE_CARD, player.getAllValidCards(), validPlacements));

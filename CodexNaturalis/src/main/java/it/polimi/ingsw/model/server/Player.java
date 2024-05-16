@@ -10,10 +10,7 @@ import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.game.*;
 import it.polimi.ingsw.network.server.ServerSubject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +50,7 @@ public class Player {
         this.score = 0;
         //DEBUG
         if (nickname.equals("jonny")) {
-            this.score = 20;
+            this.score = 15; //nerfed
         }
         //DEBUG
         //Set the owner for both the regular cards and the objectives
@@ -127,21 +124,15 @@ public class Player {
      * visible in the player's board.
      */
     public Map<Content,Integer> getPlayerContent(){
-        return new HashMap<>(){{
-            if(!nickname.equals("jonny")){
-                for(Content content : Content.values()) {
-                    put(content, getPlacedCards().stream()
-                            .map(BasicCard::getCardSymbols)
-                            .mapToInt(x -> x.get(content))
-                            .reduce(0, Integer::sum)
-                    );
-                }
-            }else{
-                for(Content content : Content.values()) {
-                    put(content, 99999);
-                }
-            }
-        }};
+        Map<Content, Integer> result = new HashMap<>();
+        for(Content content : Content.values()){
+            result.put(content, getPlacedCards().stream()
+                    .map(BasicCard::getCardSymbols)
+                    .mapToInt(x -> x.get(content))
+                    .reduce(0, Integer::sum)
+            );
+        }
+        return result;
     }
 
     /**
@@ -152,7 +143,7 @@ public class Player {
      * @return a list with the amount of points given by each objective.
      */
     public List<Integer> awardObjectivePoints(){
-        Map<Objective, Integer> objectivePoints = new HashMap<>();
+        Map<Objective, Integer> objectivePoints = new LinkedHashMap<>();
         for(Objective objective : this.objectives) {
             int objectiveResult = objective.checkObjective();
             objectivePoints.put(objective, objectiveResult);

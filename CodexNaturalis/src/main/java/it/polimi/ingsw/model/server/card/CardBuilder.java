@@ -38,15 +38,13 @@ public class CardBuilder {
         int points = getPoints(cardJson);
         switch (cardJson.get("type").asText()) {
             case "RESOURCE" -> {
-                cardFront = new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>());
-                cardBack = new BasicCard(cardId, color, backCornerMap, 0, new ArrayList<>() {{
-                    add(color);
-                }});
+                cardFront = new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>(), true);
+                cardBack = new BasicCard(cardId, color, backCornerMap, 0, new ArrayList<>() {{add(color);}}, false);
             }
             case "GOLD" -> {
                 List<Content> requirements = getContentFromArray(cardJson, "requirements");
                 GoldCard goldFront = new GoldCard(
-                        new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>()), requirements);
+                        new BasicCard(cardId, color, frontCornerMap, points, new ArrayList<>(), true), requirements);
                 Bonus bonus = switch (getBonusType(cardJson)) {
                     case "CORNER" -> goldFront.new CornerBonus();
                     case "OBJECT" -> {
@@ -59,14 +57,12 @@ public class CardBuilder {
                 };
                 goldFront.setBonus(bonus);
                 cardFront = goldFront;
-                cardBack = new BasicCard(cardId, color, backCornerMap, 0, new ArrayList<>() {{
-                    add(color);
-                }});
+                cardBack = new BasicCard(cardId, color, backCornerMap, 0, new ArrayList<>() {{ add(color); }}, false);
             }
             case "STARTER" -> {
                 List<Content> resources = getContentFromArray(cardJson, "resources");
-                cardFront = new BasicCard(cardId, Content.WHITE, frontCornerMap, 0, resources);
-                cardBack = new BasicCard(cardId, Content.WHITE, backCornerMap, 0, new ArrayList<>());
+                cardFront = new BasicCard(cardId, Content.WHITE, frontCornerMap, 0, resources, true);
+                cardBack = new BasicCard(cardId, Content.WHITE, backCornerMap, 0, new ArrayList<>(), false);
             }
             default -> throw new IllegalStateException("Unexpected value: " + cardJson.get("type").asText());
         }
