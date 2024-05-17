@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GameGUI implements GameView {
+
     @Override
     public void notifyLastTurn() {
 
