@@ -1,0 +1,12 @@
+.mainBg {
+    -fx-background-image:url('minicodexBG.png');
+    -fx-background-size: 75 75;
+}
+.ipPort{
+    -fx-background-image:url('wood.png');
+    -fx-background-size: 40 40;
+    -fx-background-radius: 50;
+    -fx-border: none;
+    -fx-border-radius: 50;
+    -fx-border-width: 30;
+}
