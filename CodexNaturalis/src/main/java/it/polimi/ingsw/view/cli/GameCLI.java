@@ -413,7 +413,7 @@ public class GameCLI extends AbstractCLI implements GameView {
             System.out.println("Some of the recipients couldn't be found. The message wasn't sent.");
         }
     }
-    
+
     private List<String> extractRecipients(String arguments){
         List<String> recipients = new ArrayList<>();
         int indexOfDelimiter = 0;

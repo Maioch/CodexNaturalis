@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.RMIHandler;
 import it.polimi.ingsw.network.TCPHandler;
 import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
@@ -55,13 +56,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             switch (protocol) {
                 case 1 -> {
                     try {
-                        Socket socket = new Socket(ip, port);
-                        socket.getInputStream();
-                        TCPHandler tcpHandler = new TCPHandler(socket, clientController);
-                        clientController.setNetworkHandler(tcpHandler);
-                        new Thread(tcpHandler).start();
-                        System.out.println(GameParameters.getTitle());
-                        clientController.sendMessage(new Message(Status.REQUEST_GAMES));
+                        ConnectionInitializer.initializeTCP(ip, port, clientController);
                         isConnected = true;
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
@@ -69,17 +64,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 }
                 case 2 -> {
                     try {
-                        RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager", ip, port));
-                        try {
-                            RMIHandler rmiHandler = new RMIHandler(clientController);
-                            clientController.setNetworkHandler(rmiHandler);
-                            rmiSetup.register(rmiHandler);
-                            System.out.println(GameParameters.getTitle());
-                            clientController.sendMessage(new Message(Status.REQUEST_GAMES));
-                            isConnected = true;
-                        } catch (IOException e) {
-                            System.out.println(e.getMessage());
-                        }
+                        ConnectionInitializer.initializeRMI(ip, port, clientController);
+                        isConnected = true;
                     } catch (MalformedURLException e) {
                         System.out.println("No RMI Server was found at the supplied address");
                     } catch (NotBoundException e) {
@@ -208,7 +194,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                     Desktop.getDesktop().browse(url);
                 }catch(URISyntaxException | IOException | UnsupportedOperationException e){
                     System.out.printf(
-                            "Couldn't launch the browser. Please open it yourself and navigate to %s \n",GameParameters.getRulesURL());
+                            "Couldn't launch the browser. Please open it yourself and navigate to %s \n", GameParameters.getRulesURL());
                 }
             }
             case "ABOUT" ->  System.out.println(
