@@ -6,6 +6,7 @@ import it.polimi.ingsw.network.TCPHandler;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.server.RMISetup;
+import it.polimi.ingsw.view.EventSubmitter;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,12 +27,22 @@ public class ConnectionInitializer {
      * @param controller the controller that will handle the client.
      * @throws IOException when a connection error occurs.
      */
-    public static void initializeTCP(String ip, int port, ClientController controller) throws IOException {
+    public static void initializeTCP(String ip, int port, ClientController controller, EventSubmitter eventSubmitter) throws IOException {
         Socket socket = new Socket(ip, port);
         socket.getInputStream();
         TCPHandler tcpHandler = new TCPHandler(socket, controller);
+        eventSubmitter.submit(() -> completeTCPSetup(socket, tcpHandler, controller));
+    }
+
+
+    private static void completeTCPSetup(Socket socket, TCPHandler tcpHandler,ClientController controller){
         controller.setNetworkHandler(tcpHandler);
         new Thread(tcpHandler).start();
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+    }
+
+    private static void completeRMISetup(ClientController controller, RMIHandler rmiHandler){
+        controller.setNetworkHandler(rmiHandler);
         System.out.println(GameParameters.getTitle());
         controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
@@ -45,12 +56,10 @@ public class ConnectionInitializer {
      * @throws MalformedURLException when the server ip isn't correct.
      * @throws NotBoundException when the requested object isn't bound.
      */
-    public static void initializeRMI(String ip, int port, ClientController controller) throws RemoteException, MalformedURLException, NotBoundException {
+    public static void initializeRMI(String ip, int port, ClientController controller,EventSubmitter eventSubmitter) throws RemoteException, MalformedURLException, NotBoundException {
         RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager", ip, port));
         RMIHandler rmiHandler = new RMIHandler(controller);
-        controller.setNetworkHandler(rmiHandler);
         rmiSetup.register(rmiHandler);
-        System.out.println(GameParameters.getTitle());
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        eventSubmitter.submit(() -> completeRMISetup(controller, rmiHandler));
     }
 }

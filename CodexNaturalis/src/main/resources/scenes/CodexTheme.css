@@ -65,5 +65,60 @@
   -fx-border-color: #2f0606;
   -fx-border-radius: 8;
   -fx-border-width: 2px;
+  -fx-region-background: #FFFCE2;
   -fx-text-fill: #2f0606;
 }
+.matchScrollView .viewport{
+  -fx-color: #FFFCE2;
+  -fx-background-radius: 8;
+  -fx-background-color: #FFFCE2;
+  -fx-region-background: #FFFCE2;
+  -fx-text-fill: #2f0606;
+}
+.matchScrollView .scroll-bar{
+  -fx-color: #E4DFB5;
+}
+.matchScrollView .scroll-bar:hover{
+  -fx-color: #FFFCDD;
+}
+.matchScrollView .scroll-bar .track{
+  -fx-background-color: #E4DFB5;
+}
+.matchScrollView .scroll-bar .increment-button{
+  -fx-background-color: #E4DFB5;
+}
+.matchScrollView .scroll-bar .decrement-button{
+  -fx-background-color: #E4DFB5;
+}
+.tableButton{
+  -fx-color: #2f0606;
+  -fx-text-fill: #2f0606;
+  -fx-background-color: transparent;
+  -fx-background-radius: 0;
+  -fx-border-color: transparent;
+  -fx-border-radius: 0;
+  -fx-border-width: 0px;
+}
+.tableButton:hover{
+  -fx-color: #2f0606;
+  -fx-text-fill: #2f0606;
+  -fx-background-color: #E8DF92;
+  -fx-background-radius: 0;
+  -fx-border-color: transparent;
+  -fx-border-radius: 0;
+  -fx-border-width: 0px;
+}
+.tableButton:pressed{
+  -fx-color: #2f0606;
+  -fx-text-fill: #2f0606;
+  -fx-background-color: #A49E22;
+  -fx-border-color: transparent;
+  -fx-background-radius: 0;
+  -fx-border-radius: 0;
+  -fx-border-width: 0px;
+}
+.popUpBackground{
+  -fx-background-color: rgba(0,0,0,0.5)
+}
+
+

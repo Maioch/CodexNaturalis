@@ -4,8 +4,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -15,12 +17,15 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@IPPortMenu.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:controller="it.polimi.ingsw.view.gui.controllers.MatchBrowserViewController"
+            maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="720.0" prefWidth="1280.0" stylesheets="@CodexTheme.css"
+            xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <GridPane layoutX="55.0" layoutY="55.0" prefHeight="720.0" prefWidth="1280.0" styleClass="mainBg" stylesheets="@CodexTheme.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <GridPane layoutX="55.0" layoutY="55.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="720.0" prefWidth="1280.0" styleClass="mainBg" stylesheets="@CodexTheme.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" maxWidth="890.0" minWidth="10.0" percentWidth="70.0" prefWidth="596.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="684.0" minWidth="10.0" prefWidth="684.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="684.0" minWidth="10.0" percentWidth="30.0" prefWidth="684.0" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -31,7 +36,7 @@
                   <Image url="@images/CodexNaturalisLogo.png" />
                </image>
             </ImageView>
-            <GridPane prefHeight="720.0" prefWidth="512.0" styleClass="woodenPanel" stylesheets="@CodexTheme.css" GridPane.columnIndex="1">
+            <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" prefHeight="1000000.0" prefWidth="1000000.0" styleClass="woodenPanel" stylesheets="@CodexTheme.css" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" percentWidth="15.0" prefWidth="0.0" />
                   <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
@@ -54,9 +59,9 @@
                      <children>
                         <GridPane prefHeight="367.0" prefWidth="512.0" GridPane.rowIndex="1">
                           <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="6.0" prefWidth="100.0" />
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="6.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" percentHeight="90.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -67,35 +72,78 @@
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                 </columnConstraints>
                                 <rowConstraints>
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <Button fx:id="connectButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Refresh" textFill="#2f0606" GridPane.halignment="CENTER">
+                                    <Button fx:id="refreshButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Refresh" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                        <font>
-                                          <Font name="Fira Sans Condensed Regular" size="16.0" />
+                                          <Font name="Fira Sans Condensed Regular" size="14.0" />
                                        </font>
                                        <GridPane.margin>
-                                          <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                          <Insets right="4.0" />
                                        </GridPane.margin>
                                     </Button>
-                                    <Button fx:id="connectButton1" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Join" textFill="#2f0606" GridPane.columnIndex="1">
+                                    <Button fx:id="joinButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Join" textFill="#2f0606" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                        <font>
-                                          <Font name="Fira Sans Condensed Regular" size="16.0" />
+                                          <Font name="Fira Sans Condensed Regular" size="14.0" />
                                        </font>
                                        <GridPane.margin>
-                                          <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                                          <Insets left="4.0" />
+                                       </GridPane.margin>
+                                    </Button>
+                                    <Button fx:id="createButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Create" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                       <font>
+                                          <Font name="Fira Sans Condensed Regular" size="14.0" />
+                                       </font>
+                                       <GridPane.margin>
+                                          <Insets left="4.0" right="4.0" />
                                        </GridPane.margin>
                                     </Button>
                                  </children>
                               </GridPane>
-                              <TableView prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-                                <columns>
-                                  <TableColumn prefWidth="75.0" text="C1" />
-                                  <TableColumn prefWidth="75.0" text="C2" />
-                                </columns>
-                              </TableView>
+                              <ScrollPane fitToWidth="true" hbarPolicy="NEVER" hmax="0.0" pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="matchScrollView" GridPane.columnIndex="1">
+                                 <GridPane.margin>
+                                    <Insets bottom="8.0" top="16.0" />
+                                 </GridPane.margin>
+                                 <content>
+                                    <GridPane fx:id="matchGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="100.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints fillHeight="false" minHeight="10.0" prefHeight="30.0" />
+                                        <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="1.0" percentHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <GridPane>
+                                            <columnConstraints>
+                                              <ColumnConstraints minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                                              <ColumnConstraints minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="20.0" prefHeight="20.0" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name" textFill="#2f0606" GridPane.columnIndex="1" GridPane.valignment="CENTER">
+                                                   <font>
+                                                      <Font name="Fira Sans Condensed SemiBold" size="16.0" />
+                                                   </font>
+                                                </Label>
+                                                <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="ID" textFill="#2f0606">
+                                                   <font>
+                                                      <Font name="Fira Sans Condensed SemiBold" size="16.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </GridPane>
+                                          <Pane maxHeight="1.0" prefHeight="1.0" prefWidth="1.0" styleClass="titleDivider" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="NEVER" />
+                                       </children>
+                                    </GridPane>
+                                 </content>
+                              </ScrollPane>
                            </children>
                         </GridPane>
                         <GridPane styleClass="titleBackground">
@@ -126,9 +174,222 @@
             </GridPane>
          </children>
       </GridPane>
+      <GridPane fx:id="errorPopup" styleClass="popUpBackground" stylesheets="@CodexTheme.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="10.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="32.0" percentHeight="20.0" prefHeight="32.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <GridPane styleClass="menuCard" GridPane.columnIndex="1" GridPane.rowIndex="1">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints fillHeight="false" minHeight="1.0" prefHeight="1.0" vgrow="NEVER" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Error" textFill="#2f0606">
+                     <font>
+                        <Font name="Fira Sans Condensed SemiBold" size="21.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="errorText" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="Unable to join the match" textFill="#2f0606" GridPane.rowIndex="2">
+                     <font>
+                        <Font name="Fira Sans Condensed SemiBold" size="18.0" />
+                     </font>
+                  </Label>
+                  <Pane prefHeight="1.0" prefWidth="1.0" styleClass="titleDivider" GridPane.rowIndex="1" />
+                  <Button fx:id="okButton" mnemonicParsing="false" text="Ok" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+               </children>
+            </GridPane>
+         </children>
+      </GridPane>
+      <GridPane fx:id="joinGamePopup" layoutX="10.0" layoutY="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="popUpBackground" stylesheets="@CodexTheme.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="32.0" percentHeight="40.0" prefHeight="32.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <GridPane styleClass="menuCard" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints fillHeight="false" minHeight="1.0" prefHeight="1.0" vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Join game" textFill="#2f0606">
+                     <font>
+                        <Font name="Fira Sans Condensed SemiBold" size="21.0" />
+                     </font>
+                  </Label>
+                  <Pane prefHeight="1.0" prefWidth="1.0" styleClass="titleDivider" GridPane.rowIndex="1" />
+                  <GridPane GridPane.rowIndex="2">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <TextField fx:id="nicknameTextBox" promptText="Nickname" styleClass="textField" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <font>
+                              <Font name="Fira Sans Condensed Regular" size="14.0" />
+                           </font>
+                        </TextField>
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="Nickname" textFill="#2f0606" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Fira Sans Condensed SemiBold" size="18.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="joinPopupButton" disable="true" mnemonicParsing="false" text="Join" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="Color" textFill="#2f0606" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <font>
+                              <Font name="Fira Sans Condensed SemiBold" size="18.0" />
+                           </font>
+                        </Label>
+                        <GridPane fx:id="colorChoicePane" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                          <columnConstraints>
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                        </GridPane>
+                     </children>
+                  </GridPane>
+               </children>
+            </GridPane>
+         </children>
+      </GridPane>
+      <GridPane fx:id="createMatchPopup" layoutX="20.0" layoutY="20.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="popUpBackground" stylesheets="@CodexTheme.css" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="10.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="32.0" percentHeight="40.0" prefHeight="32.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <GridPane styleClass="menuCard" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints fillHeight="false" minHeight="1.0" prefHeight="1.0" vgrow="NEVER" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Create match" textFill="#2f0606">
+                     <font>
+                        <Font name="Fira Sans Condensed SemiBold" size="21.0" />
+                     </font>
+                  </Label>
+                  <Pane prefHeight="1.0" prefWidth="1.0" styleClass="titleDivider" GridPane.rowIndex="1" />
+                  <GridPane GridPane.rowIndex="2">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <TextField fx:id="MatchNameTextbox" promptText="Match name" styleClass="textField" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <font>
+                              <Font name="Fira Sans Condensed Regular" size="14.0" />
+                           </font>
+                        </TextField>
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="Match name" textFill="#2f0606" GridPane.columnIndex="1">
+                           <font>
+                              <Font name="Fira Sans Condensed SemiBold" size="18.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="createPopupButton" disable="true" mnemonicParsing="false" text="Create" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="Number of players" textFill="#2f0606" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <font>
+                              <Font name="Fira Sans Condensed SemiBold" size="18.0" />
+                           </font>
+                        </Label>
+                        <GridPane GridPane.columnIndex="1" GridPane.rowIndex="3">
+                           <columnConstraints>
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin>
+                           <children>
+                              <RadioButton fx:id="twoPlayersRadio" mnemonicParsing="false" styleClass="radioButtons" text="2" textFill="#2f0606">
+                                 <font>
+                                    <Font name="Fira Sans Condensed Regular" size="18.0" />
+                                 </font>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="playerNumberChoice" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="threePlayersRadio" mnemonicParsing="false" styleClass="radioButtons" text="3" textFill="#2f0606" toggleGroup="$playerNumberChoice" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font name="Fira Sans Condensed Regular" size="18.0" />
+                                 </font>
+                              </RadioButton>
+                              <RadioButton fx:id="fourPlayersRadio" mnemonicParsing="false" styleClass="radioButtons" text="4" textFill="#2f0606" GridPane.columnIndex="2">
+                                 <font>
+                                    <Font name="Fira Sans Condensed Regular" size="18.0" />
+                                 </font>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="playerNumberChoice12" />
+                                 </toggleGroup>
+                              </RadioButton>
+                           </children>
+                        </GridPane>
+                     </children>
+                  </GridPane>
+               </children>
+            </GridPane>
+         </children>
+      </GridPane>
    </children>
    <styleClass>
-      <String fx:value="anchor" />
       <String fx:value="mainBg" />
    </styleClass>
 </AnchorPane>

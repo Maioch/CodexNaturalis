@@ -16,7 +16,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:controller="it.polimi.ingsw.view.gui.controllers.LoginViewController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@CodexTheme.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:controller="it.polimi.ingsw.view.gui.controllers.ConnectionViewController"
+            maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0"
+            stylesheets="@CodexTheme.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane layoutX="55.0" layoutY="55.0" prefHeight="720.0" prefWidth="1280.0" styleClass="mainBg" stylesheets="@CodexTheme.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -79,16 +81,16 @@
                                     <Font name="Fira Sans Condensed Regular" size="16.0" />
                                  </font>
                               </Button>
-                              <TextField fx:id="portTextBox" onKeyTyped="#checkIfEnableButton" promptText="Server port" styleClass="textField" GridPane.columnIndex="1" GridPane.rowIndex="5">
-                                 <font>
-                                    <Font name="Fira Sans Condensed Regular" size="14.0" />
-                                 </font>
-                              </TextField>
                               <TextField fx:id="ipTextBox" onKeyTyped="#checkIfEnableButton" promptText="Server ip" styleClass="textField" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <font>
                                     <Font name="Fira Sans Condensed Regular" size="14.0" />
                                  </font>
                               </TextField>
+                               <TextField fx:id="portTextBox" onKeyTyped="#checkIfEnableButton" promptText="Server port" styleClass="textField" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                   <font>
+                                       <Font name="Fira Sans Condensed Regular" size="14.0" />
+                                   </font>
+                               </TextField>
                               <Label alignment="CENTER" prefHeight="21.0" prefWidth="111.0" text="Server Port" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
                                  <font>
                                     <Font name="Fira Sans Condensed Regular" size="18.0" />
@@ -125,15 +127,15 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <RadioButton fx:id="rmiRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButtons" text="RMI" textFill="#351f16" GridPane.columnIndex="1" GridPane.halignment="CENTER">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="protocol" />
-                                       </toggleGroup>
-                                       <font>
-                                          <Font name="Fira Sans Condensed Regular" size="18.0" />
-                                       </font>
-                                    </RadioButton>
-                                    <RadioButton fx:id="tcpRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButtons" text="TCP" textFill="#351f16" toggleGroup="$protocol" GridPane.halignment="CENTER">
+                                     <RadioButton fx:id="tcpRadioButton" id="0" mnemonicParsing="false" selected="true" styleClass="radioButtons" text="TCP" textFill="#351f16" GridPane.halignment="CENTER">
+                                         <toggleGroup>
+                                             <ToggleGroup fx:id="protocol" />
+                                         </toggleGroup>
+                                         <font>
+                                             <Font name="Fira Sans Condensed Regular" size="18.0" />
+                                         </font>
+                                     </RadioButton>
+                                    <RadioButton fx:id="rmiRadioButton" id="1" mnemonicParsing="false" styleClass="radioButtons" text="RMI" textFill="#351f16" toggleGroup="$protocol" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                                        <font>
                                           <Font name="Fira Sans Condensed Regular" size="18.0" />
                                        </font>

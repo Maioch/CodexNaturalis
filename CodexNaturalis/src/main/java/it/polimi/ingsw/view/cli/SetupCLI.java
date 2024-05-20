@@ -13,6 +13,7 @@ import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
 import it.polimi.ingsw.network.server.RMISetup;
 import it.polimi.ingsw.view.SetupView;
+import it.polimi.ingsw.view.gui.GraphicalSubmitter;
 
 import java.awt.*;
 import java.io.IOException;
@@ -42,8 +43,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     public SetupCLI(){
         boolean isConnected = false;
         this.clientController = new ClientController(this, new TerminalSubmitter());
+        new Thread(clientController).start();
         while (!isConnected) {
-            new Thread(clientController).start();
             String ip = readFromInput("Please enter the IP of the server you want to play on: ",
                     (s -> s.length() <= 15 && Pattern.compile("[0-9]{0,3}\\.[0-9]{0,3}\\.[0-9]{0,3}\\.[0.9]{0,3}").matcher(s).find()),
                     this::stringIdentity);
@@ -56,7 +57,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             switch (protocol) {
                 case 1 -> {
                     try {
-                        ConnectionInitializer.initializeTCP(ip, port, clientController);
+                        ConnectionInitializer.initializeTCP(ip, port, clientController, new TerminalSubmitter());
+                        System.out.println(GameParameters.getTitle());
                         isConnected = true;
                     } catch (IOException e) {
                         System.out.println(e.getMessage());
@@ -64,7 +66,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 }
                 case 2 -> {
                     try {
-                        ConnectionInitializer.initializeRMI(ip, port, clientController);
+                        ConnectionInitializer.initializeRMI(ip, port, clientController, new TerminalSubmitter());
+                        System.out.println(GameParameters.getTitle());
                         isConnected = true;
                     } catch (MalformedURLException e) {
                         System.out.println("No RMI Server was found at the supplied address");

@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.server;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.model.server.card.CardType;
+import javafx.fxml.FXMLLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.io.IOException;
  * @author Andrea Fidanza, Guglielmo Gatti
  */
 public class GameParameters {
-    private final static String filePath = "resources/";
+    private final static String filePath = "/gameFiles/";
     private final static String fileName = "parameters.json";
 
     /**
@@ -150,11 +151,10 @@ public class GameParameters {
      * @return the integer corresponding with the given parameter name.
      */
     private static JsonNode getParameter(String parameter){
-        File parametersJson = new File(filePath + fileName);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node;
         try {
-            node = objectMapper.readTree(parametersJson).get(parameter);
+            node = objectMapper.readTree(GameParameters.class.getResource(filePath + fileName)).get(parameter);
             return node;
         }
         catch(IOException e){

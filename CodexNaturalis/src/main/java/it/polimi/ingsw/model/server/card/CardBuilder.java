@@ -7,7 +7,6 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.model.server.Content;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.awt.*;
@@ -21,7 +20,7 @@ import java.util.List;
  */
 public class CardBuilder {
     private static final String fileName = "cards.json";
-    private static final String filePath = "resources/";
+    private static final String filePath = "/gameFiles/";
 
     /**
      * Method that creates resource/gold/starter cards.
@@ -108,12 +107,11 @@ public class CardBuilder {
      * @return the json node.
      */
     public static JsonNode getCardJson(int cardId){
-        File cardsJson = new File(filePath + fileName);
         String cardType = cardId < GameParameters.getStartCardIndex(CardType.OBJECTIVE) ? "placeableCards" : "objectiveCards";
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node;
         try {
-            node = objectMapper.readTree(cardsJson).get(cardType);
+            node = objectMapper.readTree(CardBuilder.class.getResource(filePath + fileName)).get(cardType);
         }
         catch(IOException e){
             throw new RuntimeException(e.getMessage());
