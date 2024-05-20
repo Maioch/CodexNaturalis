@@ -34,7 +34,7 @@ public class MatchBrowserViewController {
     public TextField nicknameTextBox;
 
     @FXML
-    public TextField joinPopupButton;
+    public Button joinPopupButton;
 
     @FXML
     public Button refreshButton;

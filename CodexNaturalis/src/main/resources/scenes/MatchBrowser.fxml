@@ -17,10 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:controller="it.polimi.ingsw.view.gui.controllers.MatchBrowserViewController"
-            maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="720.0" prefWidth="1280.0" stylesheets="@CodexTheme.css"
-            xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:controller="it.polimi.ingsw.view.gui.controllers.MatchBrowserViewController" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0"  stylesheets="@CodexTheme.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane layoutX="55.0" layoutY="55.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="720.0" prefWidth="1280.0" styleClass="mainBg" stylesheets="@CodexTheme.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -44,7 +41,7 @@
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="8.0" prefHeight="8.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="128.0" percentHeight="80.0" prefHeight="128.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="128.0" percentHeight="60.0" prefHeight="128.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="8.0" prefHeight="8.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
@@ -64,8 +61,8 @@
                               <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="6.0" prefWidth="100.0" />
                           </columnConstraints>
                           <rowConstraints>
-                            <RowConstraints minHeight="10.0" percentHeight="90.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" percentHeight="88.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" percentHeight="12.0" prefHeight="30.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                            <children>
                               <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">
@@ -85,6 +82,9 @@
                                        <GridPane.margin>
                                           <Insets right="4.0" />
                                        </GridPane.margin>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
                                     </Button>
                                     <Button fx:id="joinButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Join" textFill="#2f0606" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                        <font>
@@ -93,6 +93,9 @@
                                        <GridPane.margin>
                                           <Insets left="4.0" />
                                        </GridPane.margin>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
                                     </Button>
                                     <Button fx:id="createButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Create" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                        <font>
@@ -101,6 +104,9 @@
                                        <GridPane.margin>
                                           <Insets left="4.0" right="4.0" />
                                        </GridPane.margin>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
                                     </Button>
                                  </children>
                               </GridPane>
@@ -116,30 +122,53 @@
                                       <rowConstraints>
                                         <RowConstraints fillHeight="false" minHeight="10.0" prefHeight="30.0" />
                                         <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="1.0" percentHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
+                                          <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints fillHeight="false" maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                       </rowConstraints>
                                        <children>
                                           <GridPane>
                                             <columnConstraints>
-                                              <ColumnConstraints minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
-                                              <ColumnConstraints minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                                              <ColumnConstraints minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
+                                              <ColumnConstraints minWidth="10.0" percentWidth="60.0" prefWidth="100.0" />
                                             </columnConstraints>
                                             <rowConstraints>
                                               <RowConstraints minHeight="20.0" prefHeight="20.0" />
                                             </rowConstraints>
                                              <children>
-                                                <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name" textFill="#2f0606" GridPane.columnIndex="1" GridPane.valignment="CENTER">
+                                                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name" textFill="#2f0606" GridPane.columnIndex="1" GridPane.valignment="CENTER">
                                                    <font>
                                                       <Font name="Fira Sans Condensed SemiBold" size="16.0" />
                                                    </font>
+                                                   <GridPane.margin>
+                                                      <Insets />
+                                                   </GridPane.margin>
+                                                   <padding>
+                                                      <Insets left="6.0" />
+                                                   </padding>
                                                 </Label>
-                                                <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="ID" textFill="#2f0606">
+                                                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="ID" textFill="#2f0606">
                                                    <font>
                                                       <Font name="Fira Sans Condensed SemiBold" size="16.0" />
                                                    </font>
+                                                   <opaqueInsets>
+                                                      <Insets />
+                                                   </opaqueInsets>
+                                                   <GridPane.margin>
+                                                      <Insets left="16.0" />
+                                                   </GridPane.margin>
                                                 </Label>
                                              </children>
                                           </GridPane>
                                           <Pane maxHeight="1.0" prefHeight="1.0" prefWidth="1.0" styleClass="titleDivider" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.vgrow="NEVER" />
+                                          <GridPane layoutX="10.0" layoutY="61.0" GridPane.rowIndex="3">
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                          </GridPane>
                                        </children>
                                     </GridPane>
                                  </content>
@@ -390,6 +419,7 @@
       </GridPane>
    </children>
    <styleClass>
+      <String fx:value="anchor" />
       <String fx:value="mainBg" />
    </styleClass>
 </AnchorPane>

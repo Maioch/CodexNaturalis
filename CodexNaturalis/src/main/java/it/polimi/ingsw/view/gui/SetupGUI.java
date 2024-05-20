@@ -9,9 +9,11 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +67,12 @@ public class SetupGUI extends Application implements SetupView {
 
     @Override
     public void start(Stage stage) throws IOException{
+        URL firaLocation = getClass().getResource("/scenes/fonts/FiraSansCondensed-Regular.ttf");
+        URL firaBoldLocation = getClass().getResource("/scenes/fonts/FiraSansCondensed-SemiBold.ttf");
+        if(firaLocation != null && firaBoldLocation != null){
+            Font.loadFont(firaLocation.toExternalForm(), 14);
+            Font.loadFont(firaBoldLocation.toExternalForm(), 14);
+        }
         this.primaryStage = stage;
         stage.setTitle("Codex Naturalis");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/Connection.fxml"));

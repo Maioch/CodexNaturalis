@@ -36,8 +36,8 @@ public class ConnectionInitializer {
 
 
     private static void completeTCPSetup(Socket socket, TCPHandler tcpHandler,ClientController controller){
-        controller.setNetworkHandler(tcpHandler);
         new Thread(tcpHandler).start();
+        controller.setNetworkHandler(tcpHandler);
         controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
