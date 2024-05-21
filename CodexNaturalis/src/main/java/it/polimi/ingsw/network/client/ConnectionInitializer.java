@@ -43,7 +43,6 @@ public class ConnectionInitializer {
 
     private static void completeRMISetup(ClientController controller, RMIHandler rmiHandler){
         controller.setNetworkHandler(rmiHandler);
-        System.out.println(GameParameters.getTitle());
         controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 

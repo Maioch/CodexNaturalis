@@ -30,7 +30,7 @@ public class SetupGUI extends Application implements SetupView {
     public void updateMatchList(Map<Integer, String> matchList){
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/MatchBrowser.fxml"));
         try {
-            currentScene = new Scene(loader.load(), 1820, 980);
+            currentScene = new Scene(loader.load(), currentScene.getWidth(), currentScene.getHeight());
         } catch (IOException e) {
             System.out.println(e.getMessage());
             return;
