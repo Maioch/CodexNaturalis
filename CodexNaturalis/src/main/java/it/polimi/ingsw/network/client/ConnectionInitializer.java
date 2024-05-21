@@ -31,12 +31,12 @@ public class ConnectionInitializer {
         Socket socket = new Socket(ip, port);
         socket.getInputStream();
         TCPHandler tcpHandler = new TCPHandler(socket, controller);
+        new Thread(tcpHandler).start();
         eventSubmitter.submit(() -> completeTCPSetup(socket, tcpHandler, controller));
     }
 
 
     private static void completeTCPSetup(Socket socket, TCPHandler tcpHandler,ClientController controller){
-        new Thread(tcpHandler).start();
         controller.setNetworkHandler(tcpHandler);
         controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }

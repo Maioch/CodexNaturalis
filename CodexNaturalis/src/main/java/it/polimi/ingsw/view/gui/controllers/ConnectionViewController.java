@@ -54,7 +54,7 @@ public class ConnectionViewController {
         rmiRadioButton.setDisable(true);
         connectButton.setDisable(true);
         if(!checkAddress(ipTextBox.getText(), portTextBox.getText())){
-            errorText.setText("Invalid IP address or Port!");
+            setLoginError("Invalid IP address or Port!");
             return;
         }
         errorText.setText("Connecting...");
@@ -64,7 +64,6 @@ public class ConnectionViewController {
                 try {
                     ConnectionInitializer.initializeTCP(ipTextBox.getText(), port, controller, new GraphicalSubmitter());
                     new Thread(controller).start();
-                    controller.sendMessage(new Message(Status.REQUEST_GAMES));
                 } catch (IOException e) {
                     setLoginError("Couldn't connect to the specified server");
                 }
@@ -72,7 +71,6 @@ public class ConnectionViewController {
                 try {
                     ConnectionInitializer.initializeRMI(ipTextBox.getText(), port, controller, new GraphicalSubmitter());
                     new Thread(controller).start();
-                    controller.sendMessage(new Message(Status.REQUEST_GAMES));
                 } catch (MalformedURLException e) {
                     setLoginError("No RMI Server was found at the supplied address");
                 } catch (NotBoundException e) {
