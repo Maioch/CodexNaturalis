@@ -72,12 +72,15 @@ public class SetupGUI extends Application implements SetupView {
         if(firaLocation != null && firaBoldLocation != null){
             Font.loadFont(firaLocation.toExternalForm(), 14);
             Font.loadFont(firaBoldLocation.toExternalForm(), 14);
+        }else{
+            System.out.println("Couldn't load the fira font, resorting to fallback system font");
         }
         this.primaryStage = stage;
         stage.setTitle("Codex Naturalis");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/Connection.fxml"));
         currentScene = new Scene(loader.load(),1820,980);
         loader.<ConnectionViewController>getController().setClientController(controller);
+        loader.<ConnectionViewController>getController().setApplication(this);
         stage.setScene(currentScene);
         stage.getIcons().add(new Image("/scenes/images/CodexNaturalisColoredLogo.png"));
         stage.show();

@@ -1,10 +1,12 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.view.gui.GraphicalSubmitter;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -42,6 +44,7 @@ public class ConnectionViewController {
     public RadioButton rmiRadioButton;
 
     private ClientController controller;
+    private Application application;
 
     /**
      * Method used to handle the client's connection to the server, using the information inputted in the login module.
@@ -105,12 +108,19 @@ public class ConnectionViewController {
         this.controller = controller;
     }
 
+    public void setApplication(Application application){ this.application = application; }
+
     /**
      * Method used to disable the "connect" button if the client hasn't inputted both the ip and the port.
      */
     @FXML
     public void checkIfEnableButton(){
         connectButton.setDisable(ipTextBox.getText().isEmpty() || portTextBox.getText().isEmpty());
+    }
+
+    @FXML
+    public void openRulesLink(){
+        application.getHostServices().showDocument(GameParameters.getRulesURL());
     }
 
     /**
