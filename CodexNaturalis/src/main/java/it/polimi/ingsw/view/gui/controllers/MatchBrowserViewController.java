@@ -1,5 +1,7 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import it.polimi.ingsw.controller.GameInfo;
+import it.polimi.ingsw.controller.GameStatus;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
@@ -54,23 +56,24 @@ public class MatchBrowserViewController {
      * Method that adds all matches to the match list.
      * @param matchList the list of matches.
      */
-    public void addMatches(Map<Integer, String> matchList){
+    public void addMatches(List<GameInfo> matchList){
         ToggleGroup groupId = new ToggleGroup();
         ToggleGroup groupName = new ToggleGroup();
-        for(Map.Entry<Integer, String> match : matchList.entrySet()) {
-            int id = match.getKey();
-            String name = match.getValue();
+        for(GameInfo match : matchList) {
+            int id = match.gameId();
             GridPane grid = new GridPane();
             RadioButton idButton = new RadioButton(String.valueOf(id));
             idButton.setToggleGroup(groupId);
             idButton.setId(String.valueOf(id));
             idButton.setMaxWidth(Double.MAX_VALUE);
             setupButton(idButton);
-            RadioButton nameButton = new RadioButton(name);
-            nameButton.setId(String.valueOf(id));
+            idButton.setDisable(match.gameStatus() == GameStatus.STARTED);
+            RadioButton nameButton = new RadioButton(match.gameStatus().getText());
             nameButton.setToggleGroup(groupName);
-            setupButton(nameButton);
+            nameButton.setId(String.valueOf(id));
             nameButton.setMaxWidth(Double.MAX_VALUE);
+            setupButton(nameButton);
+            nameButton.setDisable(match.gameStatus() == GameStatus.STARTED);
             radioButtons.add(new Pair<>(idButton, nameButton));
             grid.addColumn(0, idButton);
             grid.addColumn(1, nameButton);

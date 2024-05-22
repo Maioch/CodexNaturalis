@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.network.server.ServerSubject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,15 +63,13 @@ public class GamesManager{
     }
 
     /**
-     * @return a map that contains each game's id along with its name.
+     * @return a list that contains each game's id along with its name.
      */
-    public synchronized Map<Integer, String> getFormattedAvailableMatches(){
-        return new HashMap<>(){{
-            for(Entry<Integer, GameController> entry : games.entrySet()){
-                if(!entry.getValue().isGameFull()){
-                    put(entry.getKey(), entry.getValue().getName());
-                }
-            }
-        }};
+    public synchronized List<GameInfo> getFormattedAvailableMatches(){
+        List<GameInfo> result = new ArrayList<>();
+        for(Map.Entry<Integer, GameController> entry : games.entrySet()){
+            result.add(new GameInfo(entry.getKey(), entry.getValue().getName(), entry.getValue().getGameStatus()));
+        }
+        return result;
     }
 }

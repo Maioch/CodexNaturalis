@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.gui;
 
+import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.view.SetupView;
@@ -15,7 +16,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
 public class SetupGUI extends Application implements SetupView {
     private Stage primaryStage;
@@ -27,7 +27,7 @@ public class SetupGUI extends Application implements SetupView {
     }
 
     @Override
-    public void updateMatchList(Map<Integer, String> matchList){
+    public void updateMatchList(List<GameInfo> matchList){
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/MatchBrowser.fxml"));
         try {
             currentScene = new Scene(loader.load(), currentScene.getWidth(), currentScene.getHeight());

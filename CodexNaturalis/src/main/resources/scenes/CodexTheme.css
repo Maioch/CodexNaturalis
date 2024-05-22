@@ -102,7 +102,6 @@
   -fx-font-size: 16;
   -fx-padding: 0 0 0 18;
 }
-
 .tableButton:hover{
   -fx-color: #2f0606;
   -fx-text-fill: #2f0606;

@@ -1,5 +1,7 @@
 package it.polimi.ingsw.view.cli;
 
+import it.polimi.ingsw.controller.GameInfo;
+import it.polimi.ingsw.controller.GameStatus;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.RMIHandler;
@@ -88,15 +90,18 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      * @param matchList the list of all available matches.
      */
     @Override
-    public void updateMatchList(Map<Integer,String> matchList){
+    public void updateMatchList(List<GameInfo> matchList){
         System.out.println("Here's the match list:");
         System.out.println();
-        for (Map.Entry<Integer, String> entry : matchList.entrySet()){
-            System.out.printf("Match %7d: %s\n", entry.getKey(), entry.getValue());
+        int gameNameLength = - GameParameters.getMaxNicknameLength();
+        for (GameInfo gameInfo: matchList){
+            System.out.printf("Match %7d: %" + gameNameLength + "s %s\n",
+                    gameInfo.gameId(), gameInfo.gameName(), gameInfo.gameStatus().getText());
         }
         System.out.println();
         int id = readFromInput("Enter the ID of the match you want to join (0 for a new match, -1 to refresh the match list): ",
-                (i -> matchList.containsKey(i) || i == 0 || i == -1),
+                (i -> matchList.stream().filter(g -> g.gameStatus() != GameStatus.STARTED)
+                        .map(GameInfo::gameId).toList().contains(i) || i == 0 || i == -1),
                 this::stringToInt);
         Message messageToSend = id == -1 ? new Message(Status.REQUEST_GAMES) : new IntegerMessage(Status.REQUEST_COLORS, id);
         if (id == 0) {

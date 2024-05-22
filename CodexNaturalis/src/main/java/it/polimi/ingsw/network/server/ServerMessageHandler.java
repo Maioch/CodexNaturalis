@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GameController;
+import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GamesManager;
 import it.polimi.ingsw.exceptions.GameException;
 import it.polimi.ingsw.exceptions.GameFullException;
@@ -53,7 +54,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
             }
             switch(labeledMessage.message().getStatus()){
                 case REQUEST_GAMES -> {
-                    Map<Integer, String> matches = games.getFormattedAvailableMatches();
+                    List<GameInfo> matches = games.getFormattedAvailableMatches();
                     labeledMessage.networkHandler().update(new MatchListMessage(Status.REQUEST_GAMES, matches));
                 }
                 case NEW_GAME -> {
@@ -64,7 +65,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                                     newGameMessage.getName().substring(0, Math.min(nameLength,GameParameters.getMaxNicknameLength())));
                             labeledMessage.networkHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
                         }catch (IllegalNumberOfPlayers e) {
-                            Map<Integer, String> matches = games.getFormattedAvailableMatches();
+                            List<GameInfo> matches = games.getFormattedAvailableMatches();
                             labeledMessage.networkHandler().update(new MatchListMessage(Status.INVALID_PLAYERS_NUMBER, matches));
                         }
                     }

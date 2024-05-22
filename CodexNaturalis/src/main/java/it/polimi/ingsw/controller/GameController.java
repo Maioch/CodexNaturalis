@@ -20,7 +20,6 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Class that represents the controller for each game, according to the MVC model.
@@ -34,6 +33,8 @@ public class GameController implements Runnable{
     private final Queue<LabeledMessage> messageQueue;
     private final Consumer<GameController> endGameProcedure;
     private final Object gameIsFullLock;
+    private final Object gameStatusLock;
+    private GameStatus gameStatus;
 
     /**
      * Constructor for the class.
@@ -53,6 +54,8 @@ public class GameController implements Runnable{
         this.messageQueue = new LinkedList<>();
         this.endGameProcedure = endGameProcedure;
         this.gameIsFullLock = new Object();
+        this.gameStatusLock = new Object();
+        this.gameStatus = GameStatus.LOBBY;
     }
 
     /**
@@ -243,6 +246,15 @@ public class GameController implements Runnable{
     }
 
     /**
+     * @return the status of the game.
+     */
+    public GameStatus getGameStatus(){
+        synchronized (gameStatusLock) {
+            return gameStatus;
+        }
+    }
+
+    /**
      * A method that adds a message to the message queue.
      * @param message the message to add.
      * @param handler the handler that sent the message.
@@ -330,7 +342,10 @@ public class GameController implements Runnable{
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("A new game started and is waiting for YOU!");
+        synchronized (gameStatusLock) {
+            gameStatus = GameStatus.STARTED;
+        }
+        System.out.println("A new game started and is now in progress");
         initializeGame();
         startGame();
         for (Player player : game.getAllPlayers()) {

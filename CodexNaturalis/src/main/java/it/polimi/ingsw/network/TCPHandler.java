@@ -45,7 +45,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
             }
         }catch (IOException e){
             System.out.println("Encountered an IO Exception in TCPHandler");
-            //System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 
