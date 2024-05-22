@@ -128,7 +128,7 @@
                                                       <Font name="Fira Sans Condensed SemiBold" size="16.0" />
                                                    </font>
                                                    <GridPane.margin>
-                                                      <Insets />
+                                                      <Insets left="12.0"/>
                                                    </GridPane.margin>
                                                    <padding>
                                                       <Insets left="6.0" />

@@ -102,6 +102,7 @@
   -fx-font-size: 16;
   -fx-padding: 0 0 0 18;
 }
+
 .tableButton:hover{
   -fx-color: #2f0606;
   -fx-text-fill: #2f0606;
@@ -139,6 +140,18 @@
   -fx-font-family: "Fira Sans Condensed";
   -fx-font-size: 16;
   -fx-border-width: 0px;
+  -fx-padding: 0 0 0 18;
+}
+.pressedTableButton{
+  -fx-color: #2f0606;
+  -fx-text-fill: #2f0606;
+  -fx-background-color: #A49E22;
+  -fx-border-color: transparent;
+  -fx-background-radius: 0;
+  -fx-border-radius: 0;
+  -fx-border-width: 0px;
+  -fx-font-family: "Fira Sans Condensed";
+  -fx-font-size: 16;
   -fx-padding: 0 0 0 18;
 }
 .popUpBackground{

@@ -54,7 +54,6 @@ public class MatchBrowserViewController {
             int id = match.getKey();
             String name = match.getValue();
             GridPane grid = new GridPane();
-            grid.setMaxWidth(Double.MAX_VALUE);
             RadioButton idButton = new RadioButton(String.valueOf(id));
             idButton.setToggleGroup(groupId);
             idButton.setId(String.valueOf(id));
@@ -70,21 +69,28 @@ public class MatchBrowserViewController {
             grid.addColumn(1, nameButton);
             System.out.println(grid.widthProperty());
             grid.getColumnCount();
-            grid.getColumnConstraints().addAll(new ColumnConstraints(40),new ColumnConstraints(60));
+            ColumnConstraints column1Constraint = new ColumnConstraints();
+            column1Constraint.setPercentWidth(40);
+            ColumnConstraints column2Constraint = new ColumnConstraints();
+            column2Constraint.setPercentWidth(60);
+            grid.getColumnConstraints().addAll(column1Constraint, column2Constraint);
             matchGridPane.addRow(matchGridPane.getRowCount(), grid);
         }
     }
 
     /**
-     * Method used to add CSS effects to the matches list entries.
+     * Method used to add CSS effects and method callbacks to the matches list entries.
      * @param button the entry to stylize.
      */
     private void setupButton(RadioButton button){
         button.setTextAlignment(TextAlignment.CENTER);
         button.getStyleClass().clear();
         button.getStyleClass().add("tableButton");
-        button.setOnMouseClicked(this::disableButtonRow);
-        button.setOnMousePressed(mouseEvent -> setRadioButtonStyle(mouseEvent, "tableButton"));
+        button.setOnMouseClicked((mouseEvent) -> {
+            disableButtonRow(mouseEvent);
+            setRadioButtonStyle(mouseEvent, "tableButton");
+        });
+        button.setOnMousePressed(mouseEvent -> setRadioButtonStyle(mouseEvent, "pressedTableButton"));
         button.setOnMouseEntered(mouseEvent -> setRadioButtonStyle(mouseEvent, "hoveredTableButton"));
         button.setOnMouseExited(mouseEvent -> setRadioButtonStyle(mouseEvent, "tableButton"));
     }
