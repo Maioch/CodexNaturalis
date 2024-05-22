@@ -1,5 +1,9 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -12,6 +16,7 @@ import java.util.*;
 
 public class MatchBrowserViewController {
     private final List<Pair<RadioButton, RadioButton>> radioButtons = new ArrayList<>();
+    private ClientController controller;
 
     @FXML
     public Button createButton;
@@ -42,6 +47,8 @@ public class MatchBrowserViewController {
 
     @FXML
     public Button joinButton;
+
+    public void setController (ClientController controller) { this.controller = controller; }
 
     /**
      * Method that adds all matches to the match list.
@@ -112,11 +119,6 @@ public class MatchBrowserViewController {
     }
 
     @FXML
-    public void showHoverOnLine(MouseEvent mouseEvent){
-
-    }
-
-    @FXML
     public void setRadioButtonStyle(MouseEvent mouseEvent,String styleClass){
         RadioButton sender = (RadioButton) mouseEvent.getSource();
         Pair<RadioButton, RadioButton> currentPair = radioButtons.stream()
@@ -126,4 +128,10 @@ public class MatchBrowserViewController {
         currentPair.getKey().getStyleClass().add(styleClass);
         currentPair.getValue().getStyleClass().add(styleClass);
     }
+
+    @FXML
+    public void refreshMatchList(ActionEvent event){
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+    }
+
 }

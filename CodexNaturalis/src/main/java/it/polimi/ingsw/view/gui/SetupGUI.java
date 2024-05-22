@@ -31,6 +31,7 @@ public class SetupGUI extends Application implements SetupView {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/MatchBrowser.fxml"));
         try {
             currentScene = new Scene(loader.load(), currentScene.getWidth(), currentScene.getHeight());
+            loader.<MatchBrowserViewController>getController().setController(controller);
         } catch (IOException e) {
             System.out.println(e.getMessage());
             return;
