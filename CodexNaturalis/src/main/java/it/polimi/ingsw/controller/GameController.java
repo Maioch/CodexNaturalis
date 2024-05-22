@@ -20,7 +20,7 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
-
+import java.util.stream.Collectors;
 
 /**
  * Class that represents the controller for each game, according to the MVC model.
@@ -257,43 +257,62 @@ public class GameController implements Runnable{
      * @param handler the NetworkHandler from which the server expects a message.
      * @return the polled message.
      */
-    public LabeledMessage readFromQueue(NetworkHandler handler){
+    private LabeledMessage readFromQueue(NetworkHandler handler){
         LabeledMessage labeledMessage = null;
-        boolean isTimeOut = false;
-        while(labeledMessage == null || isTimeOut){
-            //TODO: TIMER IMPLEMENTATION
-            synchronized(messageQueue){
-                if(messageQueue.isEmpty()){
+        while(labeledMessage == null){
+            synchronized(messageQueue) {
+                if (messageQueue.isEmpty()) {
+                    Thread.onSpinWait();
                     continue;
                 }
                 labeledMessage = messageQueue.poll();
-                Message message = labeledMessage.message();
-                //handle chat messages
-                if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
-                    LabeledMessage finalLabeledMessage = labeledMessage;
-                    String senderNickname = game.getAllPlayers().stream()
-                            .map(Player::getNickname)
-                            .filter(n -> serverSubject.getNetworkHandler(n) == finalLabeledMessage.networkHandler())
-                            .findFirst().orElse("Missing Sender");
-                    int chatMsgLength = chatMessage.getMessage().length();
-                    List<String> recipients = chatMessage.getRecipients();
-                    Message messageToSendBack = new ChatMessage(
-                            chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
-                            senderNickname,
-                            chatMessage.getRecipients());
-                    for(String nickname : recipients){
-                        serverSubject.notify(nickname, messageToSendBack);
-                    }
-                    serverSubject.notify(senderNickname, messageToSendBack);
-                }
-                if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
-                    labeledMessage = null;
-                }
             }
-            Thread.onSpinWait();
-            System.out.println("popo");
+            Message message = labeledMessage.message();
+            //handle chat messages
+            if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
+                LabeledMessage finalLabeledMessage = labeledMessage;
+                String senderNickname = game.getAllPlayers().stream()
+                        .map(Player::getNickname)
+                        .filter(n -> serverSubject.getNetworkHandler(n) == finalLabeledMessage.networkHandler())
+                        .findFirst().orElse("Missing Sender");
+                int chatMsgLength = chatMessage.getMessage().length();
+                List<String> recipients = chatMessage.getRecipients();
+                Message messageToSendBack = new ChatMessage(
+                        chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
+                        senderNickname,
+                        chatMessage.getRecipients());
+                for(String nickname : recipients){
+                    serverSubject.notify(nickname, messageToSendBack);
+                }
+                serverSubject.notify(senderNickname, messageToSendBack);
+            }
+            if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
+                labeledMessage = null;
+            }
         }
         return labeledMessage;
+    }
+
+    /**
+     * Method used by the server to wait that all clients are ready to play a game, using the CLIENT_READY message.
+     * @param status the CLIENT_READY message.
+     * @param handlers all the client handlers in the game.
+     */
+    private void awaitForStatusFromPlayers(Status status, List<NetworkHandler> handlers){
+        LabeledMessage labeledMessage;
+        List<NetworkHandler> handlerList = new ArrayList<>(handlers);
+        while(!handlerList.isEmpty()){
+            synchronized(messageQueue) {
+                if (messageQueue.isEmpty()) {
+                    Thread.onSpinWait();
+                    continue;
+                }
+                labeledMessage = messageQueue.poll();
+            }
+            Message message = labeledMessage.message();
+            NetworkHandler sender = labeledMessage.networkHandler();
+            handlerList.removeIf(h -> message.getStatus() == status && h == sender);
+        }
     }
 
     /**
@@ -306,11 +325,12 @@ public class GameController implements Runnable{
             synchronized(gameIsFullLock) {
                 gameIsFullLock.wait();
             }
-            Thread.sleep(5000);
+            awaitForStatusFromPlayers(Status.CLIENT_READY,
+                    game.getAllPlayers().stream().map(p -> serverSubject.getNetworkHandler(p.getNickname())).toList());
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
-        System.out.println("A new game started");
+        System.out.println("A new game started and is waiting for YOU!");
         initializeGame();
         startGame();
         for (Player player : game.getAllPlayers()) {

@@ -32,9 +32,10 @@ import java.util.List;
 public class ClientController extends MessageHandler{
     private final SetupView setupView;
     private ClientGame game;
-    private volatile GameView gameView;
+    private GameView gameView;
     private NetworkHandler networkHandler;
     private final EventSubmitter eventSubmitter;
+    private final Object gameViewLock;
 
     /**
      * Constructor for the class.
@@ -44,6 +45,7 @@ public class ClientController extends MessageHandler{
     public ClientController(SetupView setupView, EventSubmitter eventSubmitter) {
         this.setupView = setupView;
         this.eventSubmitter = eventSubmitter;
+        this.gameViewLock = new Object();
     }
 
     /**
@@ -58,8 +60,11 @@ public class ClientController extends MessageHandler{
      * Setter for the game view attribute.
      * @param gameView the interface associated to the client.
      */
-    public synchronized void setGameView(GameView gameView){
-        this.gameView = gameView;
+    public void setGameView(GameView gameView){
+        synchronized (gameViewLock) {
+            this.gameView = gameView;
+            gameViewLock.notifyAll();
+        }
     }
 
     /**
@@ -122,11 +127,12 @@ public class ClientController extends MessageHandler{
         return game.getLocalPlayer().getHandCards();
     }
 
-
-    public synchronized void backToSetup() {
+    public void backToSetup() {
         eventSubmitter.submit(() -> gameView.closeView());
         this.game = null;
-        this.gameView = null;
+        synchronized (gameViewLock) {
+            this.gameView = null;
+        }
         sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
@@ -161,16 +167,23 @@ public class ClientController extends MessageHandler{
                         }
                     }
                     case JOIN_GAME -> {
-                        if(labeledMessage.message() instanceof PlayerMessage playerMessage){
+                        if(labeledMessage.message() instanceof PlayerMessage playerMessage) {
                             eventSubmitter.submit(setupView::showSuccessfulJoin);
-                            //TODO: PREVENT RACE CONDITION BY ADDING VIEWREADY MESSAGE
-                            while (gameView == null) Thread.onSpinWait();
-                            synchronized (this) {
+                            //TODO: PREVENT RACE CONDITION BY ADDING CLIENT_READY MESSAGE
+                            synchronized (gameViewLock) {
+                                if (gameView == null) {
+                                    try {
+                                        gameViewLock.wait();
+                                    } catch (InterruptedException e) {
+                                        continue;
+                                    }
+                                }
                                 game = new ClientGame(
                                         new LocalPlayer(playerMessage.getNickname(), playerMessage.getColor()),
                                         eventSubmitter,
                                         gameView);
                             }
+                            eventSubmitter.submit(() -> sendMessage(new Message(Status.CLIENT_READY)));
                         }
                     }
                     case GAME_FULL -> eventSubmitter.submit(() -> setupView.showCriticalError(Status.GAME_FULL.getMessage()));
@@ -236,9 +249,7 @@ public class ClientController extends MessageHandler{
                                     validPlacementsMessage.getPlaceableCorners());
                         }
                     }
-                    case NO_MOVES -> {
-                        eventSubmitter.submit(() -> gameView.showNoMovesAvailable());
-                    }
+                    case NO_MOVES -> eventSubmitter.submit(() -> gameView.showNoMovesAvailable());
                     case PLACEMENT_OK -> {
                         if (labeledMessage.message() instanceof PlayerBoardMessage playerBoardMessage) {
                             ClientPlayer playerWithTurn = game.getPlayerWithTurn();
