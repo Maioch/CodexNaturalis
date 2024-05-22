@@ -131,7 +131,9 @@ public class ConnectionViewController {
      */
     private boolean checkAddress(String ip, String port){
         try{
-            Integer.parseInt(port);
+            int portInt = Integer.parseInt(port);
+            if (portInt < 1 || portInt > 65535)
+                return false;
         } catch (NumberFormatException e) {
             return false;
         }

@@ -33,6 +33,7 @@ public class GameController implements Runnable{
     private final ServerSubject serverSubject;
     private final Queue<LabeledMessage> messageQueue;
     private final Consumer<GameController> endGameProcedure;
+    private final Object gameIsFullLock;
 
     /**
      * Constructor for the class.
@@ -51,6 +52,7 @@ public class GameController implements Runnable{
         this.serverSubject = serverSubject;
         this.messageQueue = new LinkedList<>();
         this.endGameProcedure = endGameProcedure;
+        this.gameIsFullLock = new Object();
     }
 
     /**
@@ -76,6 +78,11 @@ public class GameController implements Runnable{
         }catch(GameFullException | NicknameTakenException | GameException e) {
             serverSubject.unsubscribe(nickname);
             throw e;
+        }
+        if(isGameFull()){
+            synchronized(gameIsFullLock) {
+                gameIsFullLock.notifyAll();
+            }
         }
     }
 
@@ -283,6 +290,8 @@ public class GameController implements Runnable{
                     labeledMessage = null;
                 }
             }
+            Thread.onSpinWait();
+            System.out.println("popo");
         }
         return labeledMessage;
     }
@@ -293,10 +302,13 @@ public class GameController implements Runnable{
      */
     @Override
     public void run() {
-        while(!game.isGameFull());
         try {
+            synchronized(gameIsFullLock) {
+                gameIsFullLock.wait();
+            }
             Thread.sleep(5000);
         } catch (InterruptedException e) {
+            System.out.println(e.getMessage());
         }
         System.out.println("A new game started");
         initializeGame();

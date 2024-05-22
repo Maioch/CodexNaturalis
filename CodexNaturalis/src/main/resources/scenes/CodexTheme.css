@@ -115,7 +115,7 @@
 .tableButton:pressed{
   -fx-color: #2f0606;
   -fx-text-fill: #2f0606;
-  -fx-background-color: #A49E22;
+  -fx-background-color: #dac224;
   -fx-border-color: transparent;
   -fx-background-radius: 0;
   -fx-border-radius: 0;
@@ -124,7 +124,7 @@
 .tableButton:selected{
   -fx-color: #2f0606;
   -fx-text-fill: #2f0606;
-  -fx-background-color: #fff951;
+  -fx-background-color: #d5c14e;
   -fx-border-color: transparent;
   -fx-background-radius: 0;
   -fx-border-radius: 0;
@@ -145,7 +145,7 @@
 .pressedTableButton{
   -fx-color: #2f0606;
   -fx-text-fill: #2f0606;
-  -fx-background-color: #A49E22;
+  -fx-background-color: #c8b967;
   -fx-border-color: transparent;
   -fx-background-radius: 0;
   -fx-border-radius: 0;
