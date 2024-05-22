@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -29,16 +30,16 @@ public class SetupGUI extends Application implements SetupView {
     @Override
     public void updateMatchList(List<GameInfo> matchList){
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/MatchBrowser.fxml"));
+        Scene newScene;
         try {
-            currentScene = new Scene(loader.load(), currentScene.getWidth(), currentScene.getHeight());
-            loader.<MatchBrowserViewController>getController().setController(controller);
+            currentScene.setRoot(loader.load());
         } catch (IOException e) {
             System.out.println(e.getMessage());
             return;
         }
+        loader.<MatchBrowserViewController>getController().setController(controller);
         MatchBrowserViewController viewController = loader.getController();
         viewController.addMatches(matchList);
-        primaryStage.setScene(currentScene);
     }
 
     @Override
@@ -80,6 +81,11 @@ public class SetupGUI extends Application implements SetupView {
         stage.setTitle("Codex Naturalis");
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/Connection.fxml"));
         currentScene = new Scene(loader.load(),1820,980);
+        currentScene.setOnKeyReleased((e) -> {
+            if(e.getCode() == KeyCode.F12){
+                stage.setFullScreen(!stage.isFullScreen());
+            }
+        });
         loader.<ConnectionViewController>getController().setClientController(controller);
         loader.<ConnectionViewController>getController().setApplication(this);
         stage.setScene(currentScene);

@@ -17,7 +17,7 @@ import javafx.util.Pair;
 import java.util.*;
 
 public class MatchBrowserViewController {
-    private final List<Pair<RadioButton, RadioButton>> radioButtons = new ArrayList<>();
+    private final List<List<RadioButton>> radioButtons = new ArrayList<>();
     private ClientController controller;
 
     @FXML
@@ -59,33 +59,34 @@ public class MatchBrowserViewController {
     public void addMatches(List<GameInfo> matchList){
         ToggleGroup groupId = new ToggleGroup();
         ToggleGroup groupName = new ToggleGroup();
+        ToggleGroup groupStatus = new ToggleGroup();
         for(GameInfo match : matchList) {
             int id = match.gameId();
             GridPane grid = new GridPane();
-            RadioButton idButton = new RadioButton(String.valueOf(id));
-            idButton.setToggleGroup(groupId);
-            idButton.setId(String.valueOf(id));
-            idButton.setMaxWidth(Double.MAX_VALUE);
-            setupButton(idButton);
-            idButton.setDisable(match.gameStatus() == GameStatus.STARTED);
-            RadioButton nameButton = new RadioButton(match.gameStatus().getText());
-            nameButton.setToggleGroup(groupName);
-            nameButton.setId(String.valueOf(id));
-            nameButton.setMaxWidth(Double.MAX_VALUE);
-            setupButton(nameButton);
-            nameButton.setDisable(match.gameStatus() == GameStatus.STARTED);
-            radioButtons.add(new Pair<>(idButton, nameButton));
-            grid.addColumn(0, idButton);
-            grid.addColumn(1, nameButton);
-            System.out.println(grid.widthProperty());
+            RadioButton idButton = createRadioButton(String.valueOf(id), match.gameStatus(), groupId);
+            RadioButton nameButton = createRadioButton(match.gameName(), match.gameStatus(), groupName);
+            RadioButton statusButton = createRadioButton(match.gameStatus().getText(), match.gameStatus(), groupStatus);
+            radioButtons.add(Arrays.asList(idButton,nameButton,statusButton));
+            grid.addRow(0,idButton,nameButton,statusButton);
             grid.getColumnCount();
-            ColumnConstraints column1Constraint = new ColumnConstraints();
-            column1Constraint.setPercentWidth(40);
-            ColumnConstraints column2Constraint = new ColumnConstraints();
-            column2Constraint.setPercentWidth(60);
-            grid.getColumnConstraints().addAll(column1Constraint, column2Constraint);
+            ColumnConstraints idColumnConstraint = new ColumnConstraints();
+            idColumnConstraint.setPercentWidth(12);
+            ColumnConstraints nameColumnConstraint = new ColumnConstraints();
+            nameColumnConstraint.setPercentWidth(53);
+            ColumnConstraints statusColumnConstraint = new ColumnConstraints();
+            statusColumnConstraint.setPercentWidth(35);
+            grid.getColumnConstraints().addAll(idColumnConstraint, nameColumnConstraint, statusColumnConstraint);
             matchGridPane.addRow(matchGridPane.getRowCount(), grid);
         }
+    }
+
+    private RadioButton createRadioButton(String buttonText, GameStatus gameStatus, ToggleGroup group){
+        RadioButton button = new RadioButton(buttonText);
+        button.setToggleGroup(group);
+        button.setMaxWidth(Double.MAX_VALUE);
+        setupButton(button);
+        button.setDisable(gameStatus == GameStatus.STARTED);
+        return button;
     }
 
     /**
@@ -112,24 +113,24 @@ public class MatchBrowserViewController {
     @FXML
     public void disableButtonRow(MouseEvent mouseEvent){
         RadioButton sender = (RadioButton) mouseEvent.getSource();
-        Pair<RadioButton, RadioButton> currentPair = radioButtons.stream()
-                .filter(pair -> (pair.getKey().getId().equals(sender.getId()))).findFirst().orElseThrow();
-        if (currentPair.getKey().equals(sender)) {
-            currentPair.getValue().setSelected(true);
-        } else {
-            currentPair.getKey().setSelected(true);
+        List<RadioButton> currentRow = radioButtons.stream()
+                .filter(l  -> l.stream().anyMatch(r -> r.getParent().equals(sender.getParent())))
+                .findFirst().orElseThrow();
+        for(RadioButton r : currentRow){
+            r.setSelected(true);
         }
     }
 
     @FXML
     public void setRadioButtonStyle(MouseEvent mouseEvent,String styleClass){
         RadioButton sender = (RadioButton) mouseEvent.getSource();
-        Pair<RadioButton, RadioButton> currentPair = radioButtons.stream()
-                .filter(pair -> (pair.getKey().getId().equals(sender.getId()))).findFirst().orElseThrow();
-        currentPair.getKey().getStyleClass().clear();
-        currentPair.getValue().getStyleClass().clear();
-        currentPair.getKey().getStyleClass().add(styleClass);
-        currentPair.getValue().getStyleClass().add(styleClass);
+        List<RadioButton> currentRow = radioButtons.stream()
+                .filter(l  -> l.stream().anyMatch(r -> r.getParent().equals(sender.getParent())))
+                .findFirst().orElseThrow();
+        for(RadioButton r : currentRow){
+            r.getStyleClass().clear();
+            r.getStyleClass().add(styleClass);
+        }
     }
 
     @FXML

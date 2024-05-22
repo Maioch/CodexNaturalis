@@ -5,9 +5,9 @@ package it.polimi.ingsw.controller;
  * and player_disconnected if one or more of the player's disconnected for whatever reason.
  */
 public enum GameStatus {
-    LOBBY("⏳ in lobby"),
-    STARTED("\uD83D\uDD12 in progress"),
-    PLAYER_DISCONNECTED("\uD83D\uDDF2 player disconnected");
+    LOBBY("⏳ lobby"),
+    STARTED("\uD83D\uDD12 playing"),
+    PLAYER_DISCONNECTED("\uD83D\uDDF2 user left");
     private final String text;
 
     GameStatus(String text){
