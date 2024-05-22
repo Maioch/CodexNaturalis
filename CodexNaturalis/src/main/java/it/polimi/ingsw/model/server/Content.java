@@ -56,7 +56,12 @@ public enum Content {
         return symbol;
     }
 
-    public String getTextColorString() { return textColorString; }
+    /**
+     * @return the color for each content.
+     */
+    public String getTextColorString(){
+        return textColorString;
+    }
 
     /**
      * Constructor for the enum.
