@@ -110,6 +110,11 @@ public class GameParameters {
     public static int getMaxChatMessageLength() { return getParameter("MaxChatMessageLength").asInt(); }
 
     /**
+     * @return the pinging period used to guarantee clients' connection
+     */
+    public static int getPingPeriodSeconds(){ return getParameter("PingPeriodSeconds").asInt(); }
+
+    /**
      * @return the prefix used to trigger a command using the CLI version of the game.
      */
     public static String getCommandChar() {

@@ -31,6 +31,7 @@ public class GameController implements Runnable{
     private final String name;
     private final ServerSubject serverSubject;
     private final Queue<LabeledMessage> messageQueue;
+    private final List<NetworkHandler> connectedUsers;
     private final Consumer<GameController> endGameProcedure;
     private final Object gameIsFullLock;
     private final Object gameStatusLock;
@@ -52,6 +53,7 @@ public class GameController implements Runnable{
         this.name = name;
         this.serverSubject = serverSubject;
         this.messageQueue = new LinkedList<>();
+        this.connectedUsers = new ArrayList<>();
         this.endGameProcedure = endGameProcedure;
         this.gameIsFullLock = new Object();
         this.gameStatusLock = new Object();
@@ -94,6 +96,15 @@ public class GameController implements Runnable{
      * is chosen) and informs the player about his objectives.
      */
     private void initializeGame() {
+        serverSubject.notifyAll(new Message(Status.PING));
+        TimerTask pingTask = new TimerTask() {
+            @Override
+            public void run() {
+                readAndRequestPings();
+            }
+        };
+        int periodSeconds = GameParameters.getPingPeriodSeconds();
+        new Timer().schedule(pingTask, periodSeconds * 1000L, periodSeconds * 1000L);
         Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
         serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards));
         for (Player player : game.getAllPlayers()) {
@@ -103,9 +114,12 @@ public class GameController implements Runnable{
             BasicCard starterSide = null;
             while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
                 serverSubject.notify(player.getNickname(), new CardHandMessage(currentStatus, player.getHandCards()));
-                LabeledMessage labeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
-                if (labeledMessage.message() instanceof CardPlacementMessage cardPlacementMessage){
+                Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+                if (message instanceof CardPlacementMessage cardPlacementMessage){
                     starterSide = cardPlacementMessage.getCard();
+                } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
+                    starterSide = starterCard.frontSide();
+                    serverSubject.notifyAll(new Message(Status.TURN_SKIPPED));
                 }
                 currentStatus = Status.INVALID_STARTER_CARD;
             }
@@ -129,8 +143,9 @@ public class GameController implements Runnable{
                     serverSubject.notifyAll(new Message(Status.NO_MOVES));
                     continue;
                 }
-                placeCard(player);
-                drawCard(player);
+                if(placeCard(player)) {
+                    drawCard(player);
+                }
             }
         }
         //last turn of the game
@@ -159,7 +174,7 @@ public class GameController implements Runnable{
      * Method that lets a player place a chosen card: it also checks if the placement is correct.
      * @param player the player that needs to place a card.
      */
-    private void placeCard(Player player) {
+    private boolean placeCard(Player player) {
         List<Corner> validPlacements = player.getAllValidCorners();
         serverSubject.notify(player.getNickname(),
                 new ValidPlacementsMessage(Status.PLACE_CARD, player.getAllValidCards(), validPlacements));
@@ -167,14 +182,17 @@ public class GameController implements Runnable{
         Corner chosenCorner = null;
         boolean moveValid = false;
         while (!moveValid) {
-            LabeledMessage LabeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
-            if (LabeledMessage.message() instanceof CardPlacementMessage cardPlacementMessage) {
+            Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+            if (message instanceof CardPlacementMessage cardPlacementMessage) {
                 BasicCard cardToLookFor = cardPlacementMessage.getCard();
                 cardToPlace = player.getAllValidCards().stream()
                         .filter(c -> c.equals(cardToLookFor))
                         .findFirst()
                         .orElse(null);
                 chosenCorner = cardPlacementMessage.getCorner();
+            } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
+                serverSubject.notifyAll(new Message(Status.TURN_SKIPPED));
+                return false;
             }
             moveValid = isMoveValid(player, cardToPlace, chosenCorner);
             if (!moveValid){
@@ -183,6 +201,7 @@ public class GameController implements Runnable{
             }
         }
         player.placeCard(cardToPlace, chosenCorner);
+        return true;
     }
 
     /**
@@ -203,22 +222,37 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Method that lets a player draw a new card.
+     * Method that lets a player draw a new card. Disconnection is managed (with automatic draw).
      * @param player the player that is drawing.
      */
     private void drawCard(Player player) {
         boolean drawSuccess = false;
         Status currentStatus = Status.DRAW;
+        if(game.getDrawableCards().values().stream().allMatch(e -> e.getFirst() == null && e.size() == 1)){
+            return;
+        }
         while (!drawSuccess){
             CardType typeChosen = null;
             int indexChosen = -1;
             do{
                 serverSubject.notify(player.getNickname(), new DrawOptionsMessage(currentStatus, game.getDrawableCards()));
                 currentStatus = Status.INVALID_DRAW;
-                LabeledMessage LabeledMessage = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
-                if (LabeledMessage.message() instanceof DrawChoiceMessage drawChoiceMessage){
+                Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+                if (message instanceof DrawChoiceMessage drawChoiceMessage){
                     indexChosen = drawChoiceMessage.getIndex();
                     typeChosen = drawChoiceMessage.getCardType();
+                } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
+                    for(Map.Entry<CardType, List<BasicCard>> entry : game.getDrawableCards().entrySet()){
+                        int i = 0;
+                        for(BasicCard card : entry.getValue()){
+                            if(card != null){
+                                typeChosen = entry.getKey();
+                                indexChosen = i;
+                                break;
+                            }
+                            i++;
+                        }
+                    }
                 }
             }while(typeChosen == null || indexChosen < 0 || indexChosen > GameParameters.getNumberOfVisibleCards());
             try{
@@ -269,9 +303,9 @@ public class GameController implements Runnable{
      * @param handler the NetworkHandler from which the server expects a message.
      * @return the polled message.
      */
-    private LabeledMessage readFromQueue(NetworkHandler handler){
+    private Message readFromQueue(NetworkHandler handler){
         LabeledMessage labeledMessage = null;
-        while(labeledMessage == null){
+        while(labeledMessage == null && !handler.isDisconnected()){
             synchronized(messageQueue) {
                 if (messageQueue.isEmpty()) {
                     Thread.onSpinWait();
@@ -298,19 +332,27 @@ public class GameController implements Runnable{
                 }
                 serverSubject.notify(senderNickname, messageToSendBack);
             }
-            if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
+            //handle pings
+            if(message.getStatus() == Status.PING){
+                synchronized (connectedUsers){
+                    connectedUsers.add(labeledMessage.networkHandler());
+                }
+            }
+            if(message.getStatus() == Status.PING || message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
                 labeledMessage = null;
             }
         }
-        return labeledMessage;
+        if(handler.isDisconnected()){
+            return new Message(Status.PLAYER_DISCONNECTED);
+        }
+        return labeledMessage == null ? null : labeledMessage.message();
     }
 
     /**
      * Method used by the server to wait that all clients are ready to play a game, using the CLIENT_READY message.
-     * @param status the CLIENT_READY message.
      * @param handlers all the client handlers in the game.
      */
-    private void awaitForStatusFromPlayers(Status status, List<NetworkHandler> handlers){
+    private void awaitForReady(List<NetworkHandler> handlers){
         LabeledMessage labeledMessage;
         List<NetworkHandler> handlerList = new ArrayList<>(handlers);
         while(!handlerList.isEmpty()){
@@ -323,8 +365,29 @@ public class GameController implements Runnable{
             }
             Message message = labeledMessage.message();
             NetworkHandler sender = labeledMessage.networkHandler();
-            handlerList.removeIf(h -> message.getStatus() == status && h == sender);
+            handlerList.removeIf(h -> message.getStatus() == Status.CLIENT_READY && h == sender);
         }
+    }
+
+    /**
+     *
+     */
+    private void readAndRequestPings(){
+        List<NetworkHandler> disconnectedHandlers;
+        synchronized (connectedUsers) {
+            disconnectedHandlers = game.getAllPlayers().stream()
+                    .map(p -> serverSubject.getNetworkHandler(p.getNickname()))
+                    .filter(n -> !connectedUsers.contains(n))
+                    .toList();
+            connectedUsers.clear();
+        }
+        for(NetworkHandler networkHandler : disconnectedHandlers){
+            if(!networkHandler.isDisconnected()){
+                serverSubject.notifyAll(new Message(Status.PLAYER_DISCONNECTED));
+            }
+            networkHandler.setDisconnected();
+        }
+        serverSubject.notifyAll(new Message(Status.PING));
     }
 
     /**
@@ -337,8 +400,7 @@ public class GameController implements Runnable{
             synchronized(gameIsFullLock) {
                 gameIsFullLock.wait();
             }
-            awaitForStatusFromPlayers(Status.CLIENT_READY,
-                    game.getAllPlayers().stream().map(p -> serverSubject.getNetworkHandler(p.getNickname())).toList());
+            awaitForReady(game.getAllPlayers().stream().map(p -> serverSubject.getNetworkHandler(p.getNickname())).toList());
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }

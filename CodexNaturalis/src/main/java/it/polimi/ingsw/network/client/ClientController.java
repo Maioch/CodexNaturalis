@@ -169,7 +169,6 @@ public class ClientController extends MessageHandler{
                     case JOIN_GAME -> {
                         if(labeledMessage.message() instanceof PlayerMessage playerMessage) {
                             eventSubmitter.submit(setupView::showSuccessfulJoin);
-                            //TODO: PREVENT RACE CONDITION BY ADDING CLIENT_READY MESSAGE
                             synchronized (gameViewLock) {
                                 if (gameView == null) {
                                     try {
@@ -202,6 +201,7 @@ public class ClientController extends MessageHandler{
             }
             synchronized (this) {
                 switch (labeledMessage.message().getStatus()) {
+                    case PING -> eventSubmitter.submit(() -> sendMessage(new Message(Status.PING)));
                     case NEW_PLAYER_JOINED -> {
                         if (labeledMessage.message() instanceof PlayerMessage playerMessage) {
                             boolean isPlayerMissing = game.getRemotePlayers().stream()

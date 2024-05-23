@@ -162,6 +162,11 @@ public enum Status {
     NO_MOVES(""),
 
     /**
+     * Message sent if a player's turn has been skipped due to the player being disconnected.
+     */
+    TURN_SKIPPED(""),
+
+    /**
      * Message sent every interval to all the players in a match
      * in order to check whether they're still connected.
      */

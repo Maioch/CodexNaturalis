@@ -70,7 +70,7 @@ public class ClientGame {
                         add(card.copy());
                     }
                 }};
-                put(entry.getKey(),newValue);
+                put(entry.getKey(), newValue);
             }
         }};
     }
@@ -103,14 +103,6 @@ public class ClientGame {
             playersColors.put(remotePlayer.getNickname(), remotePlayer.getColor());
         }
         return playersColors;
-    }
-
-    /**
-     * Method that updates the available colors for the local player's game.
-     * @param colors the list of available colors.
-     */
-    public void updateAvailableColors(List<Content> colors){
-        //Update the view with the currently available colors
     }
 
     /**

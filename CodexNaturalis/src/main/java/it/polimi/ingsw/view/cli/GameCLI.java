@@ -66,7 +66,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * A method that shows (prints) a message.
-     * @param chatMessage contains the sender, the recipients and the message.bbbbbbbbbbb
+     * @param chatMessage contains the sender, the recipients and the message.
      */
     @Override
     public void showChatMessage(ChatMessage chatMessage){

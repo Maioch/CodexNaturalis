@@ -1,6 +1,6 @@
 package it.polimi.ingsw.network.client;
 
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.RMIHandler;
 import it.polimi.ingsw.network.TCPHandler;
 import it.polimi.ingsw.network.messages.Message;
@@ -32,18 +32,7 @@ public class ConnectionInitializer {
         socket.getInputStream();
         TCPHandler tcpHandler = new TCPHandler(socket, controller);
         new Thread(tcpHandler).start();
-        eventSubmitter.submit(() -> completeTCPSetup(socket, tcpHandler, controller));
-    }
-
-
-    private static void completeTCPSetup(Socket socket, TCPHandler tcpHandler,ClientController controller){
-        controller.setNetworkHandler(tcpHandler);
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
-    }
-
-    private static void completeRMISetup(ClientController controller, RMIHandler rmiHandler){
-        controller.setNetworkHandler(rmiHandler);
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        eventSubmitter.submit(() -> completeSetup(controller, tcpHandler));
     }
 
     /**
@@ -59,6 +48,16 @@ public class ConnectionInitializer {
         RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager", ip, port));
         RMIHandler rmiHandler = new RMIHandler(controller);
         rmiSetup.register(rmiHandler);
-        eventSubmitter.submit(() -> completeRMISetup(controller, rmiHandler));
+        eventSubmitter.submit(() -> completeSetup(controller, rmiHandler));
+    }
+
+    /**
+     * Method that completes the connection setup, setting the network handler in the specified controller and sending the first message.
+     * @param controller the client's controller instance
+     * @param handler the handler to set
+     */
+    private static void completeSetup(ClientController controller, NetworkHandler handler){
+        controller.setNetworkHandler(handler);
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 }

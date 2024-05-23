@@ -19,6 +19,7 @@
   "RMIPort" : 1099,
   "MaxChatMessageLength" : 512,
   "MaxNicknameLength" : 16,
+  "PingPeriodSeconds" : 10,
   "CommandChar" : "/",
   "Delimiter" : "-",
   "RulesURL" : "https://studiobombyx.com/assets/CODEX_Rulebook_SD_EN.pdf",
