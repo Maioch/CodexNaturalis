@@ -3,12 +3,15 @@ package it.polimi.ingsw.network;
 import it.polimi.ingsw.network.messages.Message;
 
 import java.rmi.RemoteException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * RMI-based NetworkHandler implementation.
  */
 public class RMIHandler extends NetworkHandler implements RMIInterface{
     private RMIInterface receiverInterface;
+    private final ExecutorService executor;
 
     /**
      * Constructor for the class.
@@ -17,7 +20,8 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      */
     public RMIHandler(MessageHandler handler) throws RemoteException{
         super(handler);
-        receiverInterface = null;
+        this.receiverInterface = null;
+        this.executor = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -48,11 +52,14 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      */
     @Override
     public void update(Message message){
-        try {
-            //System.out.println(message.getStatus());
-            receiverInterface.receiveUpdate(message);
-        }catch (RemoteException e){
-            System.out.println(e.getMessage());
-        }
+        //System.out.println(message.getStatus());
+        //call the method through a single-threaded executor to avoid blocking the controller's thread
+        executor.submit(() -> {
+            try {
+                receiverInterface.receiveUpdate(message);
+            } catch (RemoteException e) {
+                System.out.println("unable to contact the remote interface");
+            }
+        });
     }
 }

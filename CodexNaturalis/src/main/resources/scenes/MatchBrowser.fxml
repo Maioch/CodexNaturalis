@@ -67,7 +67,7 @@
                                  <children>
                                     <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshMatchList" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Refresh" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                        <font>
-                                          <Font name="Fira Sans Regular" size="14.0" />
+                                          <Font name="FIra Sans Condensed Regular" size="14.0" />
                                        </font>
                                        <GridPane.margin>
                                           <Insets right="4.0" />
@@ -78,7 +78,7 @@
                                     </Button>
                                     <Button fx:id="joinButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Join" textFill="#2f0606" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                        <font>
-                                          <Font name="Fira Sans Regular" size="14.0" />
+                                          <Font name="FIra Sans Condensed Regular" size="14.0" />
                                        </font>
                                        <GridPane.margin>
                                           <Insets left="4.0" />
@@ -89,7 +89,7 @@
                                     </Button>
                                     <Button fx:id="createButton" mnemonicParsing="false" prefHeight="33.0" prefWidth="186.0" styleClass="Button" stylesheets="@CodexTheme.css" text="Create" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                        <font>
-                                          <Font name="Fira Sans Regular" size="14.0" />
+                                          <Font name="FIra Sans Condensed Regular" size="14.0" />
                                        </font>
                                        <GridPane.margin>
                                           <Insets left="4.0" right="4.0" />
@@ -126,7 +126,7 @@
                                              <children>
                                                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Name" textFill="#2f0606" GridPane.columnIndex="1" GridPane.valignment="CENTER">
                                                    <font>
-                                                      <Font name="Fira Sans SemiBold" size="16.0" />
+                                                      <Font name="FIra Sans Condensed SemiBold" size="16.0" />
                                                    </font>
                                                    <GridPane.margin>
                                                       <Insets left="8.0" />
@@ -134,7 +134,7 @@
                                                 </Label>
                                                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" text="ID" textFill="#2f0606">
                                                    <font>
-                                                      <Font name="Fira Sans SemiBold" size="16.0" />
+                                                      <Font name="FIra Sans Condensed SemiBold" size="16.0" />
                                                    </font>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -148,7 +148,7 @@
                                                 </Label>
                                                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Status" textFill="#2f0606" GridPane.columnIndex="2">
                                                    <font>
-                                                      <Font name="Fira Sans SemiBold" size="16.0" />
+                                                      <Font name="FIra Sans Condensed SemiBold" size="16.0" />
                                                    </font>
                                                    <GridPane.margin>
                                                       <Insets left="8.0" />
@@ -176,7 +176,7 @@
                            <children>
                               <Label alignment="CENTER" prefHeight="111.0" prefWidth="204.0" text="Choose a match" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                  <font>
-                                    <Font name="Fira Sans SemiBold" size="21.0" />
+                                    <Font name="FIra Sans Condensed SemiBold" size="21.0" />
                                  </font>
                               </Label>
                               <Pane prefHeight="47.0" prefWidth="257.0" styleClass="titleDivider" GridPane.rowIndex="3" />

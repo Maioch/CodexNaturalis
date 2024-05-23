@@ -159,7 +159,13 @@ public enum Status {
     /**
      * Message sent if a player has no moves.
      */
-    NO_MOVES("");
+    NO_MOVES(""),
+
+    /**
+     * Message sent every interval to all the players in a match
+     * in order to check whether they're still connected.
+     */
+    PING("");
 
     private final String message;
 

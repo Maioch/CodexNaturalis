@@ -78,7 +78,7 @@
                            <children>
                               <Button fx:id="connectButton" disable="true" mnemonicParsing="false" onMouseReleased="#connectButtonHandler" prefHeight="33.0" prefWidth="186.0" styleClass="Button" text="Connect to server" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="10">
                                  <font>
-                                    <Font name="Fira Sans Regular" size="18.0" />
+                                    <Font name="FIra Sans Condensed Regular" size="18.0" />
                                  </font>
                                  <GridPane.margin>
                                     <Insets />
@@ -86,17 +86,17 @@
                               </Button>
                               <TextField fx:id="ipTextBox" onKeyTyped="#checkIfEnableButton" promptText="Server ip" styleClass="textField" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <font>
-                                    <Font name="Fira Sans Regular" size="18.0" />
+                                    <Font name="FIra Sans Condensed Regular" size="18.0" />
                                  </font>
                               </TextField>
                                <TextField fx:id="portTextBox" onKeyTyped="#checkIfEnableButton" promptText="Server port" styleClass="textField" GridPane.columnIndex="1" GridPane.rowIndex="5">
                                    <font>
-                                       <Font name="Fira Sans Regular" size="18.0" />
+                                       <Font name="FIra Sans Condensed Regular" size="18.0" />
                                    </font>
                                </TextField>
                               <Label alignment="CENTER" prefHeight="21.0" prefWidth="111.0" text="Server Port" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4">
                                  <font>
-                                    <Font name="Fira Sans Regular" size="18.0" />
+                                    <Font name="FIra Sans Condensed Regular" size="18.0" />
                                  </font>
                                  <GridPane.margin>
                                     <Insets />
@@ -115,7 +115,7 @@
                               </Label>
                               <Label alignment="CENTER" prefHeight="36.0" prefWidth="191.0" text="Protocol" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7">
                                  <font>
-                                    <Font name="Fira Sans Regular" size="18.0" />
+                                    <Font name="FIra Sans Condensed Regular" size="18.0" />
                                  </font>
                                  <padding>
                                     <Insets bottom="8.0" />
@@ -135,12 +135,12 @@
                                              <ToggleGroup fx:id="protocol" />
                                          </toggleGroup>
                                          <font>
-                                             <Font name="Fira Sans Regular" size="18.0" />
+                                             <Font name="FIra Sans Condensed Regular" size="18.0" />
                                          </font>
                                      </RadioButton>
                                     <RadioButton id="1" fx:id="rmiRadioButton" mnemonicParsing="false" styleClass="radioButtons" text="RMI" textFill="#351f16" toggleGroup="$protocol" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                                        <font>
-                                          <Font name="Fira Sans Regular" size="18.0" />
+                                          <Font name="FIra Sans Condensed Regular" size="18.0" />
                                        </font>
                                     </RadioButton>
                                  </children>
@@ -155,7 +155,7 @@
                                </Label>
                               <Hyperlink onMouseReleased="#openRulesLink" text="Read the rulebook" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="12" GridPane.valignment="BOTTOM">
                                  <font>
-                                    <Font name="Fira Sans Regular" size="12.0" />
+                                    <Font name="FIra Sans Condensed Regular" size="12.0" />
                                  </font>
                                  <GridPane.margin>
                                     <Insets />
@@ -178,12 +178,12 @@
                            <children>
                               <Label alignment="TOP_CENTER" prefHeight="111.0" prefWidth="204.0" text="Codex Naturalis" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                  <font>
-                                    <Font name="Fira Sans SemiBold" size="21.0" />
+                                    <Font name="FIra Sans Condensed Semibold" size="21.0" />
                                  </font>
                               </Label>
                               <Label alignment="BOTTOM_CENTER" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Welcome to" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="BOTTOM">
                                  <font>
-                                    <Font name="Fira Sans SemiBold" size="16.0" />
+                                    <Font name="FIra Sans Condensed Semibold" size="16.0" />
                                  </font>
                               </Label>
                               <Pane prefHeight="200.0" prefWidth="200.0" styleClass="titleDivider" GridPane.rowIndex="2" />
