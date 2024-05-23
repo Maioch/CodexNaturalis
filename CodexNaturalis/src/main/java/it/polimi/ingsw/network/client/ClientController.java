@@ -200,7 +200,6 @@ public class ClientController extends MessageHandler{
                 continue;
             }
             switch (labeledMessage.message().getStatus()) {
-                case PING -> eventSubmitter.submit(() -> sendMessage(new Message(Status.PING)));
                 case TURN_SKIPPED -> eventSubmitter.submit(() -> gameView.notifyTurnSkipped());
                 case NEW_PLAYER_JOINED -> {
                     if (labeledMessage.message() instanceof PlayerMessage playerMessage) {

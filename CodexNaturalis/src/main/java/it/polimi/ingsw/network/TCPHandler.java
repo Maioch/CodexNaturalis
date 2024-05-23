@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network;
 
 import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -37,6 +38,10 @@ public class TCPHandler extends NetworkHandler implements Runnable{
                 try {
                     Message message = (Message) socketInput.readObject();
                     //System.out.println(message.getStatus());
+                    if(message.getStatus() == Status.REQUEST_PING){
+                        update(new Message(Status.PING_ACK));
+                        continue;
+                    }
                     handler.addMessageToQueue(message, this);
                     //System.out.printf("Received %s%n",message.getStatus().toString());
                 } catch (ClassNotFoundException e) {

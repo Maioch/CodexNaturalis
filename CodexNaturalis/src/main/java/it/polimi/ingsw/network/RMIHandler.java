@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network;
 
 import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 
 import java.rmi.RemoteException;
 import java.util.concurrent.ExecutorService;
@@ -32,6 +33,10 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
     @Override
     public void receiveUpdate(Message message) throws RemoteException {
         //System.out.println(message.getStatus());
+        if(message.getStatus() == Status.REQUEST_PING){
+            receiverInterface.receiveUpdate(new Message(Status.PING_ACK));
+            return;
+        }
         handler.addMessageToQueue(message,this);
     }
 

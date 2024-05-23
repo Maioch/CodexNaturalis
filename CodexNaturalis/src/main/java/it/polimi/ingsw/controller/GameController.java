@@ -96,7 +96,7 @@ public class GameController implements Runnable{
      * is chosen) and informs the player about his objectives.
      */
     private void initializeGame() {
-        serverSubject.notifyAll(new Message(Status.PING));
+        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
         TimerTask pingTask = new TimerTask() {
             @Override
             public void run() {
@@ -333,12 +333,12 @@ public class GameController implements Runnable{
                 serverSubject.notify(senderNickname, messageToSendBack);
             }
             //handle pings
-            if(message.getStatus() == Status.PING){
+            if(message.getStatus() == Status.REQUEST_PING){
                 synchronized (connectedUsers){
                     connectedUsers.add(labeledMessage.networkHandler());
                 }
             }
-            if(message.getStatus() == Status.PING || message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
+            if(message.getStatus() == Status.REQUEST_PING || message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
                 labeledMessage = null;
             }
         }
@@ -387,7 +387,7 @@ public class GameController implements Runnable{
             }
             networkHandler.setDisconnected();
         }
-        serverSubject.notifyAll(new Message(Status.PING));
+        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }
 
     /**

@@ -170,7 +170,12 @@ public enum Status {
      * Message sent every interval to all the players in a match
      * in order to check whether they're still connected.
      */
-    PING("");
+    REQUEST_PING(""),
+
+    /**
+     * Message sent in response to a ping request
+     */
+    PING_ACK("");
 
     private final String message;
 
