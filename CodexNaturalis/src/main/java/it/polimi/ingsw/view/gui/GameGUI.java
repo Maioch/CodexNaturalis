@@ -95,6 +95,11 @@ public class GameGUI implements GameView {
     }
 
     @Override
+    public void notifyTurnSkipped() {
+
+    }
+
+    @Override
     public void showNoMovesAvailable() {
 
     }

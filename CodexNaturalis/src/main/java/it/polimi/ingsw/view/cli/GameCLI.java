@@ -296,6 +296,14 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
+     * Method used to notify the players that the turn has been skipped.
+     */
+    @Override
+    public void notifyTurnSkipped() {
+        System.out.println("The turn has been skipped because the player isn't connected");
+    }
+
+    /**
      * Method used to show the client a legend of the symbols printed in the CLI.
      */
     private void showSymbols(){
@@ -340,7 +348,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     public void revealWinners(List<String> winners){
         System.out.println("The game is over! The winner is:");
         winners.forEach(System.out::println);
-        String back = readFromInput("Type BACK when you're ready to return to the main menu: ",
+        readFromInput("Type BACK when you're ready to return to the main menu: ",
                 s -> s.equalsIgnoreCase("back"),
                 this::stringIdentity);
         controller.backToSetup();
