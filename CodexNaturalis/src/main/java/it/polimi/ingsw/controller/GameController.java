@@ -333,12 +333,12 @@ public class GameController implements Runnable{
                 serverSubject.notify(senderNickname, messageToSendBack);
             }
             //handle pings
-            if(message.getStatus() == Status.REQUEST_PING){
+            if(message.getStatus() == Status.PING_ACK){
                 synchronized (connectedUsers){
                     connectedUsers.add(labeledMessage.networkHandler());
                 }
             }
-            if(message.getStatus() == Status.REQUEST_PING || message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
+            if(message.getStatus() == Status.PING_ACK || message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
                 labeledMessage = null;
             }
         }
@@ -407,7 +407,6 @@ public class GameController implements Runnable{
         synchronized (gameStatusLock) {
             gameStatus = GameStatus.STARTED;
         }
-        System.out.println("A new game started and is now in progress");
         initializeGame();
         startGame();
         for (Player player : game.getAllPlayers()) {
