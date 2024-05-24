@@ -3,9 +3,7 @@ package it.polimi.ingsw.model.server;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.model.server.card.CardType;
-import javafx.fxml.FXMLLoader;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -62,6 +60,8 @@ public class GameParameters {
     }
 
     public static int getNumberOfDrawnSecretObjectives() { return getParameter("numberOfDrawnSecretObjectives").asInt(); }
+
+    public static int getForfeitTime() { return getParameter("forfeitTime").asInt(); }
 
     /**
      * @return the number of common objectives from the json file.

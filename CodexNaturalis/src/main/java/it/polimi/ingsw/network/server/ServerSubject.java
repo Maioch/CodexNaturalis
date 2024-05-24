@@ -43,7 +43,9 @@ public class ServerSubject {
      */
     public synchronized void notifyAll(Message message){
         for(NetworkHandler networkHandler : networkHandlers.values()){
-            networkHandler.update(message);
+            if(!networkHandler.isDisconnected()) {
+                networkHandler.update(message);
+            }
         }
     }
 
@@ -53,7 +55,7 @@ public class ServerSubject {
      * @param message the message to send them.
      */
     public synchronized void notify(String nickname, Message message){
-        if(networkHandlers.containsKey(nickname)){
+        if(networkHandlers.containsKey(nickname) && !networkHandlers.get(nickname).isDisconnected()){
             networkHandlers.get(nickname).update(message);
         }
     }

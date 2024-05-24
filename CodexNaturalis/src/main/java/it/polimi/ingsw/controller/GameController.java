@@ -19,6 +19,7 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -35,7 +36,10 @@ public class GameController implements Runnable{
     private final Consumer<GameController> endGameProcedure;
     private final Object gameIsFullLock;
     private final Object gameStatusLock;
+    private final Object onlyOnePlayerLock;
+    private final AtomicBoolean gameOver;
     private GameStatus gameStatus;
+    private boolean onlyOnePlayer;
 
     /**
      * Constructor for the class.
@@ -57,6 +61,9 @@ public class GameController implements Runnable{
         this.endGameProcedure = endGameProcedure;
         this.gameIsFullLock = new Object();
         this.gameStatusLock = new Object();
+        this.onlyOnePlayerLock = new Object();
+        this.onlyOnePlayer = false;
+        this.gameOver = new AtomicBoolean(false);
         this.gameStatus = GameStatus.LOBBY;
     }
 
@@ -91,6 +98,33 @@ public class GameController implements Runnable{
         }
     }
 
+    private void checkForOnlyOnePlayer() {
+        synchronized (onlyOnePlayerLock) {
+            if (onlyOnePlayer) {
+                List<String> playerLeft = game.getAllPlayers().stream().map(Player::getNickname)
+                        .filter(n -> !serverSubject.getNetworkHandler(n).isDisconnected())
+                        .toList();
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        gameOver.set(true);
+                        serverSubject.notifyAll(new WinnersMessage(playerLeft));
+                        synchronized(onlyOnePlayerLock) {
+                            onlyOnePlayerLock.notifyAll();
+                        }
+                    }
+                }, GameParameters.getForfeitTime());
+                try {
+                    onlyOnePlayerLock.wait();
+                    timer.cancel();
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+    }
+
     /**
      * Method that handles the first phase of the game: it makes the player place his starter card (after the card's side
      * is chosen) and informs the player about his objectives.
@@ -110,10 +144,18 @@ public class GameController implements Runnable{
         for (Player player : game.getAllPlayers()) {
             serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             placeStarterCard(player);
+            checkForOnlyOnePlayer();
+            if(gameOver.get()){
+                return;
+            }
         }
         for (Player player : game.getAllPlayers()) {
             serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             choosePersonalObjective(player);
+            checkForOnlyOnePlayer();
+            if(gameOver.get()){
+                return;
+            }
         }
     }
 
@@ -179,6 +221,10 @@ public class GameController implements Runnable{
                 if(placeCard(player)) {
                     drawCard(player);
                 }
+                checkForOnlyOnePlayer();
+                if(gameOver.get()){
+                    return;
+                }
             }
         }
         //last turn of the game
@@ -193,6 +239,10 @@ public class GameController implements Runnable{
                 continue;
             }
             placeCard(player);
+            checkForOnlyOnePlayer();
+            if(gameOver.get()){
+                return;
+            }
         }
         //calculate the final score
         for (Player player : game.getAllPlayers()){
@@ -419,6 +469,13 @@ public class GameController implements Runnable{
                 serverSubject.notifyAll(new Message(Status.PLAYER_DISCONNECTED));
             }
             networkHandler.setDisconnected();
+        }
+        synchronized (connectedUsers) {
+            if (connectedUsers.size() == 1) {
+                synchronized (onlyOnePlayerLock) {
+                    onlyOnePlayer = true;
+                }
+            }
         }
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }

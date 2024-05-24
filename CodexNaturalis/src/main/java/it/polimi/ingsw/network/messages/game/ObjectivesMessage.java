@@ -29,13 +29,13 @@ public class ObjectivesMessage extends Message {
      * @return the player's personal objective.
      */
     public List<Objective> getPersonalObjectives(){
-        return new ArrayList<Objective>(personalObjectives);
+        return new ArrayList<>(personalObjectives);
     }
 
     /**
      * @return the game's common objectives, belonging to all the players.
      */
     public List<Objective> getCommonObjectives() {
-        return new ArrayList<Objective>(commonObjectives);
+        return new ArrayList<>(commonObjectives);
     }
 }

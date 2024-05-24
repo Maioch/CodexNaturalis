@@ -63,7 +63,8 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
             try {
                 receiverInterface.receiveUpdate(message);
             } catch (RemoteException e) {
-                System.out.println("unable to contact the remote interface");
+                System.out.println("Encountered an IO Exception in RMIHandler update");
+                System.out.println(e.getMessage());
             }
         });
     }
