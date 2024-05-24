@@ -70,6 +70,11 @@ public class GameGUI implements GameView {
     }
 
     @Override
+    public void requestPersonalObjectivesChoice(List<Objective> objectives) {
+
+    }
+
+    @Override
     public void showPersonalObjectives(List<Objective> objectives) {
 
     }

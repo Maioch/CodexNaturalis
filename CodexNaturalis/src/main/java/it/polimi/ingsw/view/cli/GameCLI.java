@@ -9,9 +9,11 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
+import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.GameView;
 
 import java.awt.*;
@@ -254,6 +256,22 @@ public class GameCLI extends AbstractCLI implements GameView {
         int y = placedCards.getLast().getCorner(Location.BL).getY();
         System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
         System.out.printf("Their new score is: %d\n", moveScore);
+    }
+
+    @Override
+    public void requestPersonalObjectivesChoice(List<Objective> objectives) {
+        System.out.println("These are the secret objectives you can choose from:");
+        for(int i = 0; i < objectives.size(); i++) {
+            System.out.printf("%d. %s%n", i + 1, CardFormatter.getObjectiveInfoString(objectives.get(i)));
+        }
+        int numberOfSecretObjectives = GameParameters.getNumberOfSecretObjectives();
+        List<Integer> chosenObjective = readFromInput(
+                String.format("Choose %d of these: ", numberOfSecretObjectives),
+                l -> l.stream().allMatch(i -> i >= 1 && i <= objectives.size()) && l.size() == numberOfSecretObjectives,
+                this::stringToListInt);
+        controller.sendMessage(new ObjectivesMessage(Status.SECRET_OBJECTIVES,
+                chosenObjective.stream().map(i -> objectives.get(i - 1)).toList(),
+                new ArrayList<>()));
     }
 
     /**

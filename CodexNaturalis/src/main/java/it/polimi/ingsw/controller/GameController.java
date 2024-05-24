@@ -109,27 +109,60 @@ public class GameController implements Runnable{
         serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards));
         for (Player player : game.getAllPlayers()) {
             serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
-            CardSides starterCard = player.getHandCards().getFirst();
-            Status currentStatus = Status.STARTER_CARD;
-            BasicCard starterSide = null;
-            while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
-                serverSubject.notify(player.getNickname(), new CardHandMessage(currentStatus, player.getHandCards()));
-                Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
-                if (message instanceof CardPlacementMessage cardPlacementMessage){
-                    starterSide = cardPlacementMessage.getCard();
-                } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
-                    starterSide = starterCard.frontSide();
-                    serverSubject.notifyAll(new Message(Status.TURN_SKIPPED));
-                }
-                currentStatus = Status.INVALID_STARTER_CARD;
-            }
-            player.placeStarterCard(starterSide);
-            List<Objective> secretObjectives = player.getObjectives().stream()
-                    .filter(o -> !game.getCommonObjectives().contains(o))
-                    .collect(ArrayList::new, List::add, List::addAll);
-            serverSubject.notify(player.getNickname(),
-                    new ObjectivesMessage(Status.OBJECTIVES, secretObjectives, game.getCommonObjectives()));
+            placeStarterCard(player);
         }
+        for (Player player : game.getAllPlayers()) {
+            serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            choosePersonalObjective(player);
+        }
+    }
+
+    /**
+     * Asks the player which side of the starter card he wants to place.
+     * If the player is disconnected, the game will automatically choose the front side.
+     * @param player the player that has to make the choice.
+     */
+    private void placeStarterCard(Player player){
+        CardSides starterCard = player.getHandCards().getFirst();
+        Status currentStatus = Status.STARTER_CARD;
+        BasicCard starterSide = null;
+        while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
+            serverSubject.notify(player.getNickname(), new CardHandMessage(currentStatus, player.getHandCards()));
+            Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+            if (message instanceof CardPlacementMessage cardPlacementMessage){
+                starterSide = cardPlacementMessage.getCard();
+            } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
+                starterSide = starterCard.frontSide();
+                serverSubject.notifyAll(new Message(Status.TURN_SKIPPED));
+            }
+            currentStatus = Status.INVALID_STARTER_CARD;
+        }
+        player.placeStarterCard(starterSide);
+    }
+
+    /**
+     * Draws a certain number of objectives and asks the player which personal objectives
+     * they want to choose out of them.
+     * If the player is disconnected, the game will automatically choose the first ones in the list.
+     * @param player the player that has to make the choice.
+     */
+    @SuppressWarnings({"SlowListContainsAll"})
+    private void choosePersonalObjective(Player player){
+        List<Objective> drawnObjectives = game.drawObjectiveCards();
+        Status currentStatus = Status.SECRET_OBJECTIVES;
+        List<Objective> secretObjectives = new ArrayList<>();
+        while(secretObjectives.isEmpty() || !drawnObjectives.containsAll(secretObjectives)){
+            serverSubject.notify(player.getNickname(), new ObjectivesMessage(currentStatus, drawnObjectives, new ArrayList<>()));
+            Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+            if (message instanceof ObjectivesMessage objectiveMessage){
+                secretObjectives = objectiveMessage.getPersonalObjectives();
+            } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
+                secretObjectives.addAll(drawnObjectives.subList(0, GameParameters.getNumberOfSecretObjectives()));
+                serverSubject.notifyAll(new Message(Status.TURN_SKIPPED));
+            }
+            currentStatus = Status.INVALID_SECRET_OBJECTIVES;
+        }
+        player.addPersonalObjectives(secretObjectives);
     }
 
     /**

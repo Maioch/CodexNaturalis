@@ -170,9 +170,6 @@ public class GameModel{
                 commonObjectiveClones.add(new Objective(objective));
             }
             addAll(commonObjectiveClones);
-            for (int i = 0; i < GameParameters.getNumberOfSecretObjectives(); i++) {
-                add(objectiveDeck.draw());
-            }
         }};
         players.add(new Player(nickname, color, handCards, objectives, serverSubject));
         availableColors.remove(color);
@@ -180,6 +177,14 @@ public class GameModel{
         for(Player player : players) {
             serverSubject.notifyAll(new PlayerMessage(Status.NEW_PLAYER_JOINED, player.getNickname(), player.getColor()));
         }
+    }
+
+    public synchronized List<Objective> drawObjectiveCards(){
+        List<Objective> result = new ArrayList<>();
+        for(int i = 0; i < GameParameters.getNumberOfDrawnSecretObjectives(); i++){
+            result.add(objectiveDeck.draw());
+        }
+        return result;
     }
 
     /**

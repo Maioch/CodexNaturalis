@@ -61,6 +61,8 @@ public class GameParameters {
         return getParameter("numberOfSecretObjectives").asInt();
     }
 
+    public static int getNumberOfDrawnSecretObjectives() { return getParameter("numberOfDrawnSecretObjectives").asInt(); }
+
     /**
      * @return the number of common objectives from the json file.
      */

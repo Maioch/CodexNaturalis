@@ -203,7 +203,6 @@ public class Player {
         return corners;
     }
 
-
     /**
      * Method that checks if a certain corner is present in the player's board.
      * @param corner the corner to check.
@@ -279,6 +278,23 @@ public class Player {
         cardSides.backSide().setOwner(this);
         serverSubject.notifyAll(new CardHandMessage(Status.PLAYER_HAND_BACK, getBackOnlyCardHand()));
         serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, getHandCards()));
+    }
+
+    /**
+     * Method that adds a list of personal objectives to the player.
+     * @param personalObjectives the objectives to add to the player.
+     */
+    public void addPersonalObjectives(List<Objective> personalObjectives){
+        List<Objective> commonObjectives = getObjectives();
+        for(Objective objective : personalObjectives){
+            objective.setOwner(this);
+        }
+        objectives.addAll(personalObjectives);
+        List<Objective> secretObjectives = getObjectives().stream()
+                .filter(o -> !commonObjectives.contains(o))
+                .collect(Collectors.toCollection(ArrayList::new));
+        serverSubject.notify(getNickname(),
+                new ObjectivesMessage(Status.ALL_OBJECTIVES, secretObjectives, commonObjectives));
     }
 
     /**

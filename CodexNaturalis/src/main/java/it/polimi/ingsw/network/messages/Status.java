@@ -100,9 +100,20 @@ public enum Status {
     PLAYER_HAND_BACK(""),
 
     /**
+     * Server: asks the client to choose a set amount of objectives from a list
+     * Client: sends the chosen objectives
+     */
+    SECRET_OBJECTIVES(""),
+
+    /**
+     * Server: asks the client to choose a set amount of objectives from a list, if the first response wasn't valid.
+     */
+    INVALID_SECRET_OBJECTIVES(""),
+
+    /**
      * Server: sends to the player his objectives (both common and personal).
      */
-    OBJECTIVES(""),
+    ALL_OBJECTIVES(""),
 
     /**
      * Server: requests the player to place a card, sending each placeable card and corner.

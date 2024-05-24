@@ -232,7 +232,15 @@ public class ClientController extends MessageHandler{
                         game.getLocalPlayer().requestStarterCardPlacement();
                     }
                 }
-                case OBJECTIVES -> {
+                case SECRET_OBJECTIVES, INVALID_SECRET_OBJECTIVES -> {
+                    if (labeledMessage.message().getStatus() == Status.INVALID_SECRET_OBJECTIVES) {
+                        eventSubmitter.submit(() -> gameView.showErrorMessage(Status.INVALID_SECRET_OBJECTIVES.getMessage()));
+                    }
+                    if (labeledMessage.message() instanceof ObjectivesMessage objectivesMessage) {
+                        eventSubmitter.submit(() -> gameView.requestPersonalObjectivesChoice(objectivesMessage.getPersonalObjectives()));
+                    }
+                }
+                case ALL_OBJECTIVES -> {
                     if (labeledMessage.message() instanceof ObjectivesMessage objectivesMessage) {
                         game.setCommonObjectives(objectivesMessage.getCommonObjectives());
                         game.getLocalPlayer().setPersonalObjectives(objectivesMessage.getPersonalObjectives());

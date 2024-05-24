@@ -13,6 +13,7 @@
   "numberOfResourceCardsInHand": 2,
   "numberOfGoldCardsInHand": 1,
   "numberOfSecretObjectives": 1,
+  "numberOfDrawnSecretObjectives" : 2,
   "numberOfCommonObjectives": 2,
   "winThreshold": 20,
   "TCPPort" : 23435,
