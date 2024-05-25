@@ -78,7 +78,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                     if(labeledMessage.message() instanceof IntegerMessage integerMessage){
                         GameController game = games.getController(integerMessage.getValue());
                         labeledMessage.networkHandler().update(new GameColorsMessage(Status.REQUEST_COLORS,
-                                game != null ? game.requestColors() : new ArrayList<>(), integerMessage.getValue()));
+                                game != null ? game.requestAvailableColors() : new ArrayList<>(), integerMessage.getValue()));
                     }
                 }
                 case JOIN_GAME -> {

@@ -186,7 +186,17 @@ public enum Status {
     /**
      * Message sent in response to a ping request
      */
-    PING_ACK("");
+    PING_ACK(""),
+
+    /**
+     * Message sent by the server whenever the timeout that declares the only player left as winner starts.
+     */
+    GAME_TIMEOUT_STARTED(""),
+
+    /**
+     * Message by the server sent whenever the match lobby's timeout ends.
+     */
+    GAME_CANCELED("");
 
     private final String message;
 

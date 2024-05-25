@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
- * Class that represents the controller for each game, according to the MVC model.
- *
- * @author Andrea Fidanza, Guglielmo Gatti, Marco Maiocchi, Francesco Saverio Nisoli
+ * GameController is the class that represents the MVC pattern controller.
+ * Each game has one: it allows to change the status of the match model after the occurrence of a player action,
+ * and it can also check for special configurations in it.
  */
 public class GameController implements Runnable{
     private final GameModel game;
@@ -43,12 +43,14 @@ public class GameController implements Runnable{
     private boolean onlyOnePlayer;
 
     /**
-     * Constructor for the class.
-     * @param numberOfPlayers the maximum number of players that can join the game.
-     * @param serverSubject the object used to notify the serverListeners.
-     * @param name the name of the game.
-     * @param endGameProcedure the consumer for the class; it's used to delete the game controller when the match ends.
-     * @throws IllegalNumberOfPlayers exception thrown if the player entered an invalid players number parameter.
+     * Class constructor.
+     *
+     * @param numberOfPlayers         the maximum number of players that can join the game.
+     * @param serverSubject           the object used to notify about a change in the game's model.
+     * @param name                    the name of the game.
+     * @param endGameProcedure        the consumer used to delete the game controller when the game ends.
+     *
+     * @throws IllegalNumberOfPlayers if the player entered an invalid maximum number of players when creating the game.
      */
     public GameController(int numberOfPlayers,
                           ServerSubject serverSubject,
@@ -70,20 +72,27 @@ public class GameController implements Runnable{
     }
 
     /**
-     * @return the list of the game's available colors.
+     * Returns the list of colors from which a new player entering the game may choose.
+     *
+     * @return all the game's available colors.
      */
-    public List<Content> requestColors(){
+    public List<Content> requestAvailableColors(){
         return new ArrayList<>(game.getAvailableColors());
     }
 
     /**
-     * Method used to add a player to a game, and it subscribes him to the notification system.
-     * @param nickname the nickname of the player that is joining the game.
-     * @param color the color chosen by the player.
-     * @param handler the TCP/RMI handler for the new player, that allows him to interact with the controller.
-     * @throws GameFullException exception thrown if the game the player is trying to join is full.
-     * @throws NicknameTakenException exception thrown if the nickname chosen by the player is already present in the game.
-     * @throws GameException exception thrown if the color chosen by the player is already taken.
+     * Adds a player to the game and then, if the game is full, sends a notification to start the game.
+     * If the nickname isn't already taken, adds the new player to the list of server subjects.
+     *
+     * @param nickname                the nickname of the player.
+     * @param color                   the color chosen by the player.
+     * @param handler                 the TCP/RMI handler associated to the new player.
+     *
+     * @throws GameFullException      if the game is already full.
+     * @throws NicknameTakenException if the chosen nickname is already taken.
+     * @throws GameException          if the chosen color is already taken.
+     *
+     * @see NetworkHandler
      */
     public void acceptPlayer(String nickname, Content color, NetworkHandler handler) throws GameFullException, NicknameTakenException, GameException{
         if(game.checkNickname(nickname)){
@@ -102,12 +111,229 @@ public class GameController implements Runnable{
         }
     }
 
+    /**
+     * Adds a player that has disconnected back to the game.
+     *
+     * @param nickname the player to add back.
+     * @param handler  the handler associated to the player.
+     */
+    public void reconnectPlayer(String nickname, NetworkHandler handler){
+        NetworkHandler userHandler = serverSubject.getNetworkHandler(nickname);
+        if(userHandler == null || userHandler.isDisconnected()){
+            handler.update(new Message(Status.ERROR));
+            return;
+        }
+        serverSubject.subscribe(nickname, handler);
+    }
+
+    /**
+     * Checks if the game is full
+     *
+     * @return true if the game is full.
+     */
+    public boolean isGameFull() {
+        return game.isGameFull();
+    }
+
+    /**
+     * Gets the game's name.
+     *
+     * @return the game's name.
+     */
+    public String getName(){
+        return name;
+    }
+
+    /**
+     * Gets the game's status.
+     *
+     * @return the status of the game.
+     */
+    public GameStatus getGameStatus(){
+        synchronized (gameStatusLock) {
+            return gameStatus;
+        }
+    }
+
+    /**
+     * Adds a message to the message queue.
+     *
+     * @param message the message to add.
+     * @param handler the player that sent the message.
+     */
+    public void addMessageToQueue(Message message, NetworkHandler handler){
+        synchronized (messageQueue) {
+            messageQueue.add(new LabeledMessage(handler, message));
+        }
+    }
+
+    /**
+     * Adds the player to the connected users list.
+     *
+     * @param networkHandler the player that received the ping.
+     */
+    public void receivePing(NetworkHandler networkHandler){
+        synchronized (connectedUsers){
+            connectedUsers.add(networkHandler);
+        }
+    }
+
+    /**
+     * Polls a message from the message queue.
+     * If it's a chat message, sends it to the corresponding recipients, and then polls another message.
+     * This method implements a timer.
+     *
+     * @param  handler the player from which the server expects a message.
+     *
+     * @return the polled message.
+     */
+    private Message readFromQueue(NetworkHandler handler){
+        LabeledMessage labeledMessage = null;
+        while(labeledMessage == null && handler != null && !handler.isDisconnected()){
+            synchronized(messageQueue) {
+                if (messageQueue.isEmpty()) {
+                    Thread.onSpinWait();
+                    continue;
+                }
+                labeledMessage = messageQueue.poll();
+            }
+            Message message = labeledMessage.message();
+            //handle chat messages
+            if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
+                LabeledMessage finalLabeledMessage = labeledMessage;
+                String senderNickname = game.getAllPlayers().stream()
+                        .map(Player::getNickname)
+                        .filter(n -> serverSubject.getNetworkHandler(n) == finalLabeledMessage.networkHandler())
+                        .findFirst().orElse("Missing Sender");
+                int chatMsgLength = chatMessage.getMessage().length();
+                List<String> recipients = chatMessage.getRecipients();
+                Message messageToSendBack = new ChatMessage(
+                        chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
+                        senderNickname,
+                        chatMessage.getRecipients());
+                for(String nickname : recipients){
+                    serverSubject.notify(nickname, messageToSendBack);
+                }
+                serverSubject.notify(senderNickname, messageToSendBack);
+            }
+            if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
+                labeledMessage = null;
+            }
+        }
+        if(handler == null || handler.isDisconnected()){
+            return new Message(Status.PLAYER_DISCONNECTED);
+        }
+        return labeledMessage == null ? null : labeledMessage.message();
+    }
+
+    /**
+     * Waits that all clients are ready to play the game, using the CLIENT_READY message.
+     *
+     * @param handlers all the players connected to the game.
+     */
+    private void awaitForReady(List<NetworkHandler> handlers){
+        LabeledMessage labeledMessage;
+        List<NetworkHandler> handlerList = new ArrayList<>(handlers);
+        while(!handlerList.isEmpty()){
+            synchronized(messageQueue) {
+                if (messageQueue.isEmpty()) {
+                    Thread.onSpinWait();
+                    continue;
+                }
+                labeledMessage = messageQueue.poll();
+            }
+            Message message = labeledMessage.message();
+            NetworkHandler sender = labeledMessage.networkHandler();
+            handlerList.removeIf(h -> message.getStatus() == Status.CLIENT_READY && h == sender);
+        }
+    }
+
+    /**
+     * Checks if any player has disconnected from the game and sends a ping request to all the clients.
+     * If a player doesn't answer to the ping, labels him as "disconnected", then notifies all the others with
+     * a PLAYER_DISCONNECTED message.
+     * When the connected players are less than or equal to one, the game will start an ending procedure.
+     */
+    private void readAndRequestPings(){
+        List<NetworkHandler> disconnectedHandlers;
+        //connected players part
+        synchronized (connectedUsers) {
+            if (connectedUsers.size() == 1) {
+                synchronized (onlyOnePlayerLock) {
+                    onlyOnePlayer = true;
+                }
+            }
+            if(connectedUsers.isEmpty()){
+                System.out.println("No players connected, starting abort procedure");
+                gameOver.set(true);
+                pingTimer.cancel();
+                synchronized (onlyOnePlayerLock) {
+                    onlyOnePlayerLock.notifyAll();
+                }
+            }
+            disconnectedHandlers = game.getAllPlayers().stream()
+                    .map(p -> serverSubject.getNetworkHandler(p.getNickname()))
+                    .filter(n -> !connectedUsers.contains(n))
+                    .toList();
+            connectedUsers.clear();
+        }
+        //notifying part
+        for(NetworkHandler networkHandler : disconnectedHandlers){
+            if(!networkHandler.isDisconnected()){
+                serverSubject.notifyAll(new Message(Status.PLAYER_DISCONNECTED));
+            }
+            networkHandler.setDisconnected();
+        }
+        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
+    }
+
+    /**
+     * Removes all the players from the game.
+     */
+    private void removeHandlers(){
+        for (Player player : game.getAllPlayers()) {
+            NetworkHandler playerHandler = serverSubject.getNetworkHandler(player.getNickname());
+            if(playerHandler != null) {
+                playerHandler.setCurrentGame(null);
+                serverSubject.unsubscribe(player.getNickname());
+            }
+        }
+    }
+
+    /**
+     * Starts a timer at the end of which the lobby is dismantled.
+     */
+    private void startLobbyTimer(){
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                synchronized (gameStatusLock){
+                    if(gameStatus == GameStatus.LOBBY){
+                        serverSubject.notifyAll(new Message(Status.GAME_CANCELED));
+                        removeHandlers();
+                        gameOver.set(true);
+                        endGameProcedure.accept(GameController.this);
+                        synchronized (gameIsFullLock){
+                            gameIsFullLock.notifyAll();
+                        }
+                    }
+                }
+            }
+        }, GameParameters.getLobbyTimeout() * 1000L);
+    }
+
+    /**
+     * Checks if there's only one player left in the game.
+     * If that's true and the game isn't already over, starts a timer at the end of which the game ends and the
+     * remaining player is declared the winner.
+     */
     private void checkForOnlyOnePlayer() {
         synchronized (onlyOnePlayerLock) {
             if (onlyOnePlayer && !gameOver.get()) {
                 List<String> playerLeft = game.getAllPlayers().stream().map(Player::getNickname)
                         .filter(n -> !serverSubject.getNetworkHandler(n).isDisconnected())
                         .toList();
+                serverSubject.notifyAll(new Message(Status.GAME_TIMEOUT_STARTED));
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
@@ -122,7 +348,7 @@ public class GameController implements Runnable{
                     }
                 }, GameParameters.getForfeitTime() * 1000L);
                 try {
-                    System.out.println("starting wait proc");
+                    System.out.println("Only one player left, the game will end in " + GameParameters.getForfeitTime() + " seconds");
                     onlyOnePlayerLock.wait();
                     timer.cancel();
                 } catch (InterruptedException e) {
@@ -133,8 +359,9 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Method that handles the first phase of the game: it makes the player place his starter card (after the card's side
-     * is chosen) and informs the player about his objectives.
+     * Handles the setup of the game.
+     * First checks if all the players are actually connected to the game, then makes them place their starter card and
+     * choose their personal objective.
      */
     private void initializeGame() {
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
@@ -167,9 +394,11 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Asks the player which side of the starter card he wants to place.
-     * If the player is disconnected, the game will automatically choose the front side.
-     * @param player the player that has to make the choice.
+     * Handles the starter card placement.
+     * Gets the player's choice about the starter card side to place and places it; if the player isn't connected
+     * automatically places the card.
+     *
+     * @param player the player that is placing the starter card.
      */
     private void placeStarterCard(Player player){
         CardSides starterCard = player.getHandCards().getFirst();
@@ -190,10 +419,11 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Draws a certain number of objectives and asks the player which personal objectives
-     * they want to choose out of them.
-     * If the player is disconnected, the game will automatically choose the first ones in the list.
-     * @param player the player that has to make the choice.
+     * Handles the personal objective choice.
+     * Gets the player's choice about the personal objective and updates the game's model; if the player isn't connected
+     * automatically chooses the first objective.
+     *
+     * @param player the player that is choosing the personal objective.
      */
     @SuppressWarnings({"SlowListContainsAll"})
     private void choosePersonalObjective(Player player){
@@ -215,7 +445,10 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Method that handles most of the phases of the game, making each player play his turn correctly.
+     * Handles the game's progression.
+     * Cycles between the players and makes them play their turn, including the last one; computes the final scores
+     * and declares the winner.
+     * Also checks if a player is ever stuck (can't make any move).
      */
     private void startGame() {
         while (!game.isLastTurn() && !game.isGameStuck()) {
@@ -261,8 +494,11 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Method that lets a player place a chosen card: it also checks if the placement is correct.
-     * @param player the player that needs to place a card.
+     * Handles a generic card placement.
+     * Gets the player's choice about the card to place and where to place it: after checking if the placement is valid,
+     * places the card; if the player isn't connected, skips his turn.
+     *
+     * @param player the player that is placing a card.
      */
     private boolean placeCard(Player player) {
         List<Corner> validPlacements = player.getAllValidCorners();
@@ -295,12 +531,13 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Method that checks if the player's chosen move is valid.
+     * Checks if the player's choice about a card placement is valid.
      *
-     * @param player the player who's doing the move.
-     * @param card the card chosen by the player.
-     * @param corner the corner chosen by the player.
-     * @return true if the move is valid, false if it isn't.
+     * @param player the player that is placing a card.
+     * @param card   the card chosen.
+     * @param corner the corner chosen.
+     *
+     * @return       true if the move is valid.
      */
     private boolean isMoveValid(Player player, BasicCard card, Corner corner){
         return (card != null &&
@@ -312,7 +549,10 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Method that lets a player draw a new card. Disconnection is managed (with automatic draw).
+     * Handles the drawing of a card.
+     * Gets the player's choice about where to draw the card and adds it to the player's hand; if the player isn't
+     * connected draws the first available card.
+     *
      * @param player the player that is drawing.
      */
     private void drawCard(Player player) {
@@ -331,16 +571,22 @@ public class GameController implements Runnable{
                 if (message instanceof DrawChoiceMessage drawChoiceMessage){
                     indexChosen = drawChoiceMessage.getIndex();
                     typeChosen = drawChoiceMessage.getCardType();
-                } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
+                    continue;
+                }
+                if (message.getStatus() == Status.PLAYER_DISCONNECTED){
                     for(Map.Entry<CardType, List<BasicCard>> entry : game.getDrawableCards().entrySet()){
-                        int i = 0;
-                        for(BasicCard card : entry.getValue()){
+                        boolean found = false;
+                        for(int i = 0; i < entry.getValue().size(); i++){
+                            BasicCard card = entry.getValue().get(i);
                             if(card != null){
                                 typeChosen = entry.getKey();
                                 indexChosen = i;
+                                found = true;
                                 break;
                             }
-                            i++;
+                        }
+                        if(found){
+                            break;
                         }
                     }
                 }
@@ -355,165 +601,20 @@ public class GameController implements Runnable{
     }
 
     /**
-     * A method that checks if a game is full.
-     * @return true if it is, false if it isn't.
-     */
-    public boolean isGameFull() {
-        return game.isGameFull();
-    }
-
-    /**
-     * @return the game's name.
-     */
-    public String getName(){
-        return name;
-    }
-
-    /**
-     * @return the status of the game.
-     */
-    public GameStatus getGameStatus(){
-        synchronized (gameStatusLock) {
-            return gameStatus;
-        }
-    }
-
-    /**
-     * A method that adds a message to the message queue.
-     * @param message the message to add.
-     * @param handler the handler that sent the message.
-     */
-    public void addMessageToQueue(Message message, NetworkHandler handler){
-        synchronized (messageQueue) {
-            messageQueue.add(new LabeledMessage(handler, message));
-        }
-    }
-
-    public void receivePing(NetworkHandler networkHandler){
-        synchronized (connectedUsers){
-            connectedUsers.add(networkHandler);
-        }
-    }
-
-    /**
-     * A method that polls a message from the message queue; if it's a chat message, it sends it to the corresponding
-     * recipients, and then polls another message. This method implements a timer.
-     * @param handler the NetworkHandler from which the server expects a message.
-     * @return the polled message.
-     */
-    private Message readFromQueue(NetworkHandler handler){
-        LabeledMessage labeledMessage = null;
-        while(labeledMessage == null && handler != null && !handler.isDisconnected()){
-            synchronized(messageQueue) {
-                if (messageQueue.isEmpty()) {
-                    Thread.onSpinWait();
-                    continue;
-                }
-                labeledMessage = messageQueue.poll();
-            }
-            Message message = labeledMessage.message();
-            //handle chat messages
-            if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
-                LabeledMessage finalLabeledMessage = labeledMessage;
-                String senderNickname = game.getAllPlayers().stream()
-                        .map(Player::getNickname)
-                        .filter(n -> serverSubject.getNetworkHandler(n) == finalLabeledMessage.networkHandler())
-                        .findFirst().orElse("Missing Sender");
-                int chatMsgLength = chatMessage.getMessage().length();
-                List<String> recipients = chatMessage.getRecipients();
-                Message messageToSendBack = new ChatMessage(
-                        chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
-                        senderNickname,
-                        chatMessage.getRecipients());
-                for(String nickname : recipients){
-                    serverSubject.notify(nickname, messageToSendBack);
-                }
-                serverSubject.notify(senderNickname, messageToSendBack);
-            }
-            if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
-                labeledMessage = null;
-            }
-        }
-        if(handler == null || handler.isDisconnected()){
-            return new Message(Status.PLAYER_DISCONNECTED);
-        }
-        return labeledMessage == null ? null : labeledMessage.message();
-    }
-
-    /**
-     * Method used by the server to wait that all clients are ready to play a game, using the CLIENT_READY message.
-     * @param handlers all the client handlers in the game.
-     */
-    private void awaitForReady(List<NetworkHandler> handlers){
-        LabeledMessage labeledMessage;
-        List<NetworkHandler> handlerList = new ArrayList<>(handlers);
-        while(!handlerList.isEmpty()){
-            synchronized(messageQueue) {
-                if (messageQueue.isEmpty()) {
-                    Thread.onSpinWait();
-                    continue;
-                }
-                labeledMessage = messageQueue.poll();
-            }
-            Message message = labeledMessage.message();
-            NetworkHandler sender = labeledMessage.networkHandler();
-            handlerList.removeIf(h -> message.getStatus() == Status.CLIENT_READY && h == sender);
-        }
-    }
-
-    /**
-     *
-     */
-    private void readAndRequestPings(){
-        List<NetworkHandler> disconnectedHandlers;
-        synchronized (connectedUsers) {
-            if (connectedUsers.size() == 1) {
-                synchronized (onlyOnePlayerLock) {
-                    onlyOnePlayer = true;
-                }
-            }
-            if(connectedUsers.isEmpty()){
-                System.out.println("No players connected, starting abort procedure");
-                gameOver.set(true);
-                pingTimer.cancel();
-                synchronized (onlyOnePlayerLock) {
-                    onlyOnePlayerLock.notifyAll();
-                }
-            }
-            disconnectedHandlers = game.getAllPlayers().stream()
-                    .map(p -> serverSubject.getNetworkHandler(p.getNickname()))
-                    .filter(n -> !connectedUsers.contains(n))
-                    .toList();
-            connectedUsers.clear();
-        }
-        for(NetworkHandler networkHandler : disconnectedHandlers){
-            if(!networkHandler.isDisconnected()){
-                serverSubject.notifyAll(new Message(Status.PLAYER_DISCONNECTED));
-            }
-            networkHandler.setDisconnected();
-        }
-        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
-    }
-
-    private void removeHandlers(){
-        for (Player player : game.getAllPlayers()) {
-            NetworkHandler playerHandler = serverSubject.getNetworkHandler(player.getNickname());
-            if(playerHandler != null) {
-                playerHandler.setCurrentGame(null);
-                serverSubject.unsubscribe(player.getNickname());
-            }
-        }
-    }
-
-    /**
-     * The main method of the class that calls all the above methods to correctly run a game. At the end of it,
-     * it deletes the controller.
+     * Calls all the above methods to correctly run a game.
+     * First starts a timer to avoid a too long game setup procedure, waits that all the players connected are ready
+     * and starts then runs the match.
+     * When the game ends, uses the consumer to delete the game's controller.
      */
     @Override
     public void run() {
+        startLobbyTimer();
         try {
             synchronized(gameIsFullLock) {
                 gameIsFullLock.wait();
+            }
+            if(gameOver.get()){
+                return;
             }
             awaitForReady(game.getAllPlayers().stream().map(p -> serverSubject.getNetworkHandler(p.getNickname())).toList());
         } catch (InterruptedException e) {

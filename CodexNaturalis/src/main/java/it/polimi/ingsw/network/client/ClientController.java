@@ -106,16 +106,32 @@ public class ClientController extends MessageHandler{
                         .equals(nickname)).findFirst().orElseThrow().getPlacedCards();
     }
 
+    /**
+     * @return a map that contains each player's nickname (key), and it's color.
+     */
     public Map<String, Content> getPlayerColors(){
         return game.getPlayersColors();
     }
 
+    /**
+     * @return the player's common objectives.
+     */
     public List<Objective> getCommonObjectives() { return game.getCommonObjectives(); }
 
+    /**
+     * @return the player's personal objectives.
+     */
     public List<Objective> getPersonalObjectives() {return game.getLocalPlayer().getPersonalObjectives(); }
 
+    /**
+     * @return the nickname of the player with turn.
+     */
     public String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
 
+    /**
+     * @param nickname the remote player's nickname.
+     * @return the back sides list of the specified player's hand.
+     */
     public List<BasicCard> getRemotePlayerHand(String nickname) {
         return game.getRemotePlayers().stream()
                 .filter(p -> p.getNickname().equals(nickname))
@@ -123,10 +139,16 @@ public class ClientController extends MessageHandler{
                 .orElse(new ArrayList<>());
     }
 
+    /**
+     * @return the local player's card hand
+     */
     public List<CardSides> getLocalPlayerHand() {
         return game.getLocalPlayer().getHandCards();
     }
 
+    /**
+     * Closes the game view, and sends a "REQUEST_GAME" message.
+     */
     public void backToSetup() {
         eventSubmitter.submit(() -> gameView.closeView());
         this.game = null;
@@ -290,10 +312,16 @@ public class ClientController extends MessageHandler{
                                 playerSummaryMessage.getObjectiveScores(), playerSummaryMessage.getFinalScore());
                     }
                 }
+                case GAME_TIMEOUT_STARTED -> {
+                    eventSubmitter.submit(() -> gameView.notifyGameTimeout());
+                }
                 case DECLARE_WINNER -> {
                     if (labeledMessage.message() instanceof WinnersMessage winnersMessage) {
                         eventSubmitter.submit(() -> gameView.revealWinners(winnersMessage.getWinners()));
                     }
+                }
+                case GAME_CANCELED -> {
+                    eventSubmitter.submit(() -> gameView.notifyGameCanceled());
                 }
                 case CHAT -> {
                     if (labeledMessage.message() instanceof ChatMessage chatMessage) {

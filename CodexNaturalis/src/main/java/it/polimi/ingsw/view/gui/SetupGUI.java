@@ -23,10 +23,17 @@ public class SetupGUI extends Application implements SetupView {
     private Scene currentScene;
     private final ClientController controller;
 
+    /**
+     * Constructor for the class.
+     */
     public SetupGUI(){
         this.controller = new ClientController(this, new GraphicalSubmitter());
     }
 
+    /**
+     * Updates the match list browser.
+     * @param matchList the match list.
+     */
     @Override
     public void updateMatchList(List<GameInfo> matchList){
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/MatchBrowser.fxml"));

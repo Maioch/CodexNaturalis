@@ -321,6 +321,13 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("The turn has been skipped because the player isn't connected");
     }
 
+    @Override
+    public void notifyGameTimeout(){
+        System.out.printf(
+                "You're the only player left. If no players reconnect in the next %d seconds, you'll win by forfeit.\n",
+                GameParameters.getForfeitTime());
+    }
+
     /**
      * Method used to show the client a legend of the symbols printed in the CLI.
      */
@@ -372,6 +379,12 @@ public class GameCLI extends AbstractCLI implements GameView {
         readFromInput("Type BACK when you're ready to return to the main menu: ",
                 s -> s.equalsIgnoreCase("back"),
                 this::stringIdentity);
+        controller.backToSetup();
+    }
+
+    @Override
+    public void notifyGameCanceled(){
+        System.out.println("The game took too long to start, and it has been canceled.");
         controller.backToSetup();
     }
 

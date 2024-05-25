@@ -117,6 +117,11 @@ public class GameParameters {
     public static int getPingPeriodSeconds(){ return getParameter("PingPeriodSeconds").asInt(); }
 
     /**
+     * @return the time elapsed before a lobby gets removed if the game hasn't started by then.
+     */
+    public static int getLobbyTimeout(){ return getParameter("LobbyTimeout").asInt(); }
+
+    /**
      * @return the prefix used to trigger a command using the CLI version of the game.
      */
     public static String getCommandChar() {

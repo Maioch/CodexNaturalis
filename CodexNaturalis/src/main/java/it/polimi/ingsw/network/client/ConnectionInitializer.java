@@ -27,9 +27,9 @@ public class ConnectionInitializer {
      * @param controller the controller that will handle the client.
      * @throws IOException when a connection error occurs.
      */
-    public static void initializeTCP(String ip, int port, ClientController controller, EventSubmitter eventSubmitter) throws IOException {
+    public static void initializeTCP(String ip, int port, ClientController controller, EventSubmitter eventSubmitter)
+            throws IOException {
         Socket socket = new Socket(ip, port);
-        socket.getInputStream();
         TCPHandler tcpHandler = new TCPHandler(socket, controller);
         new Thread(tcpHandler).start();
         eventSubmitter.submit(() -> completeSetup(controller, tcpHandler));
@@ -44,7 +44,8 @@ public class ConnectionInitializer {
      * @throws MalformedURLException when the server ip isn't correct.
      * @throws NotBoundException when the requested object isn't bound.
      */
-    public static void initializeRMI(String ip, int port, ClientController controller,EventSubmitter eventSubmitter) throws RemoteException, MalformedURLException, NotBoundException {
+    public static void initializeRMI(String ip, int port, ClientController controller, EventSubmitter eventSubmitter)
+            throws RemoteException, MalformedURLException, NotBoundException {
         RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager", ip, port));
         RMIHandler rmiHandler = new RMIHandler(controller);
         rmiSetup.register(rmiHandler);

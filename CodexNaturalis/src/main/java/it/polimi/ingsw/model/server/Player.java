@@ -184,7 +184,14 @@ public class Player {
         return getAllCoveredCorners(corner, cornersToCheck).isEmpty();
     }
 
-    public List<Corner> getAllCoveredCorners(Corner corner, List<Corner> cornersToCheck){
+    /**
+     * Gets all the already covered corners. Used in a card placement check.
+     * In order to execute the desired procedure, the cornersToCheck must contain either empty or not visible corners.
+     * @param corner the card's corner where the new card is going to be placed.
+     * @param cornersToCheck the list of corners that have to be checked.
+     * @return the list of covered corners.
+     */
+    private List<Corner> getAllCoveredCorners(Corner corner, List<Corner> cornersToCheck){
         List<Corner> corners = new ArrayList<>();
         int offsetX = corner.getLocation() == Location.TR || corner.getLocation() == Location.BR ? 1 : -1;
         int offsetY = corner.getLocation() == Location.TR || corner.getLocation() == Location.TL ? 1 : -1;

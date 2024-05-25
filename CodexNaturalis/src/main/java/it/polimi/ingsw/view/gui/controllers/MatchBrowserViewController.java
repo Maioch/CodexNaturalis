@@ -80,6 +80,13 @@ public class MatchBrowserViewController {
         }
     }
 
+    /**
+     * Creates a radio button.
+     * @param buttonText the contained in button text.
+     * @param gameStatus the current game status.
+     * @param group the button's group.
+     * @return the created radio button.
+     */
     private RadioButton createRadioButton(String buttonText, GameStatus gameStatus, ToggleGroup group){
         RadioButton button = new RadioButton(buttonText);
         button.setToggleGroup(group);
@@ -107,8 +114,8 @@ public class MatchBrowserViewController {
     }
 
     /**
-     * Method that disables the newly selected row
-     * @param mouseEvent the event that causes the method run
+     * Method that disables the newly selected row.
+     * @param mouseEvent the event that causes the method run.
      */
     @FXML
     public void disableButtonRow(MouseEvent mouseEvent){
@@ -121,8 +128,13 @@ public class MatchBrowserViewController {
         }
     }
 
+    /**
+     * Sets the radio button's CSS.
+     * @param mouseEvent the event causing the change of style
+     * @param styleClass the desired style class
+     */
     @FXML
-    public void setRadioButtonStyle(MouseEvent mouseEvent,String styleClass){
+    public void setRadioButtonStyle(MouseEvent mouseEvent, String styleClass){
         RadioButton sender = (RadioButton) mouseEvent.getSource();
         List<RadioButton> currentRow = radioButtons.stream()
                 .filter(l  -> l.stream().anyMatch(r -> r.getParent().equals(sender.getParent())))
@@ -133,6 +145,9 @@ public class MatchBrowserViewController {
         }
     }
 
+    /**
+     * Refreshes the match list (by requesting the games list).
+     */
     @FXML
     public void refreshMatchList(ActionEvent event){
         controller.sendMessage(new Message(Status.REQUEST_GAMES));

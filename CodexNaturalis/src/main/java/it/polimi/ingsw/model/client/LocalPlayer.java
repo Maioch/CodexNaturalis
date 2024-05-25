@@ -76,7 +76,7 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * @return the list of the player's personal objectives.
+     * @return the player's personal objectives.
      */
     public List<Objective> getPersonalObjectives() {
         return new ArrayList<>(){{

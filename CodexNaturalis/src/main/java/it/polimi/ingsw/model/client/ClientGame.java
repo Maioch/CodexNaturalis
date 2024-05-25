@@ -94,7 +94,7 @@ public class ClientGame {
     }
 
     /**
-     * @return a map that contains each player's nickname and its color.
+     * @return a map that contains each player's nickname (key), and its color.
      */
     public Map<String, Content> getPlayersColors(){
         HashMap<String, Content> playersColors = new HashMap<>();

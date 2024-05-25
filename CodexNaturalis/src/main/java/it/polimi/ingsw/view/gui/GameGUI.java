@@ -100,6 +100,16 @@ public class GameGUI implements GameView {
     }
 
     @Override
+    public void notifyGameTimeout(){
+
+    }
+
+    @Override
+    public void notifyGameCanceled(){
+
+    }
+
+    @Override
     public void notifyTurnSkipped() {
 
     }
