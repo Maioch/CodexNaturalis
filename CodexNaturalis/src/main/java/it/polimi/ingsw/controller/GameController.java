@@ -6,6 +6,7 @@ import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.game.*;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
+import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameModel;
@@ -39,6 +40,7 @@ public class GameController implements Runnable{
     private final Object onlyOnePlayerLock;
     private final AtomicBoolean gameOver;
     private final Timer pingTimer;
+    private String playerWithTurn;
     private GameStatus gameStatus;
     private boolean onlyOnePlayer;
 
@@ -69,6 +71,7 @@ public class GameController implements Runnable{
         this.gameOver = new AtomicBoolean(false);
         this.gameStatus = GameStatus.LOBBY;
         this.pingTimer = new Timer();
+        this.playerWithTurn = "";
     }
 
     /**
@@ -112,18 +115,36 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Adds a player that has disconnected back to the game.
+     * Adds a previously disconnected player back to the game.
      *
      * @param nickname the player to add back.
      * @param handler  the handler associated to the player.
      */
-    public void reconnectPlayer(String nickname, NetworkHandler handler){
+    private void reconnectPlayer(String nickname, NetworkHandler handler){
         NetworkHandler userHandler = serverSubject.getNetworkHandler(nickname);
-        if(userHandler == null || userHandler.isDisconnected()){
+        if(userHandler == null || !userHandler.isDisconnected()){
             handler.update(new Message(Status.ERROR));
             return;
         }
         serverSubject.subscribe(nickname, handler);
+        serverSubject.notify(nickname, new PlayerMessage(Status.JOIN_GAME, nickname, game.getPlayer(nickname).getColor()));
+        serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
+        for(Player player : game.getAllPlayers()){
+            serverSubject.notify(nickname, new PlayerMessage(Status.NEW_PLAYER_JOINED, player.getNickname(), player.getColor()));
+        }
+        for(Player player : game.getAllPlayers()){
+            serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            serverSubject.notify(nickname, new PlayerBoardMessage(player.getPlacedCards(), player.getScore()));
+            if(player.getNickname().equals(nickname)){
+                serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, player.getHandCards()));
+                serverSubject.notify(nickname, new ObjectivesMessage(Status.ALL_OBJECTIVES,
+                        player.getObjectives().stream().filter(o -> !game.getCommonObjectives().contains(o)).toList(),
+                        game.getCommonObjectives()));
+            }else{
+                serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_BACK, player.getBackOnlyCardHand()));
+            }
+        }
+        serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, playerWithTurn));
     }
 
     /**
@@ -188,8 +209,8 @@ public class GameController implements Runnable{
      * @return the polled message.
      */
     private Message readFromQueue(NetworkHandler handler){
-        LabeledMessage labeledMessage = null;
-        while(labeledMessage == null && handler != null && !handler.isDisconnected()){
+        LabeledMessage labeledMessage;
+        while(handler != null && !handler.isDisconnected()){
             synchronized(messageQueue) {
                 if (messageQueue.isEmpty()) {
                     Thread.onSpinWait();
@@ -198,32 +219,52 @@ public class GameController implements Runnable{
                 labeledMessage = messageQueue.poll();
             }
             Message message = labeledMessage.message();
-            //handle chat messages
-            if(message.getStatus() == Status.CHAT && message instanceof ChatMessage chatMessage){
-                LabeledMessage finalLabeledMessage = labeledMessage;
-                String senderNickname = game.getAllPlayers().stream()
-                        .map(Player::getNickname)
-                        .filter(n -> serverSubject.getNetworkHandler(n) == finalLabeledMessage.networkHandler())
-                        .findFirst().orElse("Missing Sender");
-                int chatMsgLength = chatMessage.getMessage().length();
-                List<String> recipients = chatMessage.getRecipients();
-                Message messageToSendBack = new ChatMessage(
-                        chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
-                        senderNickname,
-                        chatMessage.getRecipients());
-                for(String nickname : recipients){
-                    serverSubject.notify(nickname, messageToSendBack);
+            //handle special messages
+            switch (message.getStatus()){
+                case CHAT -> {
+                    if (message instanceof ChatMessage chatMessage) {
+                        broadcastMessage(chatMessage, labeledMessage.networkHandler());
+                        continue;
+                    }
                 }
-                serverSubject.notify(senderNickname, messageToSendBack);
+                case RECONNECT -> {
+                    if(message instanceof StringMessage stringMessage) {
+                        reconnectPlayer(stringMessage.getString(), labeledMessage.networkHandler());
+                        continue;
+                    }
+                }
             }
-            if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
-                labeledMessage = null;
+            //ignore game messages sent by the other network handlers
+            if(labeledMessage.networkHandler() != handler){
+                continue;
             }
+            //return the game message sent by the correct network handler
+            return labeledMessage.message();
         }
-        if(handler == null || handler.isDisconnected()){
-            return new Message(Status.PLAYER_DISCONNECTED);
+        return new Message(Status.PLAYER_DISCONNECTED);
+    }
+
+    /**
+     * Broadcasts a chat message.
+     *
+     * @param chatMessage the chat message.
+     * @param handler the handler who sent it.
+     */
+    private void broadcastMessage(ChatMessage chatMessage, NetworkHandler handler){
+        String senderNickname = game.getAllPlayers().stream()
+                .map(Player::getNickname)
+                .filter(n -> serverSubject.getNetworkHandler(n) == handler)
+                .findFirst().orElse("No one");
+        int chatMsgLength = chatMessage.getMessage().length();
+        List<String> recipients = chatMessage.getRecipients();
+        Message messageToSendBack = new ChatMessage(
+                chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
+                senderNickname,
+                chatMessage.getRecipients());
+        for (String nickname : recipients) {
+            serverSubject.notify(nickname, messageToSendBack);
         }
-        return labeledMessage == null ? null : labeledMessage.message();
+        serverSubject.notify(senderNickname, messageToSendBack);
     }
 
     /**
@@ -280,7 +321,11 @@ public class GameController implements Runnable{
         //notifying part
         for(NetworkHandler networkHandler : disconnectedHandlers){
             if(!networkHandler.isDisconnected()){
-                serverSubject.notifyAll(new Message(Status.PLAYER_DISCONNECTED));
+                serverSubject.notifyAll(new StringMessage(Status.PLAYER_DISCONNECTED,
+                        game.getAllPlayers().stream()
+                                .map(Player::getNickname)
+                                .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
+                                .findFirst().orElse("No players")));
             }
             networkHandler.setDisconnected();
         }
@@ -357,6 +402,11 @@ public class GameController implements Runnable{
             }
         }
     }
+    
+    private void updateTurn(String nickname){
+        playerWithTurn = nickname;
+        serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, nickname));
+    }
 
     /**
      * Handles the setup of the game.
@@ -376,7 +426,7 @@ public class GameController implements Runnable{
         Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
         serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards));
         for (Player player : game.getAllPlayers()) {
-            serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            updateTurn(player.getNickname());
             placeStarterCard(player);
             checkForOnlyOnePlayer();
             if(gameOver.get()){
@@ -384,7 +434,7 @@ public class GameController implements Runnable{
             }
         }
         for (Player player : game.getAllPlayers()) {
-            serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            updateTurn(player.getNickname());
             choosePersonalObjective(player);
             checkForOnlyOnePlayer();
             if(gameOver.get()){
@@ -453,7 +503,7 @@ public class GameController implements Runnable{
     private void startGame() {
         while (!game.isLastTurn() && !game.isGameStuck()) {
             for (Player player : game.getAllPlayers()) {
-                serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+                updateTurn(player.getNickname());
                 if(player.isPlayerStuck()){
                     serverSubject.notifyAll(new Message(Status.NO_MOVES));
                     continue;
@@ -473,7 +523,7 @@ public class GameController implements Runnable{
                 break;
             }
             serverSubject.notifyAll(new Message(Status.LAST_TURN));
-            serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            updateTurn(player.getNickname());
             if(player.isPlayerStuck()){
                 serverSubject.notifyAll(new Message(Status.NO_MOVES));
                 continue;
@@ -486,7 +536,7 @@ public class GameController implements Runnable{
         }
         //calculate the final score
         for (Player player : game.getAllPlayers()){
-            serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            updateTurn(player.getNickname());
             player.awardObjectivePoints();
         }
         List<String> winners = game.getWinningPlayers();

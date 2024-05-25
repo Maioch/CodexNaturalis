@@ -158,6 +158,11 @@ public enum Status {
     PLAYER_DISCONNECTED(""),
 
     /**
+     * Client: the player tries to rejoin the game
+     */
+    RECONNECT(""),
+
+    /**
      * Client: sends a chat message (which contains the sender, recipient and, naturally, the content of the message itself).
      */
     CHAT(""),

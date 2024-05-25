@@ -100,6 +100,11 @@ public class GameGUI implements GameView {
     }
 
     @Override
+    public void notifyRemotePlayerDisconnected(String nickname) {
+
+    }
+
+    @Override
     public void notifyGameTimeout(){
 
     }

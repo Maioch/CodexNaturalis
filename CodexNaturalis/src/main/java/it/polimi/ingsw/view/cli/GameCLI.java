@@ -258,6 +258,10 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.printf("Their new score is: %d\n", moveScore);
     }
 
+    /**
+     * Method used to request the personal objective choice.
+     * @param objectives the objectives to choose from.
+     */
     @Override
     public void requestPersonalObjectivesChoice(List<Objective> objectives) {
         System.out.println("These are the secret objectives you can choose from:");
@@ -321,6 +325,9 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("The turn has been skipped because the player isn't connected");
     }
 
+    /**
+     * Notifies that there's just one player in game, and so that an end timeout started.
+     */
     @Override
     public void notifyGameTimeout(){
         System.out.printf(
@@ -382,6 +389,19 @@ public class GameCLI extends AbstractCLI implements GameView {
         controller.backToSetup();
     }
 
+    /**
+     * Notifies that a player has disconnected.
+     * @param nickname the disconnected player's nickname.
+     */
+    @Override
+    public void notifyRemotePlayerDisconnected(String nickname) {
+        System.out.printf("%s disconnected from the game. We hope they'll be back soon ;)\n",
+                controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
+    }
+
+    /**
+     * Notifies that the game has been cancelled.
+     */
     @Override
     public void notifyGameCanceled(){
         System.out.println("The game took too long to start, and it has been canceled.");
@@ -456,6 +476,11 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    /**
+     * Extracts the recipients of a written chat command.
+     * @param arguments the arguments string.
+     * @return the list of recipients nicknames.
+     */
     private List<String> extractRecipients(String arguments){
         List<String> recipients = new ArrayList<>();
         int indexOfDelimiter = 0;
@@ -472,6 +497,10 @@ public class GameCLI extends AbstractCLI implements GameView {
         return recipients;
     }
 
+    /**
+     * Shows the board as specified in the written command.
+     * @param arguments the arguments string.
+     */
     private void showBoard(String arguments){
         String[] splitArgs = arguments.split(" ");
         switch(splitArgs.length){
@@ -500,6 +529,10 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    /**
+     * Shows the hand card as specified in written the command.
+     * @param argument the arguments string.
+     */
     private void showHandCards(String argument){
         if(argument.equals(controller.getLocalPlayerName())){
             List<CardSides> hand = controller.getLocalPlayerHand();

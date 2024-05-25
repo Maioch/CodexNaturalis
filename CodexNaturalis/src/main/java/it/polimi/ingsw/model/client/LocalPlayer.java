@@ -84,6 +84,5 @@ public class LocalPlayer extends ClientPlayer{
                 add(new Objective(obj));
             }
         }};
-
     }
 }

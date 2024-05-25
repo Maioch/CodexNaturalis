@@ -338,7 +338,7 @@ public class Player {
     /**
      * @return the list of the back sides of the player's hand.
      */
-    private List<CardSides> getBackOnlyCardHand(){
+    public List<CardSides> getBackOnlyCardHand(){
         return new ArrayList<>(){{
             for(CardSides cardSides : Player.this.getHandCards()){
                 add(new CardSides(null, cardSides.backSide()));
