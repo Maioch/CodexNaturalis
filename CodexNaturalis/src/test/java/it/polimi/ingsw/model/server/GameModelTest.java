@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameModel;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.Player;
+import it.polimi.ingsw.network.RMIHandler;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardBuilder;

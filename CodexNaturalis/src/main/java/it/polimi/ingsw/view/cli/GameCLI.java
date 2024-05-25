@@ -364,6 +364,9 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void revealWinners(List<String> winners){
+        if (readInputThread != null) {
+            readInputThread.interrupt();
+        }
         System.out.println("The game is over! The winner is:");
         winners.forEach(System.out::println);
         readFromInput("Type BACK when you're ready to return to the main menu: ",

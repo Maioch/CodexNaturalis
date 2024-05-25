@@ -86,10 +86,12 @@ public class GameController implements Runnable{
      * @throws GameException exception thrown if the color chosen by the player is already taken.
      */
     public void acceptPlayer(String nickname, Content color, NetworkHandler handler) throws GameFullException, NicknameTakenException, GameException{
-        serverSubject.subscribe(nickname, handler);
+        if(game.checkNickname(nickname)){
+            serverSubject.subscribe(nickname, handler);
+        }
         try {
             game.addPlayer(nickname, color);
-        }catch(GameFullException | NicknameTakenException | GameException e) {
+        }catch(GameFullException | GameException e) {
             serverSubject.unsubscribe(nickname);
             throw e;
         }
@@ -102,7 +104,7 @@ public class GameController implements Runnable{
 
     private void checkForOnlyOnePlayer() {
         synchronized (onlyOnePlayerLock) {
-            if (onlyOnePlayer) {
+            if (onlyOnePlayer && !gameOver.get()) {
                 List<String> playerLeft = game.getAllPlayers().stream().map(Player::getNickname)
                         .filter(n -> !serverSubject.getNetworkHandler(n).isDisconnected())
                         .toList();
@@ -113,6 +115,7 @@ public class GameController implements Runnable{
                         gameOver.set(true);
                         pingTimer.cancel();
                         serverSubject.notifyAll(new WinnersMessage(playerLeft));
+                        removeHandlers();
                         synchronized(onlyOnePlayerLock) {
                             onlyOnePlayerLock.notifyAll();
                         }
@@ -400,7 +403,7 @@ public class GameController implements Runnable{
      */
     private Message readFromQueue(NetworkHandler handler){
         LabeledMessage labeledMessage = null;
-        while(labeledMessage == null && !handler.isDisconnected()){
+        while(labeledMessage == null && handler != null && !handler.isDisconnected()){
             synchronized(messageQueue) {
                 if (messageQueue.isEmpty()) {
                     Thread.onSpinWait();
@@ -431,7 +434,7 @@ public class GameController implements Runnable{
                 labeledMessage = null;
             }
         }
-        if(handler.isDisconnected()){
+        if(handler == null || handler.isDisconnected()){
             return new Message(Status.PLAYER_DISCONNECTED);
         }
         return labeledMessage == null ? null : labeledMessage.message();
@@ -492,6 +495,16 @@ public class GameController implements Runnable{
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }
 
+    private void removeHandlers(){
+        for (Player player : game.getAllPlayers()) {
+            NetworkHandler playerHandler = serverSubject.getNetworkHandler(player.getNickname());
+            if(playerHandler != null) {
+                playerHandler.setCurrentGame(null);
+                serverSubject.unsubscribe(player.getNickname());
+            }
+        }
+    }
+
     /**
      * The main method of the class that calls all the above methods to correctly run a game. At the end of it,
      * it deletes the controller.
@@ -511,10 +524,7 @@ public class GameController implements Runnable{
         }
         initializeGame();
         startGame();
-        for (Player player : game.getAllPlayers()) {
-            serverSubject.getNetworkHandler(player.getNickname()).setCurrentGame(null);
-            serverSubject.unsubscribe(player.getNickname());
-        }
+        removeHandlers();
         endGameProcedure.accept(this);
     }
 }
