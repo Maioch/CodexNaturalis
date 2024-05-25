@@ -38,6 +38,7 @@ public class GameController implements Runnable{
     private final Object gameStatusLock;
     private final Object onlyOnePlayerLock;
     private final AtomicBoolean gameOver;
+    private final Timer pingTimer;
     private GameStatus gameStatus;
     private boolean onlyOnePlayer;
 
@@ -65,6 +66,7 @@ public class GameController implements Runnable{
         this.onlyOnePlayer = false;
         this.gameOver = new AtomicBoolean(false);
         this.gameStatus = GameStatus.LOBBY;
+        this.pingTimer = new Timer();
     }
 
     /**
@@ -109,13 +111,15 @@ public class GameController implements Runnable{
                     @Override
                     public void run() {
                         gameOver.set(true);
+                        pingTimer.cancel();
                         serverSubject.notifyAll(new WinnersMessage(playerLeft));
                         synchronized(onlyOnePlayerLock) {
                             onlyOnePlayerLock.notifyAll();
                         }
                     }
-                }, GameParameters.getForfeitTime());
+                }, GameParameters.getForfeitTime() * 1000L);
                 try {
+                    System.out.println("starting wait proc");
                     onlyOnePlayerLock.wait();
                     timer.cancel();
                 } catch (InterruptedException e) {
@@ -138,7 +142,7 @@ public class GameController implements Runnable{
             }
         };
         int periodSeconds = GameParameters.getPingPeriodSeconds();
-        new Timer().schedule(pingTask, periodSeconds * 1000L, periodSeconds * 1000L);
+        pingTimer.schedule(pingTask, periodSeconds * 1000L, periodSeconds * 1000L);
         Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
         serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards));
         for (Player player : game.getAllPlayers()) {
@@ -376,8 +380,16 @@ public class GameController implements Runnable{
      * @param message the message to add.
      * @param handler the handler that sent the message.
      */
-    public synchronized void addMessageToQueue(Message message, NetworkHandler handler){
-        messageQueue.add(new LabeledMessage(handler, message));
+    public void addMessageToQueue(Message message, NetworkHandler handler){
+        synchronized (messageQueue) {
+            messageQueue.add(new LabeledMessage(handler, message));
+        }
+    }
+
+    public void receivePing(NetworkHandler networkHandler){
+        synchronized (connectedUsers){
+            connectedUsers.add(networkHandler);
+        }
     }
 
     /**
@@ -415,13 +427,7 @@ public class GameController implements Runnable{
                 }
                 serverSubject.notify(senderNickname, messageToSendBack);
             }
-            //handle pings
-            if(message.getStatus() == Status.PING_ACK){
-                synchronized (connectedUsers){
-                    connectedUsers.add(labeledMessage.networkHandler());
-                }
-            }
-            if(message.getStatus() == Status.PING_ACK || message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
+            if(message.getStatus() == Status.CHAT || labeledMessage.networkHandler() != handler){
                 labeledMessage = null;
             }
         }
@@ -458,6 +464,19 @@ public class GameController implements Runnable{
     private void readAndRequestPings(){
         List<NetworkHandler> disconnectedHandlers;
         synchronized (connectedUsers) {
+            if (connectedUsers.size() == 1) {
+                synchronized (onlyOnePlayerLock) {
+                    onlyOnePlayer = true;
+                }
+            }
+            if(connectedUsers.isEmpty()){
+                System.out.println("No players connected, starting abort procedure");
+                gameOver.set(true);
+                pingTimer.cancel();
+                synchronized (onlyOnePlayerLock) {
+                    onlyOnePlayerLock.notifyAll();
+                }
+            }
             disconnectedHandlers = game.getAllPlayers().stream()
                     .map(p -> serverSubject.getNetworkHandler(p.getNickname()))
                     .filter(n -> !connectedUsers.contains(n))
@@ -469,13 +488,6 @@ public class GameController implements Runnable{
                 serverSubject.notifyAll(new Message(Status.PLAYER_DISCONNECTED));
             }
             networkHandler.setDisconnected();
-        }
-        synchronized (connectedUsers) {
-            if (connectedUsers.size() == 1) {
-                synchronized (onlyOnePlayerLock) {
-                    onlyOnePlayer = true;
-                }
-            }
         }
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }

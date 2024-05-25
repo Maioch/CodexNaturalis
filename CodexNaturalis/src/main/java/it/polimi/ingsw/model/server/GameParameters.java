@@ -61,7 +61,7 @@ public class GameParameters {
 
     public static int getNumberOfDrawnSecretObjectives() { return getParameter("numberOfDrawnSecretObjectives").asInt(); }
 
-    public static int getForfeitTime() { return getParameter("forfeitTime").asInt(); }
+    public static int getForfeitTime() { return getParameter("ForfeitTime").asInt(); }
 
     /**
      * @return the number of common objectives from the json file.

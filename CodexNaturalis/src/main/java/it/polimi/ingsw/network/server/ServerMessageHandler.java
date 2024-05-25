@@ -48,8 +48,12 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
             }
             GameController currentClientGame = labeledMessage.networkHandler().getCurrentGame();
             if(currentClientGame != null) {
-                labeledMessage.networkHandler().getCurrentGame().addMessageToQueue(
-                        labeledMessage.message(), labeledMessage.networkHandler());
+                if(labeledMessage.message().getStatus() == Status.PING_ACK){
+                    labeledMessage.networkHandler().getCurrentGame().receivePing(labeledMessage.networkHandler());
+                } else {
+                    labeledMessage.networkHandler().getCurrentGame().addMessageToQueue(
+                            labeledMessage.message(), labeledMessage.networkHandler());
+                }
                 continue;
             }
             switch(labeledMessage.message().getStatus()){
