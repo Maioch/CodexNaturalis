@@ -65,14 +65,14 @@
   -fx-border-color: #2f0606;
   -fx-border-radius: 8;
   -fx-border-width: 2px;
-  -fx-region-background: #FFFCE2;
+  /*-fx-region-background: #FFFCE2;*/
   -fx-text-fill: #2f0606;
 }
 .matchScrollView .viewport{
   -fx-color: #FFFCE2;
   -fx-background-radius: 8;
   -fx-background-color: #FFFCE2;
-  -fx-region-background: #FFFCE2;
+  /*-fx-region-background: #FFFCE2;*/
   -fx-text-fill: #2f0606;
 }
 .matchScrollView .scroll-bar{
