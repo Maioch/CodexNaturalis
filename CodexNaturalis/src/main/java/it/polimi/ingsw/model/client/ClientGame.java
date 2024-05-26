@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class that represents a simplified version of the game's state for the local client perspective, used
- * to handle some functionalities in an easier way.
+ * ClientGame is a simplified version of the game model.
+ * It saves the main information about the game, such as all the players participating, the objectives, the cards that
+ * can be drawn and the active player.
+ * This class is needed to handle some MVC functionalities in an easier way.
  */
 public class ClientGame {
     private final LocalPlayer localPlayer;
@@ -26,10 +28,11 @@ public class ClientGame {
     private final GameView gameView;
 
     /**
-     * Constructor for the class.
-     * @param player the player associated with the client.
-     * @param eventSubmitter the medium used to send the player's requests to the server.
-     * @param gameView the object containing all the methods used by the player to interact with the game.
+     * Class constructor.
+     *
+     * @param player         the player associated with the client.
+     * @param eventSubmitter the medium used to submit a player action to the server, mainly to update the player's view.
+     * @param gameView       the view (CLI/GUI) associated to the player.
      */
     public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView) {
         this.localPlayer = player;
@@ -42,8 +45,9 @@ public class ClientGame {
     }
 
     /**
-     * Setter for the drawable options attribute.
-     * @param drawableOptions a map containing all the drawable cards.
+     * Updates the cards that can be drawn by a player.
+     *
+     * @param drawableOptions the cards the player can draw from.
      */
     public void setDrawableOptions(Map<CardType, List<BasicCard>> drawableOptions) {
         this.drawableOptions = new HashMap<>(drawableOptions);
@@ -51,7 +55,8 @@ public class ClientGame {
     }
 
     /**
-     * Method used to enable the draw phase for the player.
+     * Updates the player's turn phase, setting it to draw.
+     *
      * @param drawableOptions the cards the player can draw from.
      */
     public void requestDraw(Map<CardType, List<BasicCard>> drawableOptions) {
@@ -60,6 +65,8 @@ public class ClientGame {
     }
 
     /**
+     *
+     *
      * @return a map that contains all the drawable cards.
      */
     public Map<CardType, List<BasicCard>> getDrawableOptions() {
@@ -76,6 +83,8 @@ public class ClientGame {
     }
 
     /**
+     * Returns the player associated to this client.
+     *
      * @return the local player.
      */
     public LocalPlayer getLocalPlayer(){
@@ -83,7 +92,9 @@ public class ClientGame {
     }
 
     /**
-     * @return a list of the remote players (all the players in the same game other than the local player).
+     * Returns the players connected to the same game as the local player.
+     *
+     * @return the remote players.
      */
     public List<RemotePlayer> getRemotePlayers(){
         return new ArrayList<>(){{
@@ -94,7 +105,9 @@ public class ClientGame {
     }
 
     /**
-     * @return a map that contains each player's nickname (key), and its color.
+     * Returns a summary of the colors chosen by the players, local and remote.
+     *
+     * @return each player's nickname and his color.
      */
     public Map<String, Content> getPlayersColors(){
         HashMap<String, Content> playersColors = new HashMap<>();
@@ -106,7 +119,7 @@ public class ClientGame {
     }
 
     /**
-     * Method that adds a player to the remote players list.
+     * Adds a player to this remote players list.
      */
     public void addRemotePlayer(RemotePlayer player){
         remotePlayers.add(player);
@@ -115,8 +128,9 @@ public class ClientGame {
     }
 
     /**
-     * Setter for the common objectives attribute.
-     * @param commonObjectives a list containing the objectives shared by each player in the game.
+     * Updates the objectives shared by all the players connected to the game.
+     *
+     * @param commonObjectives the list of common objectives.
      */
     public void setCommonObjectives(List<Objective> commonObjectives) {
         this.commonObjectives = new ArrayList<>(commonObjectives);
@@ -124,8 +138,9 @@ public class ClientGame {
     }
 
     /**
-     * Method that updates the turn cycle between players.
-     * @param nickname the nickname that should have the turn.
+     * Updates the active player.
+     *
+     * @param nickname the nickname of the player that has the turn.
      */
     public void setPlayerWithTurn(String nickname) {
         ClientPlayer remotePlayerWithTurn = remotePlayers.stream()
@@ -137,7 +152,9 @@ public class ClientGame {
     }
 
     /**
-     * @return the player's common objectives.
+     * Returns the objectives shared by all the players connected to the game.
+     *
+     * @return this common objectives.
      */
     public List<Objective> getCommonObjectives(){
         return new ArrayList<>(){{
@@ -148,6 +165,8 @@ public class ClientGame {
     }
 
     /**
+     * Returns the active player.
+     *
      * @return the player that has the turn.
      */
     public ClientPlayer getPlayerWithTurn(){

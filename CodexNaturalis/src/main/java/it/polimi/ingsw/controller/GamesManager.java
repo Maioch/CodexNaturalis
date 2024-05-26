@@ -9,25 +9,27 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class that manages all the existing games created by the clients; it contains each game controller along with a unique
- * integer id.
+ * GamesManager manages all games created by the clients, by saving them with a unique ID.
  */
 public class GamesManager{
     private final Map<Integer, GameController> games;
 
     /**
-     * Constructor for the class.
+     * Class constructor.
      */
     public GamesManager(){
         this.games = new HashMap<>();
     }
 
     /**
-     * Method that adds a new game to the list of existing games, checking which is the lowest available index to assign to it.
-     * @param numberOfPlayers the maximum number of players that can join the game.
-     * @param name the name of the game.
-     * @return the id associated with the newly created game.
-     * @throws IllegalNumberOfPlayers exception thrown if the player entered an invalid players number parameter.
+     * Adds a new game to this list, assigning it the first available ID.
+     *
+     * @param numberOfPlayers         the maximum number of players that can join the game.
+     * @param name                    the name of the game.
+     *
+     * @return                        the id assigned to the game.
+     *
+     * @throws IllegalNumberOfPlayers if the player entered an invalid maximum number of players when creating the game.
      */
     public synchronized int addGame(int numberOfPlayers, String name) throws IllegalNumberOfPlayers {
         int gameId = (!games.containsKey(1)) ? 0 :
@@ -41,7 +43,8 @@ public class GamesManager{
     }
 
     /**
-     * Method that deletes one of the games present in the list.
+     * Removes a game from this list.
+     *
      * @param game the game to remove.
      */
     public synchronized void deleteGame(GameController game){
@@ -55,15 +58,22 @@ public class GamesManager{
     }
 
     /**
-     * @param gameId the id associated with an existing controller.
-     * @return the controller associated with the given id
+     * Returns the controller of a given game in this list.
+     *
+     * @param gameId the game's ID.
+     *
+     * @return the game's controller.
      */
     public synchronized GameController getController(int gameId){
         return games.get(gameId);
     }
 
     /**
+     * Returns a summary of the games in this list, formatted used the GameInfo record.
+     *
      * @return a list that contains each game's id along with its name.
+     *
+     * @see GameInfo
      */
     public synchronized List<GameInfo> getFormattedAvailableMatches(){
         List<GameInfo> result = new ArrayList<>();

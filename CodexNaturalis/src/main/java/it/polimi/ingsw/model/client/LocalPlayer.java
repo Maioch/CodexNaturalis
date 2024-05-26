@@ -10,23 +10,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class representing the local player.
+ * LocalPlayer is the player associated to the local machine.
+ * It saves the player's hand cards and his personal objectives.
  */
 public class LocalPlayer extends ClientPlayer{
     private List<CardSides> handCards;
     private List<Objective> personalObjectives;
 
     /**
-     * Constructor for the class.
+     * Class constructor.
+     *
      * @param nickname the player's nickname.
-     * @param color the player's color.
+     * @param color    the player's color.
      */
     public LocalPlayer(String nickname, Content color) {
         super(nickname, color);
     }
 
     /**
-     * @return a list containing all the cards in the player's hand.
+     * Returns all the cards held by the player in his hand.
+     *
+     * @return the player's hand.
      */
     public List<CardSides> getHandCards() {
         return new ArrayList<>(){{
@@ -39,8 +43,9 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Setter for the hand cards attribute.
-     * @param handCards the list of the player's hand cards.
+     * Updates all the cards held by the player in his hand.
+     *
+     * @param handCards the player's hand cards.
      */
     @Override
     public void setHandCards(List<CardSides> handCards, boolean show) {
@@ -51,8 +56,9 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Setter for the personal objectives attribute.
-     * @param personalObjectives the list of the player's personal objectives.
+     * Sets the player's objectives not shared with the others.
+     *
+     * @param personalObjectives the player's personal objectives.
      */
     public void setPersonalObjectives(List<Objective> personalObjectives) {
         this.personalObjectives = new ArrayList<>(personalObjectives);
@@ -60,22 +66,8 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Method that requests all the valid card placements and the cards that can actually be placed.
-     * @param validCards the cards that can be placed.
-     * @param validCorners the corners where the player can place a new card.
-     */
-    public void requestCardPlacement(List<BasicCard> validCards, List<Corner> validCorners){
-        eventSubmitter.submit(() -> gameView.requestPlacement(getHandCards(),getPlacedCards(),validCards,validCorners));
-    }
-
-    /**
-     * Method that requests the starter card assigned to the player.
-     */
-    public void requestStarterCardPlacement(){
-        eventSubmitter.submit(() -> gameView.requestStarterSide(getHandCards()));
-    }
-
-    /**
+     * Returns the player's objectives not shared with the others.
+     *
      * @return the player's personal objectives.
      */
     public List<Objective> getPersonalObjectives() {
@@ -84,5 +76,22 @@ public class LocalPlayer extends ClientPlayer{
                 add(new Objective(obj));
             }
         }};
+    }
+
+    /**
+     * Requests all the valid card placements and the cards that can actually be placed.
+     *
+     * @param validCards   the cards that can be placed.
+     * @param validCorners the corners where the player can place a new card.
+     */
+    public void requestCardPlacement(List<BasicCard> validCards, List<Corner> validCorners){
+        eventSubmitter.submit(() -> gameView.requestPlacement(getHandCards(),getPlacedCards(),validCards,validCorners));
+    }
+
+    /**
+     * Requests the starter card assigned to the player.
+     */
+    public void requestStarterCardPlacement(){
+        eventSubmitter.submit(() -> gameView.requestStarterSide(getHandCards()));
     }
 }

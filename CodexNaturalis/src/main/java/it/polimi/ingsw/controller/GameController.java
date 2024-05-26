@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
- * GameController is the class that represents the MVC pattern controller.
+ * GameController is the MVC pattern controller.
  * Each game has one: it allows to change the status of the match model after the occurrence of a player action,
  * and it can also check for special configurations in it.
  */
@@ -402,7 +402,12 @@ public class GameController implements Runnable{
             }
         }
     }
-    
+
+    /**
+     * Updates the players on the status of game turns.
+     *
+     * @param nickname the active player.
+     */
     private void updateTurn(String nickname){
         playerWithTurn = nickname;
         serverSubject.notifyAll(new StringMessage(Status.TURN_NOTIFICATION, nickname));

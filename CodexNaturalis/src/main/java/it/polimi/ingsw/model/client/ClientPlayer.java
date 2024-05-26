@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class that represents a simplified version of the local client, used to store a player's basic information.
+ * ClientPlayer is an abstract class that stores the information about a player's game state.
+ * The main information is the nickname, the color, the cards placed and the score.
  */
 public abstract class ClientPlayer {
     private final String nickname;
@@ -23,9 +24,10 @@ public abstract class ClientPlayer {
     protected GameView gameView;
 
     /**
-     * Constructor for the class.
+     * Class constructor.
+     *
      * @param nickname the player's nickname.
-     * @param color the player's color.
+     * @param color    the player's color.
      */
     public ClientPlayer(String nickname, Content color) {
         this.nickname = nickname;
@@ -35,7 +37,8 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Copy-constructor for the class
+     * Class copy-constructor, needed to produce an exact copy of this object.
+     *
      * @param clientPlayer the instance to copy.
      */
     public ClientPlayer(ClientPlayer clientPlayer) {
@@ -46,6 +49,8 @@ public abstract class ClientPlayer {
     }
 
     /**
+     * Returns the nickname chosen by the player.
+     *
      * @return the player's nickname.
      */
     public String getNickname(){
@@ -53,11 +58,15 @@ public abstract class ClientPlayer {
     }
 
     /**
+     * Returns the color chosen by the player.
+     *
      * @return the player's color.
      */
     public Content getColor() { return color; }
 
     /**
+     * Returns the current cards placed by the player on his board.
+     *
      * @return the placed card list.
      */
     public List<BasicCard> getPlacedCards() {
@@ -69,9 +78,10 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Setter for the placed cards and score attributes.
-     * @param placedCards the player's placed cards layout.
-     * @param score the player's score.
+     * Updates the cards placed by the player on his board and his score.
+     *
+     * @param placedCards the player's placed cards.
+     * @param score       the player's score.
      */
     public void setPlacedCards(List<BasicCard> placedCards, int score) {
         this.placedCards = new ArrayList<>(placedCards);
@@ -80,6 +90,8 @@ public abstract class ClientPlayer {
     }
 
     /**
+     * Returns the points gathered by the player up to a certain point in the game.
+     *
      * @return the player's score.
      */
     public int getScore() {
@@ -87,15 +99,17 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Setter for the hand cards attribute.
+     * Updates the cards in the player's hand.
+     *
      * @param handCards the player's hand.
      */
     public abstract void setHandCards(List<CardSides> handCards, boolean show);
 
     /**
-     * Setter for the client's game view, and it's associated event submitter.
-     * @param gameView the client's game view.
-     * @param eventSubmitter the medium used to send the player's requests to the server.
+     * Sets the client's game view (CLI/GUI) and event submitter.
+     *
+     * @param gameView       the client's game view.
+     * @param eventSubmitter the medium used to submit a player action to the server, mainly to update the player's view.
      */
     public void setViewReferences(GameView gameView, EventSubmitter eventSubmitter){
         this.gameView = gameView;
@@ -103,9 +117,10 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Setter for the final score of the player.
-     * @param scoresByObjective the map containing each objective with the associated gathered points.
-     * @param finalScore the final score to set.
+     * Updates the total points gathered by the player at the end of the game.
+     *
+     * @param scoresByObjective all the objectives held by the player and the points he made by completing them.
+     * @param finalScore        the player's final score.
      */
     public void setFinalScore(Map<Objective, Integer> scoresByObjective, Integer finalScore){
         this.score = finalScore;
