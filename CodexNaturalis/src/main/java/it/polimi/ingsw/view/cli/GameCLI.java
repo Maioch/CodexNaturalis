@@ -415,6 +415,10 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     protected void checkCommand(String command, String argument){
+        if(!controller.isGameOngoing()){
+            System.out.println("The game has finished. Commands are no longer available.");
+            return;
+        }
         switch (command.toUpperCase()){
             case "HELP" -> System.out.println(GameParameters.getGameHelpBody());
             case "CHAT" -> sendChatMessage(argument);

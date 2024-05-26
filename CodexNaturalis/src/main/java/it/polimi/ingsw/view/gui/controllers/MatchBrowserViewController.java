@@ -5,14 +5,13 @@ import it.polimi.ingsw.controller.GameStatus;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
-import javafx.event.ActionEvent;
+import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.TextAlignment;
-import javafx.util.Pair;
 
 import java.util.*;
 
@@ -50,6 +49,8 @@ public class MatchBrowserViewController {
     @FXML
     public Button joinButton;
 
+    private ToggleGroup groupId;
+
     public void setController (ClientController controller) { this.controller = controller; }
 
     /**
@@ -57,13 +58,14 @@ public class MatchBrowserViewController {
      * @param matchList the list of matches.
      */
     public void addMatches(List<GameInfo> matchList){
-        ToggleGroup groupId = new ToggleGroup();
+        groupId = new ToggleGroup();
         ToggleGroup groupName = new ToggleGroup();
         ToggleGroup groupStatus = new ToggleGroup();
         for(GameInfo match : matchList) {
             int id = match.gameId();
             GridPane grid = new GridPane();
             RadioButton idButton = createRadioButton(String.valueOf(id), match.gameStatus(), groupId);
+            idButton.setId(String.valueOf(id));
             RadioButton nameButton = createRadioButton(match.gameName(), match.gameStatus(), groupName);
             RadioButton statusButton = createRadioButton(match.gameStatus().getText(), match.gameStatus(), groupStatus);
             radioButtons.add(Arrays.asList(idButton,nameButton,statusButton));
@@ -98,27 +100,27 @@ public class MatchBrowserViewController {
 
     /**
      * Method used to add CSS effects and method callbacks to the matches list entries.
-     * @param button the entry to stylize.
+     * @param radioButton the entry to stylize.
      */
-    private void setupButton(RadioButton button){
-        button.setTextAlignment(TextAlignment.CENTER);
-        button.getStyleClass().clear();
-        button.getStyleClass().add("tableButton");
-        button.setOnMouseClicked((mouseEvent) -> {
+    private void setupButton(RadioButton radioButton){
+        radioButton.setTextAlignment(TextAlignment.CENTER);
+        radioButton.getStyleClass().clear();
+        radioButton.getStyleClass().add("tableButton");
+        radioButton.setOnMouseClicked((mouseEvent) -> {
+            joinButton.setDisable(false);
             disableButtonRow(mouseEvent);
             setRadioButtonStyle(mouseEvent, "tableButton");
         });
-        button.setOnMousePressed(mouseEvent -> setRadioButtonStyle(mouseEvent, "pressedTableButton"));
-        button.setOnMouseEntered(mouseEvent -> setRadioButtonStyle(mouseEvent, "hoveredTableButton"));
-        button.setOnMouseExited(mouseEvent -> setRadioButtonStyle(mouseEvent, "tableButton"));
+        radioButton.setOnMousePressed(mouseEvent -> setRadioButtonStyle(mouseEvent, "pressedTableButton"));
+        radioButton.setOnMouseEntered(mouseEvent -> setRadioButtonStyle(mouseEvent, "hoveredTableButton"));
+        radioButton.setOnMouseExited(mouseEvent -> setRadioButtonStyle(mouseEvent, "tableButton"));
     }
 
     /**
      * Method that disables the newly selected row.
      * @param mouseEvent the event that causes the method run.
      */
-    @FXML
-    public void disableButtonRow(MouseEvent mouseEvent){
+    private void disableButtonRow(MouseEvent mouseEvent){
         RadioButton sender = (RadioButton) mouseEvent.getSource();
         List<RadioButton> currentRow = radioButtons.stream()
                 .filter(l  -> l.stream().anyMatch(r -> r.getParent().equals(sender.getParent())))
@@ -133,8 +135,7 @@ public class MatchBrowserViewController {
      * @param mouseEvent the event causing the change of style
      * @param styleClass the desired style class
      */
-    @FXML
-    public void setRadioButtonStyle(MouseEvent mouseEvent, String styleClass){
+    private void setRadioButtonStyle(MouseEvent mouseEvent, String styleClass){
         RadioButton sender = (RadioButton) mouseEvent.getSource();
         List<RadioButton> currentRow = radioButtons.stream()
                 .filter(l  -> l.stream().anyMatch(r -> r.getParent().equals(sender.getParent())))
@@ -145,12 +146,22 @@ public class MatchBrowserViewController {
         }
     }
 
+    @FXML
+    public void createMatch(){
+
+    }
+
+    @FXML
+    public void joinMatch(){
+        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS,
+                Integer.parseInt(((RadioButton) groupId.getSelectedToggle()).getId())));
+    }
+
     /**
      * Refreshes the match list (by requesting the games list).
      */
     @FXML
-    public void refreshMatchList(ActionEvent event){
+    public void refreshMatchList(){
         controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
-
 }

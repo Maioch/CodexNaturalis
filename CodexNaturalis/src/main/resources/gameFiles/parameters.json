@@ -21,7 +21,7 @@
   "MaxChatMessageLength" : 512,
   "MaxNicknameLength" : 16,
   "PingPeriodSeconds" : 10,
-  "ForfeitTime" : 120,
+  "ForfeitTime" : 10,
   "LobbyTimeout" : 50000,
   "CommandChar" : "/",
   "Delimiter" : "-",

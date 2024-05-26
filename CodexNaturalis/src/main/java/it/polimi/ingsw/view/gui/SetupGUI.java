@@ -37,7 +37,6 @@ public class SetupGUI extends Application implements SetupView {
     @Override
     public void updateMatchList(List<GameInfo> matchList){
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/MatchBrowser.fxml"));
-        Scene newScene;
         try {
             currentScene.setRoot(loader.load());
         } catch (IOException e) {

@@ -207,10 +207,6 @@ public class GameController implements Runnable{
     public void receivePing(NetworkHandler networkHandler){
         synchronized (connectedUsers){
             connectedUsers.add(networkHandler);
-            System.out.println(game.getAllPlayers().stream()
-                    .map(Player::getNickname)
-                    .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
-                    .findFirst().orElse("No players"));
         }
     }
 

@@ -228,18 +228,13 @@ public class CardFormatter {
                     patternMap.put(new Point(subNode.get("x").asInt(),subNode.get("y").asInt()),
                             Content.valueOf(subNode.get("color").asText()));
                 }
-                Point prevPoint = new Point(minX,maxY);
                 for(int y = maxY; y >= minY; y--){
+                    sb.append("      ");
                     for(int x = minX; x <= maxX; x++){
                         Point curPoint = new Point(x, y);
-                        if(patternMap.containsKey(curPoint)){
-                            Point relativePoint = new Point(curPoint.x - prevPoint.x, prevPoint.y - curPoint.y);
-                            sb.append("\n".repeat(relativePoint.y));
-                            sb.append("  ".repeat(curPoint.x - minX));
-                            sb.append(patternMap.get(curPoint).getSymbol());
-                            prevPoint = curPoint;
-                        }
+                        sb.append((patternMap.containsKey(curPoint)) ? patternMap.get(curPoint).getSymbol() : "  ");
                     }
+                    sb.append("\n");
                 }
                 yield sb.toString();
             }

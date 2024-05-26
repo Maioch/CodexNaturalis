@@ -129,6 +129,12 @@ public class ClientController extends MessageHandler{
     public String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
 
     /**
+     * @return whether the game is ongoing
+     */
+    public boolean isGameOngoing(){
+        return game != null;
+    }
+    /**
      * @param nickname the remote player's nickname.
      * @return the back sides list of the specified player's hand.
      */
@@ -316,6 +322,7 @@ public class ClientController extends MessageHandler{
                 case GAME_TIMEOUT_STARTED -> eventSubmitter.submit(() -> gameView.notifyGameTimeout());
                 case DECLARE_WINNER -> {
                     if (message instanceof WinnersMessage winnersMessage) {
+                        this.game = null;
                         eventSubmitter.submit(() -> gameView.revealWinners(winnersMessage.getWinners()));
                     }
                 }
