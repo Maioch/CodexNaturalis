@@ -59,8 +59,14 @@ public class GameParameters {
         return getParameter("numberOfSecretObjectives").asInt();
     }
 
+    /**
+     * @return the number of secret objectives which the player has to choose from
+     */
     public static int getNumberOfDrawnSecretObjectives() { return getParameter("numberOfDrawnSecretObjectives").asInt(); }
 
+    /**
+     * @return the time elapsed before the game ends by forfeit
+     */
     public static int getForfeitTime() { return getParameter("ForfeitTime").asInt(); }
 
     /**
@@ -152,7 +158,9 @@ public class GameParameters {
      */
     public static String getRulesURL() { return getParameter("RulesURL").asText(); }
 
-
+    /**
+     * @return the title of the game to print on terminal
+     */
     public static String getTitle(){
         return getParameter("GameTitle").asText();
     }

@@ -121,11 +121,11 @@ public class BasicCard implements Serializable {
      * @return the card's corners.
      */
     public Set<Corner> getAllCorners(){
-        return new HashSet<>(){{
-            for(Corner corner : corners){
-                add(new Corner(corner));
-            }
-        }};
+        Set<Corner> result = new HashSet<>();
+        for(Corner corner : corners){
+            result.add(new Corner(corner));
+        }
+        return result;
     }
 
     /**
@@ -148,14 +148,24 @@ public class BasicCard implements Serializable {
                 .map(Corner::getContent)
                 .collect(Collectors.toCollection(ArrayList::new));
         totalContent.addAll(this.resources);
-        return new HashMap<>(){{
-            for(Content content : Content.values()){
-                put(content, totalContent.stream()
-                        .filter(x -> x == content)
-                        .mapToInt(x -> 1)
-                        .reduce(0, Integer::sum));
-            }
-        }};
+        return getMapFromContentList(totalContent);
+    }
+
+    /**
+     * Helper method that convert a list of contents to a map containing each content as key and the times
+     * it appears in the list as value.
+     * @param totalContent the list containing the contents
+     * @return a hashmap with the content as key and the amount as value
+     */
+    protected Map<Content, Integer> getMapFromContentList(List<Content> totalContent){
+        Map<Content, Integer> result = new HashMap<>();
+        for(Content content : Content.values()){
+            result.put(content, totalContent.stream()
+                    .filter(x -> x == content)
+                    .mapToInt(x -> 1)
+                    .reduce(0, Integer::sum));
+        }
+        return result;
     }
 
     /**
@@ -174,11 +184,7 @@ public class BasicCard implements Serializable {
      * @return the requirements needed to place the card.
      */
     public Map<Content, Integer> getRequirements(){
-        return new HashMap<>(){{
-            for(Content content : Content.values()){
-                put(content, 0);
-            }
-        }};
+        return getMapFromContentList(new ArrayList<>());
     }
 
     /**
@@ -209,6 +215,9 @@ public class BasicCard implements Serializable {
         }
     }
 
+    /**
+     * @return true if this card represents the front side
+     */
     public boolean isFront(){
         return isFront;
     }

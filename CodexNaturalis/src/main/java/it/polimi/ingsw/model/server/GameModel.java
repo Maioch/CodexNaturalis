@@ -31,6 +31,7 @@ public class GameModel{
     private final Deck<CardSides> starterDeck;
     private final Deck<Objective> objectiveDeck;
     private final List<Content> availableColors;
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     private final List<Objective> commonObjectives;
     private final int numberOfPlayers;
 
@@ -179,6 +180,10 @@ public class GameModel{
         }
     }
 
+    /**
+     * Method that draws the secret objectives to send to the player
+     * @return the list of the drawn objectives
+     */
     public synchronized List<Objective> drawObjectiveCards(){
         List<Objective> result = new ArrayList<>();
         for(int i = 0; i < GameParameters.getNumberOfDrawnSecretObjectives(); i++){

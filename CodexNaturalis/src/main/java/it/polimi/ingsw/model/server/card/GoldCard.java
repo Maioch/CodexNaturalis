@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,10 +29,9 @@ public class GoldCard extends BasicCard {
     public GoldCard(BasicCard cardTemplate, List<Content> requirements) throws CardException {
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources, cardTemplate.isFront());
         if(requirements.stream().anyMatch(c -> !c.isResource())){
-            throw new CardException(
-                    String.format(
-                            "The card requirements contain elements that aren't considered resources on card: %d",
-                            cardTemplate.cardId)
+            throw new CardException(String.format(
+                    "The card requirements contain elements that aren't considered resources on card: %d",
+                    cardTemplate.cardId)
             );
         }
         this.requirements = new ArrayList<>(requirements);
@@ -56,14 +54,7 @@ public class GoldCard extends BasicCard {
      */
     @Override
     public Map<Content,Integer> getRequirements(){
-        Map<Content,Integer> result = new HashMap<>();
-        for(Content content : Content.values()){
-            result.put(content, requirements.stream()
-                    .filter(x -> x == content)
-                    .mapToInt(x -> 1)
-                    .reduce(0,Integer::sum));
-        }
-        return result;
+        return getMapFromContentList(requirements);
     }
 
     /**
