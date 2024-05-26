@@ -44,7 +44,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards){
         System.out.println();
-        System.out.println("Here are the cards you can draw: ");
+        System.out.println("DRAW PHASE");
+        System.out.println("\nHere are the available cards: ");
         int i = 1;
         for(CardType cardType : CardType.values()){
             List<BasicCard> deckCardList = drawableCards.get(cardType);
@@ -58,7 +59,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
         System.out.println();
         List<Integer> choice = readFromInput(
-                "Choose which card you want to draw by writing its coordinates separated by a space (starting from 1): ",
+                "Choose which card you want by entering its coordinates separated by a space (starting from 1): ",
                 (list -> list.size() == 2 &&
                         list.getFirst() >= 1 && list.getFirst() <= 2 &&
                         list.getLast() >= 1 && list.getLast() <= GameParameters.getNumberOfVisibleCards() + 1),
@@ -252,8 +253,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     public void updateBoard(String nickname, List<BasicCard> placedCards, int moveScore){
         System.out.printf("Here are %s's current placed cards (centered on his last placed card): \n",
                 controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
-        int x = placedCards.getLast().getCorner(Location.BL).getX();
-        int y = placedCards.getLast().getCorner(Location.BL).getY();
+        int x = placedCards.isEmpty() ? 0 : placedCards.getLast().getCorner(Location.BL).getX();
+        int y = placedCards.isEmpty() ? 0 : placedCards.getLast().getCorner(Location.BL).getY();
         System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
         System.out.printf("Their new score is: %d\n", moveScore);
     }
@@ -264,13 +265,12 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void requestPersonalObjectivesChoice(List<Objective> objectives) {
-        System.out.println("These are the secret objectives you can choose from:");
-        for(int i = 0; i < objectives.size(); i++) {
-            System.out.printf("%d. %s%n", i + 1, CardFormatter.getObjectiveInfoString(objectives.get(i)));
-        }
         int numberOfSecretObjectives = GameParameters.getNumberOfSecretObjectives();
-        List<Integer> chosenObjective = readFromInput(
-                String.format("Choose %d of these: ", numberOfSecretObjectives),
+        System.out.printf("\nHere are the available secret objectives (you can choose %d):\n", numberOfSecretObjectives);
+        for(int i = 0; i < objectives.size(); i++) {
+            System.out.printf("   %d. %s%n", i + 1, CardFormatter.getObjectiveInfoString(objectives.get(i)));
+        }
+        List<Integer> chosenObjective = readFromInput("Enter the ID of your chosen objective: ",
                 l -> l.stream().allMatch(i -> i >= 1 && i <= objectives.size()) && l.size() == numberOfSecretObjectives,
                 this::stringToListInt);
         controller.sendMessage(new ObjectivesMessage(Status.SECRET_OBJECTIVES,

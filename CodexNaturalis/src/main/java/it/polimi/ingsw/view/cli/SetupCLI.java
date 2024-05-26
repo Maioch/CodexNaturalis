@@ -4,8 +4,6 @@ import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.network.RMIHandler;
-import it.polimi.ingsw.network.TCPHandler;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.messages.Message;
@@ -13,23 +11,17 @@ import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
-import it.polimi.ingsw.network.server.RMISetup;
 import it.polimi.ingsw.view.SetupView;
-import it.polimi.ingsw.view.gui.GraphicalSubmitter;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 /**
  * Class used when the client chooses to play the TUI version of the game; this class represents the CLI for the player
@@ -53,7 +45,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             int port = readFromInput("Now enter the Port of the server: ",
                     (s -> s >= 0 && s <= 65535),
                     this::stringToInt);
-            int protocol = readFromInput("Enter the protocol you would like to use (1 for TCP, 2 for RMI): ",
+            int protocol = readFromInput("\nChoose the connection technology to use. Enter 1 for TCP or 2 for RMI: ",
                     (s -> s >= 1 && s <= 2),
                     this::stringToInt);
             switch (protocol) {
@@ -91,30 +83,47 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     @Override
     public void updateMatchList(List<GameInfo> matchList){
-        System.out.println("Here's the match list:");
+        System.out.println("Here are the available matches and their IDs:");
         System.out.println();
         int gameNameLength = - GameParameters.getMaxNicknameLength();
         for (GameInfo gameInfo: matchList){
-            System.out.printf("Match %7d: %" + gameNameLength + "s %s\n",
+            System.out.printf("%5d: %" + gameNameLength + "s %s\n",
                     gameInfo.gameId(), gameInfo.gameName(), gameInfo.gameStatus().getText());
         }
         System.out.println();
-        int id = readFromInput("Enter the ID of the match you want to join (0 for a new match, -1 to refresh the match list): ",
+        System.out.println("You can create a new game by entering 0 or refresh the list with -1");
+        int id = readFromInput("To join an existing game enter the corresponding ID instead: ",
                 (i -> matchList.stream().filter(g -> g.gameStatus() != GameStatus.STARTED)
                         .map(GameInfo::gameId).toList().contains(i) || i == 0 || i == -1),
                 this::stringToInt);
-        Message messageToSend = id == -1 ? new Message(Status.REQUEST_GAMES) : new IntegerMessage(Status.REQUEST_COLORS, id);
-        if (id == 0) {
-            String gameName = readFromInput("Enter the new match's name: ",
-                    (s -> s.length() <= GameParameters.getMaxNicknameLength()),
-                    this::stringIdentity);
-            int minPlayers = GameParameters.getMinPlayers();
-            int maxPlayers = GameParameters.getMaxPlayers();
-            int numberOfPlayers = readFromInput(
-                    String.format("Now enter the number of players (between %d and %d inclusive): ", minPlayers, maxPlayers),
-                    (n -> n <= GameParameters.getMaxPlayers() && n >= GameParameters.getMinPlayers()),
-                    this::stringToInt);
-            messageToSend = new NewGameMessage(gameName, numberOfPlayers);
+        Message messageToSend;
+        switch(id){
+            case -1 -> messageToSend = new Message(Status.REQUEST_GAMES);
+            case 0 -> {
+                System.out.println("\nYou're creating a new game: please enter the requested information");
+                String gameName = readFromInput("   Name: ",
+                        (s -> s.length() <= GameParameters.getMaxNicknameLength()),
+                        this::stringIdentity);
+                int minPlayers = GameParameters.getMinPlayers();
+                int maxPlayers = GameParameters.getMaxPlayers();
+                int numberOfPlayers = readFromInput(
+                        String.format("   Number of players (at least %d and not more than %d): ", minPlayers, maxPlayers),
+                        (n -> n <= GameParameters.getMaxPlayers() && n >= GameParameters.getMinPlayers()),
+                        this::stringToInt);
+                messageToSend = new NewGameMessage(gameName, numberOfPlayers);
+            }
+            default -> {
+                if(matchList.stream().filter(g -> g.gameId() == id).findFirst().orElseThrow().gameStatus() == GameStatus.LOBBY){
+                    messageToSend = new IntegerMessage(Status.REQUEST_COLORS, id);
+                } else {
+                    System.out.println("\nWelcome back!");
+                    String nickname = readFromInput("Please enter the name you chose when you first joined the game: ",
+                            (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength() && !s.contains(" ")
+                                    && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
+                            this::stringIdentity);
+                    messageToSend = new JoinGameMessage(Status.RECONNECT, nickname, null, id);
+                }
+            }
         }
         clientController.sendMessage(messageToSend);
     }
@@ -125,7 +134,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     @Override
     public void newGameSuccess(int gameId){
-        System.out.println("You have created a new match, whose ID is: " + gameId);
+        System.out.println("You've successfully created a new match! Its ID is: " + gameId);
         clientController.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
     }
 
@@ -148,21 +157,22 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     @Override
     public void showJoinGameDialog(List<Content> colors, int gameId){
-        System.out.println("You are trying to join a match.");
+        System.out.println("\nYou are trying to join the match.");
+        System.out.println("Here are the available colors and their IDs: ");
         for(int i = 0; i < colors.size(); i++){
-            System.out.printf("%d. %s%s%s", (i + 1), colors.get(i).getTextColorString(),
+            System.out.printf("   %d. %s%s%s", (i + 1), colors.get(i).getTextColorString(),
                     colors.get(i).toString().toLowerCase(), Content.EMPTY.getTextColorString());
             System.out.println(colors.get(i) != colors.getLast() ? ", " : ".");
         }
-        int colorIndex = readFromInput("First, choose a color from the list above by entering the corresponding index: ",
+        int colorIndex = readFromInput("Enter the ID of your chosen color: ",
                 (i -> i >= 1 && i <= colors.size()),
                 this::stringToInt) - 1;
-        String nickname = readFromInput(String.format("Now enter your nickname, without including '%s','%s', or spaces: ",
+        String nickname = readFromInput(String.format("Choose your nickname, without including '%s','%s', or spaces: ",
                         GameParameters.getCommandChar(), GameParameters.getDelimiter()),
                 (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength() && !s.contains(" ")
                         && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
                 this::stringIdentity);
-        clientController.sendMessage(new JoinGameMessage(nickname, colors.get(colorIndex), gameId));
+        clientController.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, colors.get(colorIndex), gameId));
     }
 
     /**
@@ -182,7 +192,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     @Override
     public void showSuccessfulJoin(){
-        System.out.println("You have successfully joined the game!");
+        System.out.println("\nYou have successfully joined the game!");
         GameCLI gameCLI = new GameCLI(clientController);
         clientController.setGameView(gameCLI);
     }

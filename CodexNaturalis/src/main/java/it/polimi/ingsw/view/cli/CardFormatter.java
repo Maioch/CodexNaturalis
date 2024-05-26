@@ -83,7 +83,7 @@ public class CardFormatter {
      * @return the message that represents the objective.
      */
     public static String getObjectiveInfoString(Objective objective){
-        return String.format("objective card that awards %d points every time %s\n",
+        return String.format("gain %d points every time %s\n",
                 objective.getPoints(),
                 getBonusInfo(objective.getObjectiveId()));
     }
@@ -201,18 +201,18 @@ public class CardFormatter {
             return "no bonus.";
         return switch (bonusNode.get("type").asText()){
             case "CORNER" -> "corner.";
-            case "OBJECT" -> "object -> " + Content.valueOf(bonusNode.get("object").asText()).getSymbol();
+            case "OBJECT" -> "object: " + Content.valueOf(bonusNode.get("object").asText()).getSymbol();
             case "CONTENT" -> {
                 List<String> contents = new ArrayList<>() {{
                     for (JsonNode subNode : bonusNode.get("content")) {
                         add(Content.valueOf(subNode.asText()).getSymbol());
                     }
                 }};
-                yield "*all* of the following content types appear -> " + contents;
+                yield "*all* of the following content types appear: " + contents;
             }
             case "PATTERN" -> {
                 StringBuilder sb = new StringBuilder();
-                sb.append("the following pattern appears -> \n");
+                sb.append("the following pattern appears: \n\n");
                 int minX = bonusNode.get("pattern").get(0).get("x").asInt();
                 int maxX = bonusNode.get("pattern").get(0).get("x").asInt();
                 int minY = bonusNode.get("pattern").get(0).get("y").asInt();

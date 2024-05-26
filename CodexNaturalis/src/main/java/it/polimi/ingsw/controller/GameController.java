@@ -127,6 +127,11 @@ public class GameController implements Runnable{
             return;
         }
         serverSubject.subscribe(nickname, handler);
+        synchronized (onlyOnePlayerLock){
+            onlyOnePlayer = false;
+        }
+        receivePing(handler);
+        handler.setCurrentGame(this);
         serverSubject.notify(nickname, new PlayerMessage(Status.JOIN_GAME, nickname, game.getPlayer(nickname).getColor()));
         serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
         for(Player player : game.getAllPlayers()){
@@ -154,6 +159,12 @@ public class GameController implements Runnable{
      */
     public boolean isGameFull() {
         return game.isGameFull();
+    }
+
+    public void wakeUpAfterReconnect(){
+        synchronized (onlyOnePlayerLock){
+            onlyOnePlayerLock.notifyAll();
+        }
     }
 
     /**
@@ -196,6 +207,10 @@ public class GameController implements Runnable{
     public void receivePing(NetworkHandler networkHandler){
         synchronized (connectedUsers){
             connectedUsers.add(networkHandler);
+            System.out.println(game.getAllPlayers().stream()
+                    .map(Player::getNickname)
+                    .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
+                    .findFirst().orElse("No players"));
         }
     }
 
@@ -204,9 +219,9 @@ public class GameController implements Runnable{
      * If it's a chat message, sends it to the corresponding recipients, and then polls another message.
      * This method implements a timer.
      *
-     * @param  handler the player from which the server expects a message.
+     * @param handler the player from which the server expects a message.
      *
-     * @return the polled message.
+     * @return        the polled message.
      */
     private Message readFromQueue(NetworkHandler handler){
         LabeledMessage labeledMessage;
@@ -317,17 +332,25 @@ public class GameController implements Runnable{
                     .filter(n -> !connectedUsers.contains(n))
                     .toList();
             connectedUsers.clear();
-        }
-        //notifying part
-        for(NetworkHandler networkHandler : disconnectedHandlers){
-            if(!networkHandler.isDisconnected()){
-                serverSubject.notifyAll(new StringMessage(Status.PLAYER_DISCONNECTED,
-                        game.getAllPlayers().stream()
-                                .map(Player::getNickname)
-                                .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
-                                .findFirst().orElse("No players")));
+            //notifying part
+            for(NetworkHandler networkHandler : disconnectedHandlers){
+            synchronized (gameStatusLock) {
+                    gameStatus = GameStatus.PLAYER_DISCONNECTED;
+                }
+                if(!networkHandler.isDisconnected()){
+                    serverSubject.notifyAll(new StringMessage(Status.PLAYER_DISCONNECTED,
+                            game.getAllPlayers().stream()
+                                    .map(Player::getNickname)
+                                    .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
+                                    .findFirst().orElse("No players")));
+                }
+                networkHandler.setDisconnected();
             }
-            networkHandler.setDisconnected();
+            if(disconnectedHandlers.isEmpty()){
+                synchronized (gameStatusLock){
+                    gameStatus = GameStatus.STARTED;
+                }
+            }
         }
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }

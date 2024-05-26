@@ -18,8 +18,8 @@ public class JoinGameMessage extends Message {
      * @param color the player's color.
      * @param gameId the match the player is joining.
      */
-    public JoinGameMessage(String nickname, Content color, int gameId){
-        super(Status.JOIN_GAME);
+    public JoinGameMessage(Status status, String nickname, Content color, int gameId){
+        super(status);
         this.nickname = nickname;
         this.color = color;
         this.gameId = gameId;

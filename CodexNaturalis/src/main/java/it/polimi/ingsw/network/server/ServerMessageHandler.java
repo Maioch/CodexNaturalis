@@ -11,6 +11,7 @@ import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.MessageHandler;
 import it.polimi.ingsw.network.messages.*;
+import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.GameColorsMessage;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
@@ -39,6 +40,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
     /**
      * Overridden run method. It reads the message queue and handles the message according to its status.
      */
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run(){
         while(true){
@@ -104,6 +106,17 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                             labeledMessage.networkHandler().update(
                                     new IntegerMessage(Status.INVALID_COLOR, joinGameMessage.getGameId()));
                         }
+                    }
+                }
+                case RECONNECT -> {
+                    if(labeledMessage.message() instanceof JoinGameMessage joinGameMessage){
+                        GameController game = games.getController(joinGameMessage.getGameId());
+                        if(game == null){
+                            labeledMessage.networkHandler().update(new Message(Status.ERROR));
+                            break;
+                        }
+                        game.addMessageToQueue(new StringMessage(Status.RECONNECT, joinGameMessage.getNickname()), labeledMessage.networkHandler());
+                        game.wakeUpAfterReconnect();
                     }
                 }
             }

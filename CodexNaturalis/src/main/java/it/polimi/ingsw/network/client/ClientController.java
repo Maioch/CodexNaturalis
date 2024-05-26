@@ -161,6 +161,7 @@ public class ClientController extends MessageHandler{
     /**
      * Main method of the class, used to differentiate between all the possible messages the client can send.
      */
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run(){
         while(true){
