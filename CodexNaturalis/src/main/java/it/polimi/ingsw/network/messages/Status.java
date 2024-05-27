@@ -158,6 +158,11 @@ public enum Status {
     PLAYER_DISCONNECTED(""),
 
     /**
+     * Server: a player left the lobby
+     */
+    PLAYER_LEFT_LOBBY(""),
+
+    /**
      * Client: the player tries to rejoin the game
      */
     RECONNECT(""),
@@ -171,6 +176,12 @@ public enum Status {
      * Message sent when an error occurs.
      */
     ERROR(""),
+
+    /**
+     * message sent whenever a user tries to reconnect to a game using a nickname that doesn't
+     * belong to a disconnected player
+     */
+    WRONG_NAME("the nickname you entered doesn't belong to any of the disconnected players."),
 
     /**
      * Message sent if a player has no moves.

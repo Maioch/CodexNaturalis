@@ -226,6 +226,12 @@ public class ClientController extends MessageHandler{
                             eventSubmitter.submit(() -> setupView.showUserError(Status.INVALID_COLOR.getMessage(), integerMessage.getValue()));
                         }
                     }
+                    case WRONG_NAME -> {
+                        eventSubmitter.submit(() -> setupView.showCriticalError(Status.WRONG_NAME.getMessage()));
+                    }
+                    case ERROR -> {
+                        eventSubmitter.submit(() -> setupView.showCriticalError("The lobby for this match timed out. Please create a new one."));
+                    }
                 }
                 continue;
             }
@@ -331,6 +337,12 @@ public class ClientController extends MessageHandler{
                 case PLAYER_DISCONNECTED -> {
                     if(message instanceof StringMessage stringMessage){
                         eventSubmitter.submit(() -> gameView.notifyRemotePlayerDisconnected(stringMessage.getString()));
+                    }
+                }
+                case PLAYER_LEFT_LOBBY -> {
+                    if(message instanceof StringMessage stringMessage){
+                        eventSubmitter.submit(() -> gameView.notifyRemotePlayerDisconnected(stringMessage.getString()));
+                        game.removeRemotePlayer(stringMessage.getString());
                     }
                 }
                 case CHAT -> {

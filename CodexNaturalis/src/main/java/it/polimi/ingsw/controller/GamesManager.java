@@ -36,7 +36,8 @@ public class GamesManager{
                 games.keySet().stream()
                         .filter(x -> games.get(x + 1) == null)
                         .min(Integer::compareTo).orElse(0);
-        GameController newController = new GameController(numberOfPlayers, new ServerSubject(), name, this::deleteGame);
+        GameController newController =
+                new GameController(numberOfPlayers, new ServerSubject(), gameId + 1, name, this::deleteGame);
         new Thread(newController).start();
         games.put(gameId + 1, newController);
         return gameId + 1;

@@ -79,8 +79,11 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                 case REQUEST_COLORS -> {
                     if(labeledMessage.message() instanceof IntegerMessage integerMessage){
                         GameController game = games.getController(integerMessage.getValue());
-                        labeledMessage.networkHandler().update(new GameColorsMessage(Status.REQUEST_COLORS,
-                                game != null ? game.requestAvailableColors() : new ArrayList<>(), integerMessage.getValue()));
+                        if(game == null){
+                            labeledMessage.networkHandler().update(new Message(Status.ERROR));
+                            break;
+                        }
+                        game.addMessageToQueue(new Message(Status.REQUEST_COLORS), labeledMessage.networkHandler());
                     }
                 }
                 case JOIN_GAME -> {
@@ -90,22 +93,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                             labeledMessage.networkHandler().update(new Message(Status.ERROR));
                             break;
                         }
-                        try{
-                            int nickLength = joinGameMessage.getNickname().length();
-                            game.acceptPlayer(
-                                    joinGameMessage.getNickname().substring(0, Math.min(nickLength,GameParameters.getMaxNicknameLength())),
-                                    joinGameMessage.getColor(),
-                                    labeledMessage.networkHandler());
-                            labeledMessage.networkHandler().setCurrentGame(game);
-                        }catch(GameFullException f){
-                            labeledMessage.networkHandler().update(new Message(Status.GAME_FULL));
-                        }catch(NicknameTakenException e){
-                            labeledMessage.networkHandler().update(
-                                    new IntegerMessage(Status.INVALID_NICKNAME, joinGameMessage.getGameId()));
-                        }catch(GameException e){
-                            labeledMessage.networkHandler().update(
-                                    new IntegerMessage(Status.INVALID_COLOR, joinGameMessage.getGameId()));
-                        }
+                        game.addMessageToQueue(joinGameMessage, labeledMessage.networkHandler());
                     }
                 }
                 case RECONNECT -> {

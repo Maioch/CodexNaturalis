@@ -127,6 +127,10 @@ public class ClientGame {
         eventSubmitter.submit(() -> gameView.showUserJoined(player.getNickname(), player.getColor()));
     }
 
+    public void removeRemotePlayer(String nickname){
+        remotePlayers.removeIf(remotePlayer -> remotePlayer.getNickname().equals(nickname));
+    }
+
     /**
      * Updates the objectives shared by all the players connected to the game.
      *

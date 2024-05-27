@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.DrawOptionsMessage;
+import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.BasicCard;
@@ -31,6 +32,7 @@ public class GameModel{
     private final Deck<CardSides> starterDeck;
     private final Deck<Objective> objectiveDeck;
     private final List<Content> availableColors;
+    private final Map<String,Content> playerData;
     private final List<Objective> commonObjectives;
     private final int numberOfPlayers;
 
@@ -46,34 +48,35 @@ public class GameModel{
             throw new IllegalNumberOfPlayers();
         this.numberOfPlayers = numberOfPlayers;
         this.serverSubject = serverSubject;
-        availableColors = new ArrayList<>() {{
+        this.availableColors = new ArrayList<>() {{
             for (Content content : Content.values()) {
                 if (content.isResource()) {
                     add(content);
                 }
             }
         }};
-        players = new ArrayList<>(numberOfPlayers);
+        this.players = new ArrayList<>(numberOfPlayers);
+        this.playerData = new HashMap<>();
         int numberOfVisibleCards = GameParameters.getNumberOfVisibleCards();
-        resourceDeck = new TurnDeck<>(
+        this.resourceDeck = new TurnDeck<>(
                 CardBuilder::buildCard,
                 GameParameters.getStartCardIndex(CardType.RESOURCE),
                 GameParameters.getEndCardIndex(CardType.RESOURCE),
                 numberOfVisibleCards);
-        goldDeck = new TurnDeck<>(
+        this.goldDeck = new TurnDeck<>(
                 CardBuilder::buildCard,
                 GameParameters.getStartCardIndex(CardType.GOLD),
                 GameParameters.getEndCardIndex(CardType.GOLD),
                 numberOfVisibleCards);
-        starterDeck = new Deck<>(
+        this.starterDeck = new Deck<>(
                 CardBuilder::buildCard,
                 GameParameters.getStartCardIndex(CardType.STARTER),
                 GameParameters.getEndCardIndex(CardType.STARTER));
-        objectiveDeck = new Deck<>(
+        this.objectiveDeck = new Deck<>(
                 CardBuilder::buildObjective,
                 GameParameters.getStartCardIndex(CardType.OBJECTIVE),
                 GameParameters.getEndCardIndex(CardType.OBJECTIVE));
-        commonObjectives = new ArrayList<>() {{
+        this.commonObjectives = new ArrayList<>() {{
             for (int i = 0; i < GameParameters.getNumberOfCommonObjectives(); i++) {
                 add(objectiveDeck.draw());
             }
@@ -100,8 +103,14 @@ public class GameModel{
      * @return true if the game is full.
      */
     public synchronized boolean isGameFull() {
-        return players.size() == numberOfPlayers;
+        return playerData.size() == numberOfPlayers;
     }
+
+    public boolean isLobbyEmpty() { return playerData.isEmpty(); }
+
+    public int getNumberOfPlayers() { return numberOfPlayers; }
+
+    public List<String> getLobbyNicknames() { return new ArrayList<>(playerData.keySet()); }
 
     /**
      * Method that checks if there's a user with the same username of the new player that is joining the game.
@@ -109,10 +118,11 @@ public class GameModel{
      * @return false if there's a duplicate username.
      */
     public synchronized boolean checkNickname(String nickname) {
-        return players.stream().noneMatch(p -> p.getNickname().equals(nickname)) &&
+        return !playerData.containsKey(nickname) &&
                 !nickname.contains(" ") &&
                 !nickname.contains(GameParameters.getDelimiter()) &&
-                !nickname.contains(GameParameters.getCommandChar());
+                !nickname.contains(GameParameters.getCommandChar()) &&
+                nickname.length() <= GameParameters.getMaxNicknameLength();
     }
 
     /**
@@ -145,7 +155,7 @@ public class GameModel{
      * @throws GameFullException if the game is full.
      * @throws NicknameTakenException if the nickname is already chosen by another player.
      */
-    public synchronized void addPlayer(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
+    public synchronized void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
         if (isGameFull()) {
             throw new GameFullException();
         }
@@ -155,27 +165,41 @@ public class GameModel{
         if (!getAvailableColors().contains(color)) {
             throw new GameException("The chosen color has already been taken");
         }
-        ArrayList<CardSides> handCards = new ArrayList<>() {{
-            add(starterDeck.draw());
-            for (int i = 0; i < GameParameters.getNumberOfGoldCardsInHand(); i++) {
-                add(goldDeck.draw());
-            }
-            for (int i = 0; i < GameParameters.getNumberOfResourceCardsInHand(); i++) {
-                add(resourceDeck.draw());
-            }
-        }};
-        List<Objective> objectives = new ArrayList<>() {{
-            List<Objective> commonObjectiveClones = new ArrayList<>();
-            for(Objective objective : commonObjectives) {
-                commonObjectiveClones.add(new Objective(objective));
-            }
-            addAll(commonObjectiveClones);
-        }};
-        players.add(new Player(nickname, color, handCards, objectives, serverSubject));
         availableColors.remove(color);
+        playerData.put(nickname,color);
         serverSubject.notify(nickname, new PlayerMessage(Status.JOIN_GAME, nickname, color));
-        for(Player player : players) {
-            serverSubject.notifyAll(new PlayerMessage(Status.NEW_PLAYER_JOINED, player.getNickname(), player.getColor()));
+        for(Map.Entry<String,Content> entry : playerData.entrySet()) {
+            serverSubject.notifyAll(new PlayerMessage(Status.NEW_PLAYER_JOINED, entry.getKey(), entry.getValue()));
+        }
+    }
+
+    public void deletePlayerData(String nickname) {
+        Content color = playerData.remove(nickname);
+        if(color != null){
+            availableColors.add(color);
+            serverSubject.notifyAll(new StringMessage(Status.PLAYER_LEFT_LOBBY, nickname));
+        }
+    }
+
+    public void createPlayers(){
+        for(Map.Entry<String,Content> entry : playerData.entrySet()) {
+            ArrayList<CardSides> handCards = new ArrayList<>() {{
+                add(starterDeck.draw());
+                for (int i = 0; i < GameParameters.getNumberOfGoldCardsInHand(); i++) {
+                    add(goldDeck.draw());
+                }
+                for (int i = 0; i < GameParameters.getNumberOfResourceCardsInHand(); i++) {
+                    add(resourceDeck.draw());
+                }
+            }};
+            List<Objective> objectives = new ArrayList<>() {{
+                List<Objective> commonObjectiveClones = new ArrayList<>();
+                for(Objective objective : commonObjectives) {
+                    commonObjectiveClones.add(new Objective(objective));
+                }
+                addAll(commonObjectiveClones);
+            }};
+            players.add(new Player(entry.getKey(), entry.getValue(), handCards, objectives, serverSubject));
         }
     }
 

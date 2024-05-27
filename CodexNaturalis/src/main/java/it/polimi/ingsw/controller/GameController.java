@@ -5,7 +5,10 @@ import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.game.*;
+import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
+import it.polimi.ingsw.network.messages.setup.GameColorsMessage;
+import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.Content;
@@ -21,6 +24,7 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Consumer;
 
 /**
@@ -31,6 +35,7 @@ import java.util.function.Consumer;
 public class GameController implements Runnable{
     private final GameModel game;
     private final String name;
+    private final int id;
     private final ServerSubject serverSubject;
     private final Queue<LabeledMessage> messageQueue;
     private final List<NetworkHandler> connectedUsers;
@@ -39,7 +44,7 @@ public class GameController implements Runnable{
     private final Object gameStatusLock;
     private final Object onlyOnePlayerLock;
     private final AtomicBoolean gameOver;
-    private final Timer pingTimer;
+    private Timer pingTimer;
     private String playerWithTurn;
     private GameStatus gameStatus;
     private boolean onlyOnePlayer;
@@ -56,9 +61,11 @@ public class GameController implements Runnable{
      */
     public GameController(int numberOfPlayers,
                           ServerSubject serverSubject,
+                          int id,
                           String name,
                           Consumer<GameController> endGameProcedure) throws IllegalNumberOfPlayers {
         this.game = new GameModel(numberOfPlayers, serverSubject);
+        this.id = id;
         this.name = name;
         this.serverSubject = serverSubject;
         this.messageQueue = new LinkedList<>();
@@ -70,7 +77,7 @@ public class GameController implements Runnable{
         this.onlyOnePlayer = false;
         this.gameOver = new AtomicBoolean(false);
         this.gameStatus = GameStatus.LOBBY;
-        this.pingTimer = new Timer();
+        this.pingTimer = null;
         this.playerWithTurn = "";
     }
 
@@ -97,20 +104,22 @@ public class GameController implements Runnable{
      *
      * @see NetworkHandler
      */
-    public void acceptPlayer(String nickname, Content color, NetworkHandler handler) throws GameFullException, NicknameTakenException, GameException{
+    public void acceptPlayer(String nickname, Content color, NetworkHandler handler){
         if(game.checkNickname(nickname)){
             serverSubject.subscribe(nickname, handler);
         }
         try {
-            game.addPlayer(nickname, color);
-        }catch(GameFullException | GameException e) {
+            game.addPlayerData(nickname, color);
+            handler.setCurrentGame(this);
+            receivePing(handler);
+        }catch(GameFullException G){
             serverSubject.unsubscribe(nickname);
-            throw e;
-        }
-        if(isGameFull()){
-            synchronized(gameIsFullLock) {
-                gameIsFullLock.notifyAll();
-            }
+            handler.update(new Message(Status.GAME_FULL));
+        }catch(GameException e){
+            serverSubject.unsubscribe(nickname);
+            handler.update(new IntegerMessage(Status.INVALID_COLOR, id));
+        }catch(NicknameTakenException n){
+            handler.update(new IntegerMessage(Status.INVALID_NICKNAME, id));
         }
     }
 
@@ -123,7 +132,7 @@ public class GameController implements Runnable{
     private void reconnectPlayer(String nickname, NetworkHandler handler){
         NetworkHandler userHandler = serverSubject.getNetworkHandler(nickname);
         if(userHandler == null || !userHandler.isDisconnected()){
-            handler.update(new Message(Status.ERROR));
+            handler.update(new Message(Status.WRONG_NAME));
             return;
         }
         serverSubject.subscribe(nickname, handler);
@@ -142,9 +151,13 @@ public class GameController implements Runnable{
             serverSubject.notify(nickname, new PlayerBoardMessage(player.getPlacedCards(), player.getScore()));
             if(player.getNickname().equals(nickname)){
                 serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, player.getHandCards()));
-                serverSubject.notify(nickname, new ObjectivesMessage(Status.ALL_OBJECTIVES,
-                        player.getObjectives().stream().filter(o -> !game.getCommonObjectives().contains(o)).toList(),
-                        game.getCommonObjectives()));
+                int numberOfCommonObjectives = GameParameters.getNumberOfCommonObjectives();
+                int numberOfSecretObjectives = GameParameters.getNumberOfSecretObjectives();
+                if(player.getObjectives().size() == numberOfCommonObjectives + numberOfSecretObjectives){
+                    serverSubject.notify(nickname, new ObjectivesMessage(Status.ALL_OBJECTIVES,
+                            player.getObjectives().stream().filter(o -> !game.getCommonObjectives().contains(o)).toList(),
+                            game.getCommonObjectives()));
+                }
             }else{
                 serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_BACK, player.getBackOnlyCardHand()));
             }
@@ -244,6 +257,7 @@ public class GameController implements Runnable{
                         continue;
                     }
                 }
+                case JOIN_GAME, REQUEST_COLORS -> labeledMessage.networkHandler().update(new Message(Status.GAME_FULL));
             }
             //ignore game messages sent by the other network handlers
             if(labeledMessage.networkHandler() != handler){
@@ -279,34 +293,12 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Waits that all clients are ready to play the game, using the CLIENT_READY message.
-     *
-     * @param handlers all the players connected to the game.
-     */
-    private void awaitForReady(List<NetworkHandler> handlers){
-        LabeledMessage labeledMessage;
-        List<NetworkHandler> handlerList = new ArrayList<>(handlers);
-        while(!handlerList.isEmpty()){
-            synchronized(messageQueue) {
-                if (messageQueue.isEmpty()) {
-                    Thread.onSpinWait();
-                    continue;
-                }
-                labeledMessage = messageQueue.poll();
-            }
-            Message message = labeledMessage.message();
-            NetworkHandler sender = labeledMessage.networkHandler();
-            handlerList.removeIf(h -> message.getStatus() == Status.CLIENT_READY && h == sender);
-        }
-    }
-
-    /**
      * Checks if any player has disconnected from the game and sends a ping request to all the clients.
      * If a player doesn't answer to the ping, labels him as "disconnected", then notifies all the others with
      * a PLAYER_DISCONNECTED message.
      * When the connected players are less than or equal to one, the game will start an ending procedure.
      */
-    private void readAndRequestPings(){
+    private void handleGameDisconnections(){
         List<NetworkHandler> disconnectedHandlers;
         //connected players part
         synchronized (connectedUsers) {
@@ -330,7 +322,7 @@ public class GameController implements Runnable{
             connectedUsers.clear();
             //notifying part
             for(NetworkHandler networkHandler : disconnectedHandlers){
-            synchronized (gameStatusLock) {
+                synchronized (gameStatusLock) {
                     gameStatus = GameStatus.PLAYER_DISCONNECTED;
                 }
                 if(!networkHandler.isDisconnected()){
@@ -351,6 +343,27 @@ public class GameController implements Runnable{
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }
 
+    private void handleLobbyDisconnections(){
+        List<NetworkHandler> disconnectedHandlers;
+        synchronized (connectedUsers) {
+            disconnectedHandlers = game.getLobbyNicknames().stream()
+                    .map(serverSubject::getNetworkHandler)
+                    .filter(n -> !connectedUsers.contains(n))
+                    .toList();
+            connectedUsers.clear();
+            for(NetworkHandler networkHandler : disconnectedHandlers){
+                String playerNickname = game.getLobbyNicknames().stream()
+                        .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
+                        .findFirst().orElse("No players");
+                game.deletePlayerData(playerNickname);
+                serverSubject.getNetworkHandler(playerNickname).setCurrentGame(null);
+                serverSubject.unsubscribe(playerNickname);
+                serverSubject.notifyAll(new StringMessage(Status.PLAYER_LEFT_LOBBY, playerNickname));
+            }
+        }
+        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
+    }
+
     /**
      * Removes all the players from the game.
      */
@@ -362,28 +375,6 @@ public class GameController implements Runnable{
                 serverSubject.unsubscribe(player.getNickname());
             }
         }
-    }
-
-    /**
-     * Starts a timer at the end of which the lobby is dismantled.
-     */
-    private void startLobbyTimer(){
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                synchronized (gameStatusLock){
-                    if(gameStatus == GameStatus.LOBBY){
-                        serverSubject.notifyAll(new Message(Status.GAME_CANCELED));
-                        removeHandlers();
-                        gameOver.set(true);
-                        endGameProcedure.accept(GameController.this);
-                        synchronized (gameIsFullLock){
-                            gameIsFullLock.notifyAll();
-                        }
-                    }
-                }
-            }
-        }, GameParameters.getLobbyTimeout() * 1000L);
     }
 
     /**
@@ -438,14 +429,17 @@ public class GameController implements Runnable{
      * choose their personal objective.
      */
     private void initializeGame() {
+        game.createPlayers();
+        pingTimer.cancel();
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
         TimerTask pingTask = new TimerTask() {
             @Override
             public void run() {
-                readAndRequestPings();
+                handleGameDisconnections();
             }
         };
         int periodSeconds = GameParameters.getPingPeriodSeconds();
+        pingTimer = new Timer();
         pingTimer.schedule(pingTask, periodSeconds * 1000L, periodSeconds * 1000L);
         Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
         serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards));
@@ -674,6 +668,67 @@ public class GameController implements Runnable{
         }
     }
 
+    private void waitForPlayers(){
+        LabeledMessage labeledMessage;
+        List<NetworkHandler> readyHandlers = new ArrayList<>();
+        while(!(game.isGameFull() && readyHandlers.size() == game.getNumberOfPlayers()) && !gameOver.get()){
+            synchronized (messageQueue) {
+                if (messageQueue.isEmpty()) {
+                    Thread.onSpinWait();
+                    continue;
+                }
+                labeledMessage = messageQueue.poll();
+            }
+            for(NetworkHandler handler : readyHandlers){
+                readyHandlers.removeIf(NetworkHandler::isDisconnected);
+            }
+            Message message = labeledMessage.message();
+            switch (message.getStatus()){
+                case Status.JOIN_GAME -> {
+                    if(message instanceof JoinGameMessage joinGameMessage){
+                        acceptPlayer(joinGameMessage.getNickname(), joinGameMessage.getColor(), labeledMessage.networkHandler());
+                    }
+                }
+                case Status.REQUEST_COLORS -> {
+                    labeledMessage.networkHandler().update(
+                            new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), id));
+                }
+                case Status.CLIENT_READY -> readyHandlers.add(labeledMessage.networkHandler());
+            }
+        }
+    }
+
+    private void startLobby(){
+        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
+        TimerTask pingTask = new TimerTask() {
+            @Override
+            public void run() {
+                handleLobbyDisconnections();
+            }
+        };
+        pingTimer = new Timer();
+        pingTimer.schedule(pingTask,
+                GameParameters.getPingPeriodSeconds() * 1000L,
+                GameParameters.getPingPeriodSeconds() * 1000L);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                GameStatus status = GameStatus.LOBBY;
+                    while(status != GameStatus.STARTED && !gameOver.get()){
+                        synchronized (gameStatusLock) {
+                            status = gameStatus;
+                        }
+                        if(game.isLobbyEmpty()) {
+                            removeHandlers();
+                            gameOver.set(true);
+                            pingTimer.cancel();
+                            endGameProcedure.accept(GameController.this);
+                        }
+                    }
+                }
+            }, GameParameters.getLobbyTimeout() * 1000L);
+    }
+
     /**
      * Calls all the above methods to correctly run a game.
      * First starts a timer to avoid a too long game setup procedure, waits that all the players connected are ready
@@ -682,17 +737,10 @@ public class GameController implements Runnable{
      */
     @Override
     public void run() {
-        startLobbyTimer();
-        try {
-            synchronized(gameIsFullLock) {
-                gameIsFullLock.wait();
-            }
-            if(gameOver.get()){
-                return;
-            }
-            awaitForReady(game.getAllPlayers().stream().map(p -> serverSubject.getNetworkHandler(p.getNickname())).toList());
-        } catch (InterruptedException e) {
-            System.out.println(e.getMessage());
+        startLobby();
+        waitForPlayers();
+        if(gameOver.get()){
+            return;
         }
         synchronized (gameStatusLock) {
             gameStatus = GameStatus.STARTED;
