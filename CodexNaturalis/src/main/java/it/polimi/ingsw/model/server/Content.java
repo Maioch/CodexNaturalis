@@ -5,7 +5,7 @@ package it.polimi.ingsw.model.server;
  * resource (e.g. Red -> Mushroom); white is used for corners with no symbols and empty for blank ones that
  * can't be overlapped. Lastly there are the three object types.
  *
- * @author Marco Maiocchi
+ * @author Marco Maiocchi, Andrea Fidanza
  */
 public enum Content {
     RED("\u001B[41m  \u001B[m","\u001B[31m"),

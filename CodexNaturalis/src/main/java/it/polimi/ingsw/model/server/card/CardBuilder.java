@@ -146,11 +146,11 @@ public class CardBuilder {
      */
     static Set<Corner> getCorners(JsonNode cardJson, String fieldName){
         JsonNode cornersJson = cardJson.get(fieldName);
-        return new HashSet<>() {{
-            for (Location loc : Location.values()) {
-                add(new Corner(!cardJson.has(fieldName) ? Content.WHITE : Content.valueOf(cornersJson.get(loc.name()).asText()), loc));
-            }
-        }};
+        Set<Corner> result = new HashSet<>();
+        for (Location loc : Location.values()) {
+            result.add(new Corner(!cardJson.has(fieldName) ? Content.WHITE : Content.valueOf(cornersJson.get(loc.name()).asText()), loc));
+        }
+        return result;
     }
 
     /**
