@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * A class representing the remote player.
  */
 public class RemotePlayer extends ClientPlayer {
+
     private List<BasicCard> handCards; //Not a card sides list, in order to obtain an only front cards hand
 
     /**

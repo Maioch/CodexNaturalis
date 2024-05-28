@@ -49,9 +49,6 @@ public class GoldCard extends BasicCard {
         this.bonus = card.bonus;
     }
 
-    /**
-     * @return the requirements needed to play the card.
-     */
     @Override
     public Map<Content,Integer> getRequirements(){
         return getMapFromContentList(requirements);

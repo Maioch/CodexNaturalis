@@ -16,6 +16,7 @@ import java.util.Map;
  * The main information is the nickname, the color, the cards placed and the score.
  */
 public abstract class ClientPlayer {
+
     private final String nickname;
     private List<BasicCard> placedCards;
     private final Content color;

@@ -12,6 +12,7 @@ import java.util.Map;
  * GamesManager manages all games created by the clients, by saving them with a unique ID.
  */
 public class GamesManager{
+
     private final Map<Integer, GameController> games;
 
     /**
@@ -32,15 +33,15 @@ public class GamesManager{
      * @throws IllegalNumberOfPlayers if the player entered an invalid maximum number of players when creating the game.
      */
     public synchronized int addGame(int numberOfPlayers, String name) throws IllegalNumberOfPlayers {
-        int gameId = (!games.containsKey(1)) ? 0 :
+        int gameId = (!games.containsKey(1)) ? 1 :
                 games.keySet().stream()
                         .filter(x -> games.get(x + 1) == null)
-                        .min(Integer::compareTo).orElse(0);
-        GameController newController =
-                new GameController(numberOfPlayers, new ServerSubject(), gameId + 1, name, this::deleteGame);
+                        .min(Integer::compareTo).orElse(0) + 1;
+        GameInfo gameInfo = new GameInfo(gameId, name, GameStatus.LOBBY);
+        GameController newController = new GameController(numberOfPlayers, new ServerSubject(), gameInfo, this::deleteGame);
         new Thread(newController).start();
-        games.put(gameId + 1, newController);
-        return gameId + 1;
+        games.put(gameId, newController);
+        return gameId;
     }
 
     /**

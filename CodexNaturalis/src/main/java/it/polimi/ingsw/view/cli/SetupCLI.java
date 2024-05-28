@@ -88,13 +88,13 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         int gameNameLength = - GameParameters.getMaxNicknameLength();
         for (GameInfo gameInfo: matchList){
             System.out.printf("%5d: %" + gameNameLength + "s %s\n",
-                    gameInfo.gameId(), gameInfo.gameName(), gameInfo.gameStatus().getText());
+                    gameInfo.getGameId(), gameInfo.getGameName(), gameInfo.getGameStatus().getText());
         }
         System.out.println();
         System.out.println("You can create a new game by entering 0 or refresh the list with -1");
         int id = readFromInput("To join an existing game enter the corresponding ID instead: ",
-                (i -> matchList.stream().filter(g -> g.gameStatus() != GameStatus.STARTED)
-                        .map(GameInfo::gameId).toList().contains(i) || i == 0 || i == -1),
+                (i -> matchList.stream().filter(g -> g.getGameStatus() != GameStatus.STARTED)
+                        .map(GameInfo::getGameId).toList().contains(i) || i == 0 || i == -1),
                 this::stringToInt);
         Message messageToSend;
         switch(id){
@@ -113,7 +113,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 messageToSend = new NewGameMessage(gameName, numberOfPlayers);
             }
             default -> {
-                if(matchList.stream().filter(g -> g.gameId() == id).findFirst().orElseThrow().gameStatus() == GameStatus.LOBBY){
+                if(matchList.stream().filter(g -> g.getGameId() == id).findFirst().orElseThrow().getGameStatus() == GameStatus.LOBBY){
                     messageToSend = new IntegerMessage(Status.REQUEST_COLORS, id);
                 } else {
                     System.out.println("\nWelcome back!");

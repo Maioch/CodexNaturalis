@@ -22,9 +22,7 @@ import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.SetupView;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.List;
+import java.util.*;
 
 /**
  * Class that handles every possible message the client can send to the server.
@@ -226,12 +224,10 @@ public class ClientController extends MessageHandler{
                             eventSubmitter.submit(() -> setupView.showUserError(Status.INVALID_COLOR.getMessage(), integerMessage.getValue()));
                         }
                     }
-                    case WRONG_NAME -> {
+                    case WRONG_NAME ->
                         eventSubmitter.submit(() -> setupView.showCriticalError(Status.WRONG_NAME.getMessage()));
-                    }
-                    case ERROR -> {
+                    case ERROR ->
                         eventSubmitter.submit(() -> setupView.showCriticalError("The lobby for this match timed out. Please create a new one."));
-                    }
                 }
                 continue;
             }

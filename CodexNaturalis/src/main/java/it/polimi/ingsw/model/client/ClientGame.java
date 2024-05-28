@@ -19,6 +19,7 @@ import java.util.Map;
  * This class is needed to handle some MVC functionalities in an easier way.
  */
 public class ClientGame {
+
     private final LocalPlayer localPlayer;
     private final List<RemotePlayer> remotePlayers;
     private List<Objective> commonObjectives;

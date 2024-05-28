@@ -165,3 +165,23 @@
 .hyperlink:hover{
   -fx-underline: true;
 }
+.coloredRadioButton{
+  -radio-color: red;
+  -fx-color: -radio-color;
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
+}
+.coloredRadioButton .dot{
+  -fx-opacity: 0;
+  -fx-visibility: 0;
+}
+.coloredRadioButton:selected .radio{
+  -radio-color: red;
+  -fx-border-width: 2;
+  -fx-border-color: #2f0606;
+  -fx-border-radius: 200;
+  -fx-color: -radio-color;
+}
+.coloredRadioButton:hover .radio{
+  -fx-color: -radio-color;
+}

@@ -1,15 +1,19 @@
 package it.polimi.ingsw.model.server.card.corner;
 
 /**
- * Enum that represents corner locations in a card (e.g. BL -> bottom left).
- *
- * @author Andrea Fidanza
+ * Location represents the position of the corner relative to the card (for example: BL -> bottom left, TR -> top right).
  */
 public enum Location {
-    BL, BR, TL, TR;
+
+    BL,
+    BR,
+    TL,
+    TR;
 
     /**
-     * @return the opposite location (symmetrical with respect to the diagonal of the card).
+     * Returns the symmetrical location to the given one in relation to the card's diagonal.
+     *
+     * @return the opposite location to the given one.
      */
     public Location getOppositeLocation(){
         return switch(this){

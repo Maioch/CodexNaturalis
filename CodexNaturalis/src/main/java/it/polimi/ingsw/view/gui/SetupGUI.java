@@ -21,6 +21,7 @@ import java.util.List;
 public class SetupGUI extends Application implements SetupView {
     private Stage primaryStage;
     private Scene currentScene;
+    private FXMLLoader currentLoader;
     private final ClientController controller;
 
     /**
@@ -36,15 +37,15 @@ public class SetupGUI extends Application implements SetupView {
      */
     @Override
     public void updateMatchList(List<GameInfo> matchList){
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/MatchBrowser.fxml"));
+        currentLoader = new FXMLLoader(getClass().getResource("/scenes/MatchBrowser.fxml"));
         try {
-            currentScene.setRoot(loader.load());
+            currentScene.setRoot(currentLoader.load());
         } catch (IOException e) {
             System.out.println(e.getMessage());
             return;
         }
-        loader.<MatchBrowserViewController>getController().setController(controller);
-        MatchBrowserViewController viewController = loader.getController();
+        currentLoader.<MatchBrowserViewController>getController().setController(controller);
+        MatchBrowserViewController viewController = currentLoader.getController();
         viewController.addMatches(matchList);
     }
 
@@ -60,7 +61,7 @@ public class SetupGUI extends Application implements SetupView {
 
     @Override
     public void showJoinGameDialog(List<Content> colors, int gameId){
-
+        currentLoader.<MatchBrowserViewController>getController().showJoinGameDialog(colors, gameId);
     }
 
     @Override
@@ -85,15 +86,15 @@ public class SetupGUI extends Application implements SetupView {
         }
         this.primaryStage = stage;
         stage.setTitle("Codex Naturalis");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/scenes/Connection.fxml"));
-        currentScene = new Scene(loader.load(),1820,980);
+        currentLoader = new FXMLLoader(getClass().getResource("/scenes/Connection.fxml"));
+        currentScene = new Scene(currentLoader.load(),1820,980);
         currentScene.setOnKeyReleased((e) -> {
             if(e.getCode() == KeyCode.F12){
                 stage.setFullScreen(!stage.isFullScreen());
             }
         });
-        loader.<ConnectionViewController>getController().setClientController(controller);
-        loader.<ConnectionViewController>getController().setApplication(this);
+        currentLoader.<ConnectionViewController>getController().setClientController(controller);
+        currentLoader.<ConnectionViewController>getController().setApplication(this);
         stage.setScene(currentScene);
         stage.getIcons().add(new Image("/scenes/images/CodexNaturalisColoredLogo.png"));
         stage.show();

@@ -32,19 +32,17 @@ import java.util.function.Consumer;
  * and it can also check for special configurations in it.
  */
 public class GameController implements Runnable{
+
     private final GameModel game;
-    private final String name;
-    private final int id;
+    private final GameInfo gameInfo;
     private final ServerSubject serverSubject;
     private final Queue<LabeledMessage> messageQueue;
     private final List<NetworkHandler> connectedUsers;
     private final Consumer<GameController> endGameProcedure;
-    private final Object gameStatusLock;
     private final Object onlyOnePlayerLock;
     private final AtomicBoolean gameOver;
     private Timer pingTimer;
     private String playerWithTurn;
-    private GameStatus gameStatus;
     private boolean onlyOnePlayer;
 
     /**
@@ -52,28 +50,27 @@ public class GameController implements Runnable{
      *
      * @param numberOfPlayers         the maximum number of players that can join the game.
      * @param serverSubject           the object used to notify about a change in the game's model.
-     * @param name                    the name of the game.
+     * @param gameInfo                the game's information.
      * @param endGameProcedure        the consumer used to delete the game controller when the game ends.
      *
      * @throws IllegalNumberOfPlayers if the player entered an invalid maximum number of players when creating the game.
+     *
+     * @see GameInfo
+     * @see ServerSubject
      */
     public GameController(int numberOfPlayers,
                           ServerSubject serverSubject,
-                          int id,
-                          String name,
+                          GameInfo gameInfo,
                           Consumer<GameController> endGameProcedure) throws IllegalNumberOfPlayers {
         this.game = new GameModel(numberOfPlayers, serverSubject);
-        this.id = id;
-        this.name = name;
+        this.gameInfo = gameInfo;
         this.serverSubject = serverSubject;
         this.messageQueue = new LinkedList<>();
         this.connectedUsers = new ArrayList<>();
         this.endGameProcedure = endGameProcedure;
-        this.gameStatusLock = new Object();
         this.onlyOnePlayerLock = new Object();
         this.onlyOnePlayer = false;
         this.gameOver = new AtomicBoolean(false);
-        this.gameStatus = GameStatus.LOBBY;
         this.pingTimer = null;
         this.playerWithTurn = "";
     }
@@ -101,9 +98,9 @@ public class GameController implements Runnable{
             handler.update(new Message(Status.GAME_FULL));
         }catch(GameException e){
             serverSubject.unsubscribe(nickname);
-            handler.update(new IntegerMessage(Status.INVALID_COLOR, id));
+            handler.update(new IntegerMessage(Status.INVALID_COLOR, gameInfo.getGameId()));
         }catch(NicknameTakenException n){
-            handler.update(new IntegerMessage(Status.INVALID_NICKNAME, id));
+            handler.update(new IntegerMessage(Status.INVALID_NICKNAME, gameInfo.getGameId()));
         }
     }
 
@@ -149,6 +146,9 @@ public class GameController implements Runnable{
         serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, playerWithTurn));
     }
 
+    /**
+     * Restarts the game as a player reconnects after just one client was left in the game.
+     */
     public void wakeUpAfterReconnect(){
         synchronized (onlyOnePlayerLock){
             onlyOnePlayerLock.notifyAll();
@@ -161,7 +161,7 @@ public class GameController implements Runnable{
      * @return the game's name.
      */
     public String getName(){
-        return name;
+        return gameInfo.getGameName();
     }
 
     /**
@@ -170,8 +170,8 @@ public class GameController implements Runnable{
      * @return the status of the game.
      */
     public GameStatus getGameStatus(){
-        synchronized (gameStatusLock) {
-            return gameStatus;
+        synchronized (gameInfo) {
+            return gameInfo.getGameStatus();
         }
     }
 
@@ -268,6 +268,18 @@ public class GameController implements Runnable{
     }
 
     /**
+     * Returns a list of the players that disconnected during the game.
+     *
+     * @return the disconnected players.
+     */
+    private List<NetworkHandler> getDisconnectedHandlers(){
+        return game.getLobbyNicknames().stream()
+                .map(serverSubject::getNetworkHandler)
+                .filter(n -> !connectedUsers.contains(n))
+                .toList();
+    }
+
+    /**
      * Checks if any player has disconnected from the game and sends a ping request to all the clients.
      * If a player doesn't answer to the ping, labels him as "disconnected", then notifies all the others with
      * a PLAYER_DISCONNECTED message.
@@ -290,15 +302,12 @@ public class GameController implements Runnable{
                     onlyOnePlayerLock.notifyAll();
                 }
             }
-            disconnectedHandlers = game.getAllPlayers().stream()
-                    .map(p -> serverSubject.getNetworkHandler(p.getNickname()))
-                    .filter(n -> !connectedUsers.contains(n))
-                    .toList();
+            disconnectedHandlers = getDisconnectedHandlers();
             connectedUsers.clear();
             //notifying part
             for(NetworkHandler networkHandler : disconnectedHandlers){
-                synchronized (gameStatusLock) {
-                    gameStatus = GameStatus.PLAYER_DISCONNECTED;
+                synchronized (gameInfo) {
+                    gameInfo.setGameStatus(GameStatus.PLAYER_DISCONNECTED);
                 }
                 if(!networkHandler.isDisconnected()){
                     serverSubject.notifyAll(new StringMessage(Status.PLAYER_DISCONNECTED,
@@ -310,21 +319,24 @@ public class GameController implements Runnable{
                 networkHandler.setDisconnected();
             }
             if(disconnectedHandlers.isEmpty()){
-                synchronized (gameStatusLock){
-                    gameStatus = GameStatus.STARTED;
+                synchronized (gameInfo){
+                    gameInfo.setGameStatus(GameStatus.STARTED);
                 }
             }
         }
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }
 
+    /**
+     * Resets all the information about a player that has disconnected from the game; finally requests a ping to
+     * each client.
+     * Removes the player from the game model and from the subscribed client list, and notifies everyone that the player
+     * has disconnected.
+     */
     private void handleLobbyDisconnections(){
         List<NetworkHandler> disconnectedHandlers;
         synchronized (connectedUsers) {
-            disconnectedHandlers = game.getLobbyNicknames().stream()
-                    .map(serverSubject::getNetworkHandler)
-                    .filter(n -> !connectedUsers.contains(n))
-                    .toList();
+            disconnectedHandlers = getDisconnectedHandlers();
             connectedUsers.clear();
             for(NetworkHandler networkHandler : disconnectedHandlers){
                 String playerNickname = game.getLobbyNicknames().stream()
@@ -643,6 +655,11 @@ public class GameController implements Runnable{
         }
     }
 
+    /**
+     * Handles the game when the players are in lobby waiting for it to be full.
+     * Accepts a new player connecting to the game and updates the available game's colors, until a number of ready
+     * clients equal to the player maximum count is reached.
+     */
     private void waitForPlayers(){
         LabeledMessage labeledMessage;
         List<NetworkHandler> readyHandlers = new ArrayList<>();
@@ -664,12 +681,17 @@ public class GameController implements Runnable{
                 }
                 case Status.REQUEST_COLORS ->
                     labeledMessage.networkHandler().update(
-                            new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), id));
+                            new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), gameInfo.getGameId()));
                 case Status.CLIENT_READY -> readyHandlers.add(labeledMessage.networkHandler());
             }
         }
     }
 
+    /**
+     * Handles the lobby phase of the game.
+     * Periodically sends pings to all the clients and, if one or more disconnected, handles the disconnections; if all
+     * clients disconnected, ends the game.
+     */
     private void startLobby(){
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
         TimerTask pingTask = new TimerTask() {
@@ -687,8 +709,8 @@ public class GameController implements Runnable{
             public void run() {
                 GameStatus status = GameStatus.LOBBY;
                     while(status != GameStatus.STARTED && !gameOver.get()){
-                        synchronized (gameStatusLock) {
-                            status = gameStatus;
+                        synchronized (gameInfo) {
+                            status = gameInfo.getGameStatus();
                         }
                         if(game.isLobbyEmpty()) {
                             removeHandlers();
@@ -703,8 +725,7 @@ public class GameController implements Runnable{
 
     /**
      * Calls all the above methods to correctly run a game.
-     * First starts a timer to avoid a too long game setup procedure, waits that all the players connected are ready
-     * and starts then runs the match.
+     * First ensures that all the players are connected and ready to play, then starts the match.
      * When the game ends, uses the consumer to delete the game's controller.
      */
     @Override
@@ -714,8 +735,8 @@ public class GameController implements Runnable{
         if(gameOver.get()){
             return;
         }
-        synchronized (gameStatusLock) {
-            gameStatus = GameStatus.STARTED;
+        synchronized (gameInfo) {
+            gameInfo.setGameStatus(GameStatus.STARTED);
         }
         initializeGame();
         startGame();

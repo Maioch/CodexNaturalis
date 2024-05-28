@@ -13,19 +13,19 @@ import java.awt.*;
 import java.util.List;
 
 /**
- * A class that creates all the cards (starter, resource, gold, objective) that are present in the game, by
- * reading their characteristics from a json file.
- *
- * @author Guglielmo Gatti, Marco Maiocchi, Andrea Fidanza, Francesco Saverio Nisoli
+ * CardBuilder creates the cards in the game, by reading their information from a json file.
  */
 public class CardBuilder {
+
     private static final String fileName = "cards.json";
     private static final String filePath = "/gameFiles/";
 
     /**
-     * Method that creates resource/gold/starter cards.
-     * @param cardId id of the resource/gold/starter card to create.
-     * @return card created by the builder.
+     * Creates resource/gold/starter cards.
+     *
+     * @param cardId the card's ID.
+     *
+     * @return       the card created.
      */
     public static CardSides buildCard(int cardId) {
         BasicCard cardFront;
@@ -69,9 +69,11 @@ public class CardBuilder {
     }
 
     /**
-     * Method that creates objective cards.
-     * @param cardId id of the objective card to create.
-     * @return objective card created by the builder.
+     * Creates objective cards.
+     *
+     * @param cardId the card's ID.
+     *
+     * @return       the card created.
      */
     public static Objective buildObjective(int cardId){
         JsonNode cardJson = getCardJson(cardId);
@@ -102,9 +104,11 @@ public class CardBuilder {
     }
 
     /**
-     * Method that creates the json node that represents the card corresponding to the given cardId by reading the json file.
+     * Returns a cards information by reading it from the json file.
+     *
      * @param cardId the card id.
-     * @return the json node.
+     *
+     * @return       the json node containing the given card information.
      */
     public static JsonNode getCardJson(int cardId){
         String cardType = cardId < GameParameters.getStartCardIndex(CardType.OBJECTIVE) ? "placeableCards" : "objectiveCards";
@@ -123,26 +127,34 @@ public class CardBuilder {
     }
 
     /**
+     * Returns the color of a card.
+     * If it's a starter card, returns white.
+     *
      * @param cardJson json node that represents the card.
-     * @return the read color.
+     *
+     * @return         the card's color.
      */
     static Content getColor(JsonNode cardJson){
         return cardJson.has("color") ? Content.valueOf(cardJson.get("color").asText()) : Content.WHITE;
     }
 
     /**
+     * Returns the points the card awards.
+     *
      * @param cardJson json node that represents the card.
-     * @return the read points.
+     *
+     * @return         the card's points.
      */
     public static int getPoints(JsonNode cardJson){
         return cardJson.get("points").asInt();
     }
 
     /**
-     * Method that returns a HashMap containing every location with the corresponding corner read from the json node.
-     * @param cardJson json node that represents the card.
-     * @param fieldName field that we want to read.
-     * @return the corners HashMap.
+     * Returns a HashMap containing every location with the corresponding corner read from the json file.
+     *
+     * @param cardJson  json node that represents the card.
+     * @param fieldName field to read.
+     * @return          the corners HashMap.
      */
     static Set<Corner> getCorners(JsonNode cardJson, String fieldName){
         JsonNode cornersJson = cardJson.get(fieldName);
@@ -154,10 +166,12 @@ public class CardBuilder {
     }
 
     /**
-     * Helper method used to convert a JSON array to a Content ArrayList.
-     * @param cardJson the JsonNode that represents the root of a single card's data.
+     * Converts a JSON array to a Content ArrayList.
+     *
+     * @param cardJson  json node that represents the card.
      * @param arrayName the name of the array property.
-     * @return an ArrayList containing the same elements as the JSON array, converted from string to Content.
+     *
+     * @return a list containing the same elements as the JSON array, converted from string to Content.
      */
     static List<Content> getContentFromArray(JsonNode cardJson, String arrayName){
         return new ArrayList<>() {{
@@ -168,18 +182,21 @@ public class CardBuilder {
     }
 
     /**
-     * Helper method used to get the bonus type.
-     * @param cardJson the JsonNode that represents the root of a single card's data.
-     * @return the String representing the bonus.
+     * Returns the bonus type.
+     *
+     * @param cardJson json node that represents the card.
+     *
+     * @return         the String representing the bonus.
      */
     static String getBonusType(JsonNode cardJson){
         return cardJson.get("bonus").get("type").asText();
     }
 
     /**
-     * Helper method used to get the object required for the bonus.
-     * @param cardJson the JsonNode that represents the root of a single card's data.
-     * @return the object.
+     * Returns the object required for the bonus.
+     *
+     * @param cardJson json node that represents the card.
+     * @return         the object.
      */
     static Content getBonusContent(JsonNode cardJson){
         return Content.valueOf(cardJson.get("bonus").get("object").asText());

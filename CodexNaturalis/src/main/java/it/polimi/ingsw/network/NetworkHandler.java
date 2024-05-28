@@ -31,8 +31,8 @@ public abstract class NetworkHandler extends UnicastRemoteObject implements List
     }
 
     /**
-     * Setter fot eh currentGame attribute.
-     * @param currentGame the game associated to the hanlder.
+     * Setter for the currentGame attribute.
+     * @param currentGame the game associated to the handler.
      */
     public void setCurrentGame(GameController currentGame){
         this.currentGame = currentGame;

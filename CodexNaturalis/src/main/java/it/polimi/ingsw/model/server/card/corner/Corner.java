@@ -6,12 +6,12 @@ import it.polimi.ingsw.model.server.Content;
 import java.io.Serializable;
 
 /**
- * Class that represents a corner of a card. Each corner has 3 coordinates: (x, y, visibility): x, y -> position
- * on the player's card setup, visibility is false if another corner is on top of it.
- *
- * @author Marco Maiocchi
+ * Corner represents each of the four corners of a card.
+ * Each corner has 3 coordinates: (x, y, visibility): x, y -> position in the player's board, visibility is false
+ * if another corner is on top of it, true otherwise.
  */
 public class Corner implements Serializable {
+
     private int x;
     private int y;
     private final Content content;
@@ -19,9 +19,13 @@ public class Corner implements Serializable {
     private final Location location;
 
     /**
-     * Constructor for the class.
-     * @param content the symbol in the corner.
-     * @param location where the corner is located with respect to the card.
+     * Class constructor.
+     *
+     * @param content the symbol the corner contains.
+     * @param location the corner's location.
+     *
+     * @see Content
+     * @see Location
      */
     public Corner(Content content, Location location){
         this.content = content;
@@ -32,8 +36,9 @@ public class Corner implements Serializable {
     }
 
     /**
-     * Copy constructor for corner, used to avoid direct object access to other methods.
-     * @param corner the corner to be copied.
+     * Class copy-constructor.
+     *
+     * @param corner the instance to be copied.
      */
     public Corner(Corner corner){
         this.content = corner.content;
@@ -44,36 +49,44 @@ public class Corner implements Serializable {
     }
 
     /**
-     * @return the corner's horizontal coordinate.
+     * Returns the corner's horizontal coordinate on the board.
+     *
+     * @return the corner's X position.
      */
     public int getX(){
         return this.x;
     }
 
     /**
-     * @return the corner's vertical coordinate.
+     * Returns the corner's vertical coordinate on the board.
+     *
+     * @return the corner's Y position.
      */
     public int getY(){
         return this.y;
     }
 
     /**
-     * Setter for the x attribute.
-     * @param x the X coordinate where the corner is placed.
+     * Sets the horizontal coordinate of the corner, when the associated card is placed.
+     *
+     * @param x the X coordinate to set.
      */
     public void setX(int x){
         this.x = x;
     }
 
     /**
-     * Setter for the y attribute.
-     * @param y the Y coordinate where the corner is placed.
+     * Sets the vertical coordinate of the corner, when the associated card is placed.
+     *
+     * @param y the Y coordinate to set.
      */
     public void setY(int y){
         this.y = y;
     }
 
     /**
+     * Returns the position of the corner relative to the card.
+     *
      * @return the corner's location.
      */
     public Location getLocation(){
@@ -81,6 +94,8 @@ public class Corner implements Serializable {
     }
 
     /**
+     * Returns the symbol the corner contains.
+     *
      * @return the corner's content.
      */
     public Content getContent(){
@@ -88,6 +103,8 @@ public class Corner implements Serializable {
     }
 
     /**
+     * Returns false if the corner was covered by another one.
+     *
      * @return the corner's visibility.
      */
     public boolean getVisibility(){
@@ -96,15 +113,17 @@ public class Corner implements Serializable {
 
 
     /**
-     * Setter for the visibility attribute.
+     * Updates the visibility of the corner to false when another one is placed on top of it.
      */
     public void coverCorner(){
         this.visibility = false;
     }
 
     /**
-     * Method that checks if two corners are in the same position.
-     * @param otherCorner another corner.
+     * Checks if this corner and another are in the same position, more precisely if their coordinates coincide.
+     *
+     * @param otherCorner the corner to check with.
+     *
      * @return true if this corner and the parameter one are in the same position.
      */
     public boolean isSamePosition(Corner otherCorner){
@@ -112,9 +131,11 @@ public class Corner implements Serializable {
     }
 
     /**
-     * Equals method.
-     * @param object Object to check.
-     * @return true if each field is equal to each field of object.
+     * Equals method override to fit the method to this class.
+     *
+     * @param object corner checked.
+     *
+     * @return true jf this corner is equal to the parameter one.
      */
     @Override
     public boolean equals(Object object){
@@ -130,10 +151,11 @@ public class Corner implements Serializable {
 
     /**
      * Override of the hashCode function that enables the correct functionality
-     * of the equals method for Hash-based data structures. This *DOES* respect
-     * the contract for hashcode as it is only required for the method to return
+     * of the equals method for Hash-based data structures.
+     * This *DOES* respect the contract for hashcode as it is only required for the method to return
      * the same value for equal objects, while it is not needed for different
      * objects to have different hash codes.
+     *
      * @return an arbitrary integer.
      */
     @Override

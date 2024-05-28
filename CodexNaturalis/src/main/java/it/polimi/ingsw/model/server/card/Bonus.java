@@ -3,10 +3,10 @@ package it.polimi.ingsw.model.server.card;
 import it.polimi.ingsw.model.server.Player;
 
 /**
- * Interface that introduces a method to calculate bonus points during different phases of the game.
- *
- * @author Andrea Fidanza
+ * Bonus is an interface needed to introduce a method that computes the amount of points gained by a player after
+ * a specific move.
  */
 public interface Bonus {
+
     int calculate(Player cardOwner);
 }
