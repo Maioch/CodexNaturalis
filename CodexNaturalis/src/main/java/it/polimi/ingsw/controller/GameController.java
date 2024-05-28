@@ -24,7 +24,6 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.LongAccumulator;
 import java.util.function.Consumer;
 
 /**
@@ -40,7 +39,6 @@ public class GameController implements Runnable{
     private final Queue<LabeledMessage> messageQueue;
     private final List<NetworkHandler> connectedUsers;
     private final Consumer<GameController> endGameProcedure;
-    private final Object gameIsFullLock;
     private final Object gameStatusLock;
     private final Object onlyOnePlayerLock;
     private final AtomicBoolean gameOver;
@@ -71,7 +69,6 @@ public class GameController implements Runnable{
         this.messageQueue = new LinkedList<>();
         this.connectedUsers = new ArrayList<>();
         this.endGameProcedure = endGameProcedure;
-        this.gameIsFullLock = new Object();
         this.gameStatusLock = new Object();
         this.onlyOnePlayerLock = new Object();
         this.onlyOnePlayer = false;
@@ -82,15 +79,6 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Returns the list of colors from which a new player entering the game may choose.
-     *
-     * @return all the game's available colors.
-     */
-    public List<Content> requestAvailableColors(){
-        return new ArrayList<>(game.getAvailableColors());
-    }
-
-    /**
      * Adds a player to the game and then, if the game is full, sends a notification to start the game.
      * If the nickname isn't already taken, adds the new player to the list of server subjects.
      *
@@ -98,13 +86,9 @@ public class GameController implements Runnable{
      * @param color                   the color chosen by the player.
      * @param handler                 the TCP/RMI handler associated to the new player.
      *
-     * @throws GameFullException      if the game is already full.
-     * @throws NicknameTakenException if the chosen nickname is already taken.
-     * @throws GameException          if the chosen color is already taken.
-     *
      * @see NetworkHandler
      */
-    public void acceptPlayer(String nickname, Content color, NetworkHandler handler){
+    private void acceptPlayer(String nickname, Content color, NetworkHandler handler){
         if(game.checkNickname(nickname)){
             serverSubject.subscribe(nickname, handler);
         }
@@ -163,15 +147,6 @@ public class GameController implements Runnable{
             }
         }
         serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, playerWithTurn));
-    }
-
-    /**
-     * Checks if the game is full
-     *
-     * @return true if the game is full.
-     */
-    public boolean isGameFull() {
-        return game.isGameFull();
     }
 
     public void wakeUpAfterReconnect(){
@@ -679,20 +654,17 @@ public class GameController implements Runnable{
                 }
                 labeledMessage = messageQueue.poll();
             }
-            for(NetworkHandler handler : readyHandlers){
-                readyHandlers.removeIf(NetworkHandler::isDisconnected);
-            }
+            readyHandlers.removeIf(NetworkHandler::isDisconnected);
             Message message = labeledMessage.message();
             switch (message.getStatus()){
                 case Status.JOIN_GAME -> {
-                    if(message instanceof JoinGameMessage joinGameMessage){
+                    if (message instanceof JoinGameMessage joinGameMessage) {
                         acceptPlayer(joinGameMessage.getNickname(), joinGameMessage.getColor(), labeledMessage.networkHandler());
                     }
                 }
-                case Status.REQUEST_COLORS -> {
+                case Status.REQUEST_COLORS ->
                     labeledMessage.networkHandler().update(
                             new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), id));
-                }
                 case Status.CLIENT_READY -> readyHandlers.add(labeledMessage.networkHandler());
             }
         }

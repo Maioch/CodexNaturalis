@@ -87,14 +87,14 @@ public class GameModel{
      * @param nickname a player's nickname.
      * @return the player in this game associated to the nickname.
      */
-    public synchronized Player getPlayer(String nickname) {
+    public Player getPlayer(String nickname) {
         return players.stream().filter(p -> p.getNickname().equals(nickname)).findFirst().orElse(null);
     }
 
     /**
      * @return all the in-game players.
      */
-    public synchronized List<Player> getAllPlayers() {
+    public List<Player> getAllPlayers() {
         return new ArrayList<>(players);
     }
 
@@ -102,7 +102,7 @@ public class GameModel{
      * Method that the checks if the maximum number of players is reached.
      * @return true if the game is full.
      */
-    public synchronized boolean isGameFull() {
+    public boolean isGameFull() {
         return playerData.size() == numberOfPlayers;
     }
 
@@ -117,7 +117,7 @@ public class GameModel{
      * @param nickname the nickname to check.
      * @return false if there's a duplicate username.
      */
-    public synchronized boolean checkNickname(String nickname) {
+    public  boolean checkNickname(String nickname) {
         return !playerData.containsKey(nickname) &&
                 !nickname.contains(" ") &&
                 !nickname.contains(GameParameters.getDelimiter()) &&
@@ -128,7 +128,7 @@ public class GameModel{
     /**
      * @return the list of colors that the player can choose from.
      */
-    public synchronized List<Content> getAvailableColors() {
+    public  List<Content> getAvailableColors() {
         return new ArrayList<>(availableColors);
     }
 
@@ -137,7 +137,7 @@ public class GameModel{
      * if both decks are empty.
      * @return true if it's the last turn.
      */
-    public synchronized boolean isLastTurn() {
+    public  boolean isLastTurn() {
         return (goldDeck.isEmpty() &&
                 goldDeck.getVisibleElements().isEmpty() &&
                 resourceDeck.isEmpty() &&
@@ -155,7 +155,7 @@ public class GameModel{
      * @throws GameFullException if the game is full.
      * @throws NicknameTakenException if the nickname is already chosen by another player.
      */
-    public synchronized void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
+    public void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
         if (isGameFull()) {
             throw new GameFullException();
         }
@@ -203,7 +203,7 @@ public class GameModel{
         }
     }
 
-    public synchronized List<Objective> drawObjectiveCards(){
+    public List<Objective> drawObjectiveCards(){
         List<Objective> result = new ArrayList<>();
         for(int i = 0; i < GameParameters.getNumberOfDrawnSecretObjectives(); i++){
             result.add(objectiveDeck.draw());
@@ -220,7 +220,7 @@ public class GameModel{
      *                  ones (if the index is higher than 0).
      * @throws GameException if the given card type doesn't match any deck and if the given index is invalid.
      */
-    public synchronized void drawCard(Player player, CardType type, int drawIndex) throws GameException {
+    public void drawCard(Player player, CardType type, int drawIndex) throws GameException {
         TurnDeck<CardSides> deck = switch (type) {
             case RESOURCE -> resourceDeck;
             case GOLD -> goldDeck;
@@ -245,7 +245,7 @@ public class GameModel{
      * the deck is empty, while the rest are the visible ones.
      * @return all the cards the player can draw during his draw phase
      */
-    public synchronized Map<CardType, List<BasicCard>> getDrawableCards() {
+    public Map<CardType, List<BasicCard>> getDrawableCards() {
         Map<CardType, List<BasicCard>> result = new HashMap<>();
         result.put(CardType.RESOURCE, new ArrayList<>() {{
             add(resourceDeck.isEmpty() ? null : resourceDeck.getElementOnTop().backSide());
@@ -261,7 +261,7 @@ public class GameModel{
     /**
      * @return a list that contains the player/s that gathered the most points.
      */
-    public synchronized List<String> getWinningPlayers() {
+    public List<String> getWinningPlayers() {
         int max = players.stream().map(Player::getScore).max(Integer::compareTo).orElse(0);
         return players.stream().filter(p -> p.getScore() == max).map(Player::getNickname).toList();
     }
@@ -281,7 +281,7 @@ public class GameModel{
      * Checks if all players have no moves available.
      * @return true if the game is in deadlock.
      */
-    public synchronized boolean isGameStuck(){
+    public  boolean isGameStuck(){
         for(Player player : players){
             if(!player.isPlayerStuck()){
                 return false;
