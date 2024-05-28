@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -108,6 +109,10 @@ public class ConnectionViewController {
         this.controller = controller;
     }
 
+    /**
+     * Setter for the controller attribute
+     * @param application the scene's application
+     */
     public void setApplication(Application application){ this.application = application; }
 
     /**
@@ -116,6 +121,14 @@ public class ConnectionViewController {
     @FXML
     public void checkIfEnableButton(){
         connectButton.setDisable(ipTextBox.getText().isEmpty() || portTextBox.getText().isEmpty());
+        /*if(!connectButton.isDisabled()){
+            connectButton.setOnKeyPressed(e -> {
+                if(e.getCode().equals(KeyCode.ENTER)){
+                    System.out.println("Connecting to " + ipTextBox.getText() + ":" + portTextBox.getText());
+                    connectButton.fire();
+                }
+            });
+        }*/
     }
 
     @FXML

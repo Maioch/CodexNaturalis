@@ -9,6 +9,7 @@ import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
+import it.polimi.ingsw.network.messages.setup.NewGameMessage;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -24,7 +25,7 @@ import java.util.*;
  */
 public class MatchBrowserViewController {
     @FXML
-    public Button createButton;
+    public Button requestCreationButton;
     @FXML
     public GridPane matchGridPane;
     @FXML
@@ -45,6 +46,14 @@ public class MatchBrowserViewController {
     public Button requestJoinButton;
     @FXML
     public GridPane colorChoiceGrid;
+    @FXML
+    public GridPane createPopupGrid;
+    @FXML
+    public TextField matchNameTextbox;
+    @FXML
+    public Button createPopupButton;
+    @FXML
+    public ToggleGroup playerNumberToggleGroup;
     private final List<List<RadioButton>> radioButtons = new ArrayList<>();
     private ClientController controller;
     private ToggleGroup gameIdToggleGroup;
@@ -121,6 +130,90 @@ public class MatchBrowserViewController {
     }
 
     /**
+     * Refreshes the match list (by requesting the games list).
+     */
+    @FXML
+    public void refreshMatchList(){
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+    }
+
+    @FXML
+    public void requestCreation(){
+        createPopupGrid.setVisible(true);
+    }
+
+    @FXML
+    public void checkCreateInput(){
+        String matchName = matchNameTextbox.getText();
+        createPopupButton.setDisable(matchName.isEmpty() ||
+                matchName.length() > GameParameters.getMaxNicknameLength() ||
+                playerNumberToggleGroup.getSelectedToggle() == null);
+        System.out.println(matchName.isEmpty() ||
+                matchName.length() > GameParameters.getMaxNicknameLength() ||
+                playerNumberToggleGroup.getSelectedToggle() == null);
+    }
+
+    @FXML
+    public void tryCreate(){
+        createPopupButton.setDisable(true);
+        matchNameTextbox.setDisable(true);
+        String matchName = matchNameTextbox.getText();
+        int numberOfPlayers = Integer.parseInt(((RadioButton)playerNumberToggleGroup.getSelectedToggle()).getId());
+        controller.sendMessage(new NewGameMessage(matchName, numberOfPlayers));
+    }
+
+    /**
+     * Starts the game joining procedure (by sending a "REQUEST_COLORS" message).
+     */
+    @FXML
+    public void requestJoin(){
+        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS,
+                Integer.parseInt(((RadioButton) gameIdToggleGroup.getSelectedToggle()).getId())));
+    }
+
+    /**
+     * Shows the color-choosing buttons.
+     *
+     * @param colors available colors.
+     * @param gameId the game's id.
+     */
+    public void showJoinGameDialog(List<Content> colors, int gameId){
+        currentSelectedId = gameId;
+        colorChoiceToggleGroup = new ToggleGroup();
+        int i = 0;
+        for(Content color : colors){
+            RadioButton colorRadioButton = createRadioButton("", colorChoiceToggleGroup, "colorRadioButton");
+            colorRadioButton.setStyle(String.format("-radio-color: %s;", color.getHexColorString()));
+            colorRadioButton.setUserData(color.name());
+            colorRadioButton.setAlignment(Pos.CENTER);
+            colorRadioButton.setOnMouseClicked((mouseEvent) -> checkJoinInput());
+            ColumnConstraints columnConstraint = new ColumnConstraints();
+            columnConstraint.setPercentWidth((double) 100 / colors.size());
+            colorChoiceGrid.getColumnConstraints().add(columnConstraint);
+            colorChoiceGrid.addColumn(i, colorRadioButton);
+            i++;
+        }
+        joinPopupGrid.setVisible(true);
+    }
+
+    @FXML
+    public void checkJoinInput(){
+        String nickname = nicknameTextBox.getText();
+        joinPopupButton.setDisable(nickname.isEmpty() ||
+                nickname.length() > GameParameters.getMaxNicknameLength() ||
+                colorChoiceToggleGroup.getSelectedToggle() == null);
+    }
+
+    @FXML
+    public void tryJoin(){
+        requestJoinButton.setDisable(true);
+        nicknameTextBox.setDisable(true);
+        Content color = Content.valueOf(((RadioButton)colorChoiceToggleGroup.getSelectedToggle()).getUserData().toString());
+        String nickname = nicknameTextBox.getText();
+        controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, color, currentSelectedId));
+    }
+
+    /**
      * Creates a radio button.
      * @param buttonText the contained in button text.
      * @param group the button's group.
@@ -164,66 +257,5 @@ public class MatchBrowserViewController {
             r.getStyleClass().clear();
             r.getStyleClass().add(styleClass);
         }
-    }
-
-    @FXML
-    public void requestCreation(){
-        
-    }
-
-    /**
-     * Starts the game joining procedure (by sending a "REQUEST_COLORS" message).
-     */
-    @FXML
-    public void requestJoin(){
-        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS,
-                Integer.parseInt(((RadioButton) gameIdToggleGroup.getSelectedToggle()).getId())));
-    }
-
-    /**
-     * Shows the color-choosing buttons.
-     *
-     * @param colors available colors.
-     * @param gameId the game's id.
-     */
-    public void showJoinGameDialog(List<Content> colors, int gameId){
-        currentSelectedId = gameId;
-        colorChoiceToggleGroup = new ToggleGroup();
-        int i = 0;
-        for(Content color : colors){
-            RadioButton colorRadioButton = createRadioButton("", colorChoiceToggleGroup, "colorRadioButton");
-            colorRadioButton.setStyle(String.format("-radio-color: %s;", color.getHexColorString()));
-            colorRadioButton.setAlignment(Pos.CENTER);
-            colorRadioButton.setOnMouseClicked((mouseEvent) -> checkInput());
-            ColumnConstraints columnConstraint = new ColumnConstraints();
-            columnConstraint.setPercentWidth((double) 100 / colors.size());
-            colorChoiceGrid.getColumnConstraints().add(columnConstraint);
-            colorChoiceGrid.addColumn(i, colorRadioButton);
-            i++;
-        }
-        joinPopupGrid.setVisible(true);
-    }
-
-    //@FXML
-    public void checkInput(){
-        String nickname = nicknameTextBox.getText();
-        joinPopupButton.setDisable(nickname.isEmpty() ||
-                nickname.length() > GameParameters.getMaxNicknameLength() ||
-                colorChoiceToggleGroup.getSelectedToggle() == null);
-    }
-
-    /**
-     * Refreshes the match list (by requesting the games list).
-     */
-    @FXML
-    public void refreshMatchList(){
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
-    }
-
-    @FXML
-    public void tryJoin(){
-        Content color = Content.valueOf(((RadioButton)colorChoiceToggleGroup.getSelectedToggle()).getText().toUpperCase());
-        String nickname = nicknameTextBox.getText();
-        controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, color, currentSelectedId));
     }
 }
