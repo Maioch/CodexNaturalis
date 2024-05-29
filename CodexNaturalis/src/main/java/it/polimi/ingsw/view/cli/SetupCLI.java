@@ -28,16 +28,16 @@ import java.util.regex.Pattern;
  * reception phase, before entering an actual game.
  */
 public class SetupCLI extends AbstractCLI implements SetupView {
+    private final ClientController controller;
 
-    private final ClientController clientController;
     /**
      * Constructor for the class. The method asks the player the ip address and the port of the server, then it makes
      * them choose if they want to connect using socket or RMI protocol: the method then handles the connection.
      */
     public SetupCLI(){
         boolean isConnected = false;
-        this.clientController = new ClientController(this, new TerminalSubmitter());
-        new Thread(clientController).start();
+        this.controller = new ClientController(this, new TerminalSubmitter());
+        new Thread(controller).start();
         while (!isConnected) {
             String ip = readFromInput("Please enter the IP of the server you want to play on: ",
                     (s -> s.length() <= 15 && Pattern.compile("[0-9]{0,3}\\.[0-9]{0,3}\\.[0-9]{0,3}\\.[0.9]{0,3}").matcher(s).find()),
@@ -51,7 +51,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             switch (protocol) {
                 case 1 -> {
                     try {
-                        ConnectionInitializer.initializeTCP(ip, port, clientController, new TerminalSubmitter());
+                        ConnectionInitializer.initializeTCP(ip, port, controller, new TerminalSubmitter());
                         System.out.println(GameParameters.getTitle());
                         isConnected = true;
                     } catch (IOException e) {
@@ -60,7 +60,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 }
                 case 2 -> {
                     try {
-                        ConnectionInitializer.initializeRMI(ip, port, clientController, new TerminalSubmitter());
+                        ConnectionInitializer.initializeRMI(ip, port, controller, new TerminalSubmitter());
                         System.out.println(GameParameters.getTitle());
                         isConnected = true;
                     } catch (MalformedURLException e) {
@@ -125,7 +125,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 }
             }
         }
-        clientController.sendMessage(messageToSend);
+        controller.sendMessage(messageToSend);
     }
 
     /**
@@ -135,7 +135,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     @Override
     public void newGameSuccess(int gameId){
         System.out.println("You've successfully created a new match! Its ID is: " + gameId);
-        clientController.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
+        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
     }
 
     /**
@@ -145,7 +145,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     @Override
     public void showCriticalError(String message){
         System.out.println(message);
-        clientController.sendMessage(new Message(Status.REQUEST_GAMES));
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -172,7 +172,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength() && !s.contains(" ")
                         && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
                 this::stringIdentity);
-        clientController.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, colors.get(colorIndex), gameId));
+        controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, colors.get(colorIndex), gameId));
     }
 
     /**
@@ -184,17 +184,18 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     @Override
     public void showUserError(String message, int gameId){
         System.out.println(message);
-        clientController.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
+        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
     }
 
     /**
      * Method that notifies the player that he successfully joined his desired game.
      */
     @Override
-    public void showSuccessfulJoin(){
+    public void showSuccessfulJoin(int numberOfPlayers){
         System.out.println("\nYou have successfully joined the game!");
-        GameCLI gameCLI = new GameCLI(clientController);
-        clientController.setGameView(gameCLI);
+        System.out.printf("This game requires %d players to start\n", numberOfPlayers);
+        GameCLI gameCLI = new GameCLI(controller);
+        controller.setGameView(gameCLI);
     }
 
     /**

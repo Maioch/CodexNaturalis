@@ -16,6 +16,7 @@ import it.polimi.ingsw.network.messages.game.*;
 import it.polimi.ingsw.network.messages.setup.GameColorsMessage;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
+import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.MatchListMessage;
 import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.view.EventSubmitter;
@@ -195,8 +196,8 @@ public class ClientController extends MessageHandler{
                         }
                     }
                     case JOIN_GAME -> {
-                        if(message instanceof PlayerMessage playerMessage) {
-                            eventSubmitter.submit(setupView::showSuccessfulJoin);
+                        if(message instanceof JoinGameMessage joinGameMessage) {
+                            eventSubmitter.submit(() -> setupView.showSuccessfulJoin(joinGameMessage.getGameInfo()));
                             synchronized (gameViewLock) {
                                 if (gameView == null) {
                                     try {
@@ -206,9 +207,10 @@ public class ClientController extends MessageHandler{
                                     }
                                 }
                                 game = new ClientGame(
-                                        new LocalPlayer(playerMessage.getNickname(), playerMessage.getColor()),
+                                        new LocalPlayer(joinGameMessage.getNickname(), joinGameMessage.getColor()),
                                         eventSubmitter,
-                                        gameView);
+                                        gameView,
+                                        joinGameMessage.getGameInfo());
                             }
                             eventSubmitter.submit(() -> sendMessage(new Message(Status.CLIENT_READY)));
                         }

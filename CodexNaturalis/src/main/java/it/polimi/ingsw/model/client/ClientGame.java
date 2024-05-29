@@ -20,6 +20,7 @@ import java.util.Map;
  */
 public class ClientGame {
 
+    private final int numberOfPlayers;
     private final LocalPlayer localPlayer;
     private final List<RemotePlayer> remotePlayers;
     private List<Objective> commonObjectives;
@@ -35,7 +36,7 @@ public class ClientGame {
      * @param eventSubmitter the medium used to submit a player action to the server, mainly to update the player's view.
      * @param gameView       the view (CLI/GUI) associated to the player.
      */
-    public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView) {
+    public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView, int numberOfPlayers) {
         this.localPlayer = player;
         this.localPlayer.setViewReferences(gameView,eventSubmitter);
         this.gameView = gameView;
@@ -43,6 +44,16 @@ public class ClientGame {
         this.remotePlayers = new ArrayList<>();
         this.commonObjectives = new ArrayList<>();
         this.playerWithTurn = null;
+        this.numberOfPlayers = numberOfPlayers;
+    }
+
+    /**
+     * Returns the game's number of players the game needs to be played.
+     *
+     * @param numberOfPlayers the number of players.
+     */
+    public int getNumberOfPlayers(int numberOfPlayers) {
+        return numberOfPlayers;
     }
 
     /**

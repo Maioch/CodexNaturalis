@@ -1,11 +1,6 @@
 package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.exceptions.*;
-import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.GameModel;
-import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.model.server.Player;
-import it.polimi.ingsw.network.RMIHandler;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardBuilder;
@@ -16,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +36,8 @@ public class GameModelTest {
         int players = 2;
         try {
             gameModel = new GameModel(players, new ServerSubject());
-            gameModel.addPlayer(playerName, playerContent);
+            gameModel.addPlayerData(playerName, playerContent);
+            gameModel.createPlayers();
             Player player = gameModel.getPlayer(playerName);
             BasicCard starter = CardBuilder.buildCard(81).backSide();
             player.placeStarterCard(starter);
@@ -57,7 +54,8 @@ public class GameModelTest {
             }
             assertTrue(gameModel.isLastTurn());
             gameModel = new GameModel(players, new ServerSubject());
-            gameModel.addPlayer(playerName, playerContent);
+            gameModel.addPlayerData(playerName, playerContent);
+            gameModel.createPlayers();
             player = gameModel.getPlayer(playerName);
             while (gameModel.getDrawableCards().get(CardType.RESOURCE).getFirst() != null) {
                 gameModel.drawCard(player, CardType.RESOURCE, 0);
@@ -89,15 +87,20 @@ public class GameModelTest {
         for (int numberOfPlayers = GameParameters.getMinPlayers(); numberOfPlayers <= GameParameters.getMaxPlayers(); numberOfPlayers++) {
             try {
                 gameModel = new GameModel(numberOfPlayers, new ServerSubject());
+                List<Content> colors = new ArrayList<>();
                 for (Content color : Arrays.stream(Content.values()).filter(Content::isColor).toList()) {
                     try {
-                        gameModel.addPlayer(color.toString(), color);
-                        assertNotNull(gameModel.getPlayer(color.toString()));
-                        assertEquals(color.toString(), gameModel.getPlayer(color.toString()).getNickname());
-                        assertEquals(color, gameModel.getPlayer(color.toString()).getColor());
+                        gameModel.addPlayerData(color.toString(), color);
+                        colors.add(color);
                     } catch (GameFullException e) {
                         if (gameModel.isGameFull()) {
-                            assertEquals(gameModel.getAllPlayers().size(), numberOfPlayers);
+                            gameModel.createPlayers();
+                            for(Content usedColor : colors){
+                                assertNotNull(gameModel.getPlayer(usedColor.toString()));
+                                assertEquals(usedColor.toString(), gameModel.getPlayer(usedColor.toString()).getNickname());
+                                assertEquals(usedColor, gameModel.getPlayer(usedColor.toString()).getColor());
+                            }
+                            assertEquals(numberOfPlayers, gameModel.getAllPlayers().size());
                             break;
                         }
                         assertTrue(gameModel.getPlayer(color.toString()) != null ||
@@ -121,8 +124,9 @@ public class GameModelTest {
         int playersNumber = 2;
         try {
             gameModel = new GameModel(playersNumber, new ServerSubject());
-            gameModel.addPlayer("resource", Content.GREEN);
-            gameModel.addPlayer("gold", Content.RED);
+            gameModel.addPlayerData("resource", Content.GREEN);
+            gameModel.addPlayerData("gold", Content.RED);
+            gameModel.createPlayers();
             Player resource = gameModel.getPlayer("resource");
             Player gold = gameModel.getPlayer("gold");
             int currentlyDrawable = gameModel.getDrawableCards().get(CardType.RESOURCE).size() + gameModel.getDrawableCards().get(CardType.GOLD).size();
@@ -202,28 +206,23 @@ public class GameModelTest {
         int numberOfPlayers = 2;
         try{
             GameModel gameModel = new GameModel(numberOfPlayers, new ServerSubject());
-            Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
-            Player playerTest2 = new Player("test2", Content.BLUE, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
-            ArrayList<String> nicknames = new ArrayList<>(Arrays.asList(playerTest.getNickname(), playerTest2.getNickname()));
+            ArrayList<String> nicknames = new ArrayList<>(Arrays.asList("test", "test2"));
 
             assertTrue(gameModel.getWinningPlayers().isEmpty());
 
-            gameModel.addPlayer(nicknames.getFirst(), playerTest.getColor());
-            gameModel.addPlayer(nicknames.get(1), playerTest2.getColor());
+            gameModel.addPlayerData(nicknames.getFirst(), Content.RED);
+            gameModel.addPlayerData(nicknames.get(1), Content.BLUE);
+            gameModel.createPlayers();
 
             Corner fakeCorner = new Corner(Content.WHITE, Location.TR);
 
-            for(int i = GameParameters.getStartCardIndex(CardType.RESOURCE); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
-                playerTest.placeCard(CardBuilder.buildCard(i).backSide(), fakeCorner);
-            }
+            gameModel.getPlayer(nicknames.getFirst()).placeCard(CardBuilder.buildCard(9).frontSide(), fakeCorner);
 
             assertEquals(nicknames.getFirst(), gameModel.getWinningPlayers().getFirst());
 
-            for(int i = GameParameters.getStartCardIndex(CardType.RESOURCE); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
-                playerTest2.placeCard(CardBuilder.buildCard(i).backSide(), fakeCorner);
-            }
+            gameModel.getPlayer(nicknames.get(1)).placeCard(CardBuilder.buildCard(9).frontSide(), fakeCorner);
 
-            assertEquals(nicknames, gameModel.getWinningPlayers());
+            assertEquals(nicknames.stream().sorted().toList(), gameModel.getWinningPlayers().stream().sorted().toList());
 
         }catch (IllegalNumberOfPlayers e){
             assertTrue(numberOfPlayers < GameParameters.getMinPlayers() ||

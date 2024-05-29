@@ -21,7 +21,7 @@ public interface GameView {
                           List<Corner> validCorners);
     void turnChanged(String turnOwner);
     void showErrorMessage(String message);
-    void showUserJoined(String nickname, Content Color);
+    void showUserJoined(String nickname, Content color);
     void updateRemotePlayerHand(String nickname, List<BasicCard> handCards);
     void updateLocalPlayerHand(List<CardSides> handCards);
     void requestStarterSide(List<CardSides> playerCards);

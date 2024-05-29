@@ -14,7 +14,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0"
             prefWidth="1280.0" stylesheets="@CodexTheme.css" xmlns="http://javafx.com/javafx/21.0.1"
-            xmlns:fx="http://javafx.com/fxml/1">
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController">
    <styleClass>
       <String fx:value="mainBg"/>
    </styleClass>
@@ -67,7 +67,7 @@
                                   vgrow="NEVER"/>
                </rowConstraints>
                <Label fx:id="playerCountText" alignment="TOP_CENTER" prefHeight="35.0" prefWidth="256.0"
-                      text="Waiting for players... (1/4)" textFill="#2f0606" GridPane.halignment="CENTER"
+                      textFill="#2f0606" GridPane.halignment="CENTER"
                       GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="TOP">
                   <font>
                      <Font name="Fira Sans Condensed SemiBold" size="21.0"/>

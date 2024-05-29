@@ -4,7 +4,6 @@ import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
@@ -13,17 +12,17 @@ import it.polimi.ingsw.network.messages.setup.NewGameMessage;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.TextAlignment;
 
 import java.util.*;
 
 /**
  * Class used to handle the march browsing scene for the GUI.
  */
-public class MatchBrowserViewController {
+public class MatchBrowserViewController extends ViewController {
     @FXML
     public Button requestCreationButton;
     @FXML
@@ -53,16 +52,15 @@ public class MatchBrowserViewController {
     @FXML
     public Button createPopupButton;
     @FXML
+    public ImageView backFromCreateIcon;
+    @FXML
+    public ImageView backFromJoinIcon;
+    @FXML
     public ToggleGroup playerNumberToggleGroup;
     private final List<List<RadioButton>> radioButtons = new ArrayList<>();
-    private ClientController controller;
     private ToggleGroup gameIdToggleGroup;
     private ToggleGroup colorChoiceToggleGroup;
     private int currentSelectedId;
-
-    public void setController (ClientController controller) {
-        this.controller = controller;
-    }
 
     /**
      * Method that adds all matches to the match list.
@@ -130,6 +128,23 @@ public class MatchBrowserViewController {
     }
 
     /**
+     * Sets the radio button's CSS.
+     *
+     * @param mouseEvent the event causing the change of style
+     * @param styleClass the desired style class
+     */
+    private void setRadioButtonStyle(MouseEvent mouseEvent, String styleClass){
+        RadioButton sender = (RadioButton) mouseEvent.getSource();
+        List<RadioButton> currentRow = radioButtons.stream()
+                .filter(l  -> l.stream().anyMatch(r -> r.getParent().equals(sender.getParent())))
+                .findFirst().orElseThrow();
+        for(RadioButton r : currentRow){
+            r.getStyleClass().clear();
+            r.getStyleClass().add(styleClass);
+        }
+    }
+
+    /**
      * Refreshes the match list (by requesting the games list).
      */
     @FXML
@@ -137,22 +152,29 @@ public class MatchBrowserViewController {
         controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
+    /**
+     * Sets the create-game pop-up to visible.
+     */
     @FXML
     public void requestCreation(){
+        joinPopupGrid.setVisible(false);
         createPopupGrid.setVisible(true);
     }
 
+    /**
+     * By firstly checking the create-input, enables the "create" button.
+     */
     @FXML
     public void checkCreateInput(){
         String matchName = matchNameTextbox.getText();
         createPopupButton.setDisable(matchName.isEmpty() ||
                 matchName.length() > GameParameters.getMaxNicknameLength() ||
                 playerNumberToggleGroup.getSelectedToggle() == null);
-        System.out.println(matchName.isEmpty() ||
-                matchName.length() > GameParameters.getMaxNicknameLength() ||
-                playerNumberToggleGroup.getSelectedToggle() == null);
     }
 
+    /**
+     * Tries to create a new game.
+     */
     @FXML
     public void tryCreate(){
         createPopupButton.setDisable(true);
@@ -179,7 +201,12 @@ public class MatchBrowserViewController {
      */
     public void showJoinGameDialog(List<Content> colors, int gameId){
         currentSelectedId = gameId;
+        createPopupGrid.setVisible(false);
         colorChoiceToggleGroup = new ToggleGroup();
+        colorChoiceGrid.getChildren().clear();
+        while(!colorChoiceGrid.getColumnConstraints().isEmpty()){
+            colorChoiceGrid.getColumnConstraints().removeFirst();
+        }
         int i = 0;
         for(Content color : colors){
             RadioButton colorRadioButton = createRadioButton("", colorChoiceToggleGroup, "colorRadioButton");
@@ -196,6 +223,9 @@ public class MatchBrowserViewController {
         joinPopupGrid.setVisible(true);
     }
 
+    /**
+     * By firstly checking the join input, enables the "join" button.
+     */
     @FXML
     public void checkJoinInput(){
         String nickname = nicknameTextBox.getText();
@@ -204,6 +234,9 @@ public class MatchBrowserViewController {
                 colorChoiceToggleGroup.getSelectedToggle() == null);
     }
 
+    /**
+     * Tries to join to the previously specified match.
+     */
     @FXML
     public void tryJoin(){
         requestJoinButton.setDisable(true);
@@ -214,48 +247,48 @@ public class MatchBrowserViewController {
     }
 
     /**
-     * Creates a radio button.
-     * @param buttonText the contained in button text.
-     * @param group the button's group.
-     * @param styleClass the css style class
-     * @return the created radio button.
+     * Shows a custom critical error pop-up.
+     * Once popped out, the user can return to the match selection by clicking on the "ok" button.
+     *
+     * @param message the error message contained in the pop-up.
      */
-    private RadioButton createRadioButton(String buttonText, ToggleGroup group, String styleClass){
-        RadioButton radioButton = createRadioButton(buttonText, group);
-        radioButton.getStyleClass().add(styleClass);
-        return radioButton;
+    public void showCriticalError(String message){
+        errorLabel.setText(message);
+        okButton.setUserData("critical");
+        errorPopupGrid.setVisible(true);
     }
 
     /**
-     * Creates a radio button.
+     * Shows a custom error pop-up.
+     * Once popped out, the user can return to the game joining pop-up by clicking on the "ok" button.
      *
-     * @param buttonText the contained in button text.
-     * @param group      the button's group.
-     *
-     * @return           the created radio button.
+     * @param message the error message contained in the pop-up.
      */
-    private RadioButton createRadioButton(String buttonText, ToggleGroup group){
-        RadioButton radioButton = new RadioButton(buttonText);
-        radioButton.setToggleGroup(group);
-        radioButton.setMaxWidth(Double.MAX_VALUE);
-        radioButton.setTextAlignment(TextAlignment.CENTER);
-        return radioButton;
+    public void showUserError(String message){
+        errorLabel.setText(message);
+        okButton.setUserData("non-critical");
+        errorPopupGrid.setVisible(true);
     }
 
     /**
-     * Sets the radio button's CSS.
-     *
-     * @param mouseEvent the event causing the change of style
-     * @param styleClass the desired style class
+     * Returns either to the match browsing page or the game joining pop-up, depending on the error nature.
      */
-    private void setRadioButtonStyle(MouseEvent mouseEvent, String styleClass){
-        RadioButton sender = (RadioButton) mouseEvent.getSource();
-        List<RadioButton> currentRow = radioButtons.stream()
-                .filter(l  -> l.stream().anyMatch(r -> r.getParent().equals(sender.getParent())))
-                .findFirst().orElseThrow();
-        for(RadioButton r : currentRow){
-            r.getStyleClass().clear();
-            r.getStyleClass().add(styleClass);
+    @FXML
+    public void handleOkButton(){
+        if (okButton.getUserData().equals("critical")) {
+            controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        } else {
+            controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, currentSelectedId));
+            nicknameTextBox.setDisable(false);
+            joinPopupButton.setDisable(true);
+            errorPopupGrid.setVisible(false);
         }
+    }
+
+    @FXML
+    public void goBackFromPopup(){
+        joinPopupGrid.setVisible(false);
+        createPopupGrid.setVisible(false);
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 }

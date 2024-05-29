@@ -1,16 +1,12 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.view.gui.GraphicalSubmitter;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -21,7 +17,7 @@ import java.util.regex.Pattern;
 /**
  * Class used to handle the login scene for the GUI.
  */
-public class ConnectionViewController {
+public class ConnectionViewController extends ViewController {
 
     @FXML
     public TextField portTextBox;
@@ -44,7 +40,6 @@ public class ConnectionViewController {
     @FXML
     public RadioButton rmiRadioButton;
 
-    private ClientController controller;
     private Application application;
 
     /**
@@ -102,14 +97,6 @@ public class ConnectionViewController {
     }
 
     /**
-     * Setter for the controller attribute.
-     * @param controller the client's controller.
-     */
-    public void setClientController(ClientController controller){
-        this.controller = controller;
-    }
-
-    /**
      * Setter for the controller attribute
      * @param application the scene's application
      */
@@ -121,14 +108,6 @@ public class ConnectionViewController {
     @FXML
     public void checkIfEnableButton(){
         connectButton.setDisable(ipTextBox.getText().isEmpty() || portTextBox.getText().isEmpty());
-        /*if(!connectButton.isDisabled()){
-            connectButton.setOnKeyPressed(e -> {
-                if(e.getCode().equals(KeyCode.ENTER)){
-                    System.out.println("Connecting to " + ipTextBox.getText() + ":" + portTextBox.getText());
-                    connectButton.fire();
-                }
-            });
-        }*/
     }
 
     @FXML

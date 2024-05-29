@@ -6,13 +6,25 @@ import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.view.GameView;
+import it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
 
-public class GameGUI implements GameView {
+public class GameGUI extends AbstractGUI implements GameView {
+
+    public GameGUI(Stage primaryStage, Scene currentScene, FXMLLoader currentLoader, ClientController controller) {
+        this.primaryStage = primaryStage;
+        this.currentScene = currentScene;
+        this.currentLoader = currentLoader;
+        this.controller = controller;
+    }
 
     @Override
     public void notifyLastTurn() {
@@ -45,8 +57,8 @@ public class GameGUI implements GameView {
     }
 
     @Override
-    public void showUserJoined(String nickname, Content Color) {
-
+    public void showUserJoined(String nickname, Content color) {
+        currentLoader.<MatchLobbyViewController>getController().updatePlayers(nickname, color);
     }
 
     @Override

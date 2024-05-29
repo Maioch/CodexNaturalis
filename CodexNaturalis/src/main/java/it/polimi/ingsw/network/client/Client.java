@@ -1,7 +1,7 @@
 package it.polimi.ingsw.network.client;
 
 import it.polimi.ingsw.view.cli.SetupCLI;
-import it.polimi.ingsw.view.gui.SetupGUI;
+import it.polimi.ingsw.view.gui.CodexApplication;
 import javafx.application.Application;
 
 /**
@@ -12,7 +12,7 @@ public class Client {
         if(args.length != 0 && args[0].equals("-cli")){
             new SetupCLI();
         }else{
-            Application.launch(SetupGUI.class, args);
+            Application.launch(CodexApplication.class, args);
         }
     }
 }

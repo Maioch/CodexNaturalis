@@ -11,5 +11,5 @@ public interface SetupView {
     void showCriticalError(String message);
     void showJoinGameDialog(List<Content> colors, int gameId);
     void showUserError(String message, int gameId);
-    void showSuccessfulJoin();
+    void showSuccessfulJoin(int numberOfPlayers);
 }

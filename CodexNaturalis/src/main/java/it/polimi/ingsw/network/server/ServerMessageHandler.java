@@ -84,7 +84,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                 }
                 case JOIN_GAME -> {
                     if(labeledMessage.message() instanceof JoinGameMessage joinGameMessage){
-                        GameController game = games.getController(joinGameMessage.getGameId());
+                        GameController game = games.getController(joinGameMessage.getGameInfo());
                         if(game == null){
                             labeledMessage.networkHandler().update(new Message(Status.ERROR));
                             break;
@@ -94,7 +94,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
                 }
                 case RECONNECT -> {
                     if(labeledMessage.message() instanceof JoinGameMessage joinGameMessage){
-                        GameController game = games.getController(joinGameMessage.getGameId());
+                        GameController game = games.getController(joinGameMessage.getGameInfo());
                         if(game == null){
                             labeledMessage.networkHandler().update(new Message(Status.ERROR));
                             break;
