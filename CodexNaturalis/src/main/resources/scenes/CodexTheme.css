@@ -192,3 +192,9 @@
 .backButton:hover {
   -fx-image: url('images/backSelected.png') ;
 }
+.scoreCard {
+  -fx-background-image: url('images/scoreCard.png');
+  -fx-background-size: contain;
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center;
+}
