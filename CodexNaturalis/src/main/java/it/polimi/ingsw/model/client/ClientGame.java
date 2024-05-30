@@ -48,6 +48,15 @@ public class ClientGame {
     }
 
     /**
+     * Checks if the game is now full
+     *
+     * @return true if it's full, false ootherewise
+     */
+    public boolean isGameFull(){
+        return remotePlayers.size() + 1 == numberOfPlayers;
+    }
+
+    /**
      * Returns the game's number of players the game needs to be played.
      *
      * @param numberOfPlayers the number of players.
@@ -77,7 +86,8 @@ public class ClientGame {
     }
 
     /**
-     *
+     * Returns the summary of all the cards the player can draw in a given moment.
+     * The returned cards are divided by type.
      *
      * @return a map that contains all the drawable cards.
      */
@@ -135,7 +145,7 @@ public class ClientGame {
      */
     public void addRemotePlayer(RemotePlayer player){
         remotePlayers.add(player);
-        player.setViewReferences(gameView,eventSubmitter);
+        player.setViewReferences(gameView, eventSubmitter);
         eventSubmitter.submit(() -> gameView.showUserJoined(player.getNickname(), player.getColor()));
     }
 

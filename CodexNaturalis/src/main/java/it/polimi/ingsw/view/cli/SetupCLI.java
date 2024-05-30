@@ -35,9 +35,11 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      * them choose if they want to connect using socket or RMI protocol: the method then handles the connection.
      */
     public SetupCLI(){
+        CLIActionHandler cliActionHandler = new CLIActionHandler();
         boolean isConnected = false;
-        this.controller = new ClientController(this, new TerminalSubmitter());
+        this.controller = new ClientController(this, new TerminalSubmitter(cliActionHandler));
         new Thread(controller).start();
+        new Thread(cliActionHandler).start();
         while (!isConnected) {
             String ip = readFromInput("Please enter the IP of the server you want to play on: ",
                     (s -> s.length() <= 15 && Pattern.compile("[0-9]{0,3}\\.[0-9]{0,3}\\.[0-9]{0,3}\\.[0.9]{0,3}").matcher(s).find()),
@@ -51,7 +53,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             switch (protocol) {
                 case 1 -> {
                     try {
-                        ConnectionInitializer.initializeTCP(ip, port, controller, new TerminalSubmitter());
+                        ConnectionInitializer.initializeTCP(ip, port, controller, new TerminalSubmitter(cliActionHandler));
                         System.out.println(GameParameters.getTitle());
                         isConnected = true;
                     } catch (IOException e) {
@@ -60,7 +62,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 }
                 case 2 -> {
                     try {
-                        ConnectionInitializer.initializeRMI(ip, port, controller, new TerminalSubmitter());
+                        ConnectionInitializer.initializeRMI(ip, port, controller, new TerminalSubmitter(cliActionHandler));
                         System.out.println(GameParameters.getTitle());
                         isConnected = true;
                     } catch (MalformedURLException e) {
@@ -191,7 +193,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      * Method that notifies the player that he successfully joined his desired game.
      */
     @Override
-    public void showSuccessfulJoin(int numberOfPlayers){
+    public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers){
         System.out.println("\nYou have successfully joined the game!");
         System.out.printf("This game requires %d players to start\n", numberOfPlayers);
         GameCLI gameCLI = new GameCLI(controller);

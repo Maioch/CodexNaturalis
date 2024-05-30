@@ -257,9 +257,6 @@
                   <image>
                      <Image url="@../../../../../../../Pictures/back.png" />
                   </image>
-                  <cursor>
-                     <Cursor fx:constant="OPEN_HAND" />
-                  </cursor>
                </ImageView>
                   <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Join game" textFill="#2f0606" GridPane.columnIndex="1">
                       <font>
@@ -379,9 +376,6 @@
                   <GridPane.margin>
                      <Insets />
                   </GridPane.margin>
-                  <cursor>
-                     <Cursor fx:constant="OPEN_HAND" />
-                  </cursor>
                </ImageView>
                   <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Create match" textFill="#2f0606" GridPane.columnIndex="1">
                       <font>

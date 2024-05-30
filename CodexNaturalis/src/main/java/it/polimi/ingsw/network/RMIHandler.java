@@ -19,7 +19,7 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      * @param handler the message handler to send the received messages to.
      * @throws RemoteException whenever the remote invocation of this method fails.
      */
-    public RMIHandler(MessageHandler handler) throws RemoteException{
+    public RMIHandler(EventHandler<LabeledMessage> handler) throws RemoteException{
         super(handler);
         this.receiverInterface = null;
         this.executor = Executors.newSingleThreadExecutor();
@@ -32,12 +32,11 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      */
     @Override
     public void receiveUpdate(Message message) throws RemoteException {
-        //System.out.println(message.getStatus());
         if(message.getStatus() == Status.REQUEST_PING){
             receiverInterface.receiveUpdate(new Message(Status.PING_ACK));
             return;
         }
-        handler.addMessageToQueue(message,this);
+        handler.addEventToQueue(new LabeledMessage(this, message));
     }
 
     /**
@@ -57,7 +56,6 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      */
     @Override
     public void update(Message message){
-        //System.out.println(message.getStatus());
         //call the method through a single-threaded executor to avoid blocking the controller's thread
         executor.submit(() -> {
             try {

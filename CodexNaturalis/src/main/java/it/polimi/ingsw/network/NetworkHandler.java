@@ -9,7 +9,7 @@ import java.rmi.server.UnicastRemoteObject;
  * Class that represents the objects that handle each client connected to the server.
  */
 public abstract class NetworkHandler extends UnicastRemoteObject implements Listener {
-    protected final MessageHandler handler;
+    protected final EventHandler<LabeledMessage> handler;
     private GameController currentGame;
     private boolean isDisconnected;
 
@@ -17,7 +17,7 @@ public abstract class NetworkHandler extends UnicastRemoteObject implements List
      * Constructor for the class.
      * @param handler the message handler associated to the client.
      */
-    public NetworkHandler(MessageHandler handler) throws RemoteException {
+    public NetworkHandler(EventHandler<LabeledMessage> handler) throws RemoteException {
         this.currentGame = null;
         this.handler = handler;
         this.isDisconnected = false;

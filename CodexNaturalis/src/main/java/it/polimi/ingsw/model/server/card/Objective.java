@@ -13,21 +13,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class that represents an Objective Card.
- *
- * @author Guglielmo Gatti, Francesco Saverio Nisoli, Marco Maiocchi, Andrea Fidanza
+ * Objective represents the cards in the game that are the player's target during a game, that, when fulfilled, award
+ * a large amount of points.
  */
 public class Objective implements Serializable {
+
     private final int objectiveId;
     private final int points;
     private transient Bonus bonus;
     private transient Player owner;
 
     /**
-     * The constructor for the class.
+     * Class constructor.
      *
      * @param objectiveId the card's id.
-     * @param points the base amount of points awarded by the card.
+     * @param points      the base amount of points awarded by the card.
      */
     public Objective(int objectiveId, int points){
         this.objectiveId = objectiveId;
@@ -37,8 +37,9 @@ public class Objective implements Serializable {
     }
 
     /**
-     * Copy constructor for the class.
-     * @param objective the objective to duplicate.
+     * Class copy-constructor.
+     *
+     * @param objective the instance to copy.
      */
     public Objective(Objective objective){
         this.objectiveId = objective.objectiveId;
@@ -49,36 +50,50 @@ public class Objective implements Serializable {
 
     /**
      * Calculates the amount of points gained by satisfying the objective's requirements.
-     * @return the amount of points gained.
+     *
+     * @return the amount of points awarded.
      */
     public int checkObjective(){
        return this.bonus.calculate(owner);
     }
 
     /**
-     * @return the card's id.
+     * Returns the ID of the card
+     *
+     * @return the card's ID.
      */
     public int getObjectiveId() { return this.objectiveId; }
 
     /**
+     * Returns the objectives' base points.
+     *
      * @return the card's points.
      */
     public int getPoints() { return this.points; }
 
     /**
+     * Sets the bonus type associated to this objective.
+     *
      * @param bonus the card's bonus type.
+     *
+     * @see ContentBonus
+     * @see PatternBonus
      */
     public void setBonus(Bonus bonus) { this.bonus = bonus; }
 
     /**
-     * @param owner the player that owns the card, used to obtain the player's board to calculate the multiplier.
+     * Sets the player that owns the objective, used to obtain the player's board to calculate the multiplier.
+     *
+     * @param owner the card's owner.
      */
     public void setOwner(Player owner) { this.owner = owner; }
 
     /**
-     * Equals method.
-     * @param object Object to check.
-     * @return true if each field is equals to each field of object.
+     * Equals method override to fit the method to this class.
+     *
+     * @param object objective checked.
+     *
+     * @return       true if this objective is equal to the parameter one.
      */
     @Override
     public boolean equals(Object object) {
@@ -90,25 +105,25 @@ public class Objective implements Serializable {
     }
 
     /**
-     * Strategy class used to handle the bonuses given out by objective cards.
-     *
-     * @author Guglielmo Gatti
+     * ContentBonus implements a method that calculates the total amount of points given by an objective that gives
+     * them per content sequences present in the player's board.
      */
     public class ContentBonus implements Bonus{
         private final List<Content> sequence;
 
         /**
-         * Constructor for the class.
-         * @param sequence list of the bonus's required content
+         * Class constructor.
+         *
+         * @param sequence list of the bonus' required content.
          */
         public ContentBonus(List<Content> sequence){
             this.sequence = sequence;
         }
 
         /**
-         * Calculate the number of instances a pattern of objects occurs on the player's board
-         * and multiply it by the card's base points value.
-         * @return the amount of points that the card awards on placement.
+         * Returns the total amount of points given to the player when he satisfies the objective.
+         *
+         * @return the card's awarded points.
          */
         @Override
         public int calculate(Player cardOwner){
@@ -130,16 +145,16 @@ public class Objective implements Serializable {
     }
 
     /**
-     * Class that represents the objective which consists in having on the board a defined pattern of
-     * correctly colored cards; each card can only be used once to calculate this particular bonus.
-     *
-     * @author Guglielmo Gatti, Francesco Nisoli
+     * ContentBonus implements a method that calculates the total amount of points given by an objective that gives
+     * them per defined pattern occurrence of correctly colored cards; each card can only be used once to calculate
+     * this particular bonus.
      */
     public class PatternBonus implements Bonus{
         private final Map<Point, Content> pattern;
 
         /**
-         * Constructor for the class.
+         * Class constructor.
+         *
          * @param pattern hashmap describing the required pattern by pairing each color to its relative coordinates.
          */
         public PatternBonus(Map<Point, Content> pattern){
@@ -155,9 +170,9 @@ public class Objective implements Serializable {
         }
 
         /**
-         * Find out how many times a specific pattern is present without counting the same card twice and calculate
-         * the points awarded to the player.
-         * @return the base number of points awarded by the card multiplied by the amount of times the pattern appears.
+         * Returns the total amount of points given to the player when he satisfies the objective.
+         *
+         * @return the card's awarded points.
          */
         @Override
         public int calculate(Player cardOwner){

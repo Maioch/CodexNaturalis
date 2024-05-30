@@ -8,22 +8,23 @@ import java.util.Stack;
 import java.util.function.Function;
 
 /**
- * Class that represents a stack of randomly sorted objects that have been created
- * through the factory method given to the constructor.
+ * Deck is a stack of randomly sorted objects, used to represent the decks in the game.
  *
- * @param <T> the type of the object contained inside the deck.
- * @author Guglielmo Gatti, Andrea Fidanza
+ * @param <T> the type of the objects contained inside the deck.
  */
 
 public class Deck<T>{
+
     Stack<T> deck;
 
     /**
-     * Constructor for the class.
-     * @param factoryMethod a method that takes an id and creates the corresponding object.
-     * @param rangeStart the id to start generating the deck's objects from.
-     * @param rangeEnd the id to end generating the deck's objects at.
-     * @exception DeckException if the given range is illegal.
+     * Class constructor.
+     *
+     * @param factoryMethod     a method that takes an id and creates the corresponding object.
+     * @param rangeStart        the id to start generating the deck's objects from.
+     * @param rangeEnd          the id to end generating the deck's objects at.
+     *
+     * @exception DeckException if the given start-end range is illegal.
      */
     public Deck(Function<Integer,T> factoryMethod, int rangeStart, int rangeEnd) throws DeckException{
         if (rangeStart > rangeEnd || rangeStart < 0){
@@ -37,6 +38,8 @@ public class Deck<T>{
     }
 
     /**
+     * Returns all the objects contained in the
+     *
      * @return the list of cards in a specified deck.
      */
     public List<T> getDeck(){

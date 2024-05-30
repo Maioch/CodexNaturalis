@@ -173,6 +173,16 @@
   -fx-focus-color: transparent;
   -fx-faint-focus-color: transparent;
 }
+.playerEntry:disabled{
+  -radio-color: red;
+  -fx-text-fill: #2f0606;
+  -fx-font-family: "Fira Sans Condensed";
+  -fx-font-size: 18;
+  -fx-color: -radio-color;
+  -fx-opacity: 1;
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
+}
 .colorRadioButton .dot{
   -fx-opacity: 0;
   -fx-visibility: 0;

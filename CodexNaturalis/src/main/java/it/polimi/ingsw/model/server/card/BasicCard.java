@@ -204,7 +204,7 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Returns the requested symbols by the card to be placed.
+     * Returns the resources requested by the card to be placed.
      * These symbols must appear an adequate number of times on the player's board.
      *
      * @return the requirements needed to place the card.
@@ -275,7 +275,7 @@ public class BasicCard implements Serializable {
      *
      * @param object side checked.
      *
-     * @return true jf this side is equal to the parameter one.
+     * @return       true if this side is equal to the parameter one.
      */
     @Override
     public boolean equals(Object object){

@@ -1,10 +1,11 @@
 package it.polimi.ingsw.model.server.card;
 
 /**
-* Enum that represents the type of cards.
-*
-* @author Andrea Fidanza
+* CardType represents the four possible type of cards in the game.
 */
 public enum CardType {
-    RESOURCE, GOLD, STARTER, OBJECTIVE
+    RESOURCE,
+    GOLD,
+    STARTER,
+    OBJECTIVE
 }

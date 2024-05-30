@@ -14,7 +14,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
 import java.util.*;
@@ -83,16 +82,13 @@ public class MatchBrowserViewController extends ViewController {
             RadioButton statusRadioButton = createRadioButton(match.getGameStatus().getText(), groupStatus, "tableButton");
             setupMatchListButton(statusRadioButton);
             statusRadioButton.setDisable(match.getGameStatus() == GameStatus.STARTED);
-            radioButtons.add(Arrays.asList(idRadioButton,nameRadioButton,statusRadioButton));
-            grid.addRow(0,idRadioButton,nameRadioButton,statusRadioButton);
-            grid.getColumnCount();
-            ColumnConstraints idColumnConstraint = new ColumnConstraints();
-            idColumnConstraint.setPercentWidth(12);
-            ColumnConstraints nameColumnConstraint = new ColumnConstraints();
-            nameColumnConstraint.setPercentWidth(53);
-            ColumnConstraints statusColumnConstraint = new ColumnConstraints();
-            statusColumnConstraint.setPercentWidth(35);
-            grid.getColumnConstraints().addAll(idColumnConstraint, nameColumnConstraint, statusColumnConstraint);
+            radioButtons.add(Arrays.asList(idRadioButton, nameRadioButton, statusRadioButton));
+            List<GridEntry> entries = new ArrayList<>(Arrays.asList(
+                    new GridEntry(12, idRadioButton),
+                    new GridEntry(53, nameRadioButton),
+                    new GridEntry(35, statusRadioButton)
+            ));
+            addColumns(grid, entries);
             matchGridPane.addRow(matchGridPane.getRowCount(), grid);
         }
     }
@@ -207,19 +203,16 @@ public class MatchBrowserViewController extends ViewController {
         while(!colorChoiceGrid.getColumnConstraints().isEmpty()){
             colorChoiceGrid.getColumnConstraints().removeFirst();
         }
-        int i = 0;
+        List<GridEntry> entries = new ArrayList<>();
         for(Content color : colors){
             RadioButton colorRadioButton = createRadioButton("", colorChoiceToggleGroup, "colorRadioButton");
             colorRadioButton.setStyle(String.format("-radio-color: %s;", color.getHexColorString()));
             colorRadioButton.setUserData(color.name());
             colorRadioButton.setAlignment(Pos.CENTER);
             colorRadioButton.setOnMouseClicked((mouseEvent) -> checkJoinInput());
-            ColumnConstraints columnConstraint = new ColumnConstraints();
-            columnConstraint.setPercentWidth((double) 100 / colors.size());
-            colorChoiceGrid.getColumnConstraints().add(columnConstraint);
-            colorChoiceGrid.addColumn(i, colorRadioButton);
-            i++;
+            entries.add(new GridEntry(100, colorRadioButton));
         }
+        addColumns(colorChoiceGrid, entries);
         joinPopupGrid.setVisible(true);
     }
 

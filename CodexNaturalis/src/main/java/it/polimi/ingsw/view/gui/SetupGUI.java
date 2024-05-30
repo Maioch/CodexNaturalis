@@ -103,9 +103,9 @@ public class SetupGUI extends AbstractGUI implements SetupView {
      * Changes the scene, notifying the user that he successfully joined the lobby.
      */
     @Override
-    public void showSuccessfulJoin(int numberOfPlayers) {
+    public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers) {
         changeScene("MatchLobby.fxml");
-        currentLoader.<MatchLobbyViewController>getController().initializeLabel(numberOfPlayers);
+        currentLoader.<MatchLobbyViewController>getController().initializeLabel(nickname, color, numberOfPlayers);
         GameGUI gameGUI = new GameGUI(primaryStage, currentScene, currentLoader, controller);
         controller.setGameView(gameGUI);
     }

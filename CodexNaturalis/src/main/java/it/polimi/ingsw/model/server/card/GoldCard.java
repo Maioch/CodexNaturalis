@@ -9,9 +9,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A class that represents a gold card.
+ * GoldCard is an extension of BasicCard.
+ * It's one of the types of cards in the game that need to be treated in a special manner: a gold card can only be
+ * placed if the player has on his board a specific amount of visible resources; additionally, the points awarded for their
+ * placement can be both a set amount (just like some resource cards), or they can be calculated based on the number of
+ * symbols of a given type present on the player's board.
  *
- * @author Francesco Saverio Nisoli, Andrea Fidanza, Guglielmo Gatti, Marco Maiocchi
+ * @see BasicCard
  */
 
 public class GoldCard extends BasicCard {
@@ -20,11 +24,13 @@ public class GoldCard extends BasicCard {
     private transient Bonus bonus;
     
     /**
-     * Constructor for the class.
+     * Class constructor.
      *
-     * @param cardTemplate it's a "basic" card previously initialized, which serves as a value reference for the GoldCard instantiated.
-     * @param requirements the resources needed in order to play the card.
-     * @throws CardException if there are invalid requirements.
+     * @param cardTemplate   the basic card that serves as a base for the gold card; this can be done because gold cards
+     *                       are just basic cards with added features.
+     * @param requirements   the resources needed on the player's board to place the card.
+     *
+     * @throws CardException if the requirements parameter isn't valid.
     */
     public GoldCard(BasicCard cardTemplate, List<Content> requirements) throws CardException {
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources, cardTemplate.isFront());
@@ -40,8 +46,9 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Copy-Constructor method for the GoldCard.
-     * @param card the GoldCard to be copied.
+     * Class copy-constructor.
+     *
+     * @param card the instance to copy.
      */
     public GoldCard(GoldCard card){
         super(card);
@@ -55,15 +62,24 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Setter for the bonus attribute.
-     * @param bonus the bonus related to the card.
+     * Sets the bonus type associated to this card.
+     *
+     * @param bonus the card's bonus.
+     *
+     * @see Bonus
+     * @see CornerBonus
+     * @see ObjectBonus
      */
     public void setBonus(Bonus bonus){
         this.bonus = bonus;
     }
 
     /**
-     * @return points gained by placing the card.
+     * Override of the BasicCard method that returns the points awarded to the player when he places the card.
+     * If the points are just a flat amount, returns it; if the points are related to a specific bonus type, calculates
+     * the total value and then returns it.
+     *
+     * @return the card's awarded points.
      */
     @Override
     public int getPoints(){
@@ -71,10 +87,12 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-    * Equals method.
-    * @param object Object to check.
-    * @return true if each field is equal to each field of object.
-    */
+     * Equals method override to fit the method to this class.
+     *
+     * @param object card checked.
+     *
+     * @return       true if this card is equal to the parameter one.
+     */
     @Override
     public boolean equals(Object object){
         if(this.getClass() != object.getClass())
@@ -84,8 +102,9 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Copy method that guarantees that the card will be copied using the right constructor.
-     * @return a copy of the card.
+     * Returns a copy of this card, using the correct constructor.
+     *
+     * @return a copy of this card.
      */
     @Override
     public GoldCard copy(){
@@ -93,13 +112,14 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Class that calculates the bonus given by a gold card that gives points per corner covered by the card itself.
-     *
-     * @author Andera Fidanza
+     * CornerBonus implements a method that calculates the total amount of points given by a gold card that gives
+     * them per corner covered by the card itself.
      */
     public class CornerBonus implements Bonus{
         /**
-         * @return points gained by placing the card.
+         * Returns the total amount of points given to the player when he places the card.
+         *
+         * @return the card's awarded points.
          */
         @Override
         public int calculate(Player cardOwner){
@@ -113,25 +133,25 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * Class that calculates the bonus given by a gold card that gives points per visible object in the board of the
-     * player, including the card itself.
-     *
-     * @author Marco Maiocchi
+     * CornerBonus implements a method that calculates the total amount of points given by a gold card that gives
+     * them per visible object in the board of the player, including the card itself.
      */
     public class ObjectBonus implements Bonus{
         private final Content object;
 
         /**
-         * Constructor for the class.
-         * @param object object used for the points' multiplier.
+         * Class constructor.
+         *
+         * @param object the object required by the points' multiplier.
          */
         public ObjectBonus(Content object){
             this.object = object;
         }
 
         /**
-         * Method that calculates the points given to the player by the gold card he plays.
-         * @return points given to the player.
+         * Returns the total amount of points given to the player when he places the card.
+         *
+         * @return the card's awarded points.
          */
         @Override
         public int calculate(Player cardOwner){

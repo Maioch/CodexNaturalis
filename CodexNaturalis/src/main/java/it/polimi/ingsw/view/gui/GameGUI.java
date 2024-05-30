@@ -59,6 +59,10 @@ public class GameGUI extends AbstractGUI implements GameView {
     @Override
     public void showUserJoined(String nickname, Content color) {
         currentLoader.<MatchLobbyViewController>getController().updatePlayers(nickname, color);
+        forceUpdate();
+        if(controller.isGameFull()){
+            changeScene("Game.fxml");
+        }
     }
 
     @Override

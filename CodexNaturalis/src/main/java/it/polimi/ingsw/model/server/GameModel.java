@@ -27,6 +27,7 @@ import java.util.Map;
  * @author Guglielmo Gatti, Andrea Fidanza, Francesco Nisoli, Marco Maiocchi
  */
 public class GameModel{
+
     private final ServerSubject serverSubject;
     private final List<Player> players;
     private final TurnDeck<CardSides> resourceDeck;
@@ -39,7 +40,7 @@ public class GameModel{
     private final int numberOfPlayers;
 
     /**
-     * Constructor for the class.
+     * Class constructor.
      * @param numberOfPlayers the number of players requested by the creator of the game.
      * @param serverSubject the object used to notify the serverListeners.
      * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number

@@ -6,7 +6,7 @@ import it.polimi.ingsw.controller.GamesManager;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.LabeledMessage;
-import it.polimi.ingsw.network.MessageHandler;
+import it.polimi.ingsw.network.EventHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
@@ -21,7 +21,7 @@ import java.util.*;
 *
 * @author Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli, Marco Maiocchi
 */
-public class ServerMessageHandler extends MessageHandler implements Runnable{
+public class ServerMessageHandler extends EventHandler<LabeledMessage> implements Runnable{
     private final GamesManager games;
 
     /**
@@ -40,7 +40,7 @@ public class ServerMessageHandler extends MessageHandler implements Runnable{
     @Override
     public void run(){
         while(true){
-            LabeledMessage labeledMessage = getMessageFromQueue();
+            LabeledMessage labeledMessage = getEventFromQueue();
             if(labeledMessage == null){
                 continue;
             }

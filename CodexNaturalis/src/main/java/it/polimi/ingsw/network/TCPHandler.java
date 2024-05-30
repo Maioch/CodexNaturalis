@@ -21,7 +21,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
      * @param socket the socket to which the client is connected.
      * @param handler the message handler that will handle the messages received.
      */
-    public TCPHandler(Socket socket, MessageHandler handler) throws IOException{
+    public TCPHandler(Socket socket, EventHandler<LabeledMessage> handler) throws IOException{
         super(handler);
         this.socketOutput = new ObjectOutputStream(socket.getOutputStream());
         this.socketInput = new ObjectInputStream(socket.getInputStream());
@@ -37,13 +37,11 @@ public class TCPHandler extends NetworkHandler implements Runnable{
             while (true) {
                 try {
                     Message message = (Message) socketInput.readObject();
-                    //System.out.println(message.getStatus());
                     if(message.getStatus() == Status.REQUEST_PING){
                         update(new Message(Status.PING_ACK));
                         continue;
                     }
-                    handler.addMessageToQueue(message, this);
-                    //System.out.printf("Received %s%n",message.getStatus().toString());
+                    handler.addEventToQueue(new LabeledMessage(this, message));
                 } catch (ClassNotFoundException e) {
                     System.out.println("Received an invalid message");
                 }
@@ -60,7 +58,6 @@ public class TCPHandler extends NetworkHandler implements Runnable{
      */
     @Override
     public void update(Message message){
-        //System.out.printf("Sent %s%n",message.getStatus().toString());
         try{
             socketOutput.writeObject(message);
         }catch(IOException e){

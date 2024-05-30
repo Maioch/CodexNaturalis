@@ -9,7 +9,7 @@ import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.network.LabeledMessage;
-import it.polimi.ingsw.network.MessageHandler;
+import it.polimi.ingsw.network.EventHandler;
 import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.messages.*;
 import it.polimi.ingsw.network.messages.game.*;
@@ -28,7 +28,7 @@ import java.util.*;
 /**
  * Class that handles every possible message the client can send to the server.
  */
-public class ClientController extends MessageHandler{
+public class ClientController extends EventHandler<LabeledMessage> {
     private final SetupView setupView;
     private ClientGame game;
     private GameView gameView;
@@ -128,11 +128,19 @@ public class ClientController extends MessageHandler{
     public String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
 
     /**
-     * @return whether the game is ongoing
+     * @return true whether the game is ongoing (initialized) or not
      */
     public boolean isGameOngoing(){
         return game != null;
     }
+
+    /**
+     * @return true whether the game is full or not
+     */
+    public boolean isGameFull(){
+        return game.isGameFull();
+    }
+
     /**
      * @param nickname the remote player's nickname.
      * @return the back sides list of the specified player's hand.
@@ -170,7 +178,7 @@ public class ClientController extends MessageHandler{
     @Override
     public void run(){
         while(true){
-            LabeledMessage labeledMessage = getMessageFromQueue();
+            LabeledMessage labeledMessage = getEventFromQueue();
             if(labeledMessage == null){
                 continue;
             }
@@ -197,7 +205,8 @@ public class ClientController extends MessageHandler{
                     }
                     case JOIN_GAME -> {
                         if(message instanceof JoinGameMessage joinGameMessage) {
-                            eventSubmitter.submit(() -> setupView.showSuccessfulJoin(joinGameMessage.getGameInfo()));
+                            eventSubmitter.submit(() -> setupView.showSuccessfulJoin(
+                                    joinGameMessage.getNickname(), joinGameMessage.getColor(), joinGameMessage.getGameInfo()));
                             synchronized (gameViewLock) {
                                 if (gameView == null) {
                                     try {
