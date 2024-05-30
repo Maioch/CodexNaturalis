@@ -59,9 +59,9 @@ public abstract class AbstractGUI {
     }
 
     /**
-     * Adds a row of entries in a specified grid pane
+     * Adds rows of entries in a specified grid pane
      * @param grid the grid pane to modify
-     * @param entries the list of entries conforming the new row
+     * @param entries the list of entries conforming the new rows
      */
     protected void addRows(GridPane grid, List<GridEntry> entries){
         int rowIndex = grid.getRowCount();
