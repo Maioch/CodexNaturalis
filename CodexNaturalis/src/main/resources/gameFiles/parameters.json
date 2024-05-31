@@ -19,7 +19,7 @@
   "TCPPort" : 23435,
   "RMIPort" : 1099,
   "MaxChatMessageLength" : 512,
-  "MaxNicknameLength" : 16,
+  "MaxNicknameLength" : 12,
   "PingPeriodSeconds" : 10,
   "ForfeitTime" : 120,
   "LobbyTimeout" : 120,

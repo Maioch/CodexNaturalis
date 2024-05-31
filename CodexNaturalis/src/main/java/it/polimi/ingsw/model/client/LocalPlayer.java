@@ -14,7 +14,6 @@ import java.util.List;
  * It saves the player's hand cards and his personal objectives.
  */
 public class LocalPlayer extends ClientPlayer{
-
     private List<CardSides> handCards;
     private List<Objective> personalObjectives;
 

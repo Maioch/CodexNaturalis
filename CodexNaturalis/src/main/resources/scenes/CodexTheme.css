@@ -208,3 +208,43 @@
   -fx-background-repeat: no-repeat;
   -fx-background-position: center;
 }
+.chatTextBox{
+  -fx-border-radius: 4 4 4 10;
+  -fx-background-radius: 4 4 4 10;
+}
+.sendButton{
+  -fx-border-radius: 4 4 10 4;
+  -fx-background-radius: 4 4 10 4;
+}
+.sendButton:hover{
+  -fx-border-radius: 4 4 10 4;
+  -fx-background-radius: 4 4 10 4;
+}
+.sendButton .arrow-button{
+  -fx-border-radius: 4 4 10 4;
+  -fx-background-radius: 4 4 10 4;
+}
+.widerWoodenBoard{
+  -fx-background-image: url(images/WoodenFrameWider.png);
+  -fx-background-size: stretch;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
+  -fx-background-repeat: no-repeat;
+  -fx-background-radius: 6020;
+}
+.cardHandPanel{
+  -fx-background-image: url(images/CardHandPanel.png);
+  -fx-background-size: stretch;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
+  -fx-background-repeat: no-repeat;
+  }
+.gameBoardScrollPane:focused{
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
+}
+.gameBoardScrollPane {
+  -fx-background-color: transparent;
+}
+.playerTagPane{
+  -fx-background-color: #533333;
+  -fx-background-radius: 0 0 16 16;
+}

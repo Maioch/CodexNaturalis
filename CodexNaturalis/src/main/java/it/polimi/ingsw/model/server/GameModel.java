@@ -16,10 +16,7 @@ import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.CardType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Class that represents a single match of Codex Naturalis.
@@ -59,7 +56,7 @@ public class GameModel{
             }
         }};
         this.players = new ArrayList<>(numberOfPlayers);
-        this.playerData = new HashMap<>();
+        this.playerData = new LinkedHashMap<>();
         int numberOfVisibleCards = GameParameters.getNumberOfVisibleCards();
         this.resourceDeck = new TurnDeck<>(
                 CardBuilder::buildCard,

@@ -16,7 +16,6 @@ import java.util.Map;
  * The main information is the nickname, the color, the cards placed and the score.
  */
 public abstract class ClientPlayer {
-
     private final String nickname;
     private List<BasicCard> placedCards;
     private final Content color;
@@ -27,8 +26,8 @@ public abstract class ClientPlayer {
     /**
      * Class constructor.
      *
-     * @param nickname the player's nickname.
-     * @param color    the player's color.
+     * @param nickname   the player's nickname.
+     * @param color      the player's color.
      */
     public ClientPlayer(String nickname, Content color) {
         this.nickname = nickname;
@@ -66,6 +65,15 @@ public abstract class ClientPlayer {
     public Content getColor() { return color; }
 
     /**
+     * Returns the points gathered by the player up to a certain point in the game.
+     *
+     * @return the player's score.
+     */
+    public int getScore() {
+        return score;
+    }
+
+    /**
      * Returns the current cards placed by the player on his board.
      *
      * @return the placed card list.
@@ -88,15 +96,6 @@ public abstract class ClientPlayer {
         this.placedCards = new ArrayList<>(placedCards);
         this.score = score;
         eventSubmitter.submit(() -> gameView.updateBoard(nickname, getPlacedCards(), score));
-    }
-
-    /**
-     * Returns the points gathered by the player up to a certain point in the game.
-     *
-     * @return the player's score.
-     */
-    public int getScore() {
-        return score;
     }
 
     /**

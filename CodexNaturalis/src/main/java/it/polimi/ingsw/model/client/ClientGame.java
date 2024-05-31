@@ -19,7 +19,6 @@ import java.util.Map;
  * This class is needed to handle some MVC functionalities in an easier way.
  */
 public class ClientGame {
-
     private final int numberOfPlayers;
     private final LocalPlayer localPlayer;
     private final List<RemotePlayer> remotePlayers;
@@ -38,7 +37,7 @@ public class ClientGame {
      */
     public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView, int numberOfPlayers) {
         this.localPlayer = player;
-        this.localPlayer.setViewReferences(gameView,eventSubmitter);
+        this.localPlayer.setViewReferences(gameView, eventSubmitter);
         this.gameView = gameView;
         this.eventSubmitter = eventSubmitter;
         this.remotePlayers = new ArrayList<>();
