@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.view.GameView;
+import it.polimi.ingsw.view.gui.controllers.GameViewController;
 import it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -38,7 +39,7 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void showChatMessage(ChatMessage chatMessage) {
-
+        currentLoader.<GameViewController>getController().showChatMessage(chatMessage.getSender(), chatMessage.getMessage());
     }
 
     @Override

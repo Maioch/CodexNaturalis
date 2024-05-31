@@ -5,10 +5,8 @@ import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.DrawOptionsMessage;
-import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
-import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardBuilder;
@@ -168,8 +166,10 @@ public class GameModel{
         availableColors.remove(color);
         playerData.put(nickname,color);
         serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname, color, numberOfPlayers));
-        for(Map.Entry<String,Content> entry : playerData.entrySet()) {
-            serverSubject.notifyAll(new PlayerMessage(Status.NEW_PLAYER_JOINED, entry.getKey(), entry.getValue()));
+        int turnNumber = 1;
+        for(Map.Entry<String, Content> entry : playerData.entrySet()) {
+            serverSubject.notifyAll(new JoinGameMessage(Status.NEW_PLAYER_JOINED, entry.getKey(), entry.getValue(), turnNumber));
+            turnNumber++;
         }
     }
 

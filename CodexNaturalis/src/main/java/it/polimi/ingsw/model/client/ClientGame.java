@@ -7,10 +7,7 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * ClientGame is a simplified version of the game model.
@@ -49,7 +46,7 @@ public class ClientGame {
     /**
      * Checks if the game is now full
      *
-     * @return true if it's full, false ootherewise
+     * @return true if it's full, false otherwise
      */
     public boolean isGameFull(){
         return remotePlayers.size() + 1 == numberOfPlayers;
@@ -58,9 +55,9 @@ public class ClientGame {
     /**
      * Returns the game's number of players the game needs to be played.
      *
-     * @param numberOfPlayers the number of players.
+     * @return the number of players.
      */
-    public int getNumberOfPlayers(int numberOfPlayers) {
+    public int getNumberOfPlayers() {
         return numberOfPlayers;
     }
 
@@ -126,15 +123,19 @@ public class ClientGame {
     }
 
     /**
-     * Returns a summary of the colors chosen by the players, local and remote.
+     * Returns a summary of the colors chosen by the players, local and remote, ordered by turn number.
      *
      * @return each player's nickname and his color.
      */
-    public Map<String, Content> getPlayersColors(){
-        HashMap<String, Content> playersColors = new HashMap<>();
-        playersColors.put(getLocalPlayer().getNickname(), getLocalPlayer().getColor());
-        for(RemotePlayer remotePlayer : getRemotePlayers()){
-            playersColors.put(remotePlayer.getNickname(), remotePlayer.getColor());
+    public Map<String, Content> getPlayerColors(){
+        Map<String, Content> playersColors = new LinkedHashMap<>();
+        List<ClientPlayer> players = new ArrayList<>(){{
+            add(localPlayer);
+            addAll(remotePlayers);
+        }};
+        players.sort(Comparator.comparing(ClientPlayer::getTurnNumber));
+        for(ClientPlayer player : players){
+            playersColors.put(player.getNickname(), player.getColor());
         }
         return playersColors;
     }

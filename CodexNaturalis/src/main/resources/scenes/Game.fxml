@@ -56,6 +56,26 @@
                   </Pane>
                </content>
             </ScrollPane>
+            <GridPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="60.0" prefWidth="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="75.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="400.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="70.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="toastNotificationLabel" text="SanpyTek left the game... we hope they'll be back soon ;)" textFill="#2f0606" GridPane.columnIndex="1">
+                     <font>
+                        <Font name="Fira Sans Condensed SemiBold" size="18.0" />
+                     </font>
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </Label>
+               </children>
+            </GridPane>
             <GridPane prefHeight="150.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -121,9 +141,9 @@
                                  </font>
                               </Label>
                               <Circle fill="#2197ff" radius="12.0" stroke="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.halignment="CENTER" />
-                              <ImageView fitHeight="20.0" fitWidth="20.0" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                              <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER">
                                  <image>
-                                    <Image url="@../../../../../../../Downloads/eye-outline.png" />
+                                    <Image url="@images/viewBoardIcon.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -147,28 +167,11 @@
                                  </GridPane.margin>
                               </Label>
                               <Circle fill="#2197ff" radius="12.0" stroke="#727272" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.halignment="CENTER" />
-                              <ImageView fitHeight="20.0" fitWidth="20.0" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                              <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER">
                                  <image>
-                                    <Image url="@../../../../../../../Downloads/eye-outline.png" />
+                                    <Image url="@images/viewObjectivesIcon.png" />
                                  </image>
                               </ImageView>
-                           </children>
-                        </GridPane>
-                        <GridPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="50.0" prefWidth="200.0" styleClass="playerTagPane">
-                           <columnConstraints>
-                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="40.0" />
-                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                           </columnConstraints>
-                           <rowConstraints>
-                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                           </rowConstraints>
-                           <children>
-                              <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="WWWWWWWWWWWW" textFill="WHITE" GridPane.columnIndex="1">
-                                 <font>
-                                    <Font name="Fira Sans Condensed SemiBold" size="12.0" />
-                                 </font>
-                              </Label>
-                              <Circle fill="#2197ff" radius="12.0" stroke="#727272" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.halignment="CENTER" />
                            </children>
                         </GridPane>
                         <GridPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="50.0" prefWidth="200.0" styleClass="playerTagPane" GridPane.columnIndex="2">
@@ -187,9 +190,32 @@
                                  </font>
                               </Label>
                               <Circle fill="#2197ff" radius="12.0" stroke="#727272" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.halignment="CENTER" />
-                              <ImageView fitHeight="20.0" fitWidth="20.0" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                              <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER">
                                  <image>
-                                    <Image url="@../../../../../../../Downloads/eye-outline.png" />
+                                    <Image url="@images/viewBoardIcon.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </GridPane>
+                        <GridPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="50.0" prefWidth="200.0" styleClass="playerTagPane">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="40.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="9.0" prefWidth="40.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="SDAASD" textFill="WHITE" GridPane.columnIndex="1">
+                                 <font>
+                                    <Font name="Fira Sans Condensed SemiBold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <Circle fill="#2197ff" radius="12.0" stroke="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.halignment="CENTER" />
+                              <ImageView fitHeight="24.0" fitWidth="24.0" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER">
+                                 <image>
+                                    <Image url="@images/viewBoardIcon.png" />
                                  </image>
                               </ImageView>
                            </children>
@@ -208,10 +234,9 @@
          </columnConstraints>
          <rowConstraints>
             <RowConstraints minHeight="16.0" percentHeight="5.0" prefHeight="16.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="8.0" percentHeight="60.0" prefHeight="8.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="16.0" percentHeight="5.0" prefHeight="16.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="128.0" percentHeight="40.0" prefHeight="128.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="128.0" percentHeight="40.0" prefHeight="128.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="8.0" prefHeight="8.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="-Infinity" minHeight="128.0" prefHeight="160.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="-Infinity" minHeight="128.0" prefHeight="140.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="8.0" percentHeight="0.0" prefHeight="8.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <GridPane.margin>
@@ -255,7 +280,7 @@
                          <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="64.0" vgrow="SOMETIMES" />
                        </rowConstraints>
                         <children>
-                           <TextField fx:id="chatTextBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                           <TextField fx:id="chatTextBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onKeyTyped="#checkForText" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                               <GridPane.margin>
                                  <Insets bottom="8.0" left="8.0" right="3.0" top="8.0" />
                               </GridPane.margin>
@@ -267,7 +292,7 @@
                                  <Font name="Fira Sans Condensed Regular" size="13.0" />
                               </font>
                            </TextField>
-                           <SplitMenuButton fx:id="chatSendButton" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="64.0" text="Send" GridPane.columnIndex="1">
+                           <SplitMenuButton fx:id="chatSendButton" alignment="CENTER" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefWidth="64.0" text="Send" GridPane.columnIndex="1">
                               <font>
                                  <Font name="Fira Sans Condensed Regular" size="11.0" />
                               </font>
@@ -305,17 +330,35 @@
                      </ScrollPane>
                   </children>
                </GridPane>
-               <GridPane styleClass="menuCard">
+               <GridPane fx:id="scoreGridPane" styleClass="menuCard">
                  <columnConstraints>
                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                  </columnConstraints>
                  <rowConstraints>
-                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                   <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="32.0" vgrow="SOMETIMES" />
+                     <RowConstraints maxHeight="-Infinity" minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
+                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                  </rowConstraints>
+                  <children>
+                     <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="titleBackground" text="Score" textFill="#2f0606">
+                        <font>
+                           <Font name="Fira Sans Condensed SemiBold" size="16.0" />
+                        </font>
+                     </Label>
+                     <Pane prefHeight="200.0" prefWidth="200.0" styleClass="titleDivider" GridPane.rowIndex="1" />
+                     <GridPane styleClass="scoreCard" GridPane.rowIndex="2">
+                       <columnConstraints>
+                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                       </columnConstraints>
+                       <rowConstraints>
+                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                       </rowConstraints>
+                     </GridPane>
+                  </children>
                </GridPane>
             </children>
          </GridPane>
-         <GridPane fx:id="resourceDeckGrid" vgap="32.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+         <GridPane fx:id="resourceDeckGrid" vgap="32.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
            <columnConstraints>
              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="130.0" />
@@ -327,8 +370,25 @@
             <GridPane.margin>
                <Insets bottom="16.0" />
             </GridPane.margin>
+            <children>
+               <ImageView fitHeight="133.0" fitWidth="130.0" preserveRatio="true">
+                  <image>
+                     <Image url="@../../../../../../../Downloads/Cards/Fronts/095.png" />
+                  </image>
+               </ImageView>
+               <ImageView fitHeight="133.0" fitWidth="130.0" preserveRatio="true" GridPane.columnIndex="1">
+                  <image>
+                     <Image url="@../../../../../../../Downloads/Cards/Fronts/095.png" />
+                  </image>
+               </ImageView>
+               <ImageView fitHeight="133.0" fitWidth="130.0" preserveRatio="true" GridPane.columnIndex="2">
+                  <image>
+                     <Image url="@../../../../../../../Downloads/Cards/Fronts/095.png" />
+                  </image>
+               </ImageView>
+            </children>
          </GridPane>
-         <GridPane fx:id="goldDeckGrid" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP">
+         <GridPane fx:id="goldDeckGrid" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP">
            <columnConstraints>
              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -340,6 +400,23 @@
             <GridPane.margin>
                <Insets top="16.0" />
             </GridPane.margin>
+            <children>
+               <ImageView fitHeight="133.0" fitWidth="130.0" preserveRatio="true">
+                  <image>
+                     <Image url="@../../../../../../../Downloads/Cards/Fronts/095.png" />
+                  </image>
+               </ImageView>
+               <ImageView fitHeight="133.0" fitWidth="130.0" preserveRatio="true" GridPane.columnIndex="1">
+                  <image>
+                     <Image url="@../../../../../../../Downloads/Cards/Fronts/095.png" />
+                  </image>
+               </ImageView>
+               <ImageView fitHeight="133.0" fitWidth="130.0" preserveRatio="true" GridPane.columnIndex="2">
+                  <image>
+                     <Image url="@../../../../../../../Downloads/Cards/Fronts/095.png" />
+                  </image>
+               </ImageView>
+            </children>
          </GridPane>
       </GridPane>
    </GridPane>

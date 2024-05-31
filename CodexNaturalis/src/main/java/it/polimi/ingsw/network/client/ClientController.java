@@ -18,7 +18,6 @@ import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.MatchListMessage;
-import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.SetupView;
@@ -109,7 +108,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
      * @return a map that contains each player's nickname (key), and it's color.
      */
     public Map<String, Content> getPlayerColors(){
-        return game.getPlayersColors();
+        return game.getPlayerColors();
     }
 
     /**
@@ -126,6 +125,13 @@ public class ClientController extends EventHandler<LabeledMessage> {
      * @return the nickname of the player with turn.
      */
     public String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
+
+    /**
+     * @return the number of players
+     */
+    public int getNumberOfPlayers(){
+        return game.getNumberOfPlayers();
+    }
 
     /**
      * @return true whether the game is ongoing (initialized) or not
@@ -244,14 +250,18 @@ public class ClientController extends EventHandler<LabeledMessage> {
             }
             switch (message.getStatus()) {
                 case NEW_PLAYER_JOINED -> {
-                    if (message instanceof PlayerMessage playerMessage) {
+                    if (message instanceof JoinGameMessage joinGameMessage) {
+                        if(game.getLocalPlayer().getNickname().equals(joinGameMessage.getNickname())) {
+                            game.getLocalPlayer().setTurnNumber(joinGameMessage.getGameInfo());
+                            break;
+                        }
                         boolean isPlayerMissing = game.getRemotePlayers().stream()
                                 .map(RemotePlayer::getNickname)
-                                .noneMatch(n -> n.equals(playerMessage.getNickname())) &&
-                                !getLocalPlayerName().equals(playerMessage.getNickname());
+                                .noneMatch(n -> n.equals(joinGameMessage.getNickname()));
                         if (isPlayerMissing) {
-                            game.addRemotePlayer(new RemotePlayer(
-                                    playerMessage.getNickname(), playerMessage.getColor()));
+                            RemotePlayer player = new RemotePlayer(joinGameMessage.getNickname(), joinGameMessage.getColor());
+                            player.setTurnNumber(joinGameMessage.getGameInfo());
+                            game.addRemotePlayer(player);
                         }
                     }
                 }

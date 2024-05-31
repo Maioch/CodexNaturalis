@@ -9,7 +9,6 @@ import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.GameColorsMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
-import it.polimi.ingsw.network.messages.setup.PlayerMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameModel;
@@ -122,10 +121,14 @@ public class GameController implements Runnable{
         }
         receivePing(handler);
         handler.setCurrentGame(this);
-        serverSubject.notify(nickname, new PlayerMessage(Status.JOIN_GAME, nickname, game.getPlayer(nickname).getColor()));
+        serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname,
+                game.getPlayer(nickname).getColor(), game.getAllPlayers().indexOf(game.getPlayer(nickname)) - 1));
         serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
+        int turnNumber = 1;
         for(Player player : game.getAllPlayers()){
-            serverSubject.notify(nickname, new PlayerMessage(Status.NEW_PLAYER_JOINED, player.getNickname(), player.getColor()));
+            serverSubject.notify(nickname, new JoinGameMessage(Status.NEW_PLAYER_JOINED, player.getNickname(),
+                    player.getColor(), turnNumber));
+            turnNumber++;
         }
         for(Player player : game.getAllPlayers()){
             serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
