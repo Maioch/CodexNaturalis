@@ -36,11 +36,11 @@ public abstract class AbstractGUI {
      */
     protected void forceUpdate(){
         if(primaryStage.isFullScreen()){
-            primaryStage.setWidth(primaryStage.getWidth() - 0.01);
+            primaryStage.setWidth(primaryStage.getWidth() - 1);
             primaryStage.setFullScreen(true);
         }else{
-            primaryStage.setWidth(primaryStage.getWidth() - 0.01);
-            primaryStage.setWidth(primaryStage.getWidth() + 0.01);
+            primaryStage.setWidth(primaryStage.getWidth() - 1);
+            primaryStage.setWidth(primaryStage.getWidth() + 1);
         }
     }
 }

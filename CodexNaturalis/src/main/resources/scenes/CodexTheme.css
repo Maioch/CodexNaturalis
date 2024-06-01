@@ -204,7 +204,7 @@
 }
 .scoreCard {
   -fx-background-image: url('images/scoreCard.png');
-  -fx-background-size: contain;
+  -fx-background-size: stretch;
   -fx-background-repeat: no-repeat;
   -fx-background-position: center;
 }
@@ -244,9 +244,10 @@
 .gameBoardScrollPane {
   -fx-background-color: transparent;
 }
-.playerTagPane{
+.playerTagGrid{
   -fx-background-color: #533333;
   -fx-background-radius: 0 0 16 16;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
 }
 .chatUserLabel{
   -user-color: red;
@@ -275,22 +276,18 @@
 .playerTagCircle{
   -circle-color: red;
   -fx-fill: -circle-color;
-  -fx-alignment: center;
 }
 .playerTagText{
   -fx-font-family: "Fira Sans Condensed SemiBold";
-  -fx-font-size: 18;
+  -fx-font-size: 16;
   -fx-text-fill: #FFFFFF;
 }
 .viewBoardIcon{
-  -fx-alignment: center;
   -fx-image: url("images/viewBoardIcon.png");
 }
 .hideBoardIcon{
-  -fx-alignment: center;
   -fx-image: url("images/hideBoardIcon.png");
 }
 .viewObjectivesIcon{
-  -fx-alignment: center;
   -fx-image: url("images/viewObjectivesIcon.png");
 }

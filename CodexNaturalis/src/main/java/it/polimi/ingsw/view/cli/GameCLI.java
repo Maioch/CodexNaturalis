@@ -465,7 +465,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     @SuppressWarnings("SlowListContainsAll")
     private void sendChatMessage(String arguments){
         if(controller.getPlayerWithTurn().equals(controller.getLocalPlayerName())){
-            System.out.println("You cannot send chat messages while your turn is in progress >:/");
+            System.out.println("You cannot send chat messages while your turn is in progress");
             return;
         }
         List<String> recipients = extractRecipients(arguments);

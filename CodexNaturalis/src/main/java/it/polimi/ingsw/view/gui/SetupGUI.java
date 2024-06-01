@@ -38,6 +38,8 @@ public class SetupGUI extends AbstractGUI implements SetupView {
         }
         this.primaryStage = stage;
         stage.setTitle("Codex Naturalis");
+        stage.setMinWidth(1280);
+        stage.setMinHeight(720);
         currentLoader = new FXMLLoader(getClass().getResource(filePath + "Connection.fxml"));
         currentScene = new Scene(currentLoader.load(),1820,980);
         currentScene.setOnKeyReleased((e) -> {

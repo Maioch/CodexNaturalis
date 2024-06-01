@@ -47,7 +47,8 @@ public class Deck<T>{
     }
 
     /**
-     * Check whether the deck is empty.
+     * Checks whether the deck is empty or not.
+     *
      * @return true if the deck is empty.
      */
     public boolean isEmpty(){
@@ -55,9 +56,11 @@ public class Deck<T>{
     }
 
     /**
-     * Draws the last card of a specified deck.
-     * @return the last card of the deck.
-     * @exception DeckException if the deck is empty when the user tries to draw.
+     * Draws the top card of this deck.
+     *
+     * @return               the top card of the deck.
+     *
+     * @throws DeckException if the deck is empty when the user tries to draw.
      */
     public T draw() throws DeckException{
         if(this.deck.isEmpty())

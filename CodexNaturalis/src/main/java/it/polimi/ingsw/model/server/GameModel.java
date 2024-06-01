@@ -18,8 +18,6 @@ import java.util.*;
 
 /**
  * Class that represents a single match of Codex Naturalis.
- *
- * @author Guglielmo Gatti, Andrea Fidanza, Francesco Nisoli, Marco Maiocchi
  */
 public class GameModel{
 
@@ -36,8 +34,10 @@ public class GameModel{
 
     /**
      * Class constructor.
-     * @param numberOfPlayers the number of players requested by the creator of the game.
-     * @param serverSubject the object used to notify the serverListeners.
+     *
+     * @param numberOfPlayers         the number of players requested by the creator of the game.
+     * @param serverSubject           the object used to notify the serverListeners.
+     *
      * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number
      *                                players allowed.
      */

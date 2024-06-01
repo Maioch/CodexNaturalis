@@ -1,11 +1,13 @@
 package it.polimi.ingsw.model.server;
 
 /**
- * Enum that represents every possible symbol contained in cards.
- * Every color si associated with the respective in-game resource (e.g. Red -> Mushroom); white is used for corners
- * with no symbols and empty for blank ones that can't be overlapped. Lastly there are the three object types.
+ * Content represents every possible symbol contained in cards.
+ * Every color si associated with the respective in-game resource (for example: Red -> Mushroom); white is used for
+ * corners with no symbols and empty for blank ones that can't be overlapped. Lastly there are the three object types.
+ * Each content has an associated emote and text color for graphical purposes.
  */
 public enum Content {
+
     RED("\u001B[41m  \u001B[m","\u001B[31m","#f14624"),
     GREEN("\u001b[42m  \u001b[m", "\u001B[32m", "#2d853a"),
     BLUE("\u001b[44m  \u001b[m", "\u001B[34m", "#5cc7b1"),
@@ -21,6 +23,8 @@ public enum Content {
     private final String hexColorString;
 
     /**
+     * Checks if this content is a color.
+     *
      * @return true if this is a color
      */
     public boolean isColor(){
@@ -28,6 +32,8 @@ public enum Content {
     }
 
     /**
+     * Checks if this content is a resource.
+     *
      * @return true if this is a resource
      */
     public boolean isResource(){
@@ -35,6 +41,8 @@ public enum Content {
     }
 
     /**
+     * Checks if this content is an object.
+     *
      * @return true if this is an object
      */
     public boolean isObject(){
@@ -42,20 +50,26 @@ public enum Content {
     }
 
     /**
-     * @return true if a corner can't be overlapped.
+     * Checks if this content is empty, meaning that the corner it refers to cannot be overlapped.
+     *
+     * @return true if this is empty.
      */
     public boolean isEmpty(){
         return this == EMPTY;
     }
 
     /**
-     * @return the symbol.
+     * Returns the emote associated to this content.
+     *
+     * @return the content's symbol.
      */
     public String getSymbol(){
         return symbol;
     }
 
     /**
+     * Returns the text color associated to this content.
+     *
      * @return the color for each content.
      */
     public String getTextColorString(){
@@ -63,13 +77,18 @@ public enum Content {
     }
 
     /**
+     * Returns the hexadecimal representation of the text color associated to this content.
+     *
      * @return the hex color string
      */
     public String getHexColorString(){ return hexColorString; }
 
     /**
-     * Constructor for the enum.
-     * @param symbol the textual representation for each value of the enum.
+     * Enum constructor.
+     *
+     * @param symbol          the content's emote.
+     * @param textColorString the content's text color.
+     * @param hexColorString  the content's color hexadecimal string.
      */
     Content(String symbol, String textColorString, String hexColorString){
         this.symbol = symbol;
