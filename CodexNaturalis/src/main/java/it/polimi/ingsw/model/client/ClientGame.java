@@ -22,6 +22,7 @@ public class ClientGame {
     private List<Objective> commonObjectives;
     private Map<CardType, List<BasicCard>> drawableOptions;
     private ClientPlayer playerWithTurn;
+    private final Object playerWithTurnLock;
     private final EventSubmitter eventSubmitter;
     private final GameView gameView;
 
@@ -41,6 +42,7 @@ public class ClientGame {
         this.commonObjectives = new ArrayList<>();
         this.playerWithTurn = null;
         this.numberOfPlayers = numberOfPlayers;
+        this.playerWithTurnLock = new Object();
     }
 
     /**
@@ -48,7 +50,7 @@ public class ClientGame {
      *
      * @return true if it's full, false otherwise
      */
-    public boolean isGameFull(){
+    public synchronized boolean isGameFull(){
         return remotePlayers.size() + 1 == numberOfPlayers;
     }
 
@@ -57,8 +59,27 @@ public class ClientGame {
      *
      * @return the number of players.
      */
-    public int getNumberOfPlayers() {
+    public synchronized int getNumberOfPlayers() {
         return numberOfPlayers;
+    }
+
+    /**
+     * Returns the summary of all the cards the player can draw in a given moment.
+     * The returned cards are divided by type.
+     *
+     * @return a map that contains all the drawable cards.
+     */
+    public Map<CardType, List<BasicCard>> getDrawableOptions() {
+        return new HashMap<>(){{
+            for(Map.Entry<CardType,List<BasicCard>> entry : drawableOptions.entrySet()) {
+                List<BasicCard> newValue = new ArrayList<>(){{
+                    for(BasicCard card : entry.getValue()){
+                        add(card.copy());
+                    }
+                }};
+                put(entry.getKey(), newValue);
+            }
+        }};
     }
 
     /**
@@ -82,25 +103,6 @@ public class ClientGame {
     }
 
     /**
-     * Returns the summary of all the cards the player can draw in a given moment.
-     * The returned cards are divided by type.
-     *
-     * @return a map that contains all the drawable cards.
-     */
-    public Map<CardType, List<BasicCard>> getDrawableOptions() {
-        return new HashMap<>(){{
-            for(Map.Entry<CardType,List<BasicCard>> entry : drawableOptions.entrySet()) {
-                List<BasicCard> newValue = new ArrayList<>(){{
-                    for(BasicCard card : entry.getValue()){
-                        add(card.copy());
-                    }
-                }};
-                put(entry.getKey(), newValue);
-            }
-        }};
-    }
-
-    /**
      * Returns the player associated to this client.
      *
      * @return the local player.
@@ -114,7 +116,7 @@ public class ClientGame {
      *
      * @return the remote players.
      */
-    public List<RemotePlayer> getRemotePlayers(){
+    public synchronized List<RemotePlayer> getRemotePlayers(){
         return new ArrayList<>(){{
             for(RemotePlayer remotePlayer : remotePlayers){
                 add(new RemotePlayer(remotePlayer));
@@ -127,7 +129,7 @@ public class ClientGame {
      *
      * @return each player's nickname and his color.
      */
-    public Map<String, Content> getPlayerColors(){
+    public synchronized Map<String, Content> getPlayerColors(){
         Map<String, Content> playersColors = new LinkedHashMap<>();
         List<ClientPlayer> players = new ArrayList<>(){{
             add(localPlayer);
@@ -143,13 +145,18 @@ public class ClientGame {
     /**
      * Adds a player to this remote players list.
      */
-    public void addRemotePlayer(RemotePlayer player){
+    public synchronized void addRemotePlayer(RemotePlayer player){
         remotePlayers.add(player);
         player.setViewReferences(gameView, eventSubmitter);
         eventSubmitter.submit(() -> gameView.showUserJoined(player.getNickname(), player.getColor()));
     }
 
-    public void removeRemotePlayer(String nickname){
+    /**
+     * Removes the parameter player from the remote player list.
+     *
+     * @param nickname the nickname of the player to remove.
+     */
+    public synchronized void removeRemotePlayer(String nickname){
         remotePlayers.removeIf(remotePlayer -> remotePlayer.getNickname().equals(nickname));
     }
 
@@ -164,17 +171,30 @@ public class ClientGame {
     }
 
     /**
+     * Returns the active player.
+     *
+     * @return the player that has the turn.
+     */
+    public ClientPlayer getPlayerWithTurn(){
+        synchronized (playerWithTurnLock) {
+            return playerWithTurn;
+        }
+    }
+
+    /**
      * Updates the active player.
      *
      * @param nickname the nickname of the player that has the turn.
      */
     public void setPlayerWithTurn(String nickname) {
-        ClientPlayer remotePlayerWithTurn = remotePlayers.stream()
-                .filter(p -> p.getNickname().equals(nickname))
-                .findFirst()
-                .orElse(null);
-        playerWithTurn = remotePlayerWithTurn == null ? localPlayer : remotePlayerWithTurn;
-        gameView.turnChanged(nickname);
+        synchronized (playerWithTurnLock) {
+            ClientPlayer remotePlayerWithTurn = remotePlayers.stream()
+                    .filter(p -> p.getNickname().equals(nickname))
+                    .findFirst()
+                    .orElse(null);
+            playerWithTurn = remotePlayerWithTurn == null ? localPlayer : remotePlayerWithTurn;
+        }
+        eventSubmitter.submit(() -> gameView.turnChanged(nickname));
     }
 
     /**
@@ -188,14 +208,5 @@ public class ClientGame {
                 add(new Objective(obj));
             }
         }};
-    }
-
-    /**
-     * Returns the active player.
-     *
-     * @return the player that has the turn.
-     */
-    public ClientPlayer getPlayerWithTurn(){
-        return playerWithTurn;
     }
 }

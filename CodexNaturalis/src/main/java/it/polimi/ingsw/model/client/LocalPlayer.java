@@ -28,11 +28,24 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
+     * Updates all the cards held by the player in his hand.
+     *
+     * @param handCards the player's hand cards.
+     */
+    @Override
+    public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
+        this.handCards = handCards;
+        if(show){
+            eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(getHandCards()));
+        }
+    }
+
+    /**
      * Returns all the cards held by the player in his hand.
      *
      * @return the player's hand.
      */
-    public List<CardSides> getHandCards() {
+    public synchronized List<CardSides> getHandCards() {
         return new ArrayList<>(){{
             for(CardSides cardSides : handCards){
                 add(new CardSides(
@@ -40,19 +53,6 @@ public class LocalPlayer extends ClientPlayer{
                         cardSides.backSide().copy()));
             }
         }};
-    }
-
-    /**
-     * Updates all the cards held by the player in his hand.
-     *
-     * @param handCards the player's hand cards.
-     */
-    @Override
-    public void setHandCards(List<CardSides> handCards, boolean show) {
-        this.handCards = handCards;
-        if(show){
-            eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(getHandCards()));
-        }
     }
 
     /**

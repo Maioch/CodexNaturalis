@@ -82,6 +82,8 @@ public class GameModel{
     }
 
     /**
+     * 
+     *
      * @param nickname a player's nickname.
      * @return the player in this game associated to the nickname.
      */

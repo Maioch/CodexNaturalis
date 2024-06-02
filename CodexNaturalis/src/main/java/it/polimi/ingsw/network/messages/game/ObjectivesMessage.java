@@ -11,31 +11,22 @@ import java.util.List;
  * Message used to show each objective in a game.
  */
 public class ObjectivesMessage extends Message {
-    private final List<Objective> personalObjectives;
-    private final List<Objective> commonObjectives;
+    private final List<Objective> objectives;
 
     /**
      * Constructor for the class.
      * @param personalObjectives the player's personal objective.
      * @param commonObjectives the common objectives, belonging to all the players.
      */
-    public ObjectivesMessage(Status status, List<Objective> personalObjectives, List<Objective> commonObjectives){
+    public ObjectivesMessage(Status status, List<Objective> objectives){
         super(status);
-        this.personalObjectives = new ArrayList<>(personalObjectives);
-        this.commonObjectives = new ArrayList<>(commonObjectives);
+        this.objectives = new ArrayList<>(objectives);
     }
 
     /**
      * @return the player's personal objective.
      */
-    public List<Objective> getPersonalObjectives(){
-        return new ArrayList<>(personalObjectives);
-    }
-
-    /**
-     * @return the game's common objectives, belonging to all the players.
-     */
-    public List<Objective> getCommonObjectives() {
-        return new ArrayList<>(commonObjectives);
+    public List<Objective> getObjectives(){
+        return new ArrayList<>(objectives);
     }
 }

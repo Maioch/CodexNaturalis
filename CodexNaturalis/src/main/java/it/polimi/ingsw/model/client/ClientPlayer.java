@@ -82,15 +82,8 @@ public abstract class ClientPlayer {
      *
      * @return the player's color.
      */
-    public Content getColor() { return color; }
-
-    /**
-     * Returns the points gathered by the player up to a certain point in the game.
-     *
-     * @return the player's score.
-     */
-    public int getScore() {
-        return score;
+    public Content getColor() {
+        return color;
     }
 
     /**
@@ -98,7 +91,7 @@ public abstract class ClientPlayer {
      *
      * @return the placed card list.
      */
-    public List<BasicCard> getPlacedCards() {
+    public synchronized List<BasicCard> getPlacedCards() {
         List<BasicCard> result = new ArrayList<>();
         for(BasicCard card : placedCards){
             result.add(card.copy());
@@ -112,7 +105,7 @@ public abstract class ClientPlayer {
      * @param placedCards the player's placed cards.
      * @param score       the player's score.
      */
-    public void setPlacedCards(List<BasicCard> placedCards, int score) {
+    public synchronized void setPlacedCards(List<BasicCard> placedCards, int score) {
         this.placedCards = new ArrayList<>(placedCards);
         this.score = score;
         eventSubmitter.submit(() -> gameView.updateBoard(nickname, getPlacedCards(), score));
@@ -144,6 +137,6 @@ public abstract class ClientPlayer {
      */
     public void setFinalScore(Map<Objective, Integer> scoresByObjective, Integer finalScore){
         this.score = finalScore;
-        eventSubmitter.submit(() -> gameView.revealFinalSummary(getNickname(), scoresByObjective, getScore()));
+        eventSubmitter.submit(() -> gameView.revealFinalSummary(getNickname(), scoresByObjective, score));
     }
 }

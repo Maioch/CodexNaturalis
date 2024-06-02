@@ -284,18 +284,22 @@ public class ClientController extends EventHandler<LabeledMessage> {
                         game.getLocalPlayer().requestStarterCardPlacement();
                     }
                 }
-                case SECRET_OBJECTIVES, INVALID_SECRET_OBJECTIVES -> {
+                case COMMON_OBJECTIVES -> {
+                    if (message instanceof ObjectivesMessage objectivesMessage) {
+                        game.setCommonObjectives(objectivesMessage.getObjectives());
+                    }
+                }
+                case REQUEST_SECRET_OBJECTIVES, INVALID_SECRET_OBJECTIVES -> {
                     if (message.getStatus() == Status.INVALID_SECRET_OBJECTIVES) {
                         eventSubmitter.submit(() -> gameView.showErrorMessage(Status.INVALID_SECRET_OBJECTIVES.getMessage()));
                     }
                     if (message instanceof ObjectivesMessage objectivesMessage) {
-                        eventSubmitter.submit(() -> gameView.requestPersonalObjectivesChoice(objectivesMessage.getPersonalObjectives()));
+                        eventSubmitter.submit(() -> gameView.requestPersonalObjectivesChoice(objectivesMessage.getObjectives()));
                     }
                 }
-                case ALL_OBJECTIVES -> {
+                case SECRET_OBJECTIVES -> {
                     if (message instanceof ObjectivesMessage objectivesMessage) {
-                        game.setCommonObjectives(objectivesMessage.getCommonObjectives());
-                        game.getLocalPlayer().setPersonalObjectives(objectivesMessage.getPersonalObjectives());
+                        game.getLocalPlayer().setPersonalObjectives(objectivesMessage.getObjectives());
                     }
                 }
                 case PLACE_CARD, INVALID_PLACE_CARD -> {

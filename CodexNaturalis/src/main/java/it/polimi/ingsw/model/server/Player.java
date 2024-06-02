@@ -301,7 +301,7 @@ public class Player {
                 .filter(o -> !commonObjectives.contains(o))
                 .collect(Collectors.toCollection(ArrayList::new));
         serverSubject.notify(getNickname(),
-                new ObjectivesMessage(Status.ALL_OBJECTIVES, secretObjectives, commonObjectives));
+                new ObjectivesMessage(Status.SECRET_OBJECTIVES, secretObjectives));
     }
 
     /**

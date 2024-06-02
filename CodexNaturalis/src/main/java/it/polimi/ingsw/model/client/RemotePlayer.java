@@ -39,7 +39,7 @@ public class RemotePlayer extends ClientPlayer {
      * @param handCards the player's hand.
      */
     @Override
-    public void setHandCards(List<CardSides> handCards, boolean show) {
+    public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
         this.handCards = handCards.stream()
                 .map(CardSides::backSide)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -51,7 +51,7 @@ public class RemotePlayer extends ClientPlayer {
     /**
      * @return the list of the player's hand cards.
      */
-    public List<BasicCard> getHandCards() {
+    public synchronized List<BasicCard> getHandCards() {
         return new ArrayList<>() {{
             for (BasicCard card : handCards) {
                 add(card.copy());

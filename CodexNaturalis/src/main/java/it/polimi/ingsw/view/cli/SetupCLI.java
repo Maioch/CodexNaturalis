@@ -37,7 +37,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     public SetupCLI(){
         CLIActionHandler cliActionHandler = new CLIActionHandler();
         boolean isConnected = false;
-        this.controller = new ClientController(this, new TerminalSubmitter(cliActionHandler));
+        TerminalSubmitter terminalSubmitter = new TerminalSubmitter(cliActionHandler);
+        this.controller = new ClientController(this, terminalSubmitter);
         new Thread(controller).start();
         new Thread(cliActionHandler).start();
         while (!isConnected) {
@@ -53,7 +54,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             switch (protocol) {
                 case 1 -> {
                     try {
-                        ConnectionInitializer.initializeTCP(ip, port, controller, new TerminalSubmitter(cliActionHandler));
+                        ConnectionInitializer.initializeTCP(ip, port, controller, terminalSubmitter);
                         System.out.println(GameParameters.getTitle());
                         isConnected = true;
                     } catch (IOException e) {

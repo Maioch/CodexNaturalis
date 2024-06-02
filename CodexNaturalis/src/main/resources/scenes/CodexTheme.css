@@ -16,7 +16,7 @@
   -fx-border-width: 6px;
 }
 .radioButtons{
-  -fx-color:  #E4DFB5;
+  -fx-color: #E4DFB5;
   -fx-focus-color: transparent;
   -fx-faint-focus-color: transparent;
 }
@@ -196,11 +196,8 @@
 .colorRadioButton:hover .radio{
   -fx-color: -radio-color;
 }
-.backButton {
-  -fx-image: url('images/back.png') ;
-}
 .backButton:hover {
-  -fx-image: url('images/backSelected.png') ;
+  -fx-opacity: 0.5 ;
 }
 .scoreCard {
   -fx-background-image: url('images/scoreCard.png');
@@ -272,6 +269,7 @@
   -fx-font-family: "Fira Sans Condensed SemiBold";
   -fx-font-size: 18;
   -fx-text-fill: #2f0606;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
 }
 .playerTagCircle{
   -circle-color: red;
@@ -285,9 +283,40 @@
 .viewBoardIcon{
   -fx-image: url("images/viewBoardIcon.png");
 }
+.playerTagIcon:hover{
+  -fx-opacity: 0.5;
+}
 .hideBoardIcon{
   -fx-image: url("images/hideBoardIcon.png");
 }
-.viewObjectivesIcon{
-  -fx-image: url("images/viewObjectivesIcon.png");
+.objectivesPane{
+  -fx-background-color: #E4DFB5;
+  -fx-background-radius: 0 18 18 0;
+  -fx-border-color: #A49E22;
+  -fx-border-radius: 0 15 15 0;
+  -fx-border-width: 6 6 6 0;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
+}
+.objectivesTitleBackground{
+  -fx-background-color: #E8DF92;
+  -fx-background-radius: 0 15 0 0;
+}
+.objectiveButtonPane{
+  -fx-background-color: #E8DF92;
+  -fx-background-radius: 0 15 15 0;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
+}
+.objectivesButton:hover{
+  -fx-opacity: 0.5;
+}
+.objectivesButton:disabled{
+  -fx-opacity: 0.5;
+}
+.cardSideSelectionPane{
+  -fx-background-color: #E4DFB5;
+  -fx-background-radius: 18 18 18 18;
+  -fx-border-color: #2f0606;
+  -fx-border-radius: 15 15 15 15;
+  -fx-border-width: 2;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.1, 0.0, 0.0);
 }

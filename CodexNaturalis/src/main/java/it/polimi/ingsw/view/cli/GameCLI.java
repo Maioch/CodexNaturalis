@@ -273,9 +273,8 @@ public class GameCLI extends AbstractCLI implements GameView {
         List<Integer> chosenObjective = readFromInput("Enter the ID of your chosen objective: ",
                 l -> l.stream().allMatch(i -> i >= 1 && i <= objectives.size()) && l.size() == numberOfSecretObjectives,
                 this::stringToListInt);
-        controller.sendMessage(new ObjectivesMessage(Status.SECRET_OBJECTIVES,
-                chosenObjective.stream().map(i -> objectives.get(i - 1)).toList(),
-                new ArrayList<>()));
+        controller.sendMessage(new ObjectivesMessage(Status.REQUEST_SECRET_OBJECTIVES,
+                chosenObjective.stream().map(i -> objectives.get(i - 1)).toList()));
     }
 
     /**

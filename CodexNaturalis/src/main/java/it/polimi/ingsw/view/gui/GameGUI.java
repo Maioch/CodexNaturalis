@@ -23,10 +23,11 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     /**
      * Constructor for the class.
-     * @param primaryStage
-     * @param currentScene
-     * @param currentLoader
-     * @param controller
+     *
+     * @param primaryStage the main application stage.
+     * @param currentScene the scene currently displayed.
+     * @param currentLoader the loader of the current scene. Used to get the current scene view controller.
+     * @param controller the client controller.
      */
     public GameGUI(Stage primaryStage, Scene currentScene, FXMLLoader currentLoader, ClientController controller) {
         this.primaryStage = primaryStage;
@@ -65,12 +66,10 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void turnChanged(String turnOwner) {
-        String coloredPlayer = controller.getPlayerColors().get(turnOwner).getTextColorString() +
-                turnOwner + Content.EMPTY.getTextColorString();
         currentLoader.<GameViewController>getController().updateStatusLabel(
                 controller.getLocalPlayerName().equals(turnOwner) ?
-                String.format("It's your turn, %s!", coloredPlayer) :
-                String.format("%s is playing their turn...", coloredPlayer));
+                String.format("It's your turn, %s!", turnOwner) :
+                String.format("%s is playing their turn...", turnOwner));
     }
 
     /**
@@ -99,17 +98,18 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void updateRemotePlayerHand(String nickname, List<BasicCard> handCards) {
-
+        currentLoader.<GameViewController>getController().updateRemotePlayerCards(nickname, handCards);
     }
 
     @Override
     public void updateLocalPlayerHand(List<CardSides> handCards) {
-
+        currentLoader.<GameViewController>getController().updateLocalPlayerCards(handCards);
     }
 
     @Override
     public void requestStarterSide(List<CardSides> playerCards) {
-
+        currentLoader.<GameViewController>getController().updateLocalPlayerCards(playerCards.subList(1, playerCards.size()));
+        currentLoader.<GameViewController>getController().chooseStarterSide(playerCards.getFirst());
     }
 
     @Override
@@ -119,22 +119,24 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void requestPersonalObjectivesChoice(List<Objective> objectives) {
-
+        currentLoader.<GameViewController>getController().choosePersonalObjective(
+                objectives.getFirst(), objectives.getLast());
     }
 
     @Override
     public void showPersonalObjectives(List<Objective> objectives) {
-
+        currentLoader.<GameViewController>getController().setPersonalObjectives(objectives.getFirst());
     }
 
     @Override
     public void showCommonObjectives(List<Objective> objectives) {
-
+        currentLoader.<GameViewController>getController().setCommonObjectives(
+                objectives.getFirst(), objectives.getLast());
     }
 
     @Override
     public void updateDecks(Map<CardType, List<BasicCard>> drawableCards) {
-
+        currentLoader.<GameViewController>getController().updateDecks(drawableCards);
     }
 
     @Override
@@ -150,10 +152,8 @@ public class GameGUI extends AbstractGUI implements GameView {
     @Override
     public void notifyRemotePlayerDisconnected(String nickname) {
         if(controller.getPlayerColors().get(nickname) != null) {
-            String coloredPlayer = controller.getPlayerColors().get(nickname).getTextColorString() +
-                    nickname + Content.EMPTY.getTextColorString();
             currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
-                    "%s disconnected from the game. We hope they'll be back soon ;)", coloredPlayer));
+                    "%s disconnected from the game. We hope they'll be back soon ;)", nickname));
         }
     }
 
@@ -177,12 +177,10 @@ public class GameGUI extends AbstractGUI implements GameView {
     @Override
     public void showNoMovesAvailable() {
         String turnOwner = controller.getPlayerWithTurn();
-        String coloredPlayer = controller.getPlayerColors().get(turnOwner).getTextColorString() +
-                turnOwner + Content.EMPTY.getTextColorString();
         currentLoader.<GameViewController>getController().updateStatusLabel(
                 turnOwner.equals(controller.getLocalPlayerName()) ?
-                String.format("%s, you can no longer make any more moves ;(", coloredPlayer) :
-                String.format("%s cannot make any more moves ;)", coloredPlayer)
+                String.format("%s, you can no longer make any more moves ;(", turnOwner) :
+                String.format("%s cannot make any more moves ;)", turnOwner)
         );
     }
 

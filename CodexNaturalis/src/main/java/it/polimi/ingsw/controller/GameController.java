@@ -138,9 +138,10 @@ public class GameController implements Runnable{
                 int numberOfCommonObjectives = GameParameters.getNumberOfCommonObjectives();
                 int numberOfSecretObjectives = GameParameters.getNumberOfSecretObjectives();
                 if(player.getObjectives().size() == numberOfCommonObjectives + numberOfSecretObjectives){
-                    serverSubject.notify(nickname, new ObjectivesMessage(Status.ALL_OBJECTIVES,
-                            player.getObjectives().stream().filter(o -> !game.getCommonObjectives().contains(o)).toList(),
+                    serverSubject.notify(nickname, new ObjectivesMessage(Status.COMMON_OBJECTIVES,
                             game.getCommonObjectives()));
+                    serverSubject.notify(nickname, new ObjectivesMessage(Status.SECRET_OBJECTIVES,
+                            player.getObjectives().stream().filter(o -> !game.getCommonObjectives().contains(o)).toList()));
                 }
             }else{
                 serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_BACK, player.getBackOnlyCardHand()));
@@ -486,13 +487,14 @@ public class GameController implements Runnable{
     @SuppressWarnings({"SlowListContainsAll"})
     private void choosePersonalObjective(Player player){
         List<Objective> drawnObjectives = game.drawObjectiveCards();
-        Status currentStatus = Status.SECRET_OBJECTIVES;
+        Status currentStatus = Status.REQUEST_SECRET_OBJECTIVES;
         List<Objective> secretObjectives = new ArrayList<>();
+        serverSubject.notify(player.getNickname(), new ObjectivesMessage(Status.COMMON_OBJECTIVES, game.getCommonObjectives()));
         while(secretObjectives.isEmpty() || !drawnObjectives.containsAll(secretObjectives)){
-            serverSubject.notify(player.getNickname(), new ObjectivesMessage(currentStatus, drawnObjectives, new ArrayList<>()));
+            serverSubject.notify(player.getNickname(), new ObjectivesMessage(currentStatus, drawnObjectives));
             Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
             if (message instanceof ObjectivesMessage objectiveMessage){
-                secretObjectives = objectiveMessage.getPersonalObjectives();
+                secretObjectives = objectiveMessage.getObjectives();
             } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
                 secretObjectives.addAll(drawnObjectives.subList(0, GameParameters.getNumberOfSecretObjectives()));
                 serverSubject.notifyAll(new Message(Status.TURN_SKIPPED));
