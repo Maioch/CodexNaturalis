@@ -211,6 +211,9 @@ public class MatchBrowserViewController extends ViewController {
             colorRadioButton.setAlignment(Pos.CENTER);
             colorRadioButton.setOnMouseClicked((mouseEvent) -> checkJoinInput());
             entries.add(new GridEntry(100, colorRadioButton));
+            if(colorChoiceToggleGroup.getSelectedToggle() == null){
+                colorChoiceToggleGroup.selectToggle(colorRadioButton);
+            }
         }
         addColumns(colorChoiceGrid, entries);
         joinPopupGrid.setVisible(true);

@@ -1,18 +1,22 @@
 package it.polimi.ingsw.view.gui;
 
+import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * CardAssetsProvider
  */
 public class CardAssetsProvider {
 
-    private static final String frontPath = "/";
-    private static final String backPath = "/";
-    private static final String objectivesPath = "/";
+    private static final String frontPath = "/scenes/images/cardFronts/";
+    private static final String backPath = "/scenes/images/cardBacks/";
+    private static final String objectivesPath = "/scenes/images/cardFronts/";
 
     /**
      * Returns the path where the parameter card is saved.
@@ -25,10 +29,16 @@ public class CardAssetsProvider {
     public static String getCardFilePath(BasicCard card){
         int id = card.getCardId();
         boolean isFront = card.isFront();
-        if(id < GameParameters.getStartCardIndex(CardType.STARTER) || id > GameParameters.getEndCardIndex(CardType.STARTER)){
-            id /= (GameParameters.getEndCardIndex(CardType.RESOURCE) - GameParameters.getStartCardIndex(CardType.RESOURCE));
+        int startIndex = GameParameters.getStartCardIndex(CardType.STARTER);
+        int endIndex = GameParameters.getEndCardIndex(CardType.STARTER);
+        if(!isFront && (id < startIndex || id > endIndex)){
+            // noinspection SuspiciousIntegerDivAssignment
+            id /= ((GameParameters.getEndCardIndex(CardType.RESOURCE) -
+                    GameParameters.getStartCardIndex(CardType.RESOURCE) + 1) /
+                    Arrays.stream(Content.values()).filter(Content::isResource).mapToInt(c -> 1).sum());
         }
-        return isFront ? frontPath : backPath + id + ".png";
+        return "file:" + (Objects.requireNonNull(CardAssetsProvider.class.getResource(
+                (isFront ? frontPath : backPath) + id + ".png"))).getFile();
     }
 
     /**
@@ -38,6 +48,7 @@ public class CardAssetsProvider {
      * @return          the path the objective is saved in.
      */
     public static String getObjectiveFilePath(Objective objective){
-        return objectivesPath + objective.getObjectiveId() + ".png";
+        return "file:" + (Objects.requireNonNull(CardAssetsProvider.class.getResource(
+                objectivesPath + objective.getObjectiveId() + ".png"))).getFile();
     }
 }

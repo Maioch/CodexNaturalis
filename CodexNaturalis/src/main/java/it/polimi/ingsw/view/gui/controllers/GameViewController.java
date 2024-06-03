@@ -17,6 +17,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
@@ -26,6 +27,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 
 import java.util.*;
+import java.util.Timer;
 
 public class GameViewController extends ViewController {
     @FXML
@@ -57,8 +59,6 @@ public class GameViewController extends ViewController {
     @FXML
     public ImageView objectivesIcon;
     @FXML
-    public ImageView backFromObjectivesIcon;
-    @FXML
     public GridPane objectivesPane;
     @FXML
     public GridPane commonObjectivesGrid1;
@@ -72,8 +72,13 @@ public class GameViewController extends ViewController {
     public GridPane commonObjectivesRevealPane;
     @FXML
     public GridPane secretObjectivesRevealPane;
+    @FXML
+    public GridPane objectivesButtonPane;
+    @FXML
+    public GridPane woodenPanePopUpBackground;
 
     private Map<String, Content> players;
+    private final int toastGap = 76;
 
     /**
      * Initializes the game scene.
@@ -81,6 +86,7 @@ public class GameViewController extends ViewController {
     public void initializeScene(){
         players = controller.getPlayerColors();
         int index = 0;
+        outerPlayerTagGrid.setVgap(16);
         for(String nickname : players.keySet()){
             if(!nickname.equals(controller.getLocalPlayerName())) {
                 chatSendButton.getItems().add(new CheckMenuItem(nickname));
@@ -146,19 +152,27 @@ public class GameViewController extends ViewController {
      * @param message the game's state.
      */
     public void updateStatusLabel(String message){
-        int lastRow = notificationToastGrid.getRowCount();
         Label statusLabel = new Label(message);
         statusLabel.getStyleClass().add("toastNotificationLabel");
         statusLabel.setMaxWidth(Double.MAX_VALUE);
+        statusLabel.setMaxHeight(Double.MAX_VALUE);
         statusLabel.setAlignment(Pos.CENTER);
-        notificationToastGrid.getRowConstraints().add(new RowConstraints(50));
-        notificationToastGrid.addRow(lastRow, statusLabel);
-        GridPane.setColumnIndex(statusLabel, 1);
+        int numberOfChildren = notificationToastGrid.getChildren().size();
+        notificationToastGrid.getRowConstraints().add(new RowConstraints(70));
+        notificationToastGrid.add(statusLabel, 1, 0);
+        statusLabel.setTranslateY(numberOfChildren * toastGap);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> notificationToastGrid.getChildren().remove(statusLabel));
+                Platform.runLater(() -> {
+                    notificationToastGrid.getChildren().remove(statusLabel);
+                    int i = 0;
+                    for(Node node : notificationToastGrid.getChildren()){
+                        node.setTranslateY(i * toastGap);
+                        i++;
+                    }
+                });
             }
         }, 6 * 1000L);
     }
@@ -171,21 +185,26 @@ public class GameViewController extends ViewController {
     public void chooseStarterSide(CardSides starterCard){
         ImageView frontSide = getCardImage(starterCard.frontSide());
         ImageView backSide = getCardImage(starterCard.backSide());
+        frontSide.getStyleClass().add("cardWithShadow");
+        backSide.getStyleClass().add("cardWithShadow");
         frontSide.setOnMouseClicked((mouseEvent -> {
             frontSide.setDisable(true);
             backSide.setDisable(true);
             starterChoicePopUp.setVisible(false);
+            woodenPanePopUpBackground.setVisible(false);
             controller.sendMessage(new CardPlacementMessage(starterCard.frontSide(), null));
         }));
-        frontStarterSidePane.add(frontSide, 0, 0);
+        frontStarterSidePane.add(backSide, 0, 0);
         backSide.setOnMouseClicked((mouseEvent -> {
             frontSide.setDisable(true);
             backSide.setDisable(true);
             starterChoicePopUp.setVisible(false);
+            woodenPanePopUpBackground.setVisible(false);
             controller.sendMessage(new CardPlacementMessage(starterCard.backSide(), null));
         }));
-        backStarterSidePane.add(backSide, 0, 0);
+        backStarterSidePane.add(frontSide, 0, 0);
         starterChoicePopUp.setVisible(true);
+        woodenPanePopUpBackground.setVisible(true);
     }
 
     /**
@@ -194,7 +213,7 @@ public class GameViewController extends ViewController {
     @FXML
     public void openObjectivesPane(){
         objectivesPane.setVisible(true);
-        objectivesIcon.setVisible(false);
+        objectivesButtonPane.setVisible(false);
     }
 
     /**
@@ -202,7 +221,7 @@ public class GameViewController extends ViewController {
      */
     @FXML
     public void closeObjectivesPane(){
-        objectivesIcon.setVisible(true);
+        objectivesButtonPane.setVisible(true);
         objectivesPane.setVisible(false);
     }
 
@@ -228,6 +247,7 @@ public class GameViewController extends ViewController {
         secretObjectiveGrid.add(getCardImage(objective), 0, 0);
         objectivesIcon.setDisable(false);
         objectivesRevealPopUp.setVisible(false);
+        woodenPanePopUpBackground.setVisible(false);
     }
 
     /**
@@ -254,8 +274,9 @@ public class GameViewController extends ViewController {
                     Status.REQUEST_SECRET_OBJECTIVES, new ArrayList<>(List.of(objective2))));
         });
         secretObjectivesRevealPane.addColumn(0, objectiveView1);
-        secretObjectivesRevealPane.addColumn(1, getCardImage(objective2));
+        secretObjectivesRevealPane.addColumn(1, objectiveView2);
         objectivesRevealPopUp.setVisible(true);
+        woodenPanePopUpBackground.setVisible(true);
     }
 
     /**
@@ -275,7 +296,7 @@ public class GameViewController extends ViewController {
                 //TODO
             });
             cardView.setDisable(true);
-            cardHandGrid.addColumn(index, cardView);
+            cardHandGrid.add(cardView, index, 0);
             index++;
         }
     }
@@ -292,7 +313,7 @@ public class GameViewController extends ViewController {
         }
         int index = 0;
         for(BasicCard card : cards) {
-            cardHandGrid.addColumn(index, getCardImage(card));
+            cardHandGrid.add(getCardImage(card), index, 0);
             index++;
         }
     }
@@ -314,7 +335,7 @@ public class GameViewController extends ViewController {
             cardView.setOnMouseClicked((mouseEvent) -> {
                 //TODO
             });
-            resourceDeckGrid.addColumn(index, cardView);
+            resourceDeckGrid.add(cardView, index, 0);
             index++;
         }
         index = 0;
@@ -324,7 +345,7 @@ public class GameViewController extends ViewController {
             cardView.setOnMouseClicked((mouseEvent) -> {
                 //TODO
             });
-            goldDeckGrid.addColumn(index, cardView);
+            goldDeckGrid.add(cardView, index, 0);
             index++;
         }
     }

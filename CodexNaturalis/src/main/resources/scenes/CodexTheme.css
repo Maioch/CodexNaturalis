@@ -199,6 +199,9 @@
 .backButton:hover {
   -fx-opacity: 0.5 ;
 }
+.cardWithShadow {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
+}
 .scoreCard {
   -fx-background-image: url('images/scoreCard.png');
   -fx-background-size: stretch;

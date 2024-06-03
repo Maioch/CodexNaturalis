@@ -65,7 +65,6 @@ public abstract class ClientPlayer {
      */
     public void setTurnNumber(int turnNumber){
         this.turnNumber = turnNumber;
-        System.out.println(nickname + "'s turn number: " + turnNumber);
     }
 
     /**
