@@ -238,7 +238,7 @@ public class GameModel{
         newCard.frontSide().setOwner(player);
         newCard.backSide().setOwner(player);
         player.addCardToHand(newCard);
-        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, getDrawableCards()));
+        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, getDrawableCards(), getNumberOfCardsLeft()));
     }
 
     /**
@@ -257,6 +257,13 @@ public class GameModel{
             add(goldDeck.isEmpty() ? null : goldDeck.getElementOnTop().backSide());
             addAll(goldDeck.getVisibleElements().stream().map(CardSides::frontSide).toList());
         }});
+        return result;
+    }
+
+    public Map<CardType, Integer> getNumberOfCardsLeft(){
+        Map<CardType, Integer> result = new HashMap<>();
+        result.put(CardType.RESOURCE, resourceDeck.getNumberOfCardsLeft());
+        result.put(CardType.GOLD, goldDeck.getNumberOfCardsLeft());
         return result;
     }
 

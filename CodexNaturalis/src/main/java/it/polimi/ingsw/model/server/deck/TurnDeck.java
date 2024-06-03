@@ -83,4 +83,8 @@ public class TurnDeck<T> extends Deck<T> {
             throw new DeckException("The given index does not correspond to any card");
         }
     }
+
+    public int getNumberOfCardsLeft(){
+        return this.deck.size();
+    }
 }

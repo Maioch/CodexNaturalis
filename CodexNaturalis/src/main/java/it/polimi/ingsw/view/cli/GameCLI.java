@@ -306,7 +306,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      * @param drawableCards //
      */
     @Override
-    public void updateDecks(Map<CardType, List<BasicCard>> drawableCards){}
+    public void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft){}
 
     /**
      * Method used to notify the players that it's time for the last game's turn.

@@ -87,9 +87,9 @@ public class ClientGame {
      *
      * @param drawableOptions the cards the player can draw from.
      */
-    public void setDrawableOptions(Map<CardType, List<BasicCard>> drawableOptions) {
+    public void setDrawableOptions(Map<CardType, List<BasicCard>> drawableOptions, Map<CardType,Integer> numberOfCardsLeft) {
         this.drawableOptions = new HashMap<>(drawableOptions);
-        eventSubmitter.submit(() -> gameView.updateDecks(drawableOptions));
+        eventSubmitter.submit(() -> gameView.updateDecks(drawableOptions, numberOfCardsLeft));
     }
 
     /**

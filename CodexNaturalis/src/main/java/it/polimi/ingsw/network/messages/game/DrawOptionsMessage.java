@@ -12,13 +12,15 @@ import java.util.*;
  */
 public class DrawOptionsMessage extends Message {
     private final Map<CardType, List<BasicCard>> drawableOptions;
+    private final Map<CardType, Integer> numberOfCardsLeft;
 
     /**
      * Constructor for the class.
      * @param drawableOptions a map containing, respectively, the card type and the card (sides) itself of all the possible options.
      */
-    public DrawOptionsMessage(Status status, Map<CardType, List<BasicCard>> drawableOptions) {
+    public DrawOptionsMessage(Status status, Map<CardType, List<BasicCard>> drawableOptions, Map<CardType, Integer> numberOfCardsLeft) {
         super(status);
+        this.numberOfCardsLeft = numberOfCardsLeft;
         this.drawableOptions = new HashMap<>();
         for(CardType key : drawableOptions.keySet()){
             this.drawableOptions.put(key,new ArrayList<>(drawableOptions.get(key)));
@@ -34,5 +36,9 @@ public class DrawOptionsMessage extends Message {
                 put(entry.getKey(), new ArrayList<>(entry.getValue()));
             }
         }};
+    }
+
+    public Map<CardType, Integer> getNumberOfCardsLeft() {
+        return new HashMap<>(numberOfCardsLeft);
     }
 }

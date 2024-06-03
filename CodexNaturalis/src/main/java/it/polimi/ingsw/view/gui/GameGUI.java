@@ -136,8 +136,8 @@ public class GameGUI extends AbstractGUI implements GameView {
     }
 
     @Override
-    public void updateDecks(Map<CardType, List<BasicCard>> drawableCards) {
-        currentLoader.<GameViewController>getController().updateDecks(drawableCards);
+    public void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft) {
+        currentLoader.<GameViewController>getController().updateDecks(drawableCards, numberOfCardsLeft);
     }
 
     @Override

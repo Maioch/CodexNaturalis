@@ -79,6 +79,8 @@ public class GameViewController extends ViewController {
 
     private Map<String, Content> players;
     private final int toastGap = 76;
+    private final int maxNumberOfHiddenCards = 3;
+    private final int distanceBetweenHiddenCards = 4;
 
     /**
      * Initializes the game scene.
@@ -325,7 +327,7 @@ public class GameViewController extends ViewController {
      *                      The first element of each list represents the card on top of the deck.
      *                      The rest are visible cards.
      */
-    public void updateDecks(Map<CardType, List<BasicCard>> drawableCards){
+    public void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft){
         List<BasicCard> resourceCards = drawableCards.get(CardType.RESOURCE);
         List<BasicCard> goldCards = drawableCards.get(CardType.GOLD);
         int index = 0;
@@ -335,7 +337,20 @@ public class GameViewController extends ViewController {
             cardView.setOnMouseClicked((mouseEvent) -> {
                 //TODO
             });
-            resourceDeckGrid.add(cardView, index, 0);
+            if(index == 0){
+                int j = 0;
+                while(j < numberOfCardsLeft.get(CardType.RESOURCE) && j < maxNumberOfHiddenCards){
+                    ImageView hiddenCardView = createHiddenCard();
+                    resourceDeckGrid.add(hiddenCardView, index, 0);
+                    hiddenCardView.setTranslateY(-distanceBetweenHiddenCards * j);
+                    System.out.println(hiddenCardView.getTranslateY());
+                    j++;
+                }
+                resourceDeckGrid.add(cardView, index, 0);
+                cardView.setTranslateY(-distanceBetweenHiddenCards * j);
+            }else{
+                resourceDeckGrid.add(cardView, index, 0);
+            }
             index++;
         }
         index = 0;
@@ -345,7 +360,20 @@ public class GameViewController extends ViewController {
             cardView.setOnMouseClicked((mouseEvent) -> {
                 //TODO
             });
-            goldDeckGrid.add(cardView, index, 0);
+            if(index == 0){
+                int j = 0;
+                while(j < numberOfCardsLeft.get(CardType.GOLD) && j < maxNumberOfHiddenCards){
+                    ImageView hiddenCardView = createHiddenCard();
+                    System.out.println(hiddenCardView);
+                    goldDeckGrid.add(hiddenCardView, index, 0);
+                    hiddenCardView.setTranslateY(-distanceBetweenHiddenCards * j);
+                    j++;
+                }
+                goldDeckGrid.add(cardView, index, 0);
+                cardView.setTranslateY(-distanceBetweenHiddenCards * j);
+            }else{
+                goldDeckGrid.add(cardView, index, 0);
+            }
             index++;
         }
     }
@@ -411,7 +439,16 @@ public class GameViewController extends ViewController {
      */
     private ImageView getCardImage(BasicCard card){
         ImageView cardView = new ImageView(CardAssetsProvider.getCardFilePath(card));
-        cardView.setFitWidth(130);
+        cardView.setFitWidth(150);
+        cardView.getStyleClass().add("cardWithShadow");
+        cardView.setPreserveRatio(true);
+        return cardView;
+    }
+
+    private ImageView createHiddenCard(){
+        ImageView cardView = new ImageView(CardAssetsProvider.getHiddenCardFilePath());
+        cardView.setFitWidth(150);
+        cardView.getStyleClass().add("cardWithShadow");
         cardView.setPreserveRatio(true);
         return cardView;
     }

@@ -29,7 +29,7 @@ public interface GameView {
     void requestPersonalObjectivesChoice(List<Objective> objectives);
     void showPersonalObjectives(List<Objective> objectives);
     void showCommonObjectives(List<Objective> objectives);
-    void updateDecks(Map<CardType, List<BasicCard>> drawableCards);
+    void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft);
     void revealFinalSummary(String nickname, Map<Objective,Integer> objectivePoints, int finalScore);
     void revealWinners(List<String> winners);
     void notifyRemotePlayerDisconnected(String nickname);

@@ -17,6 +17,7 @@ public class CardAssetsProvider {
     private static final String frontPath = "/scenes/images/cardFronts/";
     private static final String backPath = "/scenes/images/cardBacks/";
     private static final String objectivesPath = "/scenes/images/cardFronts/";
+    private static final String hiddenCardPath = "/scenes/images/";
 
     /**
      * Returns the path where the parameter card is saved.
@@ -50,5 +51,10 @@ public class CardAssetsProvider {
     public static String getObjectiveFilePath(Objective objective){
         return "file:" + (Objects.requireNonNull(CardAssetsProvider.class.getResource(
                 objectivesPath + objective.getObjectiveId() + ".png"))).getFile();
+    }
+
+    public static String getHiddenCardFilePath(){
+        return "file:" + (Objects.requireNonNull(CardAssetsProvider.class.getResource(
+                hiddenCardPath + "hiddenCard.png"))).getFile();
     }
 }

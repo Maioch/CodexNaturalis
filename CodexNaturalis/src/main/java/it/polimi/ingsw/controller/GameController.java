@@ -123,7 +123,7 @@ public class GameController implements Runnable{
         handler.setCurrentGame(this);
         serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname,
                 game.getPlayer(nickname).getColor(), game.getAllPlayers().indexOf(game.getPlayer(nickname)) - 1));
-        serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards()));
+        serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards(), game.getNumberOfCardsLeft()));
         int turnNumber = 1;
         for(Player player : game.getAllPlayers()){
             serverSubject.notify(nickname, new JoinGameMessage(Status.NEW_PLAYER_JOINED, player.getNickname(),
@@ -433,7 +433,7 @@ public class GameController implements Runnable{
         pingTimer = new Timer();
         pingTimer.schedule(pingTask, periodSeconds * 1000L, periodSeconds * 1000L);
         Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
-        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards));
+        serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards, game.getNumberOfCardsLeft()));
         for (Player player : game.getAllPlayers()) {
             updateTurn(player.getNickname());
             placeStarterCard(player);
@@ -625,7 +625,7 @@ public class GameController implements Runnable{
             CardType typeChosen = null;
             int indexChosen = -1;
             do{
-                serverSubject.notify(player.getNickname(), new DrawOptionsMessage(currentStatus, game.getDrawableCards()));
+                serverSubject.notify(player.getNickname(), new DrawOptionsMessage(currentStatus, game.getDrawableCards(), game.getNumberOfCardsLeft()));
                 currentStatus = Status.INVALID_DRAW;
                 Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
                 if (message instanceof DrawChoiceMessage drawChoiceMessage){

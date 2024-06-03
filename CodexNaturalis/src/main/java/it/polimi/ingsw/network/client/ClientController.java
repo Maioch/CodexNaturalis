@@ -272,7 +272,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
                 }
                 case DRAW_OPTIONS -> {
                     if (message instanceof DrawOptionsMessage drawOptionsMessage) {
-                        game.setDrawableOptions(drawOptionsMessage.getDrawableOptions());
+                        game.setDrawableOptions(drawOptionsMessage.getDrawableOptions(), drawOptionsMessage.getNumberOfCardsLeft());
                     }
                 }
                 case STARTER_CARD, INVALID_STARTER_CARD -> {
