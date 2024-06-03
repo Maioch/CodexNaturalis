@@ -320,3 +320,10 @@
   -fx-border-width: 2;
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0.1, 0.0, 0.0);
 }
+.resultsScrollPane{
+  -fx-color: #E4DFB5;
+  -fx-background-color: #E4DFB5;
+}
+.resultsGridPane{
+  -fx-background-color: #E4DFB5;
+}
