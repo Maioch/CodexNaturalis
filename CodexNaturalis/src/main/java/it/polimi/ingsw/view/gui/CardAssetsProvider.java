@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.gui;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardBuilder;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 
@@ -33,8 +34,8 @@ public class CardAssetsProvider {
         int startIndex = GameParameters.getStartCardIndex(CardType.STARTER);
         int endIndex = GameParameters.getEndCardIndex(CardType.STARTER);
         if(!isFront && (id < startIndex || id > endIndex)){
-            // noinspection SuspiciousIntegerDivAssignment
-            id /= ((GameParameters.getEndCardIndex(CardType.RESOURCE) -
+            int correctedId = id - 1;
+            id = correctedId / ((GameParameters.getEndCardIndex(CardType.RESOURCE) -
                     GameParameters.getStartCardIndex(CardType.RESOURCE) + 1) /
                     Arrays.stream(Content.values()).filter(Content::isResource).mapToInt(c -> 1).sum());
         }

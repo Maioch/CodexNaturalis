@@ -13,7 +13,7 @@ import java.util.Map;
 
 public interface GameView {
     void notifyLastTurn();
-    void requestDraw(Map<CardType, List<BasicCard>> drawableCards);
+    void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft);
     void showChatMessage(ChatMessage chatMessage);
     void requestPlacement(List<CardSides> handCards,
                           List<BasicCard> placedCards,
@@ -21,7 +21,7 @@ public interface GameView {
                           List<Corner> validCorners);
     void turnChanged(String turnOwner);
     void showErrorMessage(String message);
-    void showUserJoined(String nickname, Content color);
+    void showUserJoined(String nickname, Content color, boolean isGameFull);
     void updateRemotePlayerHand(String nickname, List<BasicCard> handCards);
     void updateLocalPlayerHand(List<CardSides> handCards);
     void requestStarterSide(List<CardSides> playerCards);
@@ -33,6 +33,7 @@ public interface GameView {
     void revealFinalSummary(String nickname, Map<Objective,Integer> objectivePoints, int finalScore);
     void revealWinners(List<String> winners);
     void notifyRemotePlayerDisconnected(String nickname);
+    void notifyRemotePlayerReconnected(String nickname);
     void notifyGameTimeout();
     void notifyGameCanceled();
     void notifyTurnSkipped();

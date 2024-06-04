@@ -32,7 +32,7 @@ public abstract class AbstractGUI {
 
     /**
      * DON'T READ THIS (DARK MAGIC)
-     * Forces, with a not so aesthetically pleasing code, a refresh update of the scene.
+     * Forces, with a not so aesthetically pleasing code, a refresh of the scene.
      */
     protected void forceUpdate(){
         if(primaryStage.isFullScreen()){

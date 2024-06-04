@@ -10,7 +10,6 @@ import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.view.GameView;
-import it.polimi.ingsw.view.cli.CardFormatter;
 import it.polimi.ingsw.view.gui.controllers.GameViewController;
 import it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 public class GameGUI extends AbstractGUI implements GameView {
+
+    public enum ToastType{
+        TIMEOUT, PLACE, DRAW
+    }
 
     /**
      * Constructor for the class.
@@ -39,11 +42,11 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void notifyLastTurn() {
-        currentLoader.<GameViewController>getController().updateStatusLabel("The next turn will be the last.");
+        currentLoader.<GameViewController>getController().updateStatusLabel("The next turn will be the last");
     }
 
     @Override
-    public void requestDraw(Map<CardType, List<BasicCard>> drawableCards) {
+    public void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft) {
 
     }
 
@@ -67,10 +70,12 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void turnChanged(String turnOwner) {
-        currentLoader.<GameViewController>getController().updateStatusLabel(
+        GameViewController gameViewController = currentLoader.getController();
+        gameViewController.updateStatusLabel(
                 controller.getLocalPlayerName().equals(turnOwner) ?
                 String.format("It's your turn, %s!", turnOwner) :
                 String.format("%s is playing their turn...", turnOwner));
+        gameViewController.setCurrentTurnOwner(turnOwner);
     }
 
     /**
@@ -88,10 +93,10 @@ public class GameGUI extends AbstractGUI implements GameView {
      * @param color the joined user color.
      */
     @Override
-    public void showUserJoined(String nickname, Content color) {
+    public void showUserJoined(String nickname, Content color, boolean isGameFull) {
         currentLoader.<MatchLobbyViewController>getController().updatePlayers(nickname, color);
         forceUpdate(); //fix for repaint issues on windows
-        if(controller.isGameFull()){
+        if(isGameFull){
             changeScene("Game.fxml");
             currentLoader.<GameViewController>getController().initializeScene();
         }
@@ -115,7 +120,8 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void updateBoard(String nickname, List<BasicCard> placedCards, int moveScore) {
-
+        currentLoader.<GameViewController>getController().updateBoard(nickname, placedCards);
+        currentLoader.<GameViewController>getController().updateScore(nickname, moveScore);
     }
 
     @Override
@@ -154,15 +160,24 @@ public class GameGUI extends AbstractGUI implements GameView {
     public void notifyRemotePlayerDisconnected(String nickname) {
         if(controller.getPlayerColors().get(nickname) != null) {
             currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
-                    "%s disconnected from the game. We hope they'll be back soon ;)", nickname));
+                    "%s disconnected from the game", nickname));
         }
+    }
+
+    @Override
+    public void notifyRemotePlayerReconnected(String nickname) {
+        currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
+                "%s reconnected to the game", nickname));
+        currentLoader.<GameViewController>getController().hideStatusLabel(ToastType.TIMEOUT.toString());
+        currentLoader.<GameViewController>getController().setChatDisable(false);
     }
 
     @Override
     public void notifyGameTimeout(){
         currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
-                "You're the only player left. If no players reconnect in the next %d seconds, you'll win by forfeit.\n",
-                GameParameters.getForfeitTime()));
+                "If no players reconnect in the next %d seconds, you'll win",
+                GameParameters.getForfeitTime()), ToastType.TIMEOUT.toString());
+        currentLoader.<GameViewController>getController().setChatDisable(true);
     }
 
     @Override
@@ -172,7 +187,8 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void notifyTurnSkipped() {
-        currentLoader.<GameViewController>getController().updateStatusLabel("The turn has been skipped because the player isn't connected");
+        currentLoader.<GameViewController>getController().updateStatusLabel(
+                "The turn has been skipped because the player isn't connected");
     }
 
     @Override
@@ -180,8 +196,8 @@ public class GameGUI extends AbstractGUI implements GameView {
         String turnOwner = controller.getPlayerWithTurn();
         currentLoader.<GameViewController>getController().updateStatusLabel(
                 turnOwner.equals(controller.getLocalPlayerName()) ?
-                String.format("%s, you can no longer make any more moves ;(", turnOwner) :
-                String.format("%s cannot make any more moves ;)", turnOwner)
+                String.format("%s, you can no longer make any more moves", turnOwner) :
+                String.format("%s cannot make any more moves", turnOwner)
         );
     }
 

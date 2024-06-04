@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,6 +41,7 @@ public class SetupGUI extends AbstractGUI implements SetupView {
         stage.setTitle("Codex Naturalis");
         stage.setMinWidth(1280);
         stage.setMinHeight(720);
+        stage.setOnCloseRequest((WindowEvent event) -> System.exit(0));
         currentLoader = new FXMLLoader(getClass().getResource(filePath + "Connection.fxml"));
         currentScene = new Scene(currentLoader.load(),1820,980);
         currentScene.setOnKeyReleased((e) -> {

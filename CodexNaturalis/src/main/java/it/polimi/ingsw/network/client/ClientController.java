@@ -336,7 +336,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
                         eventSubmitter.submit(() -> gameView.showErrorMessage(Status.INVALID_DRAW.getMessage()));
                     }
                     if (message instanceof DrawOptionsMessage drawOptionsMessage) {
-                        game.requestDraw(drawOptionsMessage.getDrawableOptions());
+                        game.requestDraw(drawOptionsMessage.getDrawableOptions(), drawOptionsMessage.getNumberOfCardsLeft());
                     }
                 }
                 case LAST_TURN -> eventSubmitter.submit(() -> gameView.notifyLastTurn());
@@ -364,6 +364,11 @@ public class ClientController extends EventHandler<LabeledMessage> {
                     if(message instanceof StringMessage stringMessage){
                         eventSubmitter.submit(() -> gameView.notifyRemotePlayerDisconnected(stringMessage.getString()));
                         game.removeRemotePlayer(stringMessage.getString());
+                    }
+                }
+                case RECONNECT -> {
+                    if(message instanceof StringMessage stringMessage){
+                        eventSubmitter.submit(() -> gameView.notifyRemotePlayerReconnected(stringMessage.getString()));
                     }
                 }
                 case CHAT -> {

@@ -23,10 +23,12 @@ import java.util.List;
 /**
  * The CLI associated to the gameplay phase.
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class GameCLI extends AbstractCLI implements GameView {
     private final ClientController controller;
     private Thread readInputThread;
     private final Queue<ChatMessage> chatMessageQueue;
+    private final int numberOfDeckCardThreshold = 4;
 
     /**
      * Constructor for the class.
@@ -42,7 +44,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      * @param drawableCards the list of drawable options.
      */
     @Override
-    public void requestDraw(Map<CardType, List<BasicCard>> drawableCards){
+    public void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft){
         System.out.println();
         System.out.println("DRAW PHASE");
         System.out.println("\nHere are the available cards: ");
@@ -51,6 +53,12 @@ public class GameCLI extends AbstractCLI implements GameView {
             List<BasicCard> deckCardList = drawableCards.get(cardType);
             if(deckCardList != null && !deckCardList.isEmpty()) {
                 System.out.println(i);
+                if(numberOfCardsLeft.get(cardType) >= numberOfDeckCardThreshold){
+                    System.out.printf("There are more than %d cards left in this deck\n", numberOfDeckCardThreshold);
+                }
+                else{
+                    System.out.printf("There are %d card(s) left in this deck\n", numberOfCardsLeft.get(cardType));
+                }
                 String cardOnTop = CardFormatter.getCardString(deckCardList.getFirst());
                 System.out.print(cardOnTop.isEmpty() ? "\n\nThe deck is empty\n\n" : cardOnTop);
                 System.out.print(CardFormatter.getCardsInfoString(deckCardList.subList(1,deckCardList.size())));
@@ -73,12 +81,10 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void showChatMessage(ChatMessage chatMessage){
-        if(!chatMessage.getSender().equals(controller.getLocalPlayerName())){
-            if(controller.getPlayerWithTurn().equals(controller.getLocalPlayerName())){
-                chatMessageQueue.add(chatMessage);
-            }else{
-                printChatMessage(chatMessage.getMessage(), chatMessage.getSender(), chatMessage.getRecipients());
-            }
+        if(controller.getPlayerWithTurn().equals(controller.getLocalPlayerName())){
+            chatMessageQueue.add(chatMessage);
+        }else{
+            printChatMessage(chatMessage.getMessage(), chatMessage.getSender(), chatMessage.getRecipients());
         }
     }
 
@@ -192,7 +198,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      * @param color the new player's color.
      */
     @Override
-    public void showUserJoined(String player, Content color){
+    public void showUserJoined(String player, Content color, boolean isGameFull){
         if (!player.equals(controller.getLocalPlayerName())) {
             System.out.println(color.getTextColorString() + player + Content.EMPTY.getTextColorString() + " joined your game!");
         }
@@ -304,6 +310,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     /**
      * Method not implemented for the TUI to prevent message flooding.
      * @param drawableCards //
+     * @param numberOfCardsLeft //
      */
     @Override
     public void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft){}
@@ -400,6 +407,12 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    @Override
+    public void notifyRemotePlayerReconnected(String nickname) {
+        System.out.printf("%s rejoined.\n",
+                controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
+    }
+
     /**
      * Notifies that the game has been cancelled.
      */
@@ -475,7 +488,6 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
         if(controller.getRemotePlayerNames().containsAll(recipients)){
             controller.sendMessage(new ChatMessage(chatMessage,null, recipients));
-            printChatMessage(chatMessage, controller.getLocalPlayerName(), recipients);
         }else{
             System.out.println("Some of the recipients couldn't be found. The message wasn't sent.");
         }

@@ -24,11 +24,13 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
 import java.util.*;
 import java.util.Timer;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class GameViewController extends ViewController {
     @FXML
     public ScrollPane gameBoardScrollPane;
@@ -78,15 +80,24 @@ public class GameViewController extends ViewController {
     public GridPane woodenPanePopUpBackground;
 
     private Map<String, Content> players;
+    private String currentViewedPlayer;
+    private final List<Label> currentPermanentMessages = new ArrayList<>();
+    private final Map<String, Circle> playerTagCircles = new HashMap<>();
+    private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
+
     private final int toastGap = 76;
     private final int maxNumberOfHiddenCards = 3;
     private final int distanceBetweenHiddenCards = 4;
+    private final long statusLabelShowInterval = 6;
+    private final int cardWidth = 150;
+    private final int objectiveWidth = 130;
 
     /**
      * Initializes the game scene.
      */
     public void initializeScene(){
         players = controller.getPlayerColors();
+        currentViewedPlayer = controller.getLocalPlayerName();
         int index = 0;
         outerPlayerTagGrid.setVgap(16);
         for(String nickname : players.keySet()){
@@ -149,34 +160,56 @@ public class GameViewController extends ViewController {
     }
 
     /**
+     * Method that set the disable field of the chat components. It will not enable the chat button.
+     *
+     * @param disable the boolean to set.
+     */
+    public void setChatDisable(boolean disable){
+        if(disable){
+            chatSendButton.setDisable(true);
+        }
+        chatTextBox.setDisable(disable);
+    }
+
+    /**
      * Notifies the players about the game's state when it changes.
      *
      * @param message the game's state.
      */
     public void updateStatusLabel(String message){
-        Label statusLabel = new Label(message);
-        statusLabel.getStyleClass().add("toastNotificationLabel");
-        statusLabel.setMaxWidth(Double.MAX_VALUE);
-        statusLabel.setMaxHeight(Double.MAX_VALUE);
-        statusLabel.setAlignment(Pos.CENTER);
-        int numberOfChildren = notificationToastGrid.getChildren().size();
-        notificationToastGrid.getRowConstraints().add(new RowConstraints(70));
-        notificationToastGrid.add(statusLabel, 1, 0);
-        statusLabel.setTranslateY(numberOfChildren * toastGap);
+        Label statusLabel = createStatusLabel(message);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Platform.runLater(() -> {
-                    notificationToastGrid.getChildren().remove(statusLabel);
-                    int i = 0;
-                    for(Node node : notificationToastGrid.getChildren()){
-                        node.setTranslateY(i * toastGap);
-                        i++;
-                    }
-                });
+                Platform.runLater(() -> removeMessageLabel(statusLabel));
             }
-        }, 6 * 1000L);
+        }, statusLabelShowInterval * 1000);
+    }
+
+    /**
+     * Notifies the players about the game's state when it changes.
+     * The message will not disappear in a set amount of time.
+     *
+     * @param message     the game's state.
+     * @param messageType the type of the message.
+     */
+    public void updateStatusLabel(String message, String messageType){
+        Label statusLabel = createStatusLabel(message);
+        statusLabel.setUserData(messageType);
+        currentPermanentMessages.add(statusLabel);
+    }
+
+    /**
+     * Removes the current status labels that have the supplied messageType.
+     *
+     * @param messageType the message type.
+     */
+    public void hideStatusLabel(String messageType){
+        for(Label label : currentPermanentMessages.stream().filter(l -> l.getUserData().equals(messageType)).toList()){
+            removeMessageLabel(label);
+        }
+        currentPermanentMessages.removeIf(l -> l.getUserData().equals(messageType));
     }
 
     /**
@@ -291,8 +324,9 @@ public class GameViewController extends ViewController {
         if(!checkCurrentView(controller.getLocalPlayerName())){
             return;
         }
+        cardHandGrid.getChildren().clear();
         int index = 0;
-        for(CardSides card : cards) {
+        for(CardSides card : cards.stream().limit(3).toList()) {
             ImageView cardView = getCardImage(card.frontSide());
             cardView.setOnMouseClicked((event) -> {
                 //TODO
@@ -313,25 +347,68 @@ public class GameViewController extends ViewController {
         if(!checkCurrentView(nickname)){
             return;
         }
+        cardHandGrid.getChildren().clear();
         int index = 0;
-        for(BasicCard card : cards) {
+        for(BasicCard card : cards.stream().limit(3).toList()) {
             cardHandGrid.add(getCardImage(card), index, 0);
             index++;
         }
     }
 
+    public void updateScore(String nickname, int moveScore){
+
+    }
+
     /**
      * Updates the resource and gold decks.
      *
-     * @param drawableCards a map containing the list of resource cards and the list of gold cards.
-     *                      The first element of each list represents the card on top of the deck.
-     *                      The rest are visible cards.
+     * @param drawableCards     a map containing the list of resource cards and the list of gold cards.
+     *                          The first element of each list represents the card on top of the deck.
+     *                          The rest are visible cards.
+     * @param numberOfCardsLeft a map containing the number of cards left of each deck.
      */
     public void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft){
-        List<BasicCard> resourceCards = drawableCards.get(CardType.RESOURCE);
-        List<BasicCard> goldCards = drawableCards.get(CardType.GOLD);
+        CardType resource = CardType.RESOURCE;
+        CardType gold = CardType.GOLD;
+        updateViewDeck(drawableCards.get(resource), numberOfCardsLeft.get(resource), resource);
+        updateViewDeck(drawableCards.get(gold), numberOfCardsLeft.get(gold), gold);
+    }
+
+    public void updateBoard(String nickname, List<BasicCard> placedCards){
+
+    }
+
+    public void setCurrentTurnOwner(String turnOwner){
+        for(Circle circle : playerTagCircles.values()){
+            circle.setStroke(Paint.valueOf("transparent"));
+        }
+        playerTagCircles.get(turnOwner).setStroke(Paint.valueOf("white"));
+    }
+
+    private Label createStatusLabel(String message){
+        Label statusLabel = new Label(message);
+        statusLabel.getStyleClass().add("toastNotificationLabel");
+        statusLabel.setMaxWidth(Double.MAX_VALUE);
+        statusLabel.setMaxHeight(Double.MAX_VALUE);
+        statusLabel.setAlignment(Pos.CENTER);
+        int numberOfChildren = notificationToastGrid.getChildren().size();
+        notificationToastGrid.getRowConstraints().add(new RowConstraints(70));
+        notificationToastGrid.add(statusLabel, 1, 0);
+        statusLabel.setTranslateY(numberOfChildren * toastGap);
+        return statusLabel;
+    }
+
+    /**
+     * Helper method that updates the view of a specified deck.
+     *
+     * @param cards             the list of card in the deck
+     * @param numberOfCardsLeft the number of card left
+     * @param deckType          the type of the deck
+     */
+    private void updateViewDeck(List<BasicCard> cards, int numberOfCardsLeft, CardType deckType){
+        GridPane deck = deckType == CardType.RESOURCE ? resourceDeckGrid : goldDeckGrid;
         int index = 0;
-        for(BasicCard card : resourceCards){
+        for(BasicCard card : cards){
             ImageView cardView = getCardImage(card);
             cardView.setDisable(true);
             cardView.setOnMouseClicked((mouseEvent) -> {
@@ -339,42 +416,32 @@ public class GameViewController extends ViewController {
             });
             if(index == 0){
                 int j = 0;
-                while(j < numberOfCardsLeft.get(CardType.RESOURCE) && j < maxNumberOfHiddenCards){
+                while(j < numberOfCardsLeft && j < maxNumberOfHiddenCards){
                     ImageView hiddenCardView = createHiddenCard();
-                    resourceDeckGrid.add(hiddenCardView, index, 0);
+                    deck.add(hiddenCardView, index, 0);
                     hiddenCardView.setTranslateY(-distanceBetweenHiddenCards * j);
-                    System.out.println(hiddenCardView.getTranslateY());
                     j++;
                 }
-                resourceDeckGrid.add(cardView, index, 0);
+                deck.add(cardView, index, 0);
                 cardView.setTranslateY(-distanceBetweenHiddenCards * j);
             }else{
-                resourceDeckGrid.add(cardView, index, 0);
+                deck.add(cardView, index, 0);
             }
             index++;
         }
-        index = 0;
-        for(BasicCard card : goldCards){
-            ImageView cardView = getCardImage(card);
-            cardView.setDisable(true);
-            cardView.setOnMouseClicked((mouseEvent) -> {
-                //TODO
-            });
-            if(index == 0){
-                int j = 0;
-                while(j < numberOfCardsLeft.get(CardType.GOLD) && j < maxNumberOfHiddenCards){
-                    ImageView hiddenCardView = createHiddenCard();
-                    System.out.println(hiddenCardView);
-                    goldDeckGrid.add(hiddenCardView, index, 0);
-                    hiddenCardView.setTranslateY(-distanceBetweenHiddenCards * j);
-                    j++;
-                }
-                goldDeckGrid.add(cardView, index, 0);
-                cardView.setTranslateY(-distanceBetweenHiddenCards * j);
-            }else{
-                goldDeckGrid.add(cardView, index, 0);
-            }
-            index++;
+    }
+
+    /**
+     * Helper method that removes the given label from the notification toast.
+     *
+     * @param label the label to remove.
+     */
+    private void removeMessageLabel(Label label){
+        notificationToastGrid.getChildren().remove(label);
+        int i = 0;
+        for(Node node : notificationToastGrid.getChildren()){
+            node.setTranslateY(i * toastGap);
+            i++;
         }
     }
 
@@ -403,7 +470,10 @@ public class GameViewController extends ViewController {
         playerTagCircle.getStyleClass().add("playerTagCircle");
         GridPane.setHalignment(playerTagCircle, HPos.CENTER);
         playerTagCircle.setStyle(String.format("-circle-color: %s;", color.getHexColorString()));
+        playerTagCircle.setStrokeWidth(3);
+        playerTagCircle.setStroke(Paint.valueOf("transparent"));
         playerTagGrid.addColumn(0, playerTagCircle);
+        playerTagCircles.put(nickname, playerTagCircle);
 
         //adds the player's nickname label
         Label nicknameLabel = new Label(nickname);
@@ -413,20 +483,37 @@ public class GameViewController extends ViewController {
         nicknameLabel.getStyleClass().add("playerTagText");
         playerTagGrid.addColumn(1, nicknameLabel);
 
-        //adds the player's tag image
-        ImageView playerTagImageView = new ImageView();
-        playerTagImageView.setPreserveRatio(true);
-        playerTagImageView.setFitWidth(24);
-        GridPane.setHalignment(playerTagImageView, HPos.CENTER);
-
+        //adds the icon that, when clicked, lets the player
+        //see the opponent's board and the back of their hand
         if(!controller.getLocalPlayerName().equals(nickname)) {
-            playerTagImageView.getStyleClass().add("viewBoardIcon");
-            playerTagImageView.getStyleClass().add("playerTagIcon");
-            playerTagImageView.setPickOnBounds(true);
-            playerTagImageView.setOnMouseClicked((mouseEvent) -> {
-
+            ImageView viewPlayerIcon = new ImageView();
+            viewPlayerIcon.setPreserveRatio(true);
+            viewPlayerIcon.setFitWidth(24);
+            GridPane.setHalignment(viewPlayerIcon, HPos.CENTER);
+            viewPlayerIcon.getStyleClass().add("viewBoardIcon");
+            viewPlayerIcon.getStyleClass().add("playerTagIcon");
+            viewPlayerIcon.setPickOnBounds(true);
+            playerTagViewIcons.put(nickname, viewPlayerIcon);
+            viewPlayerIcon.setOnMouseClicked((mouseEvent) -> {
+                if(checkCurrentView(nickname)) {
+                    currentViewedPlayer = controller.getLocalPlayerName();
+                    updateLocalPlayerCards(controller.getLocalPlayerHand());
+                    updateBoard(nickname, controller.getLocalPlayerBoard());
+                    viewPlayerIcon.getStyleClass().remove("hideBoardIcon");
+                    viewPlayerIcon.getStyleClass().add("viewBoardIcon");
+                } else {
+                    currentViewedPlayer = nickname;
+                    updateRemotePlayerCards(nickname, controller.getRemotePlayerHand(nickname));
+                    updateBoard(nickname, controller.getLocalPlayerBoard());
+                    for(ImageView icon : playerTagViewIcons.values()){
+                        icon.getStyleClass().remove("hideBoardIcon");
+                        viewPlayerIcon.getStyleClass().add("viewBoardIcon");
+                    }
+                    viewPlayerIcon.getStyleClass().remove("viewBoardIcon");
+                    viewPlayerIcon.getStyleClass().add("hideBoardIcon");
+                }
             });
-            playerTagGrid.addColumn(2, playerTagImageView);
+            playerTagGrid.addColumn(2, viewPlayerIcon);
         }
         return playerTagGrid;
     }
@@ -439,7 +526,7 @@ public class GameViewController extends ViewController {
      */
     private ImageView getCardImage(BasicCard card){
         ImageView cardView = new ImageView(CardAssetsProvider.getCardFilePath(card));
-        cardView.setFitWidth(150);
+        cardView.setFitWidth(cardWidth);
         cardView.getStyleClass().add("cardWithShadow");
         cardView.setPreserveRatio(true);
         return cardView;
@@ -447,7 +534,7 @@ public class GameViewController extends ViewController {
 
     private ImageView createHiddenCard(){
         ImageView cardView = new ImageView(CardAssetsProvider.getHiddenCardFilePath());
-        cardView.setFitWidth(150);
+        cardView.setFitWidth(cardWidth);
         cardView.getStyleClass().add("cardWithShadow");
         cardView.setPreserveRatio(true);
         return cardView;
@@ -461,13 +548,19 @@ public class GameViewController extends ViewController {
      */
     private ImageView getCardImage(Objective objective) {
         ImageView objectiveView = new ImageView(CardAssetsProvider.getObjectiveFilePath(objective));
-        objectiveView.setFitWidth(130);
+        objectiveView.setFitWidth(objectiveWidth);
         objectiveView.setPreserveRatio(true);
         return objectiveView;
     }
 
+    /**
+     * Checks if the given player is the one currently viewed.
+     *
+     * @param nickname the player name
+     * @return         true if the given player is the one currently viewed.
+     */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private boolean checkCurrentView(String nickname) {
-        //TODO
-        return true;
+        return nickname.equals(currentViewedPlayer);
     }
 }

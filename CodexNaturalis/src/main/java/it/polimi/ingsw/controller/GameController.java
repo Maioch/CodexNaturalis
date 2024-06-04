@@ -148,6 +148,7 @@ public class GameController implements Runnable{
             }
         }
         serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, playerWithTurn));
+        serverSubject.notifyAll(new StringMessage(Status.RECONNECT, nickname));
     }
 
     /**

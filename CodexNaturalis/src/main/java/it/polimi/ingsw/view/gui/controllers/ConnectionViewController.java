@@ -18,25 +18,16 @@ import java.util.regex.Pattern;
  * Class used to handle the login scene for the GUI.
  */
 public class ConnectionViewController extends ViewController {
-
     @FXML
     public TextField portTextBox;
-
     @FXML
     public TextField ipTextBox;
-
-    @FXML
-    public ToggleGroup protocol;
-
     @FXML
     public Button connectButton;
-
     @FXML
     public Label errorText;
-
     @FXML
     public RadioButton tcpRadioButton;
-
     @FXML
     public RadioButton rmiRadioButton;
 
@@ -58,15 +49,17 @@ public class ConnectionViewController extends ViewController {
         }
         errorText.setText("Connecting...");
         int port = Integer.parseInt(portTextBox.getText());
-        new Thread(((RadioButton)protocol.getSelectedToggle()).getId().equals("0") ?
-            () -> {
+        if(tcpRadioButton.isSelected()){
+            new Thread(() ->{
                 try {
                     ConnectionInitializer.initializeTCP(ipTextBox.getText(), port, controller, new GraphicalSubmitter());
                     new Thread(controller).start();
                 } catch (IOException e) {
                     setLoginError("Couldn't connect to the specified server");
                 }
-            } : () -> {
+            }).start();
+        } else {
+            new Thread(() -> {
                 try {
                     ConnectionInitializer.initializeRMI(ipTextBox.getText(), port, controller, new GraphicalSubmitter());
                     new Thread(controller).start();
@@ -77,8 +70,8 @@ public class ConnectionViewController extends ViewController {
                 } catch (RemoteException e) {
                     setLoginError("Couldn't connect to the RMI server");
                 }
-            }
-        ).start();
+            }).start();
+        }
     }
 
     /**

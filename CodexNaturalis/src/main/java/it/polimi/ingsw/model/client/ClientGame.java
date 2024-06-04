@@ -97,9 +97,9 @@ public class ClientGame {
      *
      * @param drawableOptions the cards the player can draw from.
      */
-    public void requestDraw(Map<CardType, List<BasicCard>> drawableOptions) {
+    public void requestDraw(Map<CardType, List<BasicCard>> drawableOptions, Map<CardType, Integer> numberOfCardsLeft) {
         this.drawableOptions = new HashMap<>(drawableOptions);
-        eventSubmitter.submit(() -> gameView.requestDraw(drawableOptions));
+        eventSubmitter.submit(() -> gameView.requestDraw(drawableOptions, numberOfCardsLeft));
     }
 
     /**
@@ -148,7 +148,10 @@ public class ClientGame {
     public synchronized void addRemotePlayer(RemotePlayer player){
         remotePlayers.add(player);
         player.setViewReferences(gameView, eventSubmitter);
-        eventSubmitter.submit(() -> gameView.showUserJoined(player.getNickname(), player.getColor()));
+        boolean gameFull = isGameFull();
+        String playerNickname = player.getNickname();
+        Content playerColor = player.getColor();
+        eventSubmitter.submit(() -> gameView.showUserJoined(playerNickname, playerColor, gameFull));
     }
 
     /**
