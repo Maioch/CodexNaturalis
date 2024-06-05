@@ -2,13 +2,11 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.card.CardType;
-import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.server.card.*;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
+import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import javafx.application.Platform;
@@ -20,10 +18,7 @@ import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
@@ -78,16 +73,24 @@ public class GameViewController extends ViewController {
     public GridPane objectivesButtonPane;
     @FXML
     public GridPane woodenPanePopUpBackground;
+    @FXML
+    public GridPane cardSelectionPopup;
+    @FXML
+    public GridPane cardSelectionGrid;
+    @FXML
+    public Pane scorePane;
 
     private Map<String, Content> players;
     private String currentViewedPlayer;
     private final List<Label> currentPermanentMessages = new ArrayList<>();
     private final Map<String, Circle> playerTagCircles = new HashMap<>();
     private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
+    private final Map<String, ImageView> playerTokens = new HashMap<>();
 
     private final int toastGap = 76;
     private final int maxNumberOfHiddenCards = 3;
     private final int distanceBetweenHiddenCards = 4;
+    private final int distanceBetweenTokens = 8;
     private final long statusLabelShowInterval = 6;
     private final int cardWidth = 150;
     private final int objectiveWidth = 130;
@@ -107,6 +110,12 @@ public class GameViewController extends ViewController {
             GridPane playerGrid = createPlayerTag(nickname, players.get(nickname));
             playersTagsGrid.add(playerGrid, index, 0);
             playersTagsGrid.getColumnConstraints().add(index, new ColumnConstraints(playerGrid.getPrefWidth()));
+            ImageView playerToken = new ImageView();
+            playerToken.setFitWidth(30);
+            playerToken.setPreserveRatio(true);
+            playerToken.getStyleClass().add(players.get(nickname).name().toLowerCase() + "Token");
+            playerTokens.put(nickname, playerToken);
+            ((GridPane)scorePane.getChildren().getFirst()).add(playerToken, 0, 0);
             index++;
         }
     }
@@ -324,12 +333,23 @@ public class GameViewController extends ViewController {
         if(!checkCurrentView(controller.getLocalPlayerName())){
             return;
         }
-        cardHandGrid.getChildren().clear();
+        cardHandGrid.getChildren().removeIf(c -> !(c == cardSelectionPopup));
         int index = 0;
         for(CardSides card : cards.stream().limit(3).toList()) {
             ImageView cardView = getCardImage(card.frontSide());
+            int finalIndex = index;
             cardView.setOnMouseClicked((event) -> {
-                //TODO
+                if(!cardSelectionPopup.isVisible() || GridPane.getColumnIndex(cardSelectionPopup) != finalIndex) {
+                    ImageView frontView = getCardImage(card.frontSide());
+                    ImageView backView = getCardImage(card.backSide());
+                    cardSelectionGrid.getChildren().clear();
+                    cardSelectionGrid.add(frontView, 0, 0);
+                    cardSelectionGrid.add(backView, 0, 1);
+                    GridPane.setColumnIndex(cardSelectionPopup, finalIndex);
+                    cardSelectionPopup.setVisible(true);
+                } else {
+                    cardSelectionPopup.setVisible(false);
+                }
             });
             cardView.setDisable(true);
             cardHandGrid.add(cardView, index, 0);
@@ -355,8 +375,29 @@ public class GameViewController extends ViewController {
         }
     }
 
-    public void updateScore(String nickname, int moveScore){
-
+    /**
+     * Updates the score board.
+     *
+     * @param nickname the nickname of the player of which the score has to be updated.
+     * @param playerScore the new player's score.
+     */
+    public void updateScore(String nickname, int playerScore){
+        if(playerScore >= 30){
+            playerScore = 29;
+        }
+        ImageView playerToken = playerTokens.get(nickname);
+        GridPane gridPaneToRemoveFrom = (GridPane)playerToken.getParent();
+        gridPaneToRemoveFrom.getChildren().remove(playerToken);
+        for(Node node : gridPaneToRemoveFrom.getChildren()){
+            double tokenY = node.getTranslateY();
+            if(tokenY > playerToken.getTranslateY()){
+                node.setTranslateY(tokenY + distanceBetweenTokens);
+            }
+        }
+        GridPane gridPaneToAddTo = (GridPane)scorePane.getChildren().get(playerScore);
+        gridPaneToAddTo.add(playerToken, 0, 0);
+        playerToken.setTranslateY(0);
+        playerToken.setTranslateY(-distanceBetweenTokens * gridPaneToAddTo.getChildren().size());
     }
 
     /**
@@ -378,6 +419,11 @@ public class GameViewController extends ViewController {
 
     }
 
+    /**
+     * Sets the current turn owner.
+     *
+     * @param turnOwner the turn-owner's nickname.
+     */
     public void setCurrentTurnOwner(String turnOwner){
         for(Circle circle : playerTagCircles.values()){
             circle.setStroke(Paint.valueOf("transparent"));
@@ -385,16 +431,22 @@ public class GameViewController extends ViewController {
         playerTagCircles.get(turnOwner).setStroke(Paint.valueOf("white"));
     }
 
+    /**
+     * Creates the status label.
+     *
+     * @param message the message written in the label.
+     * @return the created label.
+     */
     private Label createStatusLabel(String message){
         Label statusLabel = new Label(message);
         statusLabel.getStyleClass().add("toastNotificationLabel");
         statusLabel.setMaxWidth(Double.MAX_VALUE);
         statusLabel.setMaxHeight(Double.MAX_VALUE);
         statusLabel.setAlignment(Pos.CENTER);
+        notificationToastGrid.setGridLinesVisible(true);
         int numberOfChildren = notificationToastGrid.getChildren().size();
-        notificationToastGrid.getRowConstraints().add(new RowConstraints(70));
         notificationToastGrid.add(statusLabel, 1, 0);
-        statusLabel.setTranslateY(numberOfChildren * toastGap);
+        statusLabel.setTranslateY((numberOfChildren - 1) * toastGap);
         return statusLabel;
     }
 
@@ -411,9 +463,8 @@ public class GameViewController extends ViewController {
         for(BasicCard card : cards){
             ImageView cardView = getCardImage(card);
             cardView.setDisable(true);
-            cardView.setOnMouseClicked((mouseEvent) -> {
-                //TODO
-            });
+            int finalIndex = index;
+            cardView.setOnMouseClicked((mouseEvent) -> controller.sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
             if(index == 0){
                 int j = 0;
                 while(j < numberOfCardsLeft && j < maxNumberOfHiddenCards){
@@ -532,6 +583,11 @@ public class GameViewController extends ViewController {
         return cardView;
     }
 
+    /**
+     * Creates the ImageView of a hidden card.
+     *
+     * @return the created ImageView.
+     */
     private ImageView createHiddenCard(){
         ImageView cardView = new ImageView(CardAssetsProvider.getHiddenCardFilePath());
         cardView.setFitWidth(cardWidth);

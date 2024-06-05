@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
@@ -253,16 +254,16 @@ public class GameCLI extends AbstractCLI implements GameView {
      * Method used to update the client about another player's board and score.
      * @param nickname the player's nickname.
      * @param placedCards the players board.
-     * @param moveScore the player's score.
+     * @param score the player's score.
      */
     @Override
-    public void updateBoard(String nickname, List<BasicCard> placedCards, int moveScore){
+    public void updateBoard(String nickname, List<BasicCard> placedCards, int score){
         System.out.printf("Here are %s's current placed cards (centered on his last placed card): \n",
                 controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         int x = placedCards.isEmpty() ? 0 : placedCards.getLast().getCorner(Location.BL).getX();
         int y = placedCards.isEmpty() ? 0 : placedCards.getLast().getCorner(Location.BL).getY();
         System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
-        System.out.printf("Their new score is: %d\n", moveScore);
+        System.out.printf("Their new score is: %d\n", score);
     }
 
     /**
@@ -393,6 +394,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                 s -> s.equalsIgnoreCase("back"),
                 this::stringIdentity);
         controller.backToSetup();
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -405,11 +407,20 @@ public class GameCLI extends AbstractCLI implements GameView {
                 color.getTextColorString() + nickname + Content.EMPTY.getTextColorString());
     }
 
+    /**
+     * Notifies that a player has left the lobby.
+     * @param nickname the player's nickname.
+     * @param color the player's color.
+     */
     @Override
     public void notifyPlayerLeftLobby(String nickname, Content color) {
         notifyRemotePlayerDisconnected(nickname, color);
     }
 
+    /**
+     * Notifies that a player has reconnected.
+     * @param nickname the player's nickname.
+     */
     @Override
     public void notifyRemotePlayerReconnected(String nickname) {
         System.out.printf("%s rejoined.\n",
@@ -423,6 +434,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     public void notifyGameCanceled(){
         System.out.println("The game took too long to start, and it has been canceled.");
         controller.backToSetup();
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -464,9 +476,11 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    /**
+     * Method not implemented for the TUI.
+     */
     @Override
     public void closeView() {
-
     }
 
     /**

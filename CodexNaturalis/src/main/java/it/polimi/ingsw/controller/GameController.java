@@ -350,13 +350,18 @@ public class GameController implements Runnable{
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }
 
+    /**
+     * Removes a player from the current lobby.
+     *
+     * @param networkHandler the player's network handler.
+     */
     private void removePlayerFromLobby(NetworkHandler networkHandler){
         String playerNickname = game.getLobbyNicknames().stream()
                 .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
                 .findFirst().orElse("No players");
-        game.deletePlayerData(playerNickname);
         serverSubject.getNetworkHandler(playerNickname).setCurrentGame(null);
         serverSubject.unsubscribe(playerNickname);
+        game.deletePlayerData(playerNickname);
     }
 
     /**
@@ -692,7 +697,10 @@ public class GameController implements Runnable{
                     labeledMessage.networkHandler().update(
                             new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), gameInfo.getGameId()));
                 case Status.CLIENT_READY -> readyHandlers.add(labeledMessage.networkHandler());
-                case Status.PLAYER_DISCONNECTED -> removePlayerFromLobby(labeledMessage.networkHandler());
+                case Status.PLAYER_DISCONNECTED -> {
+                    removePlayerFromLobby(labeledMessage.networkHandler());
+                    labeledMessage.networkHandler().update(new Message(Status.PLAYER_LEFT_LOBBY));
+                }
             }
         }
     }

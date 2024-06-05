@@ -202,6 +202,9 @@
 .cardWithShadow {
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
 }
+.cardWithShadow:hover{
+  -fx-opacity: 0.2;
+}
 .scoreCard {
   -fx-background-image: url('images/scoreCard.png');
   -fx-background-size: stretch;
@@ -329,4 +332,16 @@
 }
 .resultsGridPane{
   -fx-background-color: #E4DFB5;
+}
+.redToken{
+  -fx-image: url("images/tokens/red.png")
+}
+.blueToken{
+  -fx-image: url("images/tokens/blue.png")
+}
+.greenToken{
+  -fx-image: url("images/tokens/green.png")
+}
+.purpleToken{
+  -fx-image: url("images/tokens/purple.png")
 }

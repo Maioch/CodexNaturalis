@@ -53,6 +53,11 @@ public class MatchLobbyViewController extends ViewController {
         addRows(playerList, new ArrayList<>(List.of(new GridEntry(100, playerRadioButton))));
     }
 
+    /**
+     * Removes a player from the lobby (updating the player count text).
+     *
+     * @param playerToRemove the nickname of the player to remove.
+     */
     public void removePlayer(String playerToRemove){
         List<Node> playerTags = new ArrayList<>(playerList.getChildren());
         playerList.getChildren().clear();
@@ -64,9 +69,12 @@ public class MatchLobbyViewController extends ViewController {
         }
     }
 
+    /**
+     * Lets the player leave the lobby.
+     */
     public void leaveLobby(){
-        System.out.println("Leaving lobby");
-        controller.sendMessage(new Message(Status.PLAYER_DISCONNECTED));
         controller.backToSetup();
+        controller.sendMessage(new Message(Status.PLAYER_DISCONNECTED));
+        System.out.println("Leaving lobby");
     }
 }

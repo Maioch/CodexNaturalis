@@ -37,10 +37,6 @@ public class TCPHandler extends NetworkHandler implements Runnable{
             while (true) {
                 try {
                     Message message = (Message) socketInput.readObject();
-                    if(message.getStatus() == Status.REQUEST_PING){
-                        update(new Message(Status.PING_ACK));
-                        continue;
-                    }
                     handler.addEventToQueue(new LabeledMessage(this, message));
                 } catch (ClassNotFoundException e) {
                     System.out.println("Received an invalid message");

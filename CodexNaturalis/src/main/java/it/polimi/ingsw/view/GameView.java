@@ -25,7 +25,7 @@ public interface GameView {
     void updateRemotePlayerHand(String nickname, List<BasicCard> handCards);
     void updateLocalPlayerHand(List<CardSides> handCards);
     void requestStarterSide(List<CardSides> playerCards);
-    void updateBoard(String nickname, List<BasicCard> placedCards, int moveScore);
+    void updateBoard(String nickname, List<BasicCard> placedCards, int score);
     void requestPersonalObjectivesChoice(List<Objective> objectives);
     void showPersonalObjectives(List<Objective> objectives);
     void showCommonObjectives(List<Objective> objectives);

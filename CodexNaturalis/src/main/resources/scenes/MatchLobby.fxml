@@ -100,7 +100,7 @@
                      <children>
                         <Button fx:id="leaveButton" mnemonicParsing="false" onMouseClicked="#leaveLobby" text="Leave">
                            <font>
-                              <Font name="Fira Sans Condensed Regular" size="13.0" />
+                              <Font name="Fira Sans Condensed Regular" size="14.0" />
                            </font>
                         </Button>
                      </children>

@@ -8,6 +8,8 @@ import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.gui.controllers.GameViewController;
@@ -18,6 +20,9 @@ import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class GameGUI extends AbstractGUI implements GameView {
 
@@ -40,6 +45,9 @@ public class GameGUI extends AbstractGUI implements GameView {
         this.controller = controller;
     }
 
+    /**
+     * Notifies that the next turn will be the last.
+     */
     @Override
     public void notifyLastTurn() {
         currentLoader.<GameViewController>getController().updateStatusLabel("The next turn will be the last");
@@ -102,45 +110,100 @@ public class GameGUI extends AbstractGUI implements GameView {
         }
     }
 
+    /**
+     * Updates a remote player's hand.
+     *
+     * @param nickname the remote player's nickname.
+     * @param handCards the list of remote player's hand cards.
+     */
     @Override
     public void updateRemotePlayerHand(String nickname, List<BasicCard> handCards) {
         currentLoader.<GameViewController>getController().updateRemotePlayerCards(nickname, handCards);
     }
 
+    /**
+     * Updates the local player's hand.
+     *
+     * @param handCards the list of local player's hand cards.
+     */
     @Override
     public void updateLocalPlayerHand(List<CardSides> handCards) {
         currentLoader.<GameViewController>getController().updateLocalPlayerCards(handCards);
     }
 
+    /**
+     * Requests to the player the starter card side to place.
+     *
+     * @param playerCards the player's hand cards.
+     */
     @Override
     public void requestStarterSide(List<CardSides> playerCards) {
+        /*GraphicalSubmitter graphicalSubmitter = new GraphicalSubmitter();
+        try (ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor()) {
+            for (int i = 0; i < 5; i++) {
+                for (String nickname : controller.getRemotePlayerNames()) {
+                    int finalI = i;
+                    executorService.schedule(() -> graphicalSubmitter.submit(() ->
+                            currentLoader.<GameViewController>getController().updateScore(nickname, finalI)
+                    ), i * 10, TimeUnit.SECONDS);
+                }
+            }
+        }*/
         currentLoader.<GameViewController>getController().updateLocalPlayerCards(playerCards.subList(1, playerCards.size()));
         currentLoader.<GameViewController>getController().chooseStarterSide(playerCards.getFirst());
     }
 
+    /**
+     * Updates a certain player's board.
+     *
+     * @param nickname the player's nickname.
+     * @param placedCards the player's board.
+     * @param score the new move score.
+     */
     @Override
-    public void updateBoard(String nickname, List<BasicCard> placedCards, int moveScore) {
+    public void updateBoard(String nickname, List<BasicCard> placedCards, int score) {
         currentLoader.<GameViewController>getController().updateBoard(nickname, placedCards);
-        currentLoader.<GameViewController>getController().updateScore(nickname, moveScore);
+        currentLoader.<GameViewController>getController().updateScore(nickname, score);
     }
 
+    /**
+     * Requests the personal objective choice.
+     *
+     * @param objectives the objective options.
+     */
     @Override
     public void requestPersonalObjectivesChoice(List<Objective> objectives) {
         currentLoader.<GameViewController>getController().choosePersonalObjective(
                 objectives.getFirst(), objectives.getLast());
     }
 
+    /**
+     * Shows the local player's personal objectives.
+     *
+     * @param objectives the list of personal objectives.
+     */
     @Override
     public void showPersonalObjectives(List<Objective> objectives) {
         currentLoader.<GameViewController>getController().setPersonalObjectives(objectives.getFirst());
     }
 
+    /**
+     * Shows the common objectives.
+     *
+     * @param objectives the list of common objectives.
+     */
     @Override
     public void showCommonObjectives(List<Objective> objectives) {
         currentLoader.<GameViewController>getController().setCommonObjectives(
                 objectives.getFirst(), objectives.getLast());
     }
 
+    /**
+     * Updates the decks.
+     *
+     * @param drawableCards the drawable cards of the deck.
+     * @param numberOfCardsLeft the deck's left cards.
+     */
     @Override
     public void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft) {
         currentLoader.<GameViewController>getController().updateDecks(drawableCards, numberOfCardsLeft);
@@ -156,17 +219,34 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     }
 
+    /**
+     * Notifies that a remote player has disconnected.
+     *
+     * @param nickname the player's nickname.
+     * @param color the player's color.
+     */
     @Override
     public void notifyRemotePlayerDisconnected(String nickname, Content color) {
         currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
                 "%s disconnected from the game", nickname));
     }
 
+    /**
+     * Notifies that a player has left the lobby.
+     *
+     * @param nickname the player's nickname.
+     * @param color the player's color.
+     */
     @Override
     public void notifyPlayerLeftLobby(String nickname, Content color) {
         currentLoader.<MatchLobbyViewController>getController().removePlayer(nickname);
     }
 
+    /**
+     * Notifies that a remoted player has reconnected.
+     *
+     * @param nickname the player's nickname.
+     */
     @Override
     public void notifyRemotePlayerReconnected(String nickname) {
         currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
@@ -175,6 +255,9 @@ public class GameGUI extends AbstractGUI implements GameView {
         currentLoader.<GameViewController>getController().setChatDisable(false);
     }
 
+    /**
+     * Notifies that the game has started the terminating timeout.
+     */
     @Override
     public void notifyGameTimeout(){
         currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
@@ -183,17 +266,27 @@ public class GameGUI extends AbstractGUI implements GameView {
         currentLoader.<GameViewController>getController().setChatDisable(true);
     }
 
+    /**
+     * Notifies that the game has canceled.
+     */
     @Override
     public void notifyGameCanceled(){
         controller.backToSetup();
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
+    /**
+     * Notifies that the expected turn has been skipped.
+     */
     @Override
     public void notifyTurnSkipped() {
         currentLoader.<GameViewController>getController().updateStatusLabel(
                 "The turn has been skipped because the player isn't connected");
     }
 
+    /**
+     * Notifies the player that he cannot do any move.
+     */
     @Override
     public void showNoMovesAvailable() {
         String turnOwner = controller.getPlayerWithTurn();

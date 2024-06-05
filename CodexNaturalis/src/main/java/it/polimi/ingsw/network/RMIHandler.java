@@ -32,10 +32,6 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      */
     @Override
     public void receiveUpdate(Message message) throws RemoteException {
-        if(message.getStatus() == Status.REQUEST_PING){
-            receiverInterface.receiveUpdate(new Message(Status.PING_ACK));
-            return;
-        }
         handler.addEventToQueue(new LabeledMessage(this, message));
     }
 
