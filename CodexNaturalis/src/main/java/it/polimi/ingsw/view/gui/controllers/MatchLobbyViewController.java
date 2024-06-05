@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -60,5 +62,11 @@ public class MatchLobbyViewController extends ViewController {
         for (Node node : playerTags) {
             addRows(playerList, new ArrayList<>(List.of(new GridEntry(100, node))));
         }
+    }
+
+    public void leaveLobby(){
+        System.out.println("Leaving lobby");
+        controller.sendMessage(new Message(Status.PLAYER_DISCONNECTED));
+        controller.backToSetup();
     }
 }

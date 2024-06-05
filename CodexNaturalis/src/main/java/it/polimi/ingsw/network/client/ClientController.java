@@ -169,7 +169,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
      * Closes the game view, and sends a "REQUEST_GAME" message.
      */
     public void backToSetup() {
-        eventSubmitter.submit(() -> gameView.closeView());
         this.game = null;
         synchronized (gameViewLock) {
             this.gameView = null;

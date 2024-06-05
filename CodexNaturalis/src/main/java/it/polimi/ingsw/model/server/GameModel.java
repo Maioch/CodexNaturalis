@@ -102,22 +102,22 @@ public class GameModel{
      * Method that the checks if the maximum number of players is reached.
      * @return true if the game is full.
      */
-    public boolean isGameFull() {
+    public synchronized boolean isGameFull() {
         return playerData.size() == numberOfPlayers;
     }
 
-    public boolean isLobbyEmpty() { return playerData.isEmpty(); }
+    public synchronized boolean isLobbyEmpty() { return playerData.isEmpty(); }
 
     public int getNumberOfPlayers() { return numberOfPlayers; }
 
-    public List<String> getLobbyNicknames() { return new ArrayList<>(playerData.keySet()); }
+    public synchronized List<String> getLobbyNicknames() { return new ArrayList<>(playerData.keySet()); }
 
     /**
      * Method that checks if there's a user with the same username of the new player that is joining the game.
      * @param nickname the nickname to check.
      * @return false if there's a duplicate username.
      */
-    public  boolean checkNickname(String nickname) {
+    public synchronized boolean checkNickname(String nickname) {
         return !playerData.containsKey(nickname) &&
                 !nickname.contains(" ") &&
                 !nickname.contains(GameParameters.getDelimiter()) &&
@@ -155,7 +155,7 @@ public class GameModel{
      * @throws GameFullException if the game is full.
      * @throws NicknameTakenException if the nickname is already chosen by another player.
      */
-    public void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
+    public synchronized void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
         if (isGameFull()) {
             throw new GameFullException();
         }
@@ -175,7 +175,7 @@ public class GameModel{
         }
     }
 
-    public void deletePlayerData(String nickname) {
+    public synchronized void deletePlayerData(String nickname) {
         Content color = playerData.remove(nickname);
         if(color != null){
             availableColors.add(color);
@@ -183,7 +183,7 @@ public class GameModel{
         }
     }
 
-    public void createPlayers(){
+    public synchronized void createPlayers(){
         for(Map.Entry<String,Content> entry : playerData.entrySet()) {
             ArrayList<CardSides> handCards = new ArrayList<>() {{
                 add(starterDeck.draw());
