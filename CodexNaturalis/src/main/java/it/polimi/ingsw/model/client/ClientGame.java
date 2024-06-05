@@ -160,7 +160,11 @@ public class ClientGame {
      * @param nickname the nickname of the player to remove.
      */
     public synchronized void removeRemotePlayer(String nickname){
+        Content playerColor = getPlayerColors().get(nickname) != null ?
+                getPlayerColors().get(nickname) :
+                Content.WHITE;
         remotePlayers.removeIf(remotePlayer -> remotePlayer.getNickname().equals(nickname));
+        eventSubmitter.submit(() -> gameView.notifyPlayerLeftLobby(nickname, playerColor));
     }
 
     /**

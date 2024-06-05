@@ -350,7 +350,6 @@ public class GameController implements Runnable{
                 game.deletePlayerData(playerNickname);
                 serverSubject.getNetworkHandler(playerNickname).setCurrentGame(null);
                 serverSubject.unsubscribe(playerNickname);
-                serverSubject.notifyAll(new StringMessage(Status.PLAYER_LEFT_LOBBY, playerNickname));
             }
         }
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));

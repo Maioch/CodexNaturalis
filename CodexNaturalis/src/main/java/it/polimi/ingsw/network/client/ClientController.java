@@ -357,12 +357,14 @@ public class ClientController extends EventHandler<LabeledMessage> {
                 case TURN_SKIPPED -> eventSubmitter.submit(() -> gameView.notifyTurnSkipped());
                 case PLAYER_DISCONNECTED -> {
                     if(message instanceof StringMessage stringMessage){
-                        eventSubmitter.submit(() -> gameView.notifyRemotePlayerDisconnected(stringMessage.getString()));
+                        Content playerColor = getPlayerColors().get(stringMessage.getString()) != null ?
+                                getPlayerColors().get(stringMessage.getString()) :
+                                Content.WHITE;
+                        eventSubmitter.submit(() -> gameView.notifyRemotePlayerDisconnected(stringMessage.getString(), playerColor));
                     }
                 }
                 case PLAYER_LEFT_LOBBY -> {
                     if(message instanceof StringMessage stringMessage){
-                        eventSubmitter.submit(() -> gameView.notifyRemotePlayerDisconnected(stringMessage.getString()));
                         game.removeRemotePlayer(stringMessage.getString());
                     }
                 }

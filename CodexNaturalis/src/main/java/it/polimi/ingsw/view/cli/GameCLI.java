@@ -400,11 +400,14 @@ public class GameCLI extends AbstractCLI implements GameView {
      * @param nickname the disconnected player's nickname.
      */
     @Override
-    public void notifyRemotePlayerDisconnected(String nickname) {
-        if(controller.getPlayerColors().get(nickname) != null) {
-            System.out.printf("%s disconnected from the game. We hope they'll be back soon ;)\n",
-                    controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
-        }
+    public void notifyRemotePlayerDisconnected(String nickname, Content color) {
+        System.out.printf("%s disconnected from the game. We hope they'll be back soon ;)\n",
+                color.getTextColorString() + nickname + Content.EMPTY.getTextColorString());
+    }
+
+    @Override
+    public void notifyPlayerLeftLobby(String nickname, Content color) {
+        notifyRemotePlayerDisconnected(nickname, color);
     }
 
     @Override

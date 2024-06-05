@@ -157,11 +157,14 @@ public class GameGUI extends AbstractGUI implements GameView {
     }
 
     @Override
-    public void notifyRemotePlayerDisconnected(String nickname) {
-        if(controller.getPlayerColors().get(nickname) != null) {
-            currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
-                    "%s disconnected from the game", nickname));
-        }
+    public void notifyRemotePlayerDisconnected(String nickname, Content color) {
+        currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
+                "%s disconnected from the game", nickname));
+    }
+
+    @Override
+    public void notifyPlayerLeftLobby(String nickname, Content color) {
+        currentLoader.<MatchLobbyViewController>getController().removePlayer(nickname);
     }
 
     @Override

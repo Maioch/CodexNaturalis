@@ -32,7 +32,8 @@ public interface GameView {
     void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft);
     void revealFinalSummary(String nickname, Map<Objective,Integer> objectivePoints, int finalScore);
     void revealWinners(List<String> winners);
-    void notifyRemotePlayerDisconnected(String nickname);
+    void notifyRemotePlayerDisconnected(String nickname, Content color);
+    void notifyPlayerLeftLobby(String nickname, Content color);
     void notifyRemotePlayerReconnected(String nickname);
     void notifyGameTimeout();
     void notifyGameCanceled();

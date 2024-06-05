@@ -4,11 +4,13 @@ import it.polimi.ingsw.model.server.Content;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,18 @@ public class MatchLobbyViewController extends ViewController {
         playerRadioButton.setDisable(true);
         playerRadioButton.setStyle(String.format("-radio-color: %s;", color.getHexColorString()));
         playerRadioButton.setAlignment(Pos.CENTER_LEFT);
+        playerRadioButton.setUserData(player);
         addRows(playerList, new ArrayList<>(List.of(new GridEntry(100, playerRadioButton))));
+    }
+
+    public void removePlayer(String playerToRemove){
+        List<Node> playerTags = new ArrayList<>(playerList.getChildren());
+        playerList.getChildren().clear();
+        playerList.getRowConstraints().clear();
+        currentNumberOfPlayers -= playerTags.removeIf(n -> n.getUserData().equals(playerToRemove)) ? 1 : 0;
+        playerCountText.setText(String.format("Waiting for players... (%d/%d)", currentNumberOfPlayers, maxNumberOfPlayers));
+        for (Node node : playerTags) {
+            addRows(playerList, new ArrayList<>(List.of(new GridEntry(100, node))));
+        }
     }
 }
