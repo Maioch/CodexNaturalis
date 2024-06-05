@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 /**
  * Class used to initialize the client's connection to the server, both using TCP and RMI.
@@ -48,6 +49,7 @@ public class ConnectionInitializer {
             throws RemoteException, MalformedURLException, NotBoundException {
         RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager", ip, port));
         RMIHandler rmiHandler = new RMIHandler(controller);
+        UnicastRemoteObject.exportObject(rmiHandler, 0);
         rmiSetup.register(rmiHandler);
         eventSubmitter.submit(() -> completeSetup(controller, rmiHandler));
     }

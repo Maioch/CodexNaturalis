@@ -139,14 +139,13 @@ public class GameGUI extends AbstractGUI implements GameView {
     @Override
     public void requestStarterSide(List<CardSides> playerCards) {
         /*GraphicalSubmitter graphicalSubmitter = new GraphicalSubmitter();
-        try (ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor()) {
-            for (int i = 0; i < 5; i++) {
-                for (String nickname : controller.getRemotePlayerNames()) {
-                    int finalI = i;
-                    executorService.schedule(() -> graphicalSubmitter.submit(() ->
-                            currentLoader.<GameViewController>getController().updateScore(nickname, finalI)
-                    ), i * 10, TimeUnit.SECONDS);
-                }
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        for (int i = 0; i < 50; i++) {
+            for (String nickname : controller.getRemotePlayerNames()) {
+                int finalI = i;
+                executorService.schedule(() -> graphicalSubmitter.submit(() ->
+                        currentLoader.<GameViewController>getController().updateScore(nickname, finalI)
+                ), i * 3, TimeUnit.SECONDS);
             }
         }*/
         currentLoader.<GameViewController>getController().updateLocalPlayerCards(playerCards.subList(1, playerCards.size()));

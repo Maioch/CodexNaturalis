@@ -90,7 +90,7 @@ public class GameViewController extends ViewController {
     private final int toastGap = 76;
     private final int maxNumberOfHiddenCards = 3;
     private final int distanceBetweenHiddenCards = 4;
-    private final int distanceBetweenTokens = 8;
+    private final int distanceBetweenTokens = 4;
     private final long statusLabelShowInterval = 6;
     private final int cardWidth = 150;
     private final int objectiveWidth = 130;
@@ -116,6 +116,7 @@ public class GameViewController extends ViewController {
             playerToken.getStyleClass().add(players.get(nickname).name().toLowerCase() + "Token");
             playerTokens.put(nickname, playerToken);
             ((GridPane)scorePane.getChildren().getFirst()).add(playerToken, 0, 0);
+            updateScore(nickname, 0);
             index++;
         }
     }
@@ -386,6 +387,7 @@ public class GameViewController extends ViewController {
             playerScore = 29;
         }
         ImageView playerToken = playerTokens.get(nickname);
+        GridPane gridPaneToAddTo = (GridPane)scorePane.getChildren().get(playerScore);
         GridPane gridPaneToRemoveFrom = (GridPane)playerToken.getParent();
         gridPaneToRemoveFrom.getChildren().remove(playerToken);
         for(Node node : gridPaneToRemoveFrom.getChildren()){
@@ -394,10 +396,8 @@ public class GameViewController extends ViewController {
                 node.setTranslateY(tokenY + distanceBetweenTokens);
             }
         }
-        GridPane gridPaneToAddTo = (GridPane)scorePane.getChildren().get(playerScore);
         gridPaneToAddTo.add(playerToken, 0, 0);
-        playerToken.setTranslateY(0);
-        playerToken.setTranslateY(-distanceBetweenTokens * gridPaneToAddTo.getChildren().size());
+        playerToken.setTranslateY(-distanceBetweenTokens * (gridPaneToAddTo.getChildren().size() - 1));
     }
 
     /**
@@ -443,10 +443,9 @@ public class GameViewController extends ViewController {
         statusLabel.setMaxWidth(Double.MAX_VALUE);
         statusLabel.setMaxHeight(Double.MAX_VALUE);
         statusLabel.setAlignment(Pos.CENTER);
-        notificationToastGrid.setGridLinesVisible(true);
         int numberOfChildren = notificationToastGrid.getChildren().size();
         notificationToastGrid.add(statusLabel, 1, 0);
-        statusLabel.setTranslateY((numberOfChildren - 1) * toastGap);
+        statusLabel.setTranslateY(numberOfChildren * toastGap);
         return statusLabel;
     }
 
