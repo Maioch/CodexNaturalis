@@ -30,6 +30,8 @@ public class ConnectionViewController extends ViewController {
     public RadioButton tcpRadioButton;
     @FXML
     public RadioButton rmiRadioButton;
+    @FXML
+    public ToggleGroup protocol;
 
     private Application application;
 
