@@ -11,13 +11,12 @@ import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
+import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -29,6 +28,8 @@ import java.util.Timer;
 public class GameViewController extends ViewController {
     @FXML
     public ScrollPane gameBoardScrollPane;
+    @FXML
+    public Pane gameBoardPane;
     @FXML
     public GridPane cardHandGrid;
     @FXML
@@ -103,6 +104,10 @@ public class GameViewController extends ViewController {
         currentViewedPlayer = controller.getLocalPlayerName();
         int index = 0;
         outerPlayerTagGrid.setVgap(16);
+        /*ImageView card = getCardImage(CardBuilder.buildCard(82).frontSide());
+        gameBoardPane.getChildren().add(card);
+        card.setX(0);
+        card.setY(0);*/
         for(String nickname : players.keySet()){
             if(!nickname.equals(controller.getLocalPlayerName())) {
                 chatSendButton.getItems().add(new CheckMenuItem(nickname));
@@ -115,7 +120,7 @@ public class GameViewController extends ViewController {
             playerToken.setPreserveRatio(true);
             playerToken.getStyleClass().add(players.get(nickname).name().toLowerCase() + "Token");
             playerTokens.put(nickname, playerToken);
-            ((GridPane)scorePane.getChildren().getFirst()).add(playerToken, 0, 0);
+            ((GridPane)scorePane.getChildren().getLast()).add(playerToken, 0, 0);
             updateScore(nickname, 0);
             index++;
         }
@@ -341,8 +346,8 @@ public class GameViewController extends ViewController {
             int finalIndex = index;
             cardView.setOnMouseClicked((event) -> {
                 if(!cardSelectionPopup.isVisible() || GridPane.getColumnIndex(cardSelectionPopup) != finalIndex) {
-                    ImageView frontView = getCardImage(card.frontSide());
-                    ImageView backView = getCardImage(card.backSide());
+                    ImageView frontView = createDraggableCard(card.frontSide());
+                    ImageView backView = createDraggableCard(card.backSide());
                     cardSelectionGrid.getChildren().clear();
                     cardSelectionGrid.add(frontView, 0, 0);
                     cardSelectionGrid.add(backView, 0, 1);
@@ -352,10 +357,24 @@ public class GameViewController extends ViewController {
                     cardSelectionPopup.setVisible(false);
                 }
             });
-            cardView.setDisable(true);
+            cardView.setDisable(!controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()));
             cardHandGrid.add(cardView, index, 0);
             index++;
         }
+    }
+
+    private ImageView createDraggableCard(BasicCard card) {
+        ImageView view = getCardImage(card);
+        /*view.setOnDragDetected((MouseEvent e) -> System.out.println("DRADE"));
+        view.setOnMouseDragExited((MouseEvent e) -> System.out.println("DRAXI"));
+        view.setOnMouseDragReleased((MouseEvent e) -> System.out.println("DRAVO"));
+        view.setOnMouseDragOver((MouseEvent e) -> System.out.println("DROVE"));
+        view.setOnMouseDragged((MouseEvent e) -> {
+            Point2D point = view.screenToLocal(e.getScreenX(), e.getScreenY());
+            view.setTranslateX(point.getX());
+            view.setTranslateY(point.getY());
+        });*/
+        return view;
     }
 
     /**
@@ -368,7 +387,8 @@ public class GameViewController extends ViewController {
         if(!checkCurrentView(nickname)){
             return;
         }
-        cardHandGrid.getChildren().clear();
+        cardHandGrid.getChildren().removeIf(c -> !(c == cardSelectionPopup));
+        cardSelectionPopup.setVisible(false);
         int index = 0;
         for(BasicCard card : cards.stream().limit(3).toList()) {
             cardHandGrid.add(getCardImage(card), index, 0);
@@ -377,7 +397,18 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Updates the score board.
+     * Places a card.
+     *
+     * @param handCards the local player's hand cards.
+     * @param placedCards the local player's board.
+     */
+    public void placeCard(List<CardSides> handCards, List<BasicCard> placedCards){
+        updateLocalPlayerCards(handCards);
+        updateLocalPlayerBoard(placedCards);
+    }
+
+    /**
+     * Updates the score board, by positioning at the correct position the player's token.
      *
      * @param nickname the nickname of the player of which the score has to be updated.
      * @param playerScore the new player's score.
@@ -389,10 +420,13 @@ public class GameViewController extends ViewController {
         ImageView playerToken = playerTokens.get(nickname);
         GridPane gridPaneToAddTo = (GridPane)scorePane.getChildren().get(playerScore);
         GridPane gridPaneToRemoveFrom = (GridPane)playerToken.getParent();
+        if(gridPaneToAddTo == gridPaneToRemoveFrom){
+            return;
+        }
         gridPaneToRemoveFrom.getChildren().remove(playerToken);
         for(Node node : gridPaneToRemoveFrom.getChildren()){
             double tokenY = node.getTranslateY();
-            if(tokenY > playerToken.getTranslateY()){
+            if(tokenY < playerToken.getTranslateY()){
                 node.setTranslateY(tokenY + distanceBetweenTokens);
             }
         }
@@ -415,7 +449,25 @@ public class GameViewController extends ViewController {
         updateViewDeck(drawableCards.get(gold), numberOfCardsLeft.get(gold), gold);
     }
 
-    public void updateBoard(String nickname, List<BasicCard> placedCards){
+    /**
+     * Updates the local player board, by visually placing the cards.
+     * 
+     * @param placedCards the local player's board.
+     */
+    public void updateLocalPlayerBoard(List<BasicCard> placedCards){
+        /*gameBoardPane.getChildren().clear();
+        for(BasicCard card : placedCards) {
+            GridPane cardGrid = new GridPane();
+            cardGrid.getStyleClass().add("boardCard");
+            cardGrid.setStyle(String.format("-card-asset: %s", CardAssetsProvider.getCardFilePath(card)));
+
+            //TODO
+
+            gameBoardPane.getChildren().add(cardGrid);
+        }*/
+    }
+
+    public void updateRemotePlayerBoard(String nickname, List<BasicCard> placedCards){
 
     }
 
@@ -463,6 +515,7 @@ public class GameViewController extends ViewController {
             ImageView cardView = getCardImage(card);
             cardView.setDisable(true);
             int finalIndex = index;
+            cardView.setOnMouseClicked((mouseEvent) -> controller.sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
             cardView.setOnMouseClicked((mouseEvent) -> controller.sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
             if(index == 0){
                 int j = 0;
@@ -548,13 +601,13 @@ public class GameViewController extends ViewController {
                 if(checkCurrentView(nickname)) {
                     currentViewedPlayer = controller.getLocalPlayerName();
                     updateLocalPlayerCards(controller.getLocalPlayerHand());
-                    updateBoard(nickname, controller.getLocalPlayerBoard());
+                    updateLocalPlayerBoard(controller.getLocalPlayerBoard());
                     viewPlayerIcon.getStyleClass().remove("hideBoardIcon");
                     viewPlayerIcon.getStyleClass().add("viewBoardIcon");
                 } else {
                     currentViewedPlayer = nickname;
                     updateRemotePlayerCards(nickname, controller.getRemotePlayerHand(nickname));
-                    updateBoard(nickname, controller.getLocalPlayerBoard());
+                    updateRemotePlayerBoard(nickname, controller.getRemotePlayerBoard(nickname));
                     for(ImageView icon : playerTagViewIcons.values()){
                         icon.getStyleClass().remove("hideBoardIcon");
                         viewPlayerIcon.getStyleClass().add("viewBoardIcon");

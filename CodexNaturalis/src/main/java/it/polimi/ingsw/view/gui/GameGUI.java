@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
-import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
@@ -67,9 +66,16 @@ public class GameGUI extends AbstractGUI implements GameView {
         currentLoader.<GameViewController>getController().showChatMessage(chatMessage.getSender(), chatMessage.getMessage());
     }
 
+    /**
+     * Requests the player to place a card.
+     *
+     * @param handCards the player's hand cards.
+     * @param placedCards the player's board.
+     */
     @Override
-    public void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards, List<BasicCard> validCards, List<Corner> validCorners) {
-
+    public void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards) {
+        currentLoader.<GameViewController>getController().updateStatusLabel("Place a card, codex wizard!", ToastType.PLACE.toString());
+        currentLoader.<GameViewController>getController().placeCard(handCards, placedCards);
     }
 
     /**
@@ -103,7 +109,7 @@ public class GameGUI extends AbstractGUI implements GameView {
     @Override
     public void showUserJoined(String nickname, Content color, boolean isGameFull) {
         currentLoader.<MatchLobbyViewController>getController().updatePlayers(nickname, color);
-        forceUpdate(); //fix for repaint issues on windows
+        //forceUpdate(); //fix for repaint issues on windows
         if(isGameFull){
             changeScene("Game.fxml");
             currentLoader.<GameViewController>getController().initializeScene();
@@ -141,11 +147,13 @@ public class GameGUI extends AbstractGUI implements GameView {
         /*GraphicalSubmitter graphicalSubmitter = new GraphicalSubmitter();
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         for (int i = 0; i < 50; i++) {
+            int j = 1;
             for (String nickname : controller.getRemotePlayerNames()) {
                 int finalI = i;
                 executorService.schedule(() -> graphicalSubmitter.submit(() ->
                         currentLoader.<GameViewController>getController().updateScore(nickname, finalI)
-                ), i * 3, TimeUnit.SECONDS);
+                ), i * j, TimeUnit.SECONDS);
+                j++;
             }
         }*/
         currentLoader.<GameViewController>getController().updateLocalPlayerCards(playerCards.subList(1, playerCards.size()));
@@ -161,7 +169,11 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void updateBoard(String nickname, List<BasicCard> placedCards, int score) {
-        currentLoader.<GameViewController>getController().updateBoard(nickname, placedCards);
+        if(controller.getLocalPlayerName().equals(nickname)) {
+            currentLoader.<GameViewController>getController().updateLocalPlayerBoard(placedCards);
+        } else {
+            currentLoader.<GameViewController>getController().updateRemotePlayerBoard(nickname, placedCards);
+        }
         currentLoader.<GameViewController>getController().updateScore(nickname, score);
     }
 
@@ -198,7 +210,7 @@ public class GameGUI extends AbstractGUI implements GameView {
     }
 
     /**
-     * Updates the decks.
+     * Updates the decks' view.
      *
      * @param drawableCards the drawable cards of the deck.
      * @param numberOfCardsLeft the deck's left cards.

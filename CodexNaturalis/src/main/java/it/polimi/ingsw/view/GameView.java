@@ -15,10 +15,7 @@ public interface GameView {
     void notifyLastTurn();
     void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft);
     void showChatMessage(ChatMessage chatMessage);
-    void requestPlacement(List<CardSides> handCards,
-                          List<BasicCard> placedCards,
-                          List<BasicCard> validCards,
-                          List<Corner> validCorners);
+    void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards);
     void turnChanged(String turnOwner);
     void showErrorMessage(String message);
     void showUserJoined(String nickname, Content color, boolean isGameFull);

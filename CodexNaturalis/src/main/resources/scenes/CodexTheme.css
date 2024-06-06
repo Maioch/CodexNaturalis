@@ -345,3 +345,10 @@
 .purpleToken{
   -fx-image: url("images/tokens/purple.png")
 }
+.boardCard{
+  -card-asset: url("images/cardFronts/64.png");
+  -fx-background-image: url("images/cardFronts/64.png");
+  -fx-background-size: 150 100;
+  -fx-background-position: center;
+  -fx-background-repeat: no-repeat;
+}

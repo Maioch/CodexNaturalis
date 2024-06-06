@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.EventHandler;
 import it.polimi.ingsw.network.NetworkHandler;
@@ -107,6 +108,20 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
+     * @return the client's player current placeable cards.
+     */
+    public synchronized List<BasicCard> getLocalPlayerValidCards(){
+        return game.getLocalPlayer().getValidCards();
+    }
+
+    /**
+     * @return the client's player current valid corners.
+     */
+    public synchronized List<Corner> getLocalPlayerValidCorners(){
+        return game.getLocalPlayer().getValidCorners();
+    }
+
+    /**
      * @return a map that contains each player's nickname (key), and it's color.
      */
     public synchronized Map<String, Content> getPlayerColors(){
@@ -198,7 +213,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Handles a setup message.
+     * Handles a setup message. This method is based on the message status.
      *
      * @param message the message to handle.
      */
@@ -263,7 +278,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Handles a game message.
+     * Handles a game message. This method is based on the message status.
      *
      * @param message the message to handle.
      */

@@ -90,7 +90,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method that builds the default message string, used by the method above to print a message.
+     * Builds the default message string, used by the method above to print a message.
      * @param message the client's message
      * @param sender the sender of the message.
      * @param recipients the recipients of the message.
@@ -116,17 +116,14 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method that requests the client to place a card.
+     * Requests the client to place a card.
      * @param handCards the client's hand cards.
      * @param placedCards the client's placed cards.
-     * @param validCards the cards that can be placed.
-     * @param validCorners the corners where the new card can be placed.
      */
     @Override
-    public void requestPlacement(List<CardSides> handCards,
-                                 List<BasicCard> placedCards,
-                                 List<BasicCard> validCards,
-                                 List<Corner> validCorners){
+    public void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards){
+        List<BasicCard> validCards = controller.getLocalPlayerValidCards();
+        List<Corner> validCorners = controller.getLocalPlayerValidCorners();
         System.out.println("These are the cards in your hand: ");
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList()));
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList()));

@@ -15,7 +15,9 @@ import java.util.List;
  */
 public class LocalPlayer extends ClientPlayer{
     private List<CardSides> handCards;
-    private List<Objective> personalObjectives;
+    private final List<Objective> personalObjectives;
+    private List<BasicCard> validCards;
+    private List<Corner> validCorners;
 
     /**
      * Class constructor.
@@ -25,6 +27,7 @@ public class LocalPlayer extends ClientPlayer{
      */
     public LocalPlayer(String nickname, Content color) {
         super(nickname, color);
+        personalObjectives = new ArrayList<>();
     }
 
     /**
@@ -34,7 +37,7 @@ public class LocalPlayer extends ClientPlayer{
      */
     @Override
     public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
-        this.handCards = handCards;
+        this.handCards = new ArrayList<>(handCards);
         if(show){
             eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(getHandCards()));
         }
@@ -61,7 +64,7 @@ public class LocalPlayer extends ClientPlayer{
      * @param personalObjectives the player's personal objectives.
      */
     public void setPersonalObjectives(List<Objective> personalObjectives) {
-        this.personalObjectives = new ArrayList<>(personalObjectives);
+        this.personalObjectives.addAll(personalObjectives);
         eventSubmitter.submit(() -> gameView.showPersonalObjectives(getPersonalObjectives()));
     }
 
@@ -85,7 +88,9 @@ public class LocalPlayer extends ClientPlayer{
      * @param validCorners the corners where the player can place a new card.
      */
     public void requestCardPlacement(List<BasicCard> validCards, List<Corner> validCorners){
-        eventSubmitter.submit(() -> gameView.requestPlacement(getHandCards(),getPlacedCards(),validCards,validCorners));
+        this.validCards = new ArrayList<>(validCards);
+        this.validCorners = new ArrayList<>(validCorners);
+        eventSubmitter.submit(() -> gameView.requestPlacement(getHandCards(), getPlacedCards()));
     }
 
     /**
@@ -93,5 +98,21 @@ public class LocalPlayer extends ClientPlayer{
      */
     public void requestStarterCardPlacement(){
         eventSubmitter.submit(() -> gameView.requestStarterSide(getHandCards()));
+    }
+
+    public List<BasicCard> getValidCards(){
+        return new ArrayList<>(){{
+            for(BasicCard card : validCards){
+                add(card.copy());
+            }
+        }};
+    }
+
+    public List<Corner> getValidCorners(){
+        return new ArrayList<>(){{
+            for(Corner corner : validCorners){
+                add(new Corner(corner));
+            }
+        }};
     }
 }
