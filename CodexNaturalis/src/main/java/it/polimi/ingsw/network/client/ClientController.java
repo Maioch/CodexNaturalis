@@ -242,10 +242,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
                     eventSubmitter.submit(() -> sendMessage(new Message(Status.CLIENT_READY)));
                 }
             }
-            case PLAYER_LEFT_LOBBY -> {
-                System.out.println("Player left lobby");
-                sendMessage(new Message(Status.REQUEST_GAMES));
-            }
+            case PLAYER_LEFT_LOBBY -> sendMessage(new Message(Status.REQUEST_GAMES));
             case GAME_FULL ->
                     eventSubmitter.submit(() -> setupView.showCriticalError(Status.GAME_FULL.getMessage()));
             case INVALID_NICKNAME -> {

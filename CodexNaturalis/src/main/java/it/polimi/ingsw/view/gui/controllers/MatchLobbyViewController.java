@@ -3,7 +3,6 @@ package it.polimi.ingsw.view.gui.controllers;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -12,7 +11,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +73,5 @@ public class MatchLobbyViewController extends ViewController {
     public void leaveLobby(){
         controller.backToSetup();
         controller.sendMessage(new Message(Status.PLAYER_DISCONNECTED));
-        System.out.println("Leaving lobby");
     }
 }
