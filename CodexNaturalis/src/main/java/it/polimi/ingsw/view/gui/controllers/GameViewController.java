@@ -80,6 +80,8 @@ public class GameViewController extends ViewController {
     public GridPane cardSelectionGrid;
     @FXML
     public Pane scorePane;
+    @FXML
+    public Pane dragLayerPane;
 
     private Map<String, Content> players;
     private String currentViewedPlayer;
@@ -365,15 +367,18 @@ public class GameViewController extends ViewController {
 
     private ImageView createDraggableCard(BasicCard card) {
         ImageView view = getCardImage(card);
-        /*view.setOnDragDetected((MouseEvent e) -> System.out.println("DRADE"));
-        view.setOnMouseDragExited((MouseEvent e) -> System.out.println("DRAXI"));
+        ImageView draggableCard = getCardImage(card);
+        view.setOnDragDetected((MouseEvent e) -> {
+            dragLayerPane.getChildren().add(draggableCard);
+            cardSelectionPopup.setVisible(false);
+        });
+        /*view.setOnMouseDragExited((MouseEvent e) -> System.out.println("DRAXI"));
         view.setOnMouseDragReleased((MouseEvent e) -> System.out.println("DRAVO"));
-        view.setOnMouseDragOver((MouseEvent e) -> System.out.println("DROVE"));
+        view.setOnMouseDragOver((MouseEvent e) -> System.out.println("DROVE"));*/
         view.setOnMouseDragged((MouseEvent e) -> {
-            Point2D point = view.screenToLocal(e.getScreenX(), e.getScreenY());
-            view.setTranslateX(point.getX());
-            view.setTranslateY(point.getY());
-        });*/
+            draggableCard.setLayoutX(e.getSceneX() - draggableCard.getFitWidth() / 2);
+            draggableCard.setLayoutY(e.getSceneY() - draggableCard.getLayoutBounds().getHeight() / 2);
+        });
         return view;
     }
 
