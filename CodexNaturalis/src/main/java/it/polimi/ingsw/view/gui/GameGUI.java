@@ -74,8 +74,8 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards) {
-        currentLoader.<GameViewController>getController().updateStatusLabel("Place a card, codex wizard!", ToastType.PLACE.toString());
         currentLoader.<GameViewController>getController().placeCard(handCards, placedCards);
+        currentLoader.<GameViewController>getController().updateStatusLabel("Place a card, codex wizard!", ToastType.PLACE.toString());
     }
 
     /**

@@ -3,20 +3,25 @@ package it.polimi.ingsw.view.gui.controllers;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.*;
+import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
+import it.polimi.ingsw.view.cli.CardFormatter;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
+import it.polimi.ingsw.view.gui.GameGUI;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -85,6 +90,7 @@ public class GameViewController extends ViewController {
 
     private Map<String, Content> players;
     private String currentViewedPlayer;
+    private BasicCard draggedCard;
     private final List<Label> currentPermanentMessages = new ArrayList<>();
     private final Map<String, Circle> playerTagCircles = new HashMap<>();
     private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
@@ -99,17 +105,13 @@ public class GameViewController extends ViewController {
     private final int objectiveWidth = 130;
 
     /**
-     * Initializes the game scene.
+     * Initializes the game scene and all its base components.
      */
     public void initializeScene(){
         players = controller.getPlayerColors();
         currentViewedPlayer = controller.getLocalPlayerName();
         int index = 0;
         outerPlayerTagGrid.setVgap(16);
-        /*ImageView card = getCardImage(CardBuilder.buildCard(82).frontSide());
-        gameBoardPane.getChildren().add(card);
-        card.setX(0);
-        card.setY(0);*/
         for(String nickname : players.keySet()){
             if(!nickname.equals(controller.getLocalPlayerName())) {
                 chatSendButton.getItems().add(new CheckMenuItem(nickname));
@@ -244,6 +246,10 @@ public class GameViewController extends ViewController {
             backSide.setDisable(true);
             starterChoicePopUp.setVisible(false);
             woodenPanePopUpBackground.setVisible(false);
+            GridPane card = createBoardCard(starterCard.frontSide(), starterCard.frontSide().getAllCorners().stream().toList());
+            gameBoardPane.getChildren().add(card);
+            card.setLayoutX(200);
+            card.setLayoutY(200);
             controller.sendMessage(new CardPlacementMessage(starterCard.frontSide(), null));
         }));
         frontStarterSidePane.add(backSide, 0, 0);
@@ -252,6 +258,10 @@ public class GameViewController extends ViewController {
             backSide.setDisable(true);
             starterChoicePopUp.setVisible(false);
             woodenPanePopUpBackground.setVisible(false);
+            GridPane card = createBoardCard(starterCard.backSide(), starterCard.backSide().getAllCorners().stream().toList());
+            gameBoardPane.getChildren().add(card);
+            card.setLayoutX(200);
+            card.setLayoutY(200);
             controller.sendMessage(new CardPlacementMessage(starterCard.backSide(), null));
         }));
         backStarterSidePane.add(frontSide, 0, 0);
@@ -350,6 +360,7 @@ public class GameViewController extends ViewController {
                 if(!cardSelectionPopup.isVisible() || GridPane.getColumnIndex(cardSelectionPopup) != finalIndex) {
                     ImageView frontView = createDraggableCard(card.frontSide());
                     ImageView backView = createDraggableCard(card.backSide());
+                    dragLayerPane.getChildren().clear();
                     cardSelectionGrid.getChildren().clear();
                     cardSelectionGrid.add(frontView, 0, 0);
                     cardSelectionGrid.add(backView, 0, 1);
@@ -363,23 +374,6 @@ public class GameViewController extends ViewController {
             cardHandGrid.add(cardView, index, 0);
             index++;
         }
-    }
-
-    private ImageView createDraggableCard(BasicCard card) {
-        ImageView view = getCardImage(card);
-        ImageView draggableCard = getCardImage(card);
-        view.setOnDragDetected((MouseEvent e) -> {
-            dragLayerPane.getChildren().add(draggableCard);
-            cardSelectionPopup.setVisible(false);
-        });
-        /*view.setOnMouseDragExited((MouseEvent e) -> System.out.println("DRAXI"));
-        view.setOnMouseDragReleased((MouseEvent e) -> System.out.println("DRAVO"));
-        view.setOnMouseDragOver((MouseEvent e) -> System.out.println("DROVE"));*/
-        view.setOnMouseDragged((MouseEvent e) -> {
-            draggableCard.setLayoutX(e.getSceneX() - draggableCard.getFitWidth() / 2);
-            draggableCard.setLayoutY(e.getSceneY() - draggableCard.getLayoutBounds().getHeight() / 2);
-        });
-        return view;
     }
 
     /**
@@ -402,12 +396,13 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Places a card.
+     * Places a card in the board view.
      *
      * @param handCards the local player's hand cards.
      * @param placedCards the local player's board.
      */
     public void placeCard(List<CardSides> handCards, List<BasicCard> placedCards){
+        hideStatusLabel(GameGUI.ToastType.PLACE.toString());
         updateLocalPlayerCards(handCards);
         updateLocalPlayerBoard(placedCards);
     }
@@ -627,7 +622,7 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Crates an ImageView containing a card side with the needed measures.
+     * Creates an ImageView containing a card side with the needed measures.
      *
      * @param card the card to represent.
      * @return     the ImageView containing the card.
@@ -641,6 +636,36 @@ public class GameViewController extends ViewController {
     }
 
     /**
+     * Creates a draggable ImageView of a card.
+     * This card, is used to let the player place cards by drag-and-drop (which is a user-friendly UI approach).
+     *
+     * @param card the card from which create the draggable ImageView.
+     * @return the created ImageView.
+     */
+    private ImageView createDraggableCard(BasicCard card) {
+        ImageView view = getCardImage(card);
+        ImageView draggableCard = getCardImage(card);
+        draggableCard.setMouseTransparent(true);
+        view.setOnDragDetected((MouseEvent e) -> {
+            dragLayerPane.getChildren().add(draggableCard);
+            draggableCard.setVisible(true);
+            cardSelectionPopup.setVisible(false);
+            view.startFullDrag();
+            draggedCard = card;
+            /*Dragboard dragboard = draggableCard.startDragAndDrop(TransferMode.ANY);
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString(Integer.toString(card.getCardId()));
+            dragboard.setContent(clipboardContent);*/
+        });
+        view.setOnMouseReleased((MouseEvent e) -> draggableCard.setVisible(false));
+        view.setOnMouseDragged((MouseEvent e) -> {
+            draggableCard.setLayoutX(e.getSceneX() - draggableCard.getFitWidth() / 2);
+            draggableCard.setLayoutY(e.getSceneY() - draggableCard.getLayoutBounds().getHeight() / 2);
+        });
+        return view;
+    }
+
+    /**
      * Creates the ImageView of a hidden card.
      *
      * @return the created ImageView.
@@ -651,6 +676,53 @@ public class GameViewController extends ViewController {
         cardView.getStyleClass().add("cardWithShadow");
         cardView.setPreserveRatio(true);
         return cardView;
+    }
+
+    /**
+     * Creates the GridPane representing a board card.
+     * A board card, is an already placed card on which other cards could be placed (according to the placing rules).
+     *
+     * @param card the board card from which create the GridPane.
+     * @param validCorners the list of corners on which placings are admitted.
+     * @return the created card board GridPane.
+     */
+    private GridPane createBoardCard(BasicCard card, List<Corner> validCorners){
+        GridPane boardCardGrid = new GridPane();
+        boardCardGrid.setPrefWidth(150);
+        boardCardGrid.setPrefHeight(100);
+        boardCardGrid.getStyleClass().add("boardCard");
+        boardCardGrid.getStyleClass().add("cardWithShadow");
+        System.out.printf("-fx-background-image: url('%s')\n", CardAssetsProvider.getCardFilePath(card).substring(5));
+        //boardCardGrid.setStyle(String.format("-fx-background-image: url('images/cardFronts/1.png')", CardAssetsProvider.getCardFilePath(card).substring(5)));
+        boardCardGrid.setGridLinesVisible(true);
+        boardCardGrid.getColumnConstraints().addAll(new ColumnConstraints(116), new ColumnConstraints(116));
+        boardCardGrid.getRowConstraints().addAll(new RowConstraints(59), new RowConstraints(59));
+        for(Corner corner : card.getAllCorners()){
+            Pane dragTarget = new Pane();
+            boardCardGrid.add(dragTarget, corner.getLocation().getX(), 1 - corner.getLocation().getY());
+            if(validCorners.contains(corner)){
+                System.out.printf("added corner %s\n", corner.getLocation());
+                dragTarget.setOnMouseDragReleased((MouseEvent e) -> {
+                    System.out.println(corner.getLocation());
+                    System.out.println("placed a card");
+                    if(draggedCard == null){
+                        return;
+                    }
+                    GridPane cardGridPane = createBoardCard(draggedCard, draggedCard.getAllCorners().stream().toList());
+                    gameBoardPane.getChildren().add(cardGridPane);
+                    cardGridPane.setLayoutX(
+                            boardCardGrid.getLayoutX() + (150 - 34) * ((corner.getLocation().getX() == 0) ? -1 : 1));
+                    cardGridPane.setLayoutY(
+                            boardCardGrid.getLayoutY() + (100 - 41) * ((corner.getLocation().getY() == 0) ? 1 : -1));
+                    System.out.printf("%s, x: %d, y: %d", corner.getLocation(), corner.getX(), corner.getY());
+                    System.out.println(CardFormatter.getCardsInfoString(List.of(card)));
+                    System.out.println(CardFormatter.getCardsInfoString(List.of(draggedCard)));
+                    controller.sendMessage(new CardPlacementMessage(draggedCard, corner));
+                });
+            }
+        }
+        System.out.println(boardCardGrid.getChildren());
+        return boardCardGrid;
     }
 
     /**

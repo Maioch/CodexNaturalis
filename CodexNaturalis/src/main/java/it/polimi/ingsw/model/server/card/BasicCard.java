@@ -220,26 +220,9 @@ public class BasicCard implements Serializable {
      * @param where the corner where the card will be placed.
      */
     public void place(Corner where){
-        int offsetX = where.getLocation() == Location.TR || where.getLocation() == Location.BR ? 0 : 1;
-        int offsetY = where.getLocation() == Location.TR || where.getLocation() == Location.TL ? 0 : 1;
         for(Corner corner : corners){
-            Point offset = new Point(where.getX(),where.getY());
-            switch(corner.getLocation()){
-                case BL:
-                    offset.translate(-offsetX, -offsetY);
-                    break;
-                case BR:
-                    offset.translate(1 - offsetX,-offsetY);
-                    break;
-                case TL:
-                    offset.translate(-offsetX,1 - offsetY);
-                    break;
-                case TR:
-                    offset.translate(1 - offsetX,1 - offsetY);
-                    break;
-            }
-            corner.setX(offset.x);
-            corner.setY(offset.y);
+            corner.setX(where.getX() + corner.getLocation().getX() - where.getLocation().getOppositeLocation().getX());
+            corner.setY(where.getY() + corner.getLocation().getY() - where.getLocation().getOppositeLocation().getY());
         }
     }
 
