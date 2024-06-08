@@ -28,6 +28,8 @@ public class LocalPlayer extends ClientPlayer{
     public LocalPlayer(String nickname, Content color) {
         super(nickname, color);
         personalObjectives = new ArrayList<>();
+        validCorners = new ArrayList<>();
+        validCards = new ArrayList<>();
     }
 
     /**

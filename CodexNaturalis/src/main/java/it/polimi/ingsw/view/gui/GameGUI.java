@@ -54,7 +54,8 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft) {
-
+        currentLoader.<GameViewController>getController().drawCard(drawableCards, numberOfCardsLeft);
+        currentLoader.<GameViewController>getController().updateStatusLabel("Draw a card", ToastType.DRAW.toString());
     }
 
     /**

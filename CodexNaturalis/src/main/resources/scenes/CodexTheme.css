@@ -199,11 +199,21 @@
 .backButton:hover {
   -fx-opacity: 0.5 ;
 }
+.hiddenCard{
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
+}
 .cardWithShadow {
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
 }
 .cardWithShadow:hover{
-  -fx-opacity: 0.2;
+  -fx-opacity: 0.7;
+}
+.boardCard{
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.5, 0.0, 0.0);
+}
+.draggableCard{
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0.5, 0.0, 0.0);
+  -fx-opacity: 0.4;
 }
 .scoreCard {
   -fx-background-image: url('images/scoreCard.png');
@@ -344,9 +354,4 @@
 }
 .purpleToken{
   -fx-image: url("images/tokens/purple.png")
-}
-.boardCard{
-  -fx-background-size: 150 100;
-  -fx-background-position: center;
-  -fx-background-repeat: no-repeat;
 }

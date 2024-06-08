@@ -19,6 +19,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
@@ -91,6 +92,7 @@ public class GameViewController extends ViewController {
     private Map<String, Content> players;
     private String currentViewedPlayer;
     private BasicCard draggedCard;
+    private Point2D center;
     private final List<Label> currentPermanentMessages = new ArrayList<>();
     private final Map<String, Circle> playerTagCircles = new HashMap<>();
     private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
@@ -108,6 +110,7 @@ public class GameViewController extends ViewController {
      * Initializes the game scene and all its base components.
      */
     public void initializeScene(){
+        center = new Point2D(400, 400);
         players = controller.getPlayerColors();
         currentViewedPlayer = controller.getLocalPlayerName();
         int index = 0;
@@ -348,10 +351,12 @@ public class GameViewController extends ViewController {
      * @param cards the player's hand cards.
      */
     public void updateLocalPlayerCards(List<CardSides> cards) {
+        hideStatusLabel(GameGUI.ToastType.PLACE.toString());
         if(!checkCurrentView(controller.getLocalPlayerName())){
             return;
         }
         cardHandGrid.getChildren().removeIf(c -> !(c == cardSelectionPopup));
+        List<BasicCard> validCards = controller.getLocalPlayerValidCards();
         int index = 0;
         for(CardSides card : cards.stream().limit(3).toList()) {
             ImageView cardView = getCardImage(card.frontSide());
@@ -364,13 +369,24 @@ public class GameViewController extends ViewController {
                     cardSelectionGrid.getChildren().clear();
                     cardSelectionGrid.add(frontView, 0, 0);
                     cardSelectionGrid.add(backView, 0, 1);
+                    if(!validCards.contains(card.frontSide())){
+                        frontView.setDisable(true);
+                        frontView.setEffect(new ColorAdjust(0,0,0,-0.8));
+                    }
+                    if(!validCards.contains(card.backSide())){
+                        backView.setDisable(true);
+                        backView.setEffect(new ColorAdjust(0,0,0,-0.8));
+                    }
+                    backView.setDisable(!validCards.contains(card.backSide()));
                     GridPane.setColumnIndex(cardSelectionPopup, finalIndex);
                     cardSelectionPopup.setVisible(true);
                 } else {
                     cardSelectionPopup.setVisible(false);
                 }
             });
-            cardView.setDisable(!controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()));
+            cardView.setDisable(!controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()) && !controller.isDrawPhase());
+            System.out.println(controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()));
+            System.out.println(controller.isDrawPhase());
             cardHandGrid.add(cardView, index, 0);
             index++;
         }
@@ -402,9 +418,17 @@ public class GameViewController extends ViewController {
      * @param placedCards the local player's board.
      */
     public void placeCard(List<CardSides> handCards, List<BasicCard> placedCards){
-        hideStatusLabel(GameGUI.ToastType.PLACE.toString());
         updateLocalPlayerCards(handCards);
         updateLocalPlayerBoard(placedCards);
+    }
+
+    public void drawCard(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft){
+        updateLocalPlayerCards(controller.getLocalPlayerHand());
+        for(CardType key : drawableCards.keySet()){
+            updateViewDeck(drawableCards.get(key), numberOfCardsLeft.get(key), key);
+        }
+        resourceDeckGrid.getChildren().forEach(n -> n.setDisable(false));
+        goldDeckGrid.getChildren().forEach(n -> n.setDisable(false));
     }
 
     /**
@@ -455,20 +479,41 @@ public class GameViewController extends ViewController {
      * @param placedCards the local player's board.
      */
     public void updateLocalPlayerBoard(List<BasicCard> placedCards){
-        /*gameBoardPane.getChildren().clear();
-        for(BasicCard card : placedCards) {
-            GridPane cardGrid = new GridPane();
-            cardGrid.getStyleClass().add("boardCard");
-            cardGrid.setStyle(String.format("-card-asset: %s", CardAssetsProvider.getCardFilePath(card)));
+        if(!checkCurrentView(controller.getLocalPlayerName())){
+            return;
+        }
 
-            //TODO
-
-            gameBoardPane.getChildren().add(cardGrid);
-        }*/
+        gameBoardPane.getChildren().clear();
+        List<Corner> corners = controller.getLocalPlayerValidCorners();
+        generateBoard(placedCards, corners);
     }
 
     public void updateRemotePlayerBoard(String nickname, List<BasicCard> placedCards){
+        if(!checkCurrentView(nickname)){
+            return;
+        }
+        gameBoardPane.getChildren().clear();
+        generateBoard(placedCards,new ArrayList<>());
+    }
 
+    private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
+        /*GridPane cardGridPane = createBoardCard(draggedCard, draggedCard.getAllCorners().stream().toList());
+        gameBoardPane.getChildren().add(cardGridPane);
+        cardGridPane.setLayoutX(
+                boardCardGrid.getLayoutX() + (150 - 34) * ((corner.getLocation().getX() == 0) ? -1 : 1));
+        cardGridPane.setLayoutY(
+                boardCardGrid.getLayoutY() + (100 - 41) * ((corner.getLocation().getY() == 0) ? 1 : -1));
+        System.out.printf("%s, x: %d, y: %d", corner.getLocation(), corner.getX(), corner.getY());
+        System.out.println(CardFormatter.getCardsInfoString(List.of(card)));
+        System.out.println(CardFormatter.getCardsInfoString(List.of(draggedCard)));*/
+        for(BasicCard card : cards) {
+            GridPane cardGridPane =
+                    createBoardCard(card,validCorners);
+            cardGridPane.setLayoutX(card.getCorner(Location.TL).getX() * (150 - 34)  + center.getX()
+            );
+            cardGridPane.setLayoutY(- card.getCorner(Location.TL).getY() * (100 - 41) + center.getY());
+            gameBoardPane.getChildren().add(cardGridPane);
+        }
     }
 
     /**
@@ -509,7 +554,9 @@ public class GameViewController extends ViewController {
      * @param deckType          the type of the deck
      */
     private void updateViewDeck(List<BasicCard> cards, int numberOfCardsLeft, CardType deckType){
+        hideStatusLabel(GameGUI.ToastType.DRAW.toString());
         GridPane deck = deckType == CardType.RESOURCE ? resourceDeckGrid : goldDeckGrid;
+        deck.getChildren().clear();
         int index = 0;
         for(BasicCard card : cards){
             ImageView cardView = getCardImage(card);
@@ -645,6 +692,7 @@ public class GameViewController extends ViewController {
     private ImageView createDraggableCard(BasicCard card) {
         ImageView view = getCardImage(card);
         ImageView draggableCard = getCardImage(card);
+        draggableCard.getStyleClass().add("draggableCard");
         draggableCard.setMouseTransparent(true);
         view.setOnDragDetected((MouseEvent e) -> {
             dragLayerPane.getChildren().add(draggableCard);
@@ -652,10 +700,6 @@ public class GameViewController extends ViewController {
             cardSelectionPopup.setVisible(false);
             view.startFullDrag();
             draggedCard = card;
-            /*Dragboard dragboard = draggableCard.startDragAndDrop(TransferMode.ANY);
-            ClipboardContent clipboardContent = new ClipboardContent();
-            clipboardContent.putString(Integer.toString(card.getCardId()));
-            dragboard.setContent(clipboardContent);*/
         });
         view.setOnMouseReleased((MouseEvent e) -> draggableCard.setVisible(false));
         view.setOnMouseDragged((MouseEvent e) -> {
@@ -673,7 +717,7 @@ public class GameViewController extends ViewController {
     private ImageView createHiddenCard(){
         ImageView cardView = new ImageView(CardAssetsProvider.getHiddenCardFilePath());
         cardView.setFitWidth(cardWidth);
-        cardView.getStyleClass().add("cardWithShadow");
+        cardView.getStyleClass().add("hiddenCard");
         cardView.setPreserveRatio(true);
         return cardView;
     }
@@ -691,10 +735,14 @@ public class GameViewController extends ViewController {
         boardCardGrid.setPrefWidth(150);
         boardCardGrid.setPrefHeight(100);
         boardCardGrid.getStyleClass().add("boardCard");
-        boardCardGrid.getStyleClass().add("cardWithShadow");
-        System.out.printf("-fx-background-image: url('%s')\n", CardAssetsProvider.getCardFilePath(card).substring(5));
+        Image cardImage = new Image(CardAssetsProvider.getCardFilePath(card));
+        BackgroundImage cardBackground = new BackgroundImage(cardImage,
+                BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,
+                new BackgroundSize(150,100, false, false, false, false));
+        boardCardGrid.setBackground(new Background(cardBackground));
         //boardCardGrid.setStyle(String.format("-fx-background-image: url('images/cardFronts/1.png')", CardAssetsProvider.getCardFilePath(card).substring(5)));
         boardCardGrid.setGridLinesVisible(true);
+        boardCardGrid.setVisible(true);
         boardCardGrid.getColumnConstraints().addAll(new ColumnConstraints(116), new ColumnConstraints(116));
         boardCardGrid.getRowConstraints().addAll(new RowConstraints(59), new RowConstraints(59));
         for(Corner corner : card.getAllCorners()){
@@ -708,15 +756,6 @@ public class GameViewController extends ViewController {
                     if(draggedCard == null){
                         return;
                     }
-                    GridPane cardGridPane = createBoardCard(draggedCard, draggedCard.getAllCorners().stream().toList());
-                    gameBoardPane.getChildren().add(cardGridPane);
-                    cardGridPane.setLayoutX(
-                            boardCardGrid.getLayoutX() + (150 - 34) * ((corner.getLocation().getX() == 0) ? -1 : 1));
-                    cardGridPane.setLayoutY(
-                            boardCardGrid.getLayoutY() + (100 - 41) * ((corner.getLocation().getY() == 0) ? 1 : -1));
-                    System.out.printf("%s, x: %d, y: %d", corner.getLocation(), corner.getX(), corner.getY());
-                    System.out.println(CardFormatter.getCardsInfoString(List.of(card)));
-                    System.out.println(CardFormatter.getCardsInfoString(List.of(draggedCard)));
                     controller.sendMessage(new CardPlacementMessage(draggedCard, corner));
                 });
             }
