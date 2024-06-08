@@ -19,9 +19,6 @@ import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class GameGUI extends AbstractGUI implements GameView {
 
@@ -85,12 +82,11 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void turnChanged(String turnOwner) {
-        GameViewController gameViewController = currentLoader.getController();
-        gameViewController.updateStatusLabel(
+        currentLoader.<GameViewController>getController().updateStatusLabel(
                 controller.getLocalPlayerName().equals(turnOwner) ?
                 String.format("It's your turn, %s!", turnOwner) :
                 String.format("%s is playing their turn...", turnOwner));
-        gameViewController.setCurrentTurnOwner(turnOwner);
+        currentLoader.<GameViewController>getController().setCurrentTurnOwner(turnOwner);
     }
 
     /**
@@ -145,18 +141,6 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void requestStarterSide(List<CardSides> playerCards) {
-        /*GraphicalSubmitter graphicalSubmitter = new GraphicalSubmitter();
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        for (int i = 0; i < 50; i++) {
-            int j = 1;
-            for (String nickname : controller.getRemotePlayerNames()) {
-                int finalI = i;
-                executorService.schedule(() -> graphicalSubmitter.submit(() ->
-                        currentLoader.<GameViewController>getController().updateScore(nickname, finalI)
-                ), i * j, TimeUnit.SECONDS);
-                j++;
-            }
-        }*/
         currentLoader.<GameViewController>getController().updateLocalPlayerCards(playerCards.subList(1, playerCards.size()));
         currentLoader.<GameViewController>getController().chooseStarterSide(playerCards.getFirst());
     }
@@ -223,12 +207,12 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore) {
-
+        currentLoader.<GameViewController>getController().addPlayerScoreToSummary(nickname, objectivePoints, finalScore);
     }
 
     @Override
     public void revealWinners(List<String> winners) {
-
+        currentLoader.<GameViewController>getController().revealWinners(winners);
     }
 
     /**

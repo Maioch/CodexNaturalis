@@ -11,7 +11,6 @@ import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
-import it.polimi.ingsw.view.cli.CardFormatter;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
 import javafx.application.Platform;
@@ -20,7 +19,6 @@ import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
@@ -32,6 +30,7 @@ import java.util.Timer;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class GameViewController extends ViewController {
+
     @FXML
     public ScrollPane gameBoardScrollPane;
     @FXML
@@ -88,22 +87,37 @@ public class GameViewController extends ViewController {
     public Pane scorePane;
     @FXML
     public Pane dragLayerPane;
+    @FXML
+    public GridPane matchSummaryGrid;
+    @FXML
+    public GridPane resultGrid;
+    @FXML
+    public Label winnersLabel;
+    @FXML
+    public GridPane summaryContentGrid;
 
-    private Map<String, Content> players;
+    private Map<String, Content> playerColors;
     private String currentViewedPlayer;
     private BasicCard draggedCard;
     private Point2D center;
+    private boolean isDrawPhase;
     private final List<Label> currentPermanentMessages = new ArrayList<>();
     private final Map<String, Circle> playerTagCircles = new HashMap<>();
     private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
     private final Map<String, ImageView> playerTokens = new HashMap<>();
+    private final Map<String, GridPane> playerSummary = new HashMap<>();
 
     private final int toastGap = 76;
+    private final int tokenSize = 30;
     private final int maxNumberOfHiddenCards = 3;
     private final int distanceBetweenHiddenCards = 4;
     private final int distanceBetweenTokens = 4;
+    private final int maxVisibleScore = 29;
     private final long statusLabelShowInterval = 6;
+    private final int cornerWidth = 34;
+    private final int cornerHeight = 41;
     private final int cardWidth = 150;
+    private final int cardHeight = 100;
     private final int objectiveWidth = 130;
 
     /**
@@ -111,21 +125,21 @@ public class GameViewController extends ViewController {
      */
     public void initializeScene(){
         center = new Point2D(400, 400);
-        players = controller.getPlayerColors();
+        playerColors = controller.getPlayerColors();
         currentViewedPlayer = controller.getLocalPlayerName();
         int index = 0;
         outerPlayerTagGrid.setVgap(16);
-        for(String nickname : players.keySet()){
+        for(String nickname : playerColors.keySet()){
             if(!nickname.equals(controller.getLocalPlayerName())) {
                 chatSendButton.getItems().add(new CheckMenuItem(nickname));
             }
-            GridPane playerGrid = createPlayerTag(nickname, players.get(nickname));
+            GridPane playerGrid = createPlayerTag(nickname, playerColors.get(nickname));
             playersTagsGrid.add(playerGrid, index, 0);
             playersTagsGrid.getColumnConstraints().add(index, new ColumnConstraints(playerGrid.getPrefWidth()));
             ImageView playerToken = new ImageView();
-            playerToken.setFitWidth(30);
+            playerToken.setFitWidth(tokenSize);
             playerToken.setPreserveRatio(true);
-            playerToken.getStyleClass().add(players.get(nickname).name().toLowerCase() + "Token");
+            playerToken.getStyleClass().add(playerColors.get(nickname).name().toLowerCase() + "Token");
             playerTokens.put(nickname, playerToken);
             ((GridPane)scorePane.getChildren().getLast()).add(playerToken, 0, 0);
             updateScore(nickname, 0);
@@ -142,7 +156,7 @@ public class GameViewController extends ViewController {
     public void showChatMessage(String sender, String message){
         Label senderLabel = new Label(sender + ":");
         senderLabel.getStyleClass().add("chatUserLabel");
-        senderLabel.setStyle(String.format("-user-color: %s;", players.get(sender).getHexColorString()));
+        senderLabel.setStyle(String.format("-user-color: %s;", playerColors.get(sender).getHexColorString()));
         Label messageLabel = new Label(message);
         messageLabel.getStyleClass().add("chatMessageLabel");
         chatMessageBox.getChildren().add(senderLabel);
@@ -249,10 +263,6 @@ public class GameViewController extends ViewController {
             backSide.setDisable(true);
             starterChoicePopUp.setVisible(false);
             woodenPanePopUpBackground.setVisible(false);
-            GridPane card = createBoardCard(starterCard.frontSide(), starterCard.frontSide().getAllCorners().stream().toList());
-            gameBoardPane.getChildren().add(card);
-            card.setLayoutX(200);
-            card.setLayoutY(200);
             controller.sendMessage(new CardPlacementMessage(starterCard.frontSide(), null));
         }));
         frontStarterSidePane.add(backSide, 0, 0);
@@ -261,10 +271,6 @@ public class GameViewController extends ViewController {
             backSide.setDisable(true);
             starterChoicePopUp.setVisible(false);
             woodenPanePopUpBackground.setVisible(false);
-            GridPane card = createBoardCard(starterCard.backSide(), starterCard.backSide().getAllCorners().stream().toList());
-            gameBoardPane.getChildren().add(card);
-            card.setLayoutX(200);
-            card.setLayoutY(200);
             controller.sendMessage(new CardPlacementMessage(starterCard.backSide(), null));
         }));
         backStarterSidePane.add(frontSide, 0, 0);
@@ -288,6 +294,12 @@ public class GameViewController extends ViewController {
     public void closeObjectivesPane(){
         objectivesButtonPane.setVisible(true);
         objectivesPane.setVisible(false);
+    }
+
+    @FXML
+    public void backToMatchBrowser(){
+        controller.backToSetup();
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -384,9 +396,9 @@ public class GameViewController extends ViewController {
                     cardSelectionPopup.setVisible(false);
                 }
             });
-            cardView.setDisable(!controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()) && !controller.isDrawPhase());
+            cardView.setDisable(!controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()) || isDrawPhase);
+            cardSelectionPopup.setVisible(false);
             System.out.println(controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()));
-            System.out.println(controller.isDrawPhase());
             cardHandGrid.add(cardView, index, 0);
             index++;
         }
@@ -418,11 +430,13 @@ public class GameViewController extends ViewController {
      * @param placedCards the local player's board.
      */
     public void placeCard(List<CardSides> handCards, List<BasicCard> placedCards){
+        isDrawPhase = false;
         updateLocalPlayerCards(handCards);
         updateLocalPlayerBoard(placedCards);
     }
 
     public void drawCard(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft){
+        isDrawPhase = true;
         updateLocalPlayerCards(controller.getLocalPlayerHand());
         for(CardType key : drawableCards.keySet()){
             updateViewDeck(drawableCards.get(key), numberOfCardsLeft.get(key), key);
@@ -438,8 +452,8 @@ public class GameViewController extends ViewController {
      * @param playerScore the new player's score.
      */
     public void updateScore(String nickname, int playerScore){
-        if(playerScore >= 30){
-            playerScore = 29;
+        if(playerScore > maxVisibleScore){
+            playerScore = maxVisibleScore;
         }
         ImageView playerToken = playerTokens.get(nickname);
         GridPane gridPaneToAddTo = (GridPane)scorePane.getChildren().get(playerScore);
@@ -496,26 +510,6 @@ public class GameViewController extends ViewController {
         generateBoard(placedCards,new ArrayList<>());
     }
 
-    private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
-        /*GridPane cardGridPane = createBoardCard(draggedCard, draggedCard.getAllCorners().stream().toList());
-        gameBoardPane.getChildren().add(cardGridPane);
-        cardGridPane.setLayoutX(
-                boardCardGrid.getLayoutX() + (150 - 34) * ((corner.getLocation().getX() == 0) ? -1 : 1));
-        cardGridPane.setLayoutY(
-                boardCardGrid.getLayoutY() + (100 - 41) * ((corner.getLocation().getY() == 0) ? 1 : -1));
-        System.out.printf("%s, x: %d, y: %d", corner.getLocation(), corner.getX(), corner.getY());
-        System.out.println(CardFormatter.getCardsInfoString(List.of(card)));
-        System.out.println(CardFormatter.getCardsInfoString(List.of(draggedCard)));*/
-        for(BasicCard card : cards) {
-            GridPane cardGridPane =
-                    createBoardCard(card,validCorners);
-            cardGridPane.setLayoutX(card.getCorner(Location.TL).getX() * (150 - 34)  + center.getX()
-            );
-            cardGridPane.setLayoutY(- card.getCorner(Location.TL).getY() * (100 - 41) + center.getY());
-            gameBoardPane.getChildren().add(cardGridPane);
-        }
-    }
-
     /**
      * Sets the current turn owner.
      *
@@ -526,6 +520,87 @@ public class GameViewController extends ViewController {
             circle.setStroke(Paint.valueOf("transparent"));
         }
         playerTagCircles.get(turnOwner).setStroke(Paint.valueOf("white"));
+    }
+
+    public void addPlayerScoreToSummary(String nickname, Map<Objective, Integer> summary, int finalScore){
+        GridPane playerScoreGrid = new GridPane();
+        Label playerNameLabel = new Label(nickname);
+        playerNameLabel.getStyleClass().add("playerScoreNameLabel");
+        playerNameLabel.setStyle(String.format("-text-color: %s", playerColors.get(nickname).getHexColorString()));
+        Label partialScoreLabel = new Label(
+                String.valueOf(finalScore - summary.values().stream().reduce(0,Integer::sum)));
+        partialScoreLabel.getStyleClass().add("playerScoreLabel");
+        HBox commonObjectiveScore = new HBox();
+        HBox personalObjectiveScore = new HBox();
+        Label totalScore = new Label(String.valueOf(finalScore));
+        totalScore.getStyleClass().add("playerScoreLabelBold");
+
+        for(Objective objective : summary.keySet().stream().limit(2).toList()){
+            ImageView objectiveView = getCardImage(objective);
+            Label objectiveScoreLabel = new Label(String.format("+%d",summary.get(objective)));
+            objectiveScoreLabel.getStyleClass().add("playerScoreLabelBold");
+            commonObjectiveScore.getChildren().addAll(Arrays.asList(objectiveView, objectiveScoreLabel));
+        }
+        Objective personalObjective = summary.keySet().stream().skip(2).toList().getFirst();
+        ImageView personalObjectiveView = getCardImage(personalObjective);
+        Label personalObjectiveScoreLabel = new Label(String.format("+%d",summary.get(personalObjective)));
+        personalObjectiveScore.getChildren().addAll(Arrays.asList(personalObjectiveView, personalObjectiveScoreLabel));
+
+        playerScoreGrid.add(playerNameLabel, 0, 0);
+        playerScoreGrid.add(partialScoreLabel, 0, 1);
+        playerScoreGrid.add(commonObjectiveScore, 0, 2);
+        playerScoreGrid.add(personalObjectiveScore, 0, 3);
+        playerScoreGrid.add(totalScore, 0, 4);
+        playerSummary.put(nickname, playerScoreGrid);
+    }
+
+    public void revealWinners(List<String> winners){
+        StringBuilder sb = new StringBuilder();
+        for(String winner : winners){
+            sb.append(winner).append(winner.equals(winners.getLast()) ? " " : ", ");
+        }
+        sb.append(winners.size() > 1 ? "have" : "has").append(" decoded the Codex!");
+        winnersLabel.setText(sb.toString());
+        if(playerSummary.isEmpty()){
+            summaryContentGrid.getRowConstraints().remove(3);
+            summaryContentGrid.getChildren().remove(resultGrid.getParent());
+            matchSummaryGrid.setVisible(true);
+            return;
+        }
+        for(String winner : winners){
+            ImageView crownImage = new ImageView();
+            crownImage.getStyleClass().add("crownIcon");
+            playerSummary.get(winner).add(crownImage, 0, 0);
+        }
+        GridPane upperSummaryGrid = new GridPane();
+        int index = 0;
+        for(GridPane playerSummaryGrid : playerSummary.values().stream().limit(2).toList()){
+            upperSummaryGrid.add(playerSummaryGrid, index, 0);
+            index++;
+        }
+        resultGrid.add(upperSummaryGrid, 0, 0);
+        if(playerColors.size() == 2){
+            resultGrid.getRowConstraints().removeLast();
+            matchSummaryGrid.setVisible(true);
+            return;
+        }
+        GridPane lowerSummaryGrid = new GridPane();
+        index = 0;
+        for(GridPane playerSummaryGrid : playerSummary.values().stream().skip(2).toList()){
+            lowerSummaryGrid.add(playerSummaryGrid, index, 0);
+            index++;
+        }
+        resultGrid.add(upperSummaryGrid, 0, 1);
+        matchSummaryGrid.setVisible(true);
+    }
+
+    private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
+        for(BasicCard card : cards) {
+            GridPane cardGridPane = createBoardCard(card,validCorners);
+            cardGridPane.setLayoutX(card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX());
+            cardGridPane.setLayoutY(- card.getCorner(Location.TL).getY() * (cardHeight - cornerHeight) + center.getY());
+            gameBoardPane.getChildren().add(cardGridPane);
+        }
     }
 
     /**
@@ -555,10 +630,18 @@ public class GameViewController extends ViewController {
      */
     private void updateViewDeck(List<BasicCard> cards, int numberOfCardsLeft, CardType deckType){
         hideStatusLabel(GameGUI.ToastType.DRAW.toString());
-        GridPane deck = deckType == CardType.RESOURCE ? resourceDeckGrid : goldDeckGrid;
-        deck.getChildren().clear();
-        int index = 0;
-        for(BasicCard card : cards){
+        GridPane deckGrid = deckType == CardType.RESOURCE ? resourceDeckGrid : goldDeckGrid;
+        deckGrid.getChildren().clear();
+        for(int index = 0; index < cards.size(); index++){
+            BasicCard card = cards.get(index);
+            if(card == null){
+                Pane emptyDeckPane = new Pane();
+                emptyDeckPane.setPrefWidth(cardWidth);
+                emptyDeckPane.setPrefHeight(cardHeight);
+                deckGrid.add(emptyDeckPane, index,0);
+                continue;
+            }
+            System.out.println(card.getCardId());
             ImageView cardView = getCardImage(card);
             cardView.setDisable(true);
             int finalIndex = index;
@@ -568,16 +651,15 @@ public class GameViewController extends ViewController {
                 int j = 0;
                 while(j < numberOfCardsLeft && j < maxNumberOfHiddenCards){
                     ImageView hiddenCardView = createHiddenCard();
-                    deck.add(hiddenCardView, index, 0);
+                    deckGrid.add(hiddenCardView, index, 0);
                     hiddenCardView.setTranslateY(-distanceBetweenHiddenCards * j);
                     j++;
                 }
-                deck.add(cardView, index, 0);
+                deckGrid.add(cardView, index, 0);
                 cardView.setTranslateY(-distanceBetweenHiddenCards * j);
             }else{
-                deck.add(cardView, index, 0);
+                deckGrid.add(cardView, index, 0);
             }
-            index++;
         }
     }
 
@@ -604,19 +686,24 @@ public class GameViewController extends ViewController {
      * @return         the created "tag" node.
      */
     private GridPane createPlayerTag(String nickname, Content color) {
+        int rowHeight = 24;
+        int labelWidth = 100;
+        int imageWidth = 40;
+        int defaultPadding = 16;
+        int circleDiameter = imageWidth - defaultPadding;
         GridPane playerTagGrid = new GridPane();
         playerTagGrid.getRowConstraints().add(new RowConstraints(outerPlayerTagGrid.getPrefHeight()));
         GridPane.setValignment(playerTagGrid, VPos.CENTER);
         playerTagGrid.getColumnConstraints().addAll(Arrays.asList(
-                new ColumnConstraints(40),
-                new ColumnConstraints(100),
-                new ColumnConstraints(40)));
-        GridPane.setMargin(playerTagGrid, new Insets(0, 16, 0, 16));
+                new ColumnConstraints(imageWidth),
+                new ColumnConstraints(labelWidth),
+                new ColumnConstraints(imageWidth)));
+        GridPane.setMargin(playerTagGrid, new Insets(0, defaultPadding, 0, defaultPadding));
         playerTagGrid.getStyleClass().add("playerTagGrid");
         playerTagGrid.setPrefHeight(playersTagsGrid.getPrefHeight());
 
         //adds the player's color(ed circle)
-        Circle playerTagCircle = new Circle(12);
+        Circle playerTagCircle = new Circle(circleDiameter / 2d);
         playerTagCircle.getStyleClass().add("playerTagCircle");
         GridPane.setHalignment(playerTagCircle, HPos.CENTER);
         playerTagCircle.setStyle(String.format("-circle-color: %s;", color.getHexColorString()));
@@ -627,8 +714,8 @@ public class GameViewController extends ViewController {
 
         //adds the player's nickname label
         Label nicknameLabel = new Label(nickname);
-        nicknameLabel.setPrefWidth(100);
-        nicknameLabel.setPrefHeight(24);
+        nicknameLabel.setPrefWidth(labelWidth);
+        nicknameLabel.setPrefHeight(rowHeight);
         nicknameLabel.setTranslateY(-1);
         nicknameLabel.getStyleClass().add("playerTagText");
         playerTagGrid.addColumn(1, nicknameLabel);
@@ -638,7 +725,7 @@ public class GameViewController extends ViewController {
         if(!controller.getLocalPlayerName().equals(nickname)) {
             ImageView viewPlayerIcon = new ImageView();
             viewPlayerIcon.setPreserveRatio(true);
-            viewPlayerIcon.setFitWidth(24);
+            viewPlayerIcon.setFitWidth(imageWidth - defaultPadding);
             GridPane.setHalignment(viewPlayerIcon, HPos.CENTER);
             viewPlayerIcon.getStyleClass().add("viewBoardIcon");
             viewPlayerIcon.getStyleClass().add("playerTagIcon");
@@ -732,19 +819,15 @@ public class GameViewController extends ViewController {
      */
     private GridPane createBoardCard(BasicCard card, List<Corner> validCorners){
         GridPane boardCardGrid = new GridPane();
-        boardCardGrid.setPrefWidth(150);
-        boardCardGrid.setPrefHeight(100);
+        boardCardGrid.setPrefWidth(cardWidth);
+        boardCardGrid.setPrefHeight(cardHeight);
         boardCardGrid.getStyleClass().add("boardCard");
-        Image cardImage = new Image(CardAssetsProvider.getCardFilePath(card));
-        BackgroundImage cardBackground = new BackgroundImage(cardImage,
-                BackgroundRepeat.NO_REPEAT,BackgroundRepeat.NO_REPEAT,BackgroundPosition.CENTER,
-                new BackgroundSize(150,100, false, false, false, false));
-        boardCardGrid.setBackground(new Background(cardBackground));
-        //boardCardGrid.setStyle(String.format("-fx-background-image: url('images/cardFronts/1.png')", CardAssetsProvider.getCardFilePath(card).substring(5)));
-        boardCardGrid.setGridLinesVisible(true);
-        boardCardGrid.setVisible(true);
-        boardCardGrid.getColumnConstraints().addAll(new ColumnConstraints(116), new ColumnConstraints(116));
-        boardCardGrid.getRowConstraints().addAll(new RowConstraints(59), new RowConstraints(59));
+        boardCardGrid.setStyle(String.format("-fx-background-image: url('%s')", CardAssetsProvider.getCardFilePath(card)));
+        //boardCardGrid.setGridLinesVisible(true);
+        boardCardGrid.getColumnConstraints().addAll(
+                new ColumnConstraints(cardWidth - cornerWidth), new ColumnConstraints(cardWidth - cornerWidth));
+        boardCardGrid.getRowConstraints().addAll(
+                new RowConstraints(cardHeight - cornerHeight), new RowConstraints(cardHeight - cornerHeight));
         for(Corner corner : card.getAllCorners()){
             Pane dragTarget = new Pane();
             boardCardGrid.add(dragTarget, corner.getLocation().getX(), 1 - corner.getLocation().getY());

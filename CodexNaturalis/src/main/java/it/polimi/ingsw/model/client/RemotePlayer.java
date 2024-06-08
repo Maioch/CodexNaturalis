@@ -9,14 +9,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A class representing the remote player.
+ * RemotePlayer is one of the players connected to the same game as the local client.
+ * It extends ClientPlayer and adds the player's hand cards, but only as a BasicCards array, as the only needed sides
+ * are the ones that can be seen by the other players.
+ *
+ * @see BasicCard
+ * @see ClientPlayer
  */
 public class RemotePlayer extends ClientPlayer {
 
-    private List<BasicCard> handCards; //Not a card sides list, in order to obtain an only front cards hand
+    private List<BasicCard> handCards;
 
     /**
-     * Constructor for the class.
+     * Class constructor.
+     *
      * @param nickname the player's nickname.
      * @param color the player's color.
      */
@@ -26,7 +32,8 @@ public class RemotePlayer extends ClientPlayer {
     }
 
     /**
-     * Copy-constructor for the class.
+     * Class copy-constructor.
+     *
      * @param remotePlayer the instance to be copied.
      */
     public RemotePlayer(RemotePlayer remotePlayer) {
@@ -34,10 +41,6 @@ public class RemotePlayer extends ClientPlayer {
         this.handCards = new ArrayList<>(remotePlayer.handCards);
     }
 
-    /**
-     * Setter for the hand cards attribute.
-     * @param handCards the player's hand.
-     */
     @Override
     public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
         this.handCards = handCards.stream()
@@ -49,7 +52,9 @@ public class RemotePlayer extends ClientPlayer {
     }
 
     /**
-     * @return the list of the player's hand cards.
+     * Returns the cards held by the player in his hand.
+     *
+     * @return the player's hand cards.
      */
     public synchronized List<BasicCard> getHandCards() {
         return new ArrayList<>() {{
@@ -60,9 +65,11 @@ public class RemotePlayer extends ClientPlayer {
     }
 
     /**
-     * Method that checks if two remote players are equal.
-     * @param obj the remote player to check.
-     * @return true if this and the other remote player are equal.
+     * Equals method override to fit the method to this class.
+     *
+     * @param obj player checked.
+     *
+     * @return true if this player is equal to the parameter one.
      */
     @Override
     public boolean equals(Object obj) {

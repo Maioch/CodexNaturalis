@@ -143,8 +143,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
      */
     public synchronized String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
 
-    public synchronized boolean isDrawPhase() { return game.isDrawPhase(); }
-
     /**
      * @return the number of players
      */

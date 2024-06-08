@@ -135,7 +135,7 @@ public class Corner implements Serializable {
      *
      * @param object corner checked.
      *
-     * @return true jf this corner is equal to the parameter one.
+     * @return true if this corner is equal to the parameter one.
      */
     @Override
     public boolean equals(Object object){

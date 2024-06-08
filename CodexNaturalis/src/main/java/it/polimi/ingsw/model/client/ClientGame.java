@@ -16,13 +16,13 @@ import java.util.*;
  * This class is needed to handle some MVC functionalities in an easier way.
  */
 public class ClientGame {
+
     private final int numberOfPlayers;
     private final LocalPlayer localPlayer;
     private final List<RemotePlayer> remotePlayers;
     private List<Objective> commonObjectives;
     private Map<CardType, List<BasicCard>> drawableOptions;
     private ClientPlayer playerWithTurn;
-    private boolean drawPhase;
     private final Object playerWithTurnLock;
     private final EventSubmitter eventSubmitter;
     private final GameView gameView;
@@ -38,7 +38,6 @@ public class ClientGame {
         this.localPlayer = player;
         this.localPlayer.setViewReferences(gameView, eventSubmitter);
         this.gameView = gameView;
-        this.drawPhase = false;
         this.eventSubmitter = eventSubmitter;
         this.remotePlayers = new ArrayList<>();
         this.commonObjectives = new ArrayList<>();
@@ -91,7 +90,6 @@ public class ClientGame {
      */
     public void setDrawableOptions(Map<CardType, List<BasicCard>> drawableOptions, Map<CardType,Integer> numberOfCardsLeft) {
         this.drawableOptions = new HashMap<>(drawableOptions);
-        this.drawPhase = false;
         eventSubmitter.submit(() -> gameView.updateDecks(drawableOptions, numberOfCardsLeft));
     }
 
@@ -102,7 +100,6 @@ public class ClientGame {
      */
     public void requestDraw(Map<CardType, List<BasicCard>> drawableOptions, Map<CardType, Integer> numberOfCardsLeft) {
         this.drawableOptions = new HashMap<>(drawableOptions);
-        this.drawPhase = true;
         eventSubmitter.submit(() -> gameView.requestDraw(drawableOptions, numberOfCardsLeft));
     }
 
@@ -113,10 +110,6 @@ public class ClientGame {
      */
     public LocalPlayer getLocalPlayer(){
         return this.localPlayer;
-    }
-
-    public boolean isDrawPhase(){
-        return drawPhase;
     }
 
     /**

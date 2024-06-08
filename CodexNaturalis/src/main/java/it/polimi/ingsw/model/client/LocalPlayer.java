@@ -14,6 +14,7 @@ import java.util.List;
  * It saves the player's hand cards and his personal objectives.
  */
 public class LocalPlayer extends ClientPlayer{
+
     private List<CardSides> handCards;
     private final List<Objective> personalObjectives;
     private List<BasicCard> validCards;
@@ -102,6 +103,11 @@ public class LocalPlayer extends ClientPlayer{
         eventSubmitter.submit(() -> gameView.requestStarterSide(getHandCards()));
     }
 
+    /**
+     * Returns all the cards in the player's hand he can place.
+     *
+     * @return the player's placeable cards.
+     */
     public List<BasicCard> getValidCards(){
         return new ArrayList<>(){{
             for(BasicCard card : validCards){
@@ -110,6 +116,11 @@ public class LocalPlayer extends ClientPlayer{
         }};
     }
 
+    /**
+     * Returns all the corners in the player's board he can place on.
+     *
+     * @return the corners where cards can be placed.
+     */
     public List<Corner> getValidCorners(){
         return new ArrayList<>(){{
             for(Corner corner : validCorners){

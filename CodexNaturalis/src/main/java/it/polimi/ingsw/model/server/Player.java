@@ -14,12 +14,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Class that represents each one of the 4 possible players in a game, each with his distinctive nickname and color,
- * and his board and hand status during the played turn. This keeps track of the score and objectives of each player, too.
- *
- * @author Marco Maiocchi, Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli
+ * Player represents each one of the 4 possible players in a game.
+ * It saves the nickname, the color and his board and hand status during the played turn.
+ * This keeps track of the score and objectives of each player, too.
  */
 public class Player {
+
     private final ServerSubject serverSubject;
     private final String nickname;
     private final Content color;
@@ -29,12 +29,13 @@ public class Player {
     private int score;
 
     /**
-     * Constructor for the class.
-     * @param nickname in-game name for the player.
-     * @param color color chosen by the player.
-     * @param handCards cards held by the player (max 3), that they can play during his turn.
-     * @param objectives two objectives shared by the player and a personal one.
-     * @param serverSubject the object used to notify the serverListeners.
+     * Class constructor.
+     *
+     * @param nickname      the player's in-game name.
+     * @param color         the player's chosen color.
+     * @param handCards     the cards held by the player in his hand.
+     * @param objectives    the player's objectives for his current game.
+     * @param serverSubject the object used to notify about a change in the game's model.
      */
     public Player(String nickname,
                   Content color,
@@ -64,6 +65,8 @@ public class Player {
     }
 
     /**
+     * Returns the nickname chosen by the player.
+     *
      * @return the player's nickname.
      */
     public String getNickname(){
@@ -71,6 +74,8 @@ public class Player {
     }
 
     /**
+     * Returns the color chosen by the player.
+     *
      * @return the player's color.
      */
     public Content getColor(){
@@ -78,6 +83,8 @@ public class Player {
     }
 
     /**
+     * Returns the updated player's score.
+     *
      * @return the player's score.
      */
     public int getScore(){
@@ -85,7 +92,9 @@ public class Player {
     }
 
     /**
-     * @return a deep copy of the player's objectives list.
+     * Returns all the player's objectives, both common and personal.
+     *
+     * @return the player's objectives.
      */
     public List<Objective> getObjectives(){
         return new ArrayList<>(){{
@@ -96,7 +105,9 @@ public class Player {
     }
 
     /**
-     * @return a deep copy of the player's hand.
+     * Returns the cards held by the player in his hand.
+     *
+     * @return the player's hand cards.
      */
     public List<CardSides> getHandCards(){
         return new ArrayList<>(){{
@@ -109,7 +120,9 @@ public class Player {
     }
 
     /**
-     * @return a deep copy of the player's placed cards.
+     * Returns the cards placed by the player on his board.
+     *
+     * @return the player's placed cards.
      */
     public List<BasicCard> getPlacedCards(){
         return new ArrayList<>(){{
@@ -120,8 +133,10 @@ public class Player {
     }
 
     /**
-     * @return a map with every possible content as key, and the corresponding quantity that is
-     * visible in the player's board.
+     * Returns a list of all the symbols present on the player's board, each with its corresponding number of
+     * occurrences.
+     *
+     * @return the player's contents.
      */
     public Map<Content,Integer> getPlayerContent(){
         Map<Content, Integer> result = new HashMap<>();
@@ -136,10 +151,9 @@ public class Player {
     }
 
     /**
-     * Updates the player's score by adding the points awarded by the objectives
-     * and returns an array where each element is the amount of points given by
-     * each objective.
-     * Finally, it notifies through the server subject the updated score.
+     * Updates the player's score by adding the points awarded by his objectives and returns an array where each element
+     * is the amount of points given by each objective.
+     *
      * @return a list with the amount of points given by each objective.
      */
     public List<Integer> awardObjectivePoints(){
@@ -154,10 +168,11 @@ public class Player {
     }
 
     /**
-     * Method that checks if a card is placeable by checking if the resources required
-     * are present on the player's board.
-     * @param cardToPlace card to check.
-     * @return true if the card can be placed.
+     * Checks if a card is placeable by checking if its required resources are present on the player's board.
+     *
+     * @param cardToPlace the card to check.
+     *
+     * @return            true if the card can be placed on the player's board.
      */
     public boolean checkRequirements(BasicCard cardToPlace){
         Map<Content,Integer> requirements = cardToPlace.getRequirements();
@@ -166,11 +181,12 @@ public class Player {
     }
 
     /**
-     * Method that checks if the position chosen by the player for a new card is correct,
-     * assuming that the corner that has been passed is part of the player's board
-     * and that the player already has the card.
+     * Checks if the position chosen by the player for a new card is valid, assuming that the corner that has been
+     * passed as parameter is part of the player's board and that the player has the card in his hand.
+     *
      * @param corner the card's corner where the new card is going to be placed.
-     * @return true if the card is placeable on the corner.
+     *
+     * @return       true if the card is placeable on the given corner.
      */
     public boolean checkIfPlaceable(Corner corner){
         //Finds all the corners where a card can't be placed and tests
@@ -185,11 +201,14 @@ public class Player {
     }
 
     /**
-     * Gets all the already covered corners. Used in a card placement check.
+     * Gets all the already covered corners.
+     * This is needed for a card placement check.
      * In order to execute the desired procedure, the cornersToCheck must contain either empty or not visible corners.
-     * @param corner the card's corner where the new card is going to be placed.
+     *
+     * @param corner         the card's corner where the new card is going to be placed.
      * @param cornersToCheck the list of corners that have to be checked.
-     * @return the list of covered corners.
+     *
+     * @return               the list of covered corners.
      */
     private List<Corner> getAllCoveredCorners(Corner corner, List<Corner> cornersToCheck){
         List<Corner> corners = new ArrayList<>();

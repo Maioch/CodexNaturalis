@@ -209,6 +209,9 @@
   -fx-opacity: 0.7;
 }
 .boardCard{
+  -fx-background-size: 150 100;
+  -fx-background-position: center;
+  -fx-background-repeat: no-repeat;
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 10, 0.5, 0.0, 0.0);
 }
 .draggableCard{
@@ -354,4 +357,24 @@
 }
 .purpleToken{
   -fx-image: url("images/tokens/purple.png")
+}
+.playerScoreNameLabel{
+  -text-color: red;
+  -fx-font-family: "Fira Sans Condensed SemiBold";
+  -fx-font-size: 18;
+  -fx-text-fill: -text-color;
+}
+.playerScoreLabel{
+  -fx-font-family: "Fira Sans Condensed";
+  -fx-font-size: 18;
+  -fx-text-fill: #2f0606;
+}
+.playerScoreLabelBold{
+  -fx-font-family: "Fira Sans Condensed SemiBold";
+  -fx-font-size: 18;
+  -fx-text-fill: #2f0606;
+}
+.crownIcon{
+  -fx-image: url("images/winnerIcon.png");
+  -fx-translate-y: -24;
 }

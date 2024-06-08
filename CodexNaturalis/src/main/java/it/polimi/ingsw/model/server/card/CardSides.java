@@ -8,5 +8,4 @@ import java.io.Serializable;
  * @param frontSide the card's front side.
  * @param backSide  the card's back side.
  */
-public record CardSides(BasicCard frontSide, BasicCard backSide) implements Serializable {
-}
+public record CardSides(BasicCard frontSide, BasicCard backSide) implements Serializable {}
