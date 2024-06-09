@@ -498,19 +498,25 @@ public class GameController implements Runnable{
         List<Objective> drawnObjectives = game.drawObjectiveCards();
         Status currentStatus = Status.REQUEST_SECRET_OBJECTIVES;
         List<Objective> secretObjectives = new ArrayList<>();
+        List<Objective> chosenObjectives = new ArrayList<>(drawnObjectives);
         serverSubject.notify(player.getNickname(), new ObjectivesMessage(Status.COMMON_OBJECTIVES, game.getCommonObjectives()));
         while(secretObjectives.isEmpty() || !drawnObjectives.containsAll(secretObjectives)){
             serverSubject.notify(player.getNickname(), new ObjectivesMessage(currentStatus, drawnObjectives));
             Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
             if (message instanceof ObjectivesMessage objectiveMessage){
                 secretObjectives = objectiveMessage.getObjectives();
+                chosenObjectives = new ArrayList<>(drawnObjectives);
+                chosenObjectives = chosenObjectives.stream().filter(secretObjectives::contains).toList();
+                if(chosenObjectives.size() != GameParameters.getNumberOfSecretObjectives()){
+                    continue;
+                }
             } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
                 secretObjectives.addAll(drawnObjectives.subList(0, GameParameters.getNumberOfSecretObjectives()));
                 serverSubject.notifyAll(new Message(Status.TURN_SKIPPED));
             }
             currentStatus = Status.INVALID_SECRET_OBJECTIVES;
         }
-        player.addPersonalObjectives(secretObjectives);
+        player.addPersonalObjectives(chosenObjectives);
     }
 
     /**
