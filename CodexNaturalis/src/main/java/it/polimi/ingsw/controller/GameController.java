@@ -122,14 +122,14 @@ public class GameController implements Runnable{
         receivePing(handler);
         handler.setCurrentGame(this);
         serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname,
-                game.getPlayer(nickname).getColor(), game.getAllPlayers().indexOf(game.getPlayer(nickname)) - 1));
-        serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards(), game.getNumberOfCardsLeft()));
+                game.getPlayer(nickname).getColor(), game.getNumberOfPlayers()));
         int turnNumber = 1;
         for(Player player : game.getAllPlayers()){
             serverSubject.notify(nickname, new JoinGameMessage(Status.NEW_PLAYER_JOINED, player.getNickname(),
                     player.getColor(), turnNumber));
             turnNumber++;
         }
+        serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards(), game.getNumberOfCardsLeft()));
         for(Player player : game.getAllPlayers()){
             serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
             serverSubject.notify(nickname, new PlayerBoardMessage(player.getPlacedCards(), player.getScore()));

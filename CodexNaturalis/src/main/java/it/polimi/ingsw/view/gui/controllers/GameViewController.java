@@ -14,6 +14,7 @@ import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
@@ -277,8 +278,6 @@ public class GameViewController extends ViewController {
     }
 
     private void sendStarterSide(BasicCard starterCard){
-        center = new Point2D(gameBoardScrollPane.getWidth() / 2 - cardWidth / 2d - cornerWidth,
-                gameBoardScrollPane.getLayoutBounds().getCenterY() + cardHeight / 2d - cornerHeight);
         starterChoicePopUp.setVisible(false);
         woodenPanePopUpBackground.setVisible(false);
         controller.sendMessage(new CardPlacementMessage(starterCard, null));
@@ -616,6 +615,8 @@ public class GameViewController extends ViewController {
     }
 
     private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
+        center = new Point2D(gameBoardScrollPane.getLayoutBounds().getCenterX() / 2 - cardWidth / 2d - cornerWidth,
+                gameBoardScrollPane.getLayoutBounds().getCenterY() + cardHeight / 2d - cornerHeight);
         int minX = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getX()).min().orElse(0);
         int maxY = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getY()).max().orElse(0);
         double offsetX = Math.abs(minX * (cardWidth - cornerWidth)) - (center.getX() / cardOffsetDivisor);
@@ -624,8 +625,8 @@ public class GameViewController extends ViewController {
         offsetY = Math.max(offsetY, 0);
         System.out.println(offsetX);
         System.out.println(offsetY);
-        gameBoardScrollPane.setVvalue(gameBoardPane.getHeight() / (center.getY() + offsetY));
-        gameBoardScrollPane.setHvalue(gameBoardPane.getWidth() / (center.getX() + offsetX));
+        //gameBoardScrollPane.setVvalue(gameBoardPane.getHeight() / (center.getY() + offsetY));
+        //gameBoardScrollPane.setHvalue(gameBoardPane.getWidth() / (center.getX() + offsetX));
         for(BasicCard card : cards) {
             GridPane cardGridPane = createBoardCard(card,validCorners);
             cardGridPane.setLayoutX(card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX() + offsetX);

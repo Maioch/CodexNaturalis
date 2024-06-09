@@ -104,7 +104,7 @@ public class SetupGUI extends AbstractGUI implements SetupView {
     }
 
     /**
-     * Changes the scene, notifying the user that he successfully joined the lobby.
+     * Changes the scene, notifying the user that they successfully joined the lobby.
      */
     @Override
     public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers) {

@@ -106,6 +106,8 @@ public class GameGUI extends AbstractGUI implements GameView {
     @Override
     public void showUserJoined(String nickname, Content color, boolean isGameFull) {
         currentLoader.<MatchLobbyViewController>getController().updatePlayers(nickname, color);
+        System.out.println(controller.getPlayerColors());
+        System.out.println(nickname + isGameFull);
         //forceUpdate(); //fix for repaint issues on windows
         if(isGameFull){
             changeScene("Game.fxml");

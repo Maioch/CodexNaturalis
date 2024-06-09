@@ -443,7 +443,7 @@
                            <Font name="Fira Sans Condensed Regular" size="14.0" />
                         </font>
                      </TextField>
-                     <Button fx:id="reconnectButton" onAction="#tryReconnect"  disable="true" mnemonicParsing="false" onMouseClicked="#tryJoin" text="Reconnect" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+                     <Button fx:id="reconnectButton" onAction="#tryReconnect"  disable="true" mnemonicParsing="false" text="Reconnect" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3">
                         <font>
                            <Font name="Fira Sans Condensed Regular" size="14.0" />
                         </font>

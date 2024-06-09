@@ -13,17 +13,14 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" stylesheets="@CodexTheme.css"
-            xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController">
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" stylesheets="@CodexTheme.css" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController">
    <styleClass>
       <String fx:value="mainBg" />
    </styleClass>
-   <GridPane prefHeight="720.0" prefWidth="1280.0" styleClass="mainBg" stylesheets="@CodexTheme.css"
-             AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+   <GridPane prefHeight="720.0" prefWidth="1280.0" styleClass="mainBg" stylesheets="@CodexTheme.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <columnConstraints>
-         <ColumnConstraints hgrow="SOMETIMES" percentWidth="70.0"/>
-         <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0"/>
+         <ColumnConstraints hgrow="SOMETIMES" percentWidth="70.0" />
+         <ColumnConstraints hgrow="SOMETIMES" percentWidth="30.0" />
       </columnConstraints>
       <rowConstraints>
          <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
@@ -31,12 +28,11 @@
       <ImageView fitHeight="431.0" fitWidth="457.0" GridPane.halignment="CENTER">
          <Image url="@images/CodexNaturalisLogo.png" />
       </ImageView>
-      <GridPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="720.0" prefWidth="512.0" styleClass="woodenPanel"
-                stylesheets="@CodexTheme.css" GridPane.columnIndex="1">
+      <GridPane maxHeight="Infinity" maxWidth="Infinity" prefHeight="720.0" prefWidth="512.0" styleClass="woodenPanel" stylesheets="@CodexTheme.css" GridPane.columnIndex="1">
          <columnConstraints>
-            <ColumnConstraints hgrow="SOMETIMES" percentWidth="15.0"/>
-            <ColumnConstraints hgrow="ALWAYS" prefWidth="100.0"/>
-            <ColumnConstraints hgrow="SOMETIMES" percentWidth="15.0"/>
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="15.0" />
+            <ColumnConstraints hgrow="ALWAYS" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" percentWidth="15.0" />
          </columnConstraints>
          <rowConstraints>
             <RowConstraints prefHeight="8.0" vgrow="SOMETIMES" />
@@ -46,8 +42,7 @@
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
-         <GridPane maxHeight="350.0" styleClass="menuCard" GridPane.columnIndex="1"
-                   GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+         <GridPane maxHeight="350.0" styleClass="menuCard" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
             <columnConstraints>
                <ColumnConstraints hgrow="SOMETIMES" prefWidth="100.0" />
             </columnConstraints>
@@ -64,16 +59,12 @@
                   <RowConstraints percentHeight="60.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="Infinity" minHeight="1.0" prefHeight="1.0" vgrow="NEVER" />
                </rowConstraints>
-               <Label fx:id="playerCountText" alignment="TOP_CENTER" prefHeight="35.0" prefWidth="256.0"
-                      textFill="#2f0606" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
-                      GridPane.rowIndex="1" GridPane.valignment="TOP">
+               <Label fx:id="playerCountText" alignment="TOP_CENTER" prefHeight="35.0" prefWidth="256.0" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="TOP">
                   <font>
                      <Font name="Fira Sans Condensed SemiBold" size="21.0" />
                   </font>
                </Label>
-               <Label alignment="BOTTOM_CENTER" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground"
-                      text="Match lobby" textFill="#2f0606" GridPane.halignment="CENTER"
-                      GridPane.hgrow="ALWAYS" GridPane.valignment="BOTTOM">
+               <Label alignment="BOTTOM_CENTER" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Match lobby" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="BOTTOM">
                   <font>
                      <Font name="Fira Sans Condensed SemiBold" size="16.0" />
                   </font>
@@ -97,19 +88,20 @@
                      <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
                      <RowConstraints maxHeight="-Infinity" prefHeight="32.0" />
                   </rowConstraints>
-                  <GridPane fx:id="playerList" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0"
-                            prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS">
-                  </GridPane>
+                  <GridPane fx:id="playerList" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS">
+                     <GridPane.margin>
+                        <Insets bottom="32.0" />
+                     </GridPane.margin></GridPane>
                    <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">
                        <columnConstraints>
-                           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="100.0"/>
+                           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" prefWidth="100.0" />
                        </columnConstraints>
                        <rowConstraints>
-                           <RowConstraints prefHeight="30.0" vgrow="SOMETIMES"/>
+                           <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
                        </rowConstraints>
                        <Button mnemonicParsing="false" onMouseClicked="#leaveLobby" text="Leave">
                           <font>
-                              <Font name="Fira Sans Condensed Regular" size="14.0"/>
+                              <Font name="Fira Sans Condensed Regular" size="14.0" />
                           </font>
                        </Button>
                    </GridPane>
