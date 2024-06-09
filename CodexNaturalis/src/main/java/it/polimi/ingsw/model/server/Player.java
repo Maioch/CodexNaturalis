@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
  * Player represents each one of the 4 possible players in a game.
  * It saves the nickname, the color and his board and hand status during the played turn.
  * This keeps track of the score and objectives of each player, too.
+ * All the methods that update on of the above values, also notify the change to the controller through the server subject.
  */
 public class Player {
 
@@ -230,9 +231,12 @@ public class Player {
     }
 
     /**
-     * Method that checks if a certain corner is present in the player's board.
+     * Checks if a certain corner is present in the player's board.
+     * This is useful to check if a player's move is valid and for testing purposes.
+     *
      * @param corner the corner to check.
-     * @return true if it is present, false otherwise.
+     *
+     * @return       true if present, false otherwise.
      */
     public boolean isCornerPartOfBoard(Corner corner){
         return placedCards.stream()
@@ -241,19 +245,22 @@ public class Player {
     }
 
     /**
-     * Method that checks if a BasicCard is present in the player's hand.
+     * Checks if a BasicCard is present in the player's hand.
+     * This is useful to check if a player's move is valid and for testing purposes.
+     *
      * @param card the card to check.
-     * @return true if present, false otherwise.
+     *
+     * @return     true if present, false otherwise.
      */
     public boolean isCardInHand(BasicCard card){
         return handCards.stream().anyMatch(c -> c.frontSide().equals(card) || c.backSide().equals(card));
     }
 
     /**
-     * Method that lets the player place a card on his board and notifies through the server subject the updated
-     * player's placed cards.
-     * @param cardToPlace the card the player chose to place.
-     * @param corner the corner on the card where the card is placed.
+     * Places a new card on a player's board.
+     *
+     * @param cardToPlace the card the player wants to place.
+     * @param corner      the corner where the new card will be placed.
      */
     public void placeCard(BasicCard cardToPlace, Corner corner){
         if(!checkRequirements(cardToPlace) || !checkIfPlaceable(corner))
@@ -273,10 +280,10 @@ public class Player {
     }
 
     /**
-     * Method that initializes each player's board by placing a starter card in the centre; throws an exception
-     * if the board is already initialized.
-     * Finally, it notifies through the server subject the updated player's placed cards.
-     * @param starterCard the starter card chosen randomly for the player.
+     * Places a starter card chosen on the player's board.
+     * The parameter is the side chosen by the player when he's prompted to do so.
+     *
+     * @param starterCard      the starter card.
      * @throws PlayerException if there is already a placed starter card.
      */
     public void placeStarterCard(BasicCard starterCard) throws PlayerException {
@@ -295,7 +302,8 @@ public class Player {
     }
 
     /**
-     * Method that adds a card to the player's hand and notifies through the server subject the updated player's hand.
+     * Adds a new card to the player's hand.
+     *
      * @param cardSides the card to add to the player's hand.
      */
     public void addCardToHand(CardSides cardSides){

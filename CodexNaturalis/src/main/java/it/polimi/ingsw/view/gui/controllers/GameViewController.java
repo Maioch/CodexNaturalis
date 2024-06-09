@@ -526,12 +526,14 @@ public class GameViewController extends ViewController {
         Label playerNameLabel = new Label(nickname);
         playerNameLabel.getStyleClass().add("playerScoreNameLabel");
         playerNameLabel.setStyle(String.format("-text-color: %s", playerColors.get(nickname).getHexColorString()));
-        Label partialScoreLabel = new Label(
-                String.valueOf(finalScore - summary.values().stream().reduce(0,Integer::sum)));
+        Label partialScoreLabel = new Label(String.format("Partial score: %d",
+                finalScore - summary.values().stream().reduce(0,Integer::sum)));
         partialScoreLabel.getStyleClass().add("playerScoreLabel");
         HBox commonObjectiveScore = new HBox();
         HBox personalObjectiveScore = new HBox();
-        Label totalScore = new Label(String.valueOf(finalScore));
+        commonObjectiveScore.getStyleClass().add("objectiveBox");
+        personalObjectiveScore.getStyleClass().add("objectiveBox");
+        Label totalScore = new Label(String.format("Total score: %d",finalScore));
         totalScore.getStyleClass().add("playerScoreLabelBold");
 
         for(Objective objective : summary.keySet().stream().limit(2).toList()){
@@ -543,6 +545,7 @@ public class GameViewController extends ViewController {
         Objective personalObjective = summary.keySet().stream().skip(2).toList().getFirst();
         ImageView personalObjectiveView = getCardImage(personalObjective);
         Label personalObjectiveScoreLabel = new Label(String.format("+%d",summary.get(personalObjective)));
+        personalObjectiveScoreLabel.getStyleClass().add("playerScoreLabelBold");
         personalObjectiveScore.getChildren().addAll(Arrays.asList(personalObjectiveView, personalObjectiveScoreLabel));
 
         playerScoreGrid.add(playerNameLabel, 0, 0);
@@ -569,6 +572,8 @@ public class GameViewController extends ViewController {
         for(String winner : winners){
             ImageView crownImage = new ImageView();
             crownImage.getStyleClass().add("crownIcon");
+            crownImage.setFitWidth(31);
+            crownImage.setPreserveRatio(true);
             playerSummary.get(winner).add(crownImage, 0, 0);
         }
         GridPane upperSummaryGrid = new GridPane();
