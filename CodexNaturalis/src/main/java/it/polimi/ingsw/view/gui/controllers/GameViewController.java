@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import com.sun.scenario.effect.Offset;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.*;
@@ -107,6 +108,7 @@ public class GameViewController extends ViewController {
     private final Map<String, ImageView> playerTokens = new HashMap<>();
     private final Map<String, GridPane> playerSummary = new HashMap<>();
 
+    private final int cardOffsetDivisor = 3;
     private final int toastGap = 76;
     private final int tokenSize = 30;
     private final int maxNumberOfHiddenCards = 3;
@@ -124,7 +126,7 @@ public class GameViewController extends ViewController {
      * Initializes the game scene and all its base components.
      */
     public void initializeScene(){
-        center = new Point2D(400, 400);
+        System.out.println(center);
         playerColors = controller.getPlayerColors();
         currentViewedPlayer = controller.getLocalPlayerName();
         int index = 0;
@@ -261,21 +263,25 @@ public class GameViewController extends ViewController {
         frontSide.setOnMouseClicked((mouseEvent -> {
             frontSide.setDisable(true);
             backSide.setDisable(true);
-            starterChoicePopUp.setVisible(false);
-            woodenPanePopUpBackground.setVisible(false);
-            controller.sendMessage(new CardPlacementMessage(starterCard.frontSide(), null));
+            sendStarterSide(starterCard.frontSide());
         }));
         frontStarterSidePane.add(backSide, 0, 0);
         backSide.setOnMouseClicked((mouseEvent -> {
             frontSide.setDisable(true);
             backSide.setDisable(true);
-            starterChoicePopUp.setVisible(false);
-            woodenPanePopUpBackground.setVisible(false);
-            controller.sendMessage(new CardPlacementMessage(starterCard.backSide(), null));
+            sendStarterSide(starterCard.backSide());
         }));
         backStarterSidePane.add(frontSide, 0, 0);
         starterChoicePopUp.setVisible(true);
         woodenPanePopUpBackground.setVisible(true);
+    }
+
+    private void sendStarterSide(BasicCard starterCard){
+        center = new Point2D(gameBoardScrollPane.getWidth() / 2 - cardWidth / 2d - cornerWidth,
+                gameBoardScrollPane.getLayoutBounds().getCenterY() + cardHeight / 2d - cornerHeight);
+        starterChoicePopUp.setVisible(false);
+        woodenPanePopUpBackground.setVisible(false);
+        controller.sendMessage(new CardPlacementMessage(starterCard, null));
     }
 
     /**
@@ -531,22 +537,20 @@ public class GameViewController extends ViewController {
         partialScoreLabel.getStyleClass().add("playerScoreLabel");
         HBox commonObjectiveScore = new HBox();
         HBox personalObjectiveScore = new HBox();
+        commonObjectiveScore.setAlignment(Pos.CENTER);
+        personalObjectiveScore.setAlignment(Pos.CENTER);
+        playerScoreGrid.getRowConstraints().addFirst(new RowConstraints(30));
+
         commonObjectiveScore.getStyleClass().add("objectiveBox");
         personalObjectiveScore.getStyleClass().add("objectiveBox");
         Label totalScore = new Label(String.format("Total score: %d",finalScore));
         totalScore.getStyleClass().add("playerScoreLabelBold");
 
         for(Objective objective : summary.keySet().stream().limit(2).toList()){
-            ImageView objectiveView = getCardImage(objective);
-            Label objectiveScoreLabel = new Label(String.format("+%d",summary.get(objective)));
-            objectiveScoreLabel.getStyleClass().add("playerScoreLabelBold");
-            commonObjectiveScore.getChildren().addAll(Arrays.asList(objectiveView, objectiveScoreLabel));
+            buildObjectiveScorePane(summary, commonObjectiveScore, objective);
         }
         Objective personalObjective = summary.keySet().stream().skip(2).toList().getFirst();
-        ImageView personalObjectiveView = getCardImage(personalObjective);
-        Label personalObjectiveScoreLabel = new Label(String.format("+%d",summary.get(personalObjective)));
-        personalObjectiveScoreLabel.getStyleClass().add("playerScoreLabelBold");
-        personalObjectiveScore.getChildren().addAll(Arrays.asList(personalObjectiveView, personalObjectiveScoreLabel));
+        buildObjectiveScorePane(summary, personalObjectiveScore, personalObjective);
 
         playerScoreGrid.add(playerNameLabel, 0, 0);
         playerScoreGrid.add(partialScoreLabel, 0, 1);
@@ -554,6 +558,14 @@ public class GameViewController extends ViewController {
         playerScoreGrid.add(personalObjectiveScore, 0, 3);
         playerScoreGrid.add(totalScore, 0, 4);
         playerSummary.put(nickname, playerScoreGrid);
+    }
+
+    private void buildObjectiveScorePane(Map<Objective, Integer> summary, HBox objectiveScore, Objective objective) {
+        ImageView objectiveView = getCardImage(objective);
+        Label objectiveScoreLabel = new Label(String.format("+%d",summary.get(objective)));
+        objectiveScoreLabel.setPadding(new Insets(8));
+        objectiveScoreLabel.getStyleClass().add("playerScoreLabelBold");
+        objectiveScore.getChildren().addAll(Arrays.asList(objectiveView, objectiveScoreLabel));
     }
 
     public void revealWinners(List<String> winners){
@@ -572,6 +584,7 @@ public class GameViewController extends ViewController {
         for(String winner : winners){
             ImageView crownImage = new ImageView();
             crownImage.getStyleClass().add("crownIcon");
+            GridPane.setHalignment(crownImage, HPos.CENTER);
             crownImage.setFitWidth(31);
             crownImage.setPreserveRatio(true);
             playerSummary.get(winner).add(crownImage, 0, 0);
@@ -589,20 +602,34 @@ public class GameViewController extends ViewController {
             return;
         }
         GridPane lowerSummaryGrid = new GridPane();
+        lowerSummaryGrid.setMaxWidth(Double.MAX_VALUE);
+        lowerSummaryGrid.setGridLinesVisible(true);
+        GridPane.setHgrow(lowerSummaryGrid, Priority.ALWAYS);
         index = 0;
         for(GridPane playerSummaryGrid : playerSummary.values().stream().skip(2).toList()){
             lowerSummaryGrid.add(playerSummaryGrid, index, 0);
+            GridPane.setHalignment(playerSummaryGrid, HPos.CENTER);
             index++;
         }
-        resultGrid.add(upperSummaryGrid, 0, 1);
+        resultGrid.add(lowerSummaryGrid, 0, 1);
         matchSummaryGrid.setVisible(true);
     }
 
     private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
+        int minX = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getX()).min().orElse(0);
+        int maxY = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getY()).max().orElse(0);
+        double offsetX = Math.abs(minX * (cardWidth - cornerWidth)) - (center.getX() / cardOffsetDivisor);
+        double offsetY = maxY * (cardHeight - cornerHeight) - (center.getY() / cardOffsetDivisor);
+        offsetX = Math.max(offsetX, 0);
+        offsetY = Math.max(offsetY, 0);
+        System.out.println(offsetX);
+        System.out.println(offsetY);
+        gameBoardScrollPane.setVvalue(gameBoardPane.getHeight() / (center.getY() + offsetY));
+        gameBoardScrollPane.setHvalue(gameBoardPane.getWidth() / (center.getX() + offsetX));
         for(BasicCard card : cards) {
             GridPane cardGridPane = createBoardCard(card,validCorners);
-            cardGridPane.setLayoutX(card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX());
-            cardGridPane.setLayoutY(- card.getCorner(Location.TL).getY() * (cardHeight - cornerHeight) + center.getY());
+            cardGridPane.setLayoutX(card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX() + offsetX);
+            cardGridPane.setLayoutY(- card.getCorner(Location.TL).getY() * (cardHeight - cornerHeight) + center.getY() + offsetY);
             gameBoardPane.getChildren().add(cardGridPane);
         }
     }

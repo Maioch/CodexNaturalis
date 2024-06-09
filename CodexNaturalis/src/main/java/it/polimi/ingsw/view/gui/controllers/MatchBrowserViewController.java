@@ -56,6 +56,15 @@ public class MatchBrowserViewController extends ViewController {
     public ImageView backFromJoinIcon;
     @FXML
     public ToggleGroup playerNumberToggleGroup;
+    @FXML
+    public ImageView backFromReconnectIcon;
+    @FXML
+    public Button reconnectButton;
+    @FXML
+    public TextField reconnectNicknameTextbox;
+    @FXML
+    public GridPane reconnectPopUp;
+
     private final List<List<RadioButton>> radioButtons = new ArrayList<>();
     private ToggleGroup gameIdToggleGroup;
     private ToggleGroup colorChoiceToggleGroup;
@@ -76,6 +85,7 @@ public class MatchBrowserViewController extends ViewController {
             setupMatchListButton(idRadioButton);
             idRadioButton.setDisable(match.getGameStatus() == GameStatus.STARTED);
             idRadioButton.setId(String.valueOf(id));
+            idRadioButton.setUserData(match.getGameStatus().getText());
             RadioButton nameRadioButton = createRadioButton(match.getGameName(), groupName, "tableButton");
             setupMatchListButton(nameRadioButton);
             nameRadioButton.setDisable(match.getGameStatus() == GameStatus.STARTED);
@@ -185,8 +195,19 @@ public class MatchBrowserViewController extends ViewController {
      */
     @FXML
     public void requestJoin(){
-        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS,
-                Integer.parseInt(((RadioButton) gameIdToggleGroup.getSelectedToggle()).getId())));
+        boolean isReconnect = ((RadioButton) gameIdToggleGroup.getSelectedToggle()).getUserData()
+                .equals(GameStatus.PLAYER_DISCONNECTED.getText());
+        int gameId = Integer.parseInt(((RadioButton) gameIdToggleGroup.getSelectedToggle()).getId());
+        if(isReconnect){
+            showReconnectGameDialog(gameId);
+            return;
+        }
+        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
+    }
+
+    private void showReconnectGameDialog(int gameId){
+        reconnectPopUp.setVisible(true);
+        currentSelectedId = gameId;
     }
 
     /**
@@ -230,6 +251,13 @@ public class MatchBrowserViewController extends ViewController {
                 colorChoiceToggleGroup.getSelectedToggle() == null);
     }
 
+    @FXML
+    public void checkReconnectInput(){
+        String nickname = reconnectNicknameTextbox.getText();
+        reconnectButton.setDisable(nickname.isEmpty() ||
+                nickname.length() > GameParameters.getMaxNicknameLength());
+    }
+
     /**
      * Tries to join to the previously specified match.
      */
@@ -240,6 +268,14 @@ public class MatchBrowserViewController extends ViewController {
         Content color = Content.valueOf(((RadioButton)colorChoiceToggleGroup.getSelectedToggle()).getUserData().toString());
         String nickname = nicknameTextBox.getText();
         controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, color, currentSelectedId));
+    }
+
+    @FXML
+    public void tryReconnect(){
+        reconnectButton.setDisable(true);
+        reconnectNicknameTextbox.setDisable(true);
+        String nickname = reconnectNicknameTextbox.getText();
+        controller.sendMessage(new JoinGameMessage(Status.RECONNECT, nickname, null, currentSelectedId));
     }
 
     /**
@@ -285,6 +321,7 @@ public class MatchBrowserViewController extends ViewController {
     public void goBackFromPopup(){
         joinPopupGrid.setVisible(false);
         createPopupGrid.setVisible(false);
+        reconnectPopUp.setVisible(false);
         controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 }

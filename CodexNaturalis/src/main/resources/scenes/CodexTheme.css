@@ -381,6 +381,8 @@
   -fx-font-family: "Fira Sans Condensed SemiBold";
   -fx-font-size: 18;
   -fx-text-fill: #2f0606;
+  -fx-start-margin: 8;
+  -fx-end-margin: 8;
   -fx-text-alignment: center;
   -fx-alignment: center;
   -fx-max-width: infinity;
