@@ -20,6 +20,7 @@ import it.polimi.ingsw.view.GameView;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The CLI associated to the gameplay phase.
@@ -72,7 +73,8 @@ public class GameCLI extends AbstractCLI implements GameView {
                 (list -> list.size() == 2 &&
                         list.getFirst() >= 1 && list.getFirst() <= 2 &&
                         list.getLast() >= 1 && list.getLast() <= GameParameters.getNumberOfVisibleCards() + 1),
-                this::stringToListInt);
+                this::stringToListInt,
+                true);
         controller.sendMessage(new DrawChoiceMessage(choice.getLast() - 1, CardType.values()[choice.getFirst() - 1]));
     }
 
@@ -138,7 +140,8 @@ public class GameCLI extends AbstractCLI implements GameView {
                 .toList()));
         int cardIndex = readFromInput("Choose which card you want to place by writing its index (starting from 1): ",
                 (i -> i >= 1 && i <= validCards.size()),
-                this::stringToInt) - 1;
+                this::stringToInt,
+                true) - 1;
         System.out.println("These are the cards placed on your board: ");
         int x = placedCards.getLast().getCorner(Location.BL).getX();
         int y = placedCards.getLast().getCorner(Location.BL).getY();
@@ -151,7 +154,8 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println();
         int cornerIndex = readFromInput("Choose the coordinates you prefer by typing their index: ",
                 (i -> i >= 1 && i <= validPositions.size()),
-                this::stringToInt) - 1;
+                this::stringToInt,
+                true) - 1;
         controller.sendMessage(new CardPlacementMessage(validCards.get(cardIndex), validCorners.get(cornerIndex)));
     }
 
@@ -170,7 +174,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         if(!turnOwner.equals(controller.getLocalPlayerName())) {
             System.out.printf("%s is playing their turn...\n", coloredTurnOwner);
             if(readInputThread == null || !readInputThread.isAlive()) {
-                readInputThread = new Thread(() -> readFromInput("", ((c) -> false), this::stringIdentity));
+                readInputThread = new Thread(() -> readFromInput("", ((c) -> false), this::stringIdentity, true));
                 readInputThread.start();
             }
             return;
@@ -242,7 +246,8 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(Collections.singletonList(starterCard.backSide())));
         int chosenSide = readFromInput("Choose which side of your starter you want to place (1 for front, 2 for back): ",
                 n -> n >= 1 && n <= 2,
-                this::stringToInt);
+                this::stringToInt,
+                true);
         BasicCard chosenStarter = chosenSide == 1 ? starterCard.frontSide() : starterCard.backSide();
         controller.sendMessage(new CardPlacementMessage(chosenStarter, null));
     }
@@ -276,7 +281,8 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
         List<Integer> chosenObjective = readFromInput("Enter the ID of your chosen objective: ",
                 l -> l.stream().allMatch(i -> i >= 1 && i <= objectives.size()) && l.size() == numberOfSecretObjectives,
-                this::stringToListInt);
+                this::stringToListInt,
+                true);
         controller.sendMessage(new ObjectivesMessage(Status.REQUEST_SECRET_OBJECTIVES,
                 chosenObjective.stream().map(i -> objectives.get(i - 1)).toList()));
     }
@@ -389,7 +395,8 @@ public class GameCLI extends AbstractCLI implements GameView {
         winners.forEach(System.out::println);
         readFromInput("Type BACK when you're ready to return to the main menu: ",
                 s -> s.equalsIgnoreCase("back"),
-                this::stringIdentity);
+                this::stringIdentity,
+                false);
         controller.backToSetup();
         controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
@@ -441,10 +448,6 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     protected void checkCommand(String command, String argument){
-        if(!controller.isGameOngoing()){
-            System.out.println("The game has finished. Commands are no longer available.");
-            return;
-        }
         switch (command.toUpperCase()){
             case "HELP" -> System.out.println(GameParameters.getGameHelpBody());
             case "CHAT" -> sendChatMessage(argument);

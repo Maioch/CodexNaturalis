@@ -163,7 +163,7 @@ public class Player {
             objectivePoints.put(objective, objectiveResult);
             score += objectiveResult;
         }
-        serverSubject.notifyAll(new PlayerSummaryMessage(objectivePoints, score));
+        serverSubject.notifyAll(new PlayerSummaryMessage(objectivePoints, score, nickname));
         return new ArrayList<>(objectivePoints.values());
     }
 

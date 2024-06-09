@@ -14,16 +14,18 @@ import java.util.Map;
 public class PlayerSummaryMessage extends Message {
     private final Map<Objective, Integer> objectiveScores;
     private final int finalScore;
+    private final String playerName;
 
     /**
      * Constructor for the class.
      * @param objectiveScores a map with each player's objective and the associated score.
      * @param finalScore the final total score of the player.
      */
-    public PlayerSummaryMessage(Map<Objective, Integer> objectiveScores, int finalScore){
+    public PlayerSummaryMessage(Map<Objective, Integer> objectiveScores, int finalScore, String playerName){
         super(Status.PLAYER_FINAL_SCORE);
         this.objectiveScores = new LinkedHashMap<>(objectiveScores);
         this.finalScore = finalScore;
+        this.playerName = playerName;
     }
 
     /**
@@ -39,4 +41,6 @@ public class PlayerSummaryMessage extends Message {
     public Map<Objective, Integer> getObjectiveScores(){
         return new LinkedHashMap<>(objectiveScores);
     }
+
+    public String getPlayerName(){ return playerName; }
 }

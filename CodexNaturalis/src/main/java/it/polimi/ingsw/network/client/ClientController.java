@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.client.ClientPlayer;
 import it.polimi.ingsw.model.client.LocalPlayer;
 import it.polimi.ingsw.model.client.RemotePlayer;
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
@@ -148,13 +149,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
      */
     public synchronized int getNumberOfPlayers(){
         return game.getNumberOfPlayers();
-    }
-
-    /**
-     * @return true whether the game is ongoing (initialized) or not
-     */
-    public synchronized boolean isGameOngoing(){
-        return game != null;
     }
 
     /**
@@ -377,14 +371,14 @@ public class ClientController extends EventHandler<LabeledMessage> {
             case LAST_TURN -> eventSubmitter.submit(() -> gameView.notifyLastTurn());
             case PLAYER_FINAL_SCORE -> {
                 if (message instanceof PlayerSummaryMessage playerSummaryMessage) {
-                    game.getPlayerWithTurn().setFinalScore(
-                            playerSummaryMessage.getObjectiveScores(), playerSummaryMessage.getFinalScore());
+                    game.getPlayerWithNickname(playerSummaryMessage.getPlayerName()).setFinalScore(
+                            playerSummaryMessage.getObjectiveScores(),
+                            playerSummaryMessage.getFinalScore());
                 }
             }
             case GAME_TIMEOUT_STARTED -> eventSubmitter.submit(() -> gameView.notifyGameTimeout());
             case DECLARE_WINNER -> {
                 if (message instanceof WinnersMessage winnersMessage) {
-                    this.game = null;
                     eventSubmitter.submit(() -> gameView.revealWinners(winnersMessage.getWinners()));
                 }
             }

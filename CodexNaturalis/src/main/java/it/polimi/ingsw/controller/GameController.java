@@ -368,6 +368,7 @@ public class GameController implements Runnable{
      * Removes all the players from the game.
      */
     private void removeHandlers(){
+        pingTimer.cancel();
         for (Player player : game.getAllPlayers()) {
             NetworkHandler playerHandler = serverSubject.getNetworkHandler(player.getNickname());
             if(playerHandler != null) {
@@ -561,7 +562,6 @@ public class GameController implements Runnable{
         }
         //calculate the final score
         for (Player player : game.getAllPlayers()){
-            updateTurn(player.getNickname());
             player.awardObjectivePoints();
         }
         List<String> winners = game.getWinningPlayers();

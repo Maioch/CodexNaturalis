@@ -125,6 +125,16 @@ public class ClientGame {
         }};
     }
 
+    public ClientPlayer getPlayerWithNickname(String nickname){
+        if(localPlayer.getNickname().equals(nickname)){
+            return localPlayer;
+        }
+        return remotePlayers.stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst()
+                .orElseThrow();
+    }
+
     /**
      * Returns a summary of the colors chosen by the players, local and remote, ordered by turn number.
      *

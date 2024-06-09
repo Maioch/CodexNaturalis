@@ -44,13 +44,16 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         while (!isConnected) {
             String ip = readFromInput("Please enter the IP of the server you want to play on: ",
                     (s -> s.length() <= 15 && Pattern.compile("[0-9]{0,3}\\.[0-9]{0,3}\\.[0-9]{0,3}\\.[0.9]{0,3}").matcher(s).find()),
-                    this::stringIdentity);
+                    this::stringIdentity,
+                    true);
             int port = readFromInput("Now enter the Port of the server: ",
                     (s -> s >= 0 && s <= 65535),
-                    this::stringToInt);
+                    this::stringToInt,
+                    true);
             int protocol = readFromInput("\nChoose the connection technology to use. Enter 1 for TCP or 2 for RMI: ",
                     (s -> s >= 1 && s <= 2),
-                    this::stringToInt);
+                    this::stringToInt,
+                    true);
             switch (protocol) {
                 case 1 -> {
                     try {
@@ -98,7 +101,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         int id = readFromInput("To join an existing game enter the corresponding ID instead: ",
                 (i -> matchList.stream().filter(g -> g.getGameStatus() != GameStatus.STARTED)
                         .map(GameInfo::getGameId).toList().contains(i) || i == 0 || i == -1),
-                this::stringToInt);
+                this::stringToInt,
+                true);
         Message messageToSend;
         switch(id){
             case -1 -> messageToSend = new Message(Status.REQUEST_GAMES);
@@ -106,13 +110,15 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 System.out.println("\nYou're creating a new game: please enter the requested information");
                 String gameName = readFromInput("   Name: ",
                         (s -> s.length() <= GameParameters.getMaxNicknameLength()),
-                        this::stringIdentity);
+                        this::stringIdentity,
+                        true);
                 int minPlayers = GameParameters.getMinPlayers();
                 int maxPlayers = GameParameters.getMaxPlayers();
                 int numberOfPlayers = readFromInput(
                         String.format("   Number of players (at least %d and not more than %d): ", minPlayers, maxPlayers),
                         (n -> n <= GameParameters.getMaxPlayers() && n >= GameParameters.getMinPlayers()),
-                        this::stringToInt);
+                        this::stringToInt,
+                        true);
                 messageToSend = new NewGameMessage(gameName, numberOfPlayers);
             }
             default -> {
@@ -123,7 +129,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                     String nickname = readFromInput("Please enter the name you chose when you first joined the game: ",
                             (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength() && !s.contains(" ")
                                     && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
-                            this::stringIdentity);
+                            this::stringIdentity,
+                            true);
                     messageToSend = new JoinGameMessage(Status.RECONNECT, nickname, null, id);
                 }
             }
@@ -169,12 +176,14 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         }
         int colorIndex = readFromInput("Enter the ID of your chosen color: ",
                 (i -> i >= 1 && i <= colors.size()),
-                this::stringToInt) - 1;
+                this::stringToInt,
+                true) - 1;
         String nickname = readFromInput(String.format("Choose your nickname, without including '%s','%s', or spaces: ",
                         GameParameters.getCommandChar(), GameParameters.getDelimiter()),
                 (s -> !s.isBlank() && s.length() < GameParameters.getMaxNicknameLength() && !s.contains(" ")
                         && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
-                this::stringIdentity);
+                this::stringIdentity,
+                true);
         controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, colors.get(colorIndex), gameId));
     }
 

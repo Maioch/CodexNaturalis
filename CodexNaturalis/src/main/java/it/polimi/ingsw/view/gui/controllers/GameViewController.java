@@ -398,7 +398,6 @@ public class GameViewController extends ViewController {
             });
             cardView.setDisable(!controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()) || isDrawPhase);
             cardSelectionPopup.setVisible(false);
-            System.out.println(controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()));
             cardHandGrid.add(cardView, index, 0);
             index++;
         }
@@ -641,7 +640,6 @@ public class GameViewController extends ViewController {
                 deckGrid.add(emptyDeckPane, index,0);
                 continue;
             }
-            System.out.println(card.getCardId());
             ImageView cardView = getCardImage(card);
             cardView.setDisable(true);
             int finalIndex = index;
@@ -832,10 +830,7 @@ public class GameViewController extends ViewController {
             Pane dragTarget = new Pane();
             boardCardGrid.add(dragTarget, corner.getLocation().getX(), 1 - corner.getLocation().getY());
             if(validCorners.contains(corner)){
-                System.out.printf("added corner %s\n", corner.getLocation());
                 dragTarget.setOnMouseDragReleased((MouseEvent e) -> {
-                    System.out.println(corner.getLocation());
-                    System.out.println("placed a card");
                     if(draggedCard == null){
                         return;
                     }
@@ -843,7 +838,6 @@ public class GameViewController extends ViewController {
                 });
             }
         }
-        System.out.println(boardCardGrid.getChildren());
         return boardCardGrid;
     }
 

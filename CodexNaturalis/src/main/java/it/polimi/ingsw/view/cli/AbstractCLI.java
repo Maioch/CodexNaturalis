@@ -20,7 +20,7 @@ public abstract class AbstractCLI {
      * @return the converted client's input.
      * @param <T> generic used to return different types of converted inputs.
      */
-    protected <T> T readFromInput (String prompt, Predicate<T> checker, Mapper<String, T> mapper){
+    protected <T> T readFromInput (String prompt, Predicate<T> checker, Mapper<String, T> mapper, boolean acceptCommands){
         String commandChar = GameParameters.getCommandChar();
         Scanner scanner = new Scanner(System.in);
         while(true){
@@ -37,7 +37,7 @@ public abstract class AbstractCLI {
                 return null;
             }
             String inputString = scanner.nextLine();
-            boolean isCommand = inputString.indexOf(GameParameters.getCommandChar()) == 0;
+            boolean isCommand = acceptCommands && inputString.indexOf(GameParameters.getCommandChar()) == 0;
             if(!isCommand){
                 try{
                     T mappedInput = mapper.apply(inputString);
