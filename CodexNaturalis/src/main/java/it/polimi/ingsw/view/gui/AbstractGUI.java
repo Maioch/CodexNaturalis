@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view.gui;
 
 import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.view.gui.controllers.ViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,6 +15,7 @@ public abstract class AbstractGUI {
     protected Scene currentScene;
     protected FXMLLoader currentLoader;
     protected ClientController controller;
+    protected ConnectionSettings connectionSettings;
 
     /**
      * Changes (and loads) the current scene.

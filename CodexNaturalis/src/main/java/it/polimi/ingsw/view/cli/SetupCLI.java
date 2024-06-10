@@ -30,10 +30,9 @@ import java.util.regex.Pattern;
  * reception phase, before entering an actual game.
  */
 public class SetupCLI extends AbstractCLI implements SetupView {
-    private final ClientController controller;
+    private ClientController controller;
     private final TerminalSubmitter terminalSubmitter;
     private ConnectionSettings connectionSettings;
-
 
     /**
      * Constructor for the class. The method asks the player the ip address and the port of the server, then it makes
@@ -151,7 +150,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     @Override
     public void showJoinGameDialog(List<Content> colors, int gameId){
-        System.out.println("\nYou are trying to join the match.");
+        System.out.println("\nYou are trying to join the match");
         System.out.println("Here are the available colors and their IDs: ");
         for(int i = 0; i < colors.size(); i++){
             System.out.printf("   %d. %s%s%s", (i + 1), colors.get(i).getTextColorString(),
@@ -189,7 +188,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     @Override
     public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers){
         System.out.println("\nYou have successfully joined the game!");
-        System.out.printf("This game requires %d players to start\n", numberOfPlayers);
+        System.out.printf("It will start when %d players join...\n", numberOfPlayers);
         GameCLI gameCLI = new GameCLI(controller);
         controller.setGameView(gameCLI);
     }
@@ -202,8 +201,9 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     public void showDisconnectionMessage(){
         controller.stop();
         ClientController newController = new ClientController(this, terminalSubmitter);
+        setController(newController);
         while(true) {
-            readFromInput("Oh no, your castings seem to not be received by us codex gods... \nPress ENTER to try reconnection:",
+            readFromInput("\nOh no, your castings seem to not be received by us, codex gods... \nPress ENTER to try to reconnect",
                     (s) -> true, this::stringIdentity, false);
             if (tryConnect(newController)) {
                 break;

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import javafx.fxml.FXML;
@@ -73,5 +75,10 @@ public class MatchLobbyViewController extends ViewController {
     public void leaveLobby(){
         controller.backToSetup();
         controller.sendMessage(new Message(Status.PLAYER_DISCONNECTED));
+    }
+
+    @Override
+    public void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings){
+
     }
 }

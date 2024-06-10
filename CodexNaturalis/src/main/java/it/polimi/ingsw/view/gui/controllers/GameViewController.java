@@ -6,6 +6,8 @@ import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.*;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
@@ -14,6 +16,7 @@ import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
+import it.polimi.ingsw.view.gui.SetupGUI;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -150,6 +153,11 @@ public class GameViewController extends ViewController {
             updateScore(nickname, 0);
             index++;
         }
+    }
+
+    @Override
+    public void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings){
+
     }
 
     /**

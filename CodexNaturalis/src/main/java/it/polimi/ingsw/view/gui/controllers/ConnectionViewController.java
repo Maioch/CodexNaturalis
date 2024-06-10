@@ -2,11 +2,13 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.view.gui.GraphicalSubmitter;
+import it.polimi.ingsw.view.gui.SetupGUI;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -37,6 +39,7 @@ public class ConnectionViewController extends ViewController {
     @FXML
     public ToggleGroup protocol;
 
+    private ConnectionSettings connectionSettings;
     private Application application;
 
     /**
@@ -59,8 +62,9 @@ public class ConnectionViewController extends ViewController {
             try {
                 ConnectionSettings.ConnectionType type = tcpRadioButton.isSelected() ?
                         ConnectionSettings.ConnectionType.TCP : ConnectionSettings.ConnectionType.RMI;
-                ConnectionInitializer.initializeConnection(
-                        new ConnectionSettings(ipTextBox.getText(), port, type), controller);
+                connectionSettings = new ConnectionSettings(ipTextBox.getText(), port, type);
+                System.out.println(connectionSettings.ip());
+                ConnectionInitializer.initializeConnection(connectionSettings, controller);
                 new Thread(controller).start();
                 controller.sendMessage(new Message(Status.REQUEST_PING));
                 controller.sendMessage(new Message(Status.REQUEST_GAMES));
@@ -74,6 +78,10 @@ public class ConnectionViewController extends ViewController {
                 setLoginError("Couldn't connect to the RMI server");
             }
         }).start();
+    }
+
+    public ConnectionSettings getConnectionSettings(){
+        return connectionSettings;
     }
 
     /**
@@ -108,6 +116,11 @@ public class ConnectionViewController extends ViewController {
     @FXML
     public void openRulesLink(){
         application.getHostServices().showDocument(GameParameters.getRulesURL());
+    }
+
+    @Override
+    public void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings){
+
     }
 
     /**

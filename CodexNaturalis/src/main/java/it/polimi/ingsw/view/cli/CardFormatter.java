@@ -83,7 +83,7 @@ public class CardFormatter {
      * @return the message that represents the objective.
      */
     public static String getObjectiveInfoString(Objective objective){
-        return String.format("gain %d points every time %s\n",
+        return String.format("gain %d points every time %s",
                 objective.getPoints(),
                 getBonusInfo(objective.getObjectiveId()));
     }

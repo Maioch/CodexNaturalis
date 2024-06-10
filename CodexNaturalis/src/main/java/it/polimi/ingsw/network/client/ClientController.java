@@ -39,6 +39,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     private final EventSubmitter eventSubmitter;
     private final AtomicBoolean isDisconnected;
     private Thread controllerThread;
+    private final Timer pingTimer;
 
     /**
      * Constructor for the class.
@@ -46,6 +47,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
      * @param eventSubmitter the medium used to send the player's requests to the server.
      */
     public ClientController(SetupView setupView, EventSubmitter eventSubmitter) {
+        this.pingTimer = new Timer();
         this.setupView = setupView;
         this.eventSubmitter = eventSubmitter;
         this.networkHandlerLock = new Object();
@@ -195,8 +197,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     public void run(){
         controllerThread = Thread.currentThread();
         int periodSeconds = GameParameters.getPingPeriodSeconds();
-        Timer pingsTimer = new Timer();
-        pingsTimer.schedule(new TimerTask() {
+        pingTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 handleDisconnection();
@@ -230,8 +231,10 @@ public class ClientController extends EventHandler<LabeledMessage> {
      */
     private void handleDisconnection(){
         if(isDisconnected.get()){
+            pingTimer.cancel();
             networkHandler.stop();
             eventSubmitter.submit(setupView::showDisconnectionMessage);
+            return;
         }
         isDisconnected.set(true);
         sendMessage(new Message(Status.REQUEST_PING));

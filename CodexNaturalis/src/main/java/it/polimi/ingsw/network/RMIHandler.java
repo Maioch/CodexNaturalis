@@ -1,7 +1,6 @@
 package it.polimi.ingsw.network;
 
 import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
 
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;

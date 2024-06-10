@@ -108,7 +108,6 @@ public abstract class ClientPlayer {
     public synchronized void setPlacedCards(List<BasicCard> placedCards, int score) {
         this.placedCards = new ArrayList<>(placedCards);
         this.score = score;
-        System.out.println(eventSubmitter);
         eventSubmitter.submit(() -> gameView.updateBoard(nickname, getPlacedCards(), score));
     }
 
@@ -128,7 +127,6 @@ public abstract class ClientPlayer {
     public void setViewReferences(GameView gameView, EventSubmitter eventSubmitter){
         this.gameView = gameView;
         this.eventSubmitter = eventSubmitter;
-        System.out.println("this is the event sub " + eventSubmitter.toString());
     }
 
     /**
@@ -139,8 +137,6 @@ public abstract class ClientPlayer {
      */
     public void setFinalScore(Map<Objective, Integer> scoresByObjective, Integer finalScore){
         this.score = finalScore;
-        System.out.println(eventSubmitter);
-        System.out.println(getNickname());
         eventSubmitter.submit(() -> gameView.revealFinalSummary(getNickname(), scoresByObjective, score));
     }
 }

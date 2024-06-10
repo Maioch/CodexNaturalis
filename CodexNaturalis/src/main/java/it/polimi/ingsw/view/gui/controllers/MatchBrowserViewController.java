@@ -2,20 +2,31 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
+import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.ConnectionInitializer;
+import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
+import it.polimi.ingsw.view.gui.GraphicalSubmitter;
+import it.polimi.ingsw.view.gui.SetupGUI;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
+import java.net.MalformedURLException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.*;
 
 /**
@@ -64,6 +75,12 @@ public class MatchBrowserViewController extends ViewController {
     public TextField reconnectNicknameTextbox;
     @FXML
     public GridPane reconnectPopUp;
+    @FXML
+    public GridPane disconnectionPopupGrid;
+    @FXML
+    public Button disconnectionButton;
+    @FXML
+    public Label disconnectionLabel;
 
     private final List<List<RadioButton>> radioButtons = new ArrayList<>();
     private ToggleGroup gameIdToggleGroup;
@@ -185,6 +202,11 @@ public class MatchBrowserViewController extends ViewController {
     public void tryCreate(){
         createPopupButton.setDisable(true);
         matchNameTextbox.setDisable(true);
+        for(Toggle toggle : playerNumberToggleGroup.getToggles()){
+            if(toggle instanceof RadioButton radioButton){
+                radioButton.setDisable(true);
+            }
+        }
         String matchName = matchNameTextbox.getText();
         int numberOfPlayers = Integer.parseInt(((RadioButton)playerNumberToggleGroup.getSelectedToggle()).getId());
         controller.sendMessage(new NewGameMessage(matchName, numberOfPlayers));
@@ -265,8 +287,13 @@ public class MatchBrowserViewController extends ViewController {
      */
     @FXML
     public void tryJoin(){
-        requestJoinButton.setDisable(true);
+        joinPopupButton.setDisable(true);
         nicknameTextBox.setDisable(true);
+        for(Toggle toggle : colorChoiceToggleGroup.getToggles()){
+            if(toggle instanceof RadioButton radioButton){
+                radioButton.setDisable(true);
+            }
+        }
         Content color = Content.valueOf(((RadioButton)colorChoiceToggleGroup.getSelectedToggle()).getUserData().toString());
         String nickname = nicknameTextBox.getText();
         controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, color, currentSelectedId));
@@ -317,6 +344,28 @@ public class MatchBrowserViewController extends ViewController {
             joinPopupButton.setDisable(true);
             errorPopupGrid.setVisible(false);
         }
+    }
+
+    @Override
+    public void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings){
+        disconnectionButton.setOnMouseClicked((mouseEvent -> tryReconnectToServer(controller, connectionSettings)));
+        errorPopupGrid.setVisible(false);
+        disconnectionPopupGrid.setVisible(true);
+    }
+
+    public void tryReconnectToServer(ClientController controller, ConnectionSettings connectionSettings){
+        disconnectionButton.setDisable(true);
+        new Thread(() ->{
+            try {
+                ConnectionInitializer.initializeConnection(connectionSettings, controller);
+                new Thread(controller).start();
+                controller.sendMessage(new Message(Status.REQUEST_PING));
+                controller.sendMessage(new Message(Status.REQUEST_GAMES));
+            } catch (TCPException | MalformedURLException | NotBoundException | RemoteException e) {
+                Platform.runLater(() -> disconnectionLabel.setText("Could not reconnect to the server. Try again"));
+            }
+            Platform.runLater(() -> disconnectionButton.setDisable(false));
+        }).start();
     }
 
     @FXML

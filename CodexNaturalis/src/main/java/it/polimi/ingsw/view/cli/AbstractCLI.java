@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.exceptions.MapperException;
 import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.network.client.ClientController;
 
 import java.io.IOException;
 import java.util.*;
@@ -11,6 +12,17 @@ import java.util.function.Predicate;
  * Abstract class that contains all the methods used to handle the client's inputs.
  */
 public abstract class AbstractCLI {
+
+    protected ClientController controller;
+
+    /**
+     * Links the client's controller to the client's CLI.
+     *
+     * @param controller the client's controller.
+     */
+    public void setController(ClientController controller){
+        this.controller = controller;
+    }
 
     /**
      * Method used to read the client's inputs.

@@ -10,6 +10,7 @@ import it.polimi.ingsw.view.SetupView;
 import it.polimi.ingsw.view.gui.controllers.ConnectionViewController;
 import it.polimi.ingsw.view.gui.controllers.MatchBrowserViewController;
 import it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController;
+import it.polimi.ingsw.view.gui.controllers.ViewController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -63,6 +64,9 @@ public class SetupGUI extends AbstractGUI implements SetupView {
      */
     @Override
     public void updateMatchList(List<GameInfo> matchList){
+        if(connectionSettings == null) {
+            connectionSettings = currentLoader.<ConnectionViewController>getController().getConnectionSettings();
+        }
         changeScene("MatchBrowser.fxml");
         currentLoader.<MatchBrowserViewController>getController().addMatches(matchList);
     }
@@ -117,6 +121,8 @@ public class SetupGUI extends AbstractGUI implements SetupView {
 
     @Override
     public void showDisconnectionMessage() {
-
+        controller.stop();
+        controller = new ClientController(this, new GraphicalSubmitter());
+        currentLoader.<ViewController>getController().handleDisconnection(controller, connectionSettings);
     }
 }

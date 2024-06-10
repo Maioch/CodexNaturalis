@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.ConnectionSettings;
+import it.polimi.ingsw.view.gui.SetupGUI;
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -21,6 +23,8 @@ public abstract class ViewController {
     public void setController(ClientController controller) {
         this.controller = controller;
     }
+
+    public abstract void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings);
 
     /**
      * Creates a radio button.
