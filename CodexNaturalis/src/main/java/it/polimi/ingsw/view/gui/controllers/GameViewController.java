@@ -376,7 +376,7 @@ public class GameViewController extends ViewController {
         List<BasicCard> validCards = controller.getLocalPlayerValidCards();
         int index = 0;
         for(CardSides card : cards.stream().limit(3).toList()) {
-            ImageView cardView = getCardImage(card.frontSide());
+            ImageView cardView = createDraggableCard(card.frontSide());
             int finalIndex = index;
             cardView.setOnMouseClicked((event) -> {
                 if(!cardSelectionPopup.isVisible() || GridPane.getColumnIndex(cardSelectionPopup) != finalIndex) {
@@ -501,7 +501,6 @@ public class GameViewController extends ViewController {
             return;
         }
 
-        gameBoardPane.getChildren().clear();
         List<Corner> corners = controller.getLocalPlayerValidCorners();
         generateBoard(placedCards, corners);
     }
@@ -510,7 +509,7 @@ public class GameViewController extends ViewController {
         if(!checkCurrentView(nickname)){
             return;
         }
-        gameBoardPane.getChildren().clear();
+
         generateBoard(placedCards,new ArrayList<>());
     }
 
@@ -536,6 +535,7 @@ public class GameViewController extends ViewController {
         partialScoreLabel.getStyleClass().add("playerScoreLabel");
         HBox commonObjectiveScore = new HBox();
         HBox personalObjectiveScore = new HBox();
+        playerScoreGrid.setMaxWidth(Double.MAX_VALUE);
         commonObjectiveScore.setAlignment(Pos.CENTER);
         personalObjectiveScore.setAlignment(Pos.CENTER);
         playerScoreGrid.getRowConstraints().addFirst(new RowConstraints(30));
@@ -556,6 +556,10 @@ public class GameViewController extends ViewController {
         playerScoreGrid.add(commonObjectiveScore, 0, 2);
         playerScoreGrid.add(personalObjectiveScore, 0, 3);
         playerScoreGrid.add(totalScore, 0, 4);
+        GridPane.setHgrow(playerScoreGrid, Priority.ALWAYS);
+        ColumnConstraints fillColumn = new ColumnConstraints();
+        fillColumn.setPercentWidth(100);
+        playerScoreGrid.getColumnConstraints().addFirst(fillColumn);
         playerSummary.put(nickname, playerScoreGrid);
     }
 
@@ -602,7 +606,6 @@ public class GameViewController extends ViewController {
         }
         GridPane lowerSummaryGrid = new GridPane();
         lowerSummaryGrid.setMaxWidth(Double.MAX_VALUE);
-        lowerSummaryGrid.setGridLinesVisible(true);
         GridPane.setHgrow(lowerSummaryGrid, Priority.ALWAYS);
         index = 0;
         for(GridPane playerSummaryGrid : playerSummary.values().stream().skip(2).toList()){
@@ -615,7 +618,8 @@ public class GameViewController extends ViewController {
     }
 
     private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
-        center = new Point2D(gameBoardScrollPane.getLayoutBounds().getCenterX() / 2 - cardWidth / 2d - cornerWidth,
+        gameBoardPane.getChildren().clear();
+        center = new Point2D(gameBoardScrollPane.getLayoutBounds().getCenterX() - cardWidth / 2d - cornerWidth,
                 gameBoardScrollPane.getLayoutBounds().getCenterY() + cardHeight / 2d - cornerHeight);
         int minX = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getX()).min().orElse(0);
         int maxY = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getY()).max().orElse(0);
@@ -624,15 +628,24 @@ public class GameViewController extends ViewController {
         offsetX = Math.max(offsetX, 0);
         offsetY = Math.max(offsetY, 0);
         System.out.println(offsetX);
-        System.out.println(offsetY);
-        //gameBoardScrollPane.setVvalue(gameBoardPane.getHeight() / (center.getY() + offsetY));
-        //gameBoardScrollPane.setHvalue(gameBoardPane.getWidth() / (center.getX() + offsetX));
         for(BasicCard card : cards) {
             GridPane cardGridPane = createBoardCard(card,validCorners);
             cardGridPane.setLayoutX(card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX() + offsetX);
             cardGridPane.setLayoutY(- card.getCorner(Location.TL).getY() * (cardHeight - cornerHeight) + center.getY() + offsetY);
             gameBoardPane.getChildren().add(cardGridPane);
         }
+        /*
+        Pane offsetPane = new Pane();
+        offsetPane.setPrefWidth(offsetX);
+        offsetPane.setPrefHeight(offsetY);
+        System.out.println(offsetX / gameBoardPane.getWidth());
+        gameBoardPane.getChildren().add(offsetPane);
+        offsetPane.setLayoutX(gameBoardPane.getWidth());
+        offsetPane.setLayoutY(gameBoardPane.getHeight());
+        gameBoardScrollPane.setHvalue(gameBoardScrollPane.getHvalue() + offsetX / gameBoardPane.getWidth());
+        gameBoardScrollPane.setVvalue(gameBoardScrollPane.getVvalue() + offsetY / gameBoardPane.getHeight());
+        System.out.println(gameBoardScrollPane.getHvalue() + offsetX / gameBoardPane.getWidth());
+        System.out.println(gameBoardScrollPane.getVvalue() - offsetY / gameBoardPane.getHeight());*/
     }
 
     /**
@@ -765,12 +778,16 @@ public class GameViewController extends ViewController {
             viewPlayerIcon.setOnMouseClicked((mouseEvent) -> {
                 if(checkCurrentView(nickname)) {
                     currentViewedPlayer = controller.getLocalPlayerName();
+                    gameBoardScrollPane.setHvalue(center.getX() / gameBoardPane.getWidth());
+                    gameBoardScrollPane.setVvalue(center.getY() / gameBoardPane.getHeight());
                     updateLocalPlayerCards(controller.getLocalPlayerHand());
                     updateLocalPlayerBoard(controller.getLocalPlayerBoard());
                     viewPlayerIcon.getStyleClass().remove("hideBoardIcon");
                     viewPlayerIcon.getStyleClass().add("viewBoardIcon");
                 } else {
                     currentViewedPlayer = nickname;
+                    gameBoardScrollPane.setHvalue(center.getX() / gameBoardPane.getWidth());
+                    gameBoardScrollPane.setVvalue(center.getY() / gameBoardPane.getHeight());
                     updateRemotePlayerCards(nickname, controller.getRemotePlayerHand(nickname));
                     updateRemotePlayerBoard(nickname, controller.getRemotePlayerBoard(nickname));
                     for(ImageView icon : playerTagViewIcons.values()){
@@ -812,13 +829,17 @@ public class GameViewController extends ViewController {
         ImageView draggableCard = getCardImage(card);
         draggableCard.getStyleClass().add("draggableCard");
         draggableCard.setMouseTransparent(true);
-        view.setOnDragDetected((MouseEvent e) -> {
-            dragLayerPane.getChildren().add(draggableCard);
-            draggableCard.setVisible(true);
-            cardSelectionPopup.setVisible(false);
-            view.startFullDrag();
-            draggedCard = card;
-        });
+        if(controller.getLocalPlayerValidCards().contains(card)) {
+            view.setOnDragDetected((MouseEvent e) -> {
+                if (!dragLayerPane.getChildren().contains(draggableCard)) {
+                    dragLayerPane.getChildren().add(draggableCard);
+                }
+                draggableCard.setVisible(true);
+                cardSelectionPopup.setVisible(false);
+                view.startFullDrag();
+                draggedCard = card;
+            });
+        }
         view.setOnMouseReleased((MouseEvent e) -> draggableCard.setVisible(false));
         view.setOnMouseDragged((MouseEvent e) -> {
             draggableCard.setLayoutX(e.getSceneX() - draggableCard.getFitWidth() / 2);

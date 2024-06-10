@@ -33,11 +33,7 @@
          <children>
             <ScrollPane fx:id="gameBoardScrollPane" hbarPolicy="NEVER" hvalue="0.5" pannable="true" prefHeight="200.0" prefWidth="200.0" styleClass="gameBoardScrollPane" vbarPolicy="NEVER" vvalue="0.5" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
-                  <Pane fx:id="gameBoardPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="${gameBoardScrollPane.height}" minWidth="${gameBoardScrollPane.width}" styleClass="mainBg">
-                     <padding>
-                        <Insets bottom="64.0" left="64.0" right="64.0" top="64.0" />
-                     </padding>
-                  </Pane>
+                  <Pane fx:id="gameBoardPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="${gameBoardScrollPane.height}" minWidth="${gameBoardScrollPane.width}" styleClass="mainBg" />
                </content>
             </ScrollPane>
              <GridPane fx:id="notificationToastGrid" pickOnBounds="false" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="75.0">
