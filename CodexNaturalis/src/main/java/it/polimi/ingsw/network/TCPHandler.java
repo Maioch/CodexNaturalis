@@ -15,6 +15,7 @@ import java.net.Socket;
 public class TCPHandler extends NetworkHandler implements Runnable{
     private final ObjectOutputStream socketOutput;
     private final ObjectInputStream socketInput;
+    private Thread handlerThread;
 
     /**
      * Constructor for the class.
@@ -27,14 +28,19 @@ public class TCPHandler extends NetworkHandler implements Runnable{
         this.socketInput = new ObjectInputStream(socket.getInputStream());
     }
 
+    @Override
+    public void stop(){
+        handlerThread.interrupt();
+    }
+
     /**
      * Main method run by the thread.
      */
-    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run(){
+        handlerThread = Thread.currentThread();
         try {
-            while (true) {
+            while (!handlerThread.isInterrupted()) {
                 try {
                     Message message = (Message) socketInput.readObject();
                     handler.addEventToQueue(new LabeledMessage(this, message));

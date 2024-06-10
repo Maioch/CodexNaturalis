@@ -36,5 +36,6 @@ public interface GameView {
     void notifyGameCanceled();
     void notifyTurnSkipped();
     void showNoMovesAvailable();
+    void showDisconnectionMessage();
     void closeView();
 }

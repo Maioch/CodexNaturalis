@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.gui;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.network.NetworkHandler;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
@@ -112,5 +113,10 @@ public class SetupGUI extends AbstractGUI implements SetupView {
         currentLoader.<MatchLobbyViewController>getController().initializeLabel(nickname, color, numberOfPlayers);
         GameGUI gameGUI = new GameGUI(primaryStage, currentScene, currentLoader, controller);
         controller.setGameView(gameGUI);
+    }
+
+    @Override
+    public void showDisconnectionMessage() {
+
     }
 }

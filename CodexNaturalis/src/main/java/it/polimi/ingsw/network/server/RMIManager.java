@@ -30,7 +30,6 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
     @Override
     public void register(RMIInterface remoteInterface) throws RemoteException {
         RMIHandler rmiHandler = new RMIHandler(messageHandler);
-        UnicastRemoteObject.exportObject(rmiHandler, 0);
         rmiHandler.setReceiver(remoteInterface);
         remoteInterface.setReceiver(rmiHandler);
     }

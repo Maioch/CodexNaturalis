@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 public class GameGUI extends AbstractGUI implements GameView {
-
     public enum ToastType{
         TIMEOUT, PLACE, DRAW
     }
@@ -49,6 +48,12 @@ public class GameGUI extends AbstractGUI implements GameView {
         currentLoader.<GameViewController>getController().updateStatusLabel("The next turn will be the last");
     }
 
+    /**
+     * Request to the player a card drawing choice.
+     *
+     * @param drawableCards the list of drawable cards, for each type.
+     * @param numberOfCardsLeft the number of cards left, for each type.
+     */
     @Override
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft) {
         currentLoader.<GameViewController>getController().drawCard(drawableCards, numberOfCardsLeft);
@@ -207,11 +212,23 @@ public class GameGUI extends AbstractGUI implements GameView {
         currentLoader.<GameViewController>getController().updateDecks(drawableCards, numberOfCardsLeft);
     }
 
+    /**
+     * Reveals the final summary of a player.
+     *
+     * @param nickname the player's nickname.
+     * @param objectivePoints the map linking the player's objectives to the points each made.
+     * @param finalScore the player's final score.
+     */
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore) {
         currentLoader.<GameViewController>getController().addPlayerScoreToSummary(nickname, objectivePoints, finalScore);
     }
 
+    /**
+     * Shows the winners of the game.
+     *
+     * @param winners the list of winners' nicknames.
+     */
     @Override
     public void revealWinners(List<String> winners) {
         currentLoader.<GameViewController>getController().revealWinners(winners);
@@ -293,6 +310,11 @@ public class GameGUI extends AbstractGUI implements GameView {
                 String.format("%s, you can no longer make any more moves", turnOwner) :
                 String.format("%s cannot make any more moves", turnOwner)
         );
+    }
+
+    @Override
+    public void showDisconnectionMessage(){
+
     }
 
     @Override

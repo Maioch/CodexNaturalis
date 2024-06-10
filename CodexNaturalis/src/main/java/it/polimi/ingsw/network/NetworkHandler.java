@@ -52,4 +52,6 @@ public abstract class NetworkHandler implements Listener {
     public synchronized boolean isDisconnected(){
         return isDisconnected;
     }
+
+    public abstract void stop();
 }

@@ -479,7 +479,7 @@
                            </SplitMenuButton>
                         </children>
                      </GridPane>
-                     <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" vvalue="1.0" GridPane.rowIndex="2">
+                     <ScrollPane fx:id="chatScrollPane" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" vvalue="1.0" GridPane.rowIndex="2">
                         <content>
                            <VBox fx:id="chatMessageBox" alignment="BOTTOM_LEFT">
                               <children>

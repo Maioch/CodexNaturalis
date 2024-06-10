@@ -3,7 +3,9 @@ package it.polimi.ingsw.network;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
+import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +23,7 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      */
     public RMIHandler(EventHandler<LabeledMessage> handler) throws RemoteException{
         super(handler);
+        UnicastRemoteObject.exportObject(this, 0);
         this.receiverInterface = null;
         this.executor = Executors.newSingleThreadExecutor();
     }
@@ -43,6 +46,18 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
     @Override
     public void setReceiver(RMIInterface receiverInterface) throws RemoteException{
         this.receiverInterface = receiverInterface;
+    }
+
+    /**
+     * Stops this handler.
+     */
+    @Override
+    public void stop(){
+        try {
+            UnicastRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException e) {
+            System.err.println("Could not unexport RMI interface");
+        }
     }
 
     /**

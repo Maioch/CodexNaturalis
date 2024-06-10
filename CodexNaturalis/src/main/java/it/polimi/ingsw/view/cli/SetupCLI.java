@@ -2,10 +2,12 @@ package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
+import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
+import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
@@ -29,6 +31,9 @@ import java.util.regex.Pattern;
  */
 public class SetupCLI extends AbstractCLI implements SetupView {
     private final ClientController controller;
+    private final TerminalSubmitter terminalSubmitter;
+    private ConnectionSettings connectionSettings;
+
 
     /**
      * Constructor for the class. The method asks the player the ip address and the port of the server, then it makes
@@ -36,11 +41,10 @@ public class SetupCLI extends AbstractCLI implements SetupView {
      */
     public SetupCLI(){
         CLIActionHandler cliActionHandler = new CLIActionHandler();
-        boolean isConnected = false;
-        TerminalSubmitter terminalSubmitter = new TerminalSubmitter(cliActionHandler);
+        this.terminalSubmitter = new TerminalSubmitter(cliActionHandler);
         this.controller = new ClientController(this, terminalSubmitter);
-        new Thread(controller).start();
         new Thread(cliActionHandler).start();
+        boolean isConnected = false;
         while (!isConnected) {
             String ip = readFromInput("Please enter the IP of the server you want to play on: ",
                     (s -> s.length() <= 15 && Pattern.compile("[0-9]{0,3}\\.[0-9]{0,3}\\.[0-9]{0,3}\\.[0.9]{0,3}").matcher(s).find()),
@@ -54,30 +58,10 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                     (s -> s >= 1 && s <= 2),
                     this::stringToInt,
                     true);
-            switch (protocol) {
-                case 1 -> {
-                    try {
-                        ConnectionInitializer.initializeTCP(ip, port, controller, terminalSubmitter);
-                        System.out.println(GameParameters.getTitle());
-                        isConnected = true;
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-                case 2 -> {
-                    try {
-                        ConnectionInitializer.initializeRMI(ip, port, controller, new TerminalSubmitter(cliActionHandler));
-                        System.out.println(GameParameters.getTitle());
-                        isConnected = true;
-                    } catch (MalformedURLException e) {
-                        System.out.println("No RMI Server was found at the supplied address");
-                    } catch (NotBoundException e) {
-                        System.out.println("The requested object isn't bound");
-                    } catch (RemoteException e) {
-                        System.out.println("Couldn't connect to the RMI server");
-                    }
-                }
-            }
+            ConnectionSettings.ConnectionType type = (protocol == 1) ?
+                    ConnectionSettings.ConnectionType.TCP : ConnectionSettings.ConnectionType.RMI;
+            connectionSettings = new ConnectionSettings(ip, port, type);
+            isConnected = tryConnect(controller);
         }
     }
 
@@ -211,6 +195,23 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
+     * Shows that the client has disconnected. Tries to reconnect to the server.
+     */
+    @SuppressWarnings("ConditionalBreakInInfiniteLoop")
+    @Override
+    public void showDisconnectionMessage(){
+        controller.stop();
+        ClientController newController = new ClientController(this, terminalSubmitter);
+        while(true) {
+            readFromInput("Oh no, your castings seem to not be received by us codex gods... \nPress ENTER to try reconnection:",
+                    (s) -> true, this::stringIdentity, false);
+            if (tryConnect(newController)) {
+                break;
+            }
+        }
+    }
+
+    /**
      * Method used to handle the "REFRESH" command that may be inputted by the player; this command refreshes the available
      * games list given to the player.
      * @param command the command inputted by the client.
@@ -233,5 +234,30 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             case "HELP" -> System.out.println(GameParameters.getSetupHelpBody());
             default -> System.out.println("Command not recognized, type /HELP for a list of all commands!");
         }
+    }
+
+    /**
+     * Tries to initialize the connection.
+     *
+     * @return true if the connection is set without errors, false otherwise.
+     */
+    private boolean tryConnect(ClientController controller){
+        try {
+            ConnectionInitializer.initializeConnection(connectionSettings, controller);
+            new Thread(controller).start();
+            controller.sendMessage(new Message(Status.REQUEST_PING));
+            controller.sendMessage(new Message(Status.REQUEST_GAMES));
+            System.out.println(GameParameters.getTitle());
+            return true;
+        } catch (TCPException e) {
+            System.out.println(e.getMessage());
+        } catch (MalformedURLException e) {
+            System.out.println("No RMI Server was found at the supplied address");
+        } catch (NotBoundException e) {
+            System.out.println("The requested object isn't bound");
+        } catch (RemoteException e) {
+            System.out.println("Couldn't connect to the RMI server");
+        }
+        return false;
     }
 }

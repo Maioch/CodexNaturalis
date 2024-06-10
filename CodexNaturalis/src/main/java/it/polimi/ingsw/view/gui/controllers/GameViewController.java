@@ -97,6 +97,8 @@ public class GameViewController extends ViewController {
     public Label winnersLabel;
     @FXML
     public GridPane summaryContentGrid;
+    @FXML
+    public ScrollPane chatScrollPane;
 
     private Map<String, Content> playerColors;
     private String currentViewedPlayer;
@@ -164,6 +166,7 @@ public class GameViewController extends ViewController {
         messageLabel.getStyleClass().add("chatMessageLabel");
         chatMessageBox.getChildren().add(senderLabel);
         chatMessageBox.getChildren().add(messageLabel);
+        chatScrollPane.setVvalue(1);
     }
 
     /**
@@ -277,6 +280,11 @@ public class GameViewController extends ViewController {
         woodenPanePopUpBackground.setVisible(true);
     }
 
+    /**
+     * Sends the chosen starter side to the server and closes the starter-choice popup.
+     *
+     * @param starterCard the chose starter card side.
+     */
     private void sendStarterSide(BasicCard starterCard){
         starterChoicePopUp.setVisible(false);
         woodenPanePopUpBackground.setVisible(false);
@@ -301,6 +309,9 @@ public class GameViewController extends ViewController {
         objectivesPane.setVisible(false);
     }
 
+    /**
+     * Closes the game view by going back to the setup scene.
+     */
     @FXML
     public void backToMatchBrowser(){
         controller.backToSetup();
@@ -439,6 +450,12 @@ public class GameViewController extends ViewController {
         updateLocalPlayerBoard(placedCards);
     }
 
+    /**
+     * Lets the local player draw a card.
+     *
+     * @param drawableCards the list of drawable cards, for each type.
+     * @param numberOfCardsLeft the number of remaining cards, for each type.
+     */
     public void drawCard(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft){
         isDrawPhase = true;
         updateLocalPlayerCards(controller.getLocalPlayerHand());
@@ -505,6 +522,12 @@ public class GameViewController extends ViewController {
         generateBoard(placedCards, corners);
     }
 
+    /**
+     * Updates a certain remote player's board, by visually placing the cards.
+     *
+     * @param nickname the remote player's nickname.
+     * @param placedCards the remote player's board.
+     */
     public void updateRemotePlayerBoard(String nickname, List<BasicCard> placedCards){
         if(!checkCurrentView(nickname)){
             return;
@@ -525,6 +548,14 @@ public class GameViewController extends ViewController {
         playerTagCircles.get(turnOwner).setStroke(Paint.valueOf("white"));
     }
 
+    /**
+     * Adds a players score to the game summary.
+     * The game summary contains the objectives (and its points made) of each player.
+     *
+     * @param nickname the player's nickname.
+     * @param summary the map linking the player's objectives to the points each made.
+     * @param finalScore the player's final score.
+     */
     public void addPlayerScoreToSummary(String nickname, Map<Objective, Integer> summary, int finalScore){
         GridPane playerScoreGrid = new GridPane();
         Label playerNameLabel = new Label(nickname);
@@ -563,14 +594,26 @@ public class GameViewController extends ViewController {
         playerSummary.put(nickname, playerScoreGrid);
     }
 
+    /**
+     * Builds an objective-score pane, which includes its image and points label.
+     *
+     * @param summary a map that links objectives to its respective points makings.
+     * @param objectiveScore the HBox representing the single objective pane to build on.
+     * @param objective the objective represented in the pane to build.
+     */
     private void buildObjectiveScorePane(Map<Objective, Integer> summary, HBox objectiveScore, Objective objective) {
         ImageView objectiveView = getCardImage(objective);
-        Label objectiveScoreLabel = new Label(String.format("+%d",summary.get(objective)));
+        Label objectiveScoreLabel = new Label(String.format("+%d", summary.get(objective)));
         objectiveScoreLabel.setPadding(new Insets(8));
         objectiveScoreLabel.getStyleClass().add("playerScoreLabelBold");
         objectiveScore.getChildren().addAll(Arrays.asList(objectiveView, objectiveScoreLabel));
     }
 
+    /**
+     * Shows a game summary GridPane containing the results of the players.
+     *
+     * @param winners the winner players' nicknames.
+     */
     public void revealWinners(List<String> winners){
         StringBuilder sb = new StringBuilder();
         for(String winner : winners){
@@ -617,6 +660,12 @@ public class GameViewController extends ViewController {
         matchSummaryGrid.setVisible(true);
     }
 
+    /**
+     * Generates the board. This method, always firstly clears the current board.
+     *
+     * @param cards the board's placed cards.
+     * @param validCorners the boards valid corners.
+     */
     private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
         gameBoardPane.getChildren().clear();
         center = new Point2D(gameBoardScrollPane.getLayoutBounds().getCenterX() - cardWidth / 2d - cornerWidth,

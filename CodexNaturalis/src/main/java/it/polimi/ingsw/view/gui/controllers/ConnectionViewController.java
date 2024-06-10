@@ -1,7 +1,11 @@
 package it.polimi.ingsw.view.gui.controllers;
 
+import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
+import it.polimi.ingsw.network.client.ConnectionSettings;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.view.gui.GraphicalSubmitter;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -51,29 +55,25 @@ public class ConnectionViewController extends ViewController {
         }
         errorText.setText("Connecting...");
         int port = Integer.parseInt(portTextBox.getText());
-        if(tcpRadioButton.isSelected()){
-            new Thread(() ->{
-                try {
-                    ConnectionInitializer.initializeTCP(ipTextBox.getText(), port, controller, new GraphicalSubmitter());
-                    new Thread(controller).start();
-                } catch (IOException e) {
-                    setLoginError("Couldn't connect to the specified server");
-                }
-            }).start();
-        } else {
-            new Thread(() -> {
-                try {
-                    ConnectionInitializer.initializeRMI(ipTextBox.getText(), port, controller, new GraphicalSubmitter());
-                    new Thread(controller).start();
-                } catch (MalformedURLException e) {
-                    setLoginError("No RMI Server was found at the supplied address");
-                } catch (NotBoundException e) {
-                    setLoginError("The requested object isn't bound");
-                } catch (RemoteException e) {
-                    setLoginError("Couldn't connect to the RMI server");
-                }
-            }).start();
-        }
+        new Thread(() ->{
+            try {
+                ConnectionSettings.ConnectionType type = tcpRadioButton.isSelected() ?
+                        ConnectionSettings.ConnectionType.TCP : ConnectionSettings.ConnectionType.RMI;
+                ConnectionInitializer.initializeConnection(
+                        new ConnectionSettings(ipTextBox.getText(), port, type), controller);
+                new Thread(controller).start();
+                controller.sendMessage(new Message(Status.REQUEST_PING));
+                controller.sendMessage(new Message(Status.REQUEST_GAMES));
+            } catch (TCPException e) {
+                setLoginError(e.getMessage());
+            } catch (MalformedURLException e) {
+                setLoginError("No RMI Server was found at the supplied address");
+            } catch (NotBoundException e) {
+                setLoginError("The requested object isn't bound");
+            } catch (RemoteException e) {
+                setLoginError("Couldn't connect to the RMI server");
+            }
+        }).start();
     }
 
     /**

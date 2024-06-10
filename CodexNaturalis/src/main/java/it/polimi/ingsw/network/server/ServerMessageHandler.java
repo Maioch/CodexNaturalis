@@ -45,6 +45,10 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                 continue;
             }
             GameController currentClientGame = labeledMessage.networkHandler().getCurrentGame();
+            if(labeledMessage.message().getStatus() == Status.REQUEST_PING){
+                labeledMessage.networkHandler().update(new Message(Status.PING_ACK));
+                continue;
+            }
             if(currentClientGame != null) {
                 if(labeledMessage.message().getStatus() == Status.PING_ACK){
                     labeledMessage.networkHandler().getCurrentGame().receivePing(labeledMessage.networkHandler());

@@ -4,6 +4,7 @@ import java.util.List;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.network.NetworkHandler;
 
 public interface SetupView {
     void updateMatchList(List<GameInfo> matchList);
@@ -12,4 +13,5 @@ public interface SetupView {
     void showJoinGameDialog(List<Content> colors, int gameId);
     void showUserError(String message, int gameId);
     void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers);
+    void showDisconnectionMessage();
 }

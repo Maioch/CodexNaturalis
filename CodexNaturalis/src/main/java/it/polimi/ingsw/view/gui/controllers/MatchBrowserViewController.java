@@ -248,6 +248,8 @@ public class MatchBrowserViewController extends ViewController {
         String nickname = nicknameTextBox.getText();
         joinPopupButton.setDisable(nickname.isEmpty() ||
                 nickname.length() > GameParameters.getMaxNicknameLength() ||
+                nickname.contains(GameParameters.getCommandChar()) ||
+                nickname.contains(GameParameters.getDelimiter()) ||
                 colorChoiceToggleGroup.getSelectedToggle() == null);
     }
 

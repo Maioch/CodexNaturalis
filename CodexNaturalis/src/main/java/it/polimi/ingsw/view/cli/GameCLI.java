@@ -476,6 +476,11 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    @Override
+    public void showDisconnectionMessage(){
+
+    }
+
     /**
      * Method not implemented for the TUI.
      */

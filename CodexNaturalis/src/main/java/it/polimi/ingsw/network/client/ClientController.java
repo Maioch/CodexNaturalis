@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.client.ClientPlayer;
 import it.polimi.ingsw.model.client.LocalPlayer;
 import it.polimi.ingsw.model.client.RemotePlayer;
 import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.Player;
+import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
@@ -25,6 +25,7 @@ import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.SetupView;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class that handles every possible message the client can send to the server.
@@ -36,6 +37,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
     private NetworkHandler networkHandler;
     private final Object networkHandlerLock;
     private final EventSubmitter eventSubmitter;
+    private final AtomicBoolean isDisconnected;
+    private Thread controllerThread;
 
     /**
      * Constructor for the class.
@@ -46,6 +49,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
         this.setupView = setupView;
         this.eventSubmitter = eventSubmitter;
         this.networkHandlerLock = new Object();
+        isDisconnected = new AtomicBoolean(false);
     }
 
     /**
@@ -187,16 +191,27 @@ public class ClientController extends EventHandler<LabeledMessage> {
     /**
      * Main method of the class, used to differentiate between all the possible messages the client can send.
      */
-    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run(){
-        while(true) {
+        controllerThread = Thread.currentThread();
+        int periodSeconds = GameParameters.getPingPeriodSeconds();
+        Timer pingsTimer = new Timer();
+        pingsTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handleDisconnection();
+            }
+        }, periodSeconds * 1000L, periodSeconds * 1000L);
+        while(!controllerThread.isInterrupted()) {
             LabeledMessage labeledMessage = getEventFromQueue();
             if (labeledMessage == null) {
                 continue;
             }
             Message message = labeledMessage.message();
             synchronized (this) {
+                if (message.getStatus() == Status.PING_ACK){
+                    isDisconnected.set(false);
+                }
                 if (game == null) {
                     handleSetupMessage(message);
                 } else {
@@ -204,6 +219,22 @@ public class ClientController extends EventHandler<LabeledMessage> {
                 }
             }
         }
+    }
+
+    public void stop(){
+        controllerThread.interrupt();
+    }
+
+    /**
+     * Handles (eventually) the disconnection of the client.
+     */
+    private void handleDisconnection(){
+        if(isDisconnected.get()){
+            networkHandler.stop();
+            eventSubmitter.submit(setupView::showDisconnectionMessage);
+        }
+        isDisconnected.set(true);
+        sendMessage(new Message(Status.REQUEST_PING));
     }
 
     /**
