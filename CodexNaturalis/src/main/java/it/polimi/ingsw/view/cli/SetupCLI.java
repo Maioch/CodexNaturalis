@@ -30,15 +30,17 @@ import java.util.regex.Pattern;
  * reception phase, before entering an actual game.
  */
 public class SetupCLI extends AbstractCLI implements SetupView {
-    private ClientController controller;
-    private final TerminalSubmitter terminalSubmitter;
-    private ConnectionSettings connectionSettings;
 
     /**
-     * Constructor for the class. The method asks the player the ip address and the port of the server, then it makes
-     * them choose if they want to connect using socket or RMI protocol: the method then handles the connection.
+     * Constructor for the class.
      */
-    public SetupCLI(){
+    public SetupCLI(){}
+
+    /**
+     * The method asks the player the ip address and the port of the server, then it makethem choose if they
+     * want to connect using socket or RMI protocol: the method then handles the connection.
+     */
+    public void startCLI(){
         CLIActionHandler cliActionHandler = new CLIActionHandler();
         this.terminalSubmitter = new TerminalSubmitter(cliActionHandler);
         this.controller = new ClientController(this, terminalSubmitter);
@@ -61,6 +63,9 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                     ConnectionSettings.ConnectionType.TCP : ConnectionSettings.ConnectionType.RMI;
             connectionSettings = new ConnectionSettings(ip, port, type);
             isConnected = tryConnect(controller);
+            if(isConnected){
+                controller.sendMessage(new Message(Status.REQUEST_GAMES));
+            }
         }
     }
 
@@ -114,7 +119,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                                     && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
                             this::stringIdentity,
                             true);
-                    messageToSend = new JoinGameMessage(Status.RECONNECT, nickname, null, id);
+                    messageToSend = new JoinGameMessage(Status.RECONNECT, nickname, null, null, id);
                 }
             }
         }
@@ -167,7 +172,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                         && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
                 this::stringIdentity,
                 true);
-        controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, colors.get(colorIndex), gameId));
+        controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, colors.get(colorIndex), null, gameId));
     }
 
     /**
@@ -189,26 +194,20 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers){
         System.out.println("\nYou have successfully joined the game!");
         System.out.printf("It will start when %d players join...\n", numberOfPlayers);
-        GameCLI gameCLI = new GameCLI(controller);
+        GameCLI gameCLI = new GameCLI(controller, terminalSubmitter, connectionSettings, this);
         controller.setGameView(gameCLI);
     }
 
-    /**
-     * Shows that the client has disconnected. Tries to reconnect to the server.
-     */
-    @SuppressWarnings("ConditionalBreakInInfiniteLoop")
     @Override
     public void showDisconnectionMessage(){
-        controller.stop();
-        ClientController newController = new ClientController(this, terminalSubmitter);
-        setController(newController);
-        while(true) {
-            readFromInput("\nOh no, your castings seem to not be received by us, codex gods... \nPress ENTER to try to reconnect",
-                    (s) -> true, this::stringIdentity, false);
-            if (tryConnect(newController)) {
-                break;
-            }
-        }
+        disconnectionProcedure(this);
+    }
+
+    @Override
+    public void showReconnectionError(String message){
+        System.out.println(message);
+        readFromInput("Press ENTER to go back to the match list", (s) -> true, this::stringIdentity, false);
+        controller.sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -237,27 +236,12 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * Tries to initialize the connection.
+     * Gets the conventionally chosen message to send when the user disconnects in the current scene.
      *
-     * @return true if the connection is set without errors, false otherwise.
+     * @return a request available games message.
      */
-    private boolean tryConnect(ClientController controller){
-        try {
-            ConnectionInitializer.initializeConnection(connectionSettings, controller);
-            new Thread(controller).start();
-            controller.sendMessage(new Message(Status.REQUEST_PING));
-            controller.sendMessage(new Message(Status.REQUEST_GAMES));
-            System.out.println(GameParameters.getTitle());
-            return true;
-        } catch (TCPException e) {
-            System.out.println(e.getMessage());
-        } catch (MalformedURLException e) {
-            System.out.println("No RMI Server was found at the supplied address");
-        } catch (NotBoundException e) {
-            System.out.println("The requested object isn't bound");
-        } catch (RemoteException e) {
-            System.out.println("Couldn't connect to the RMI server");
-        }
-        return false;
+    @Override
+    public Message getReconnectMessage(){
+        return new Message(Status.REQUEST_GAMES);
     }
 }

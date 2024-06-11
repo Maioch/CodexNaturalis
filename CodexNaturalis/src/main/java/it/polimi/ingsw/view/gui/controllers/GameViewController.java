@@ -1,13 +1,10 @@
 package it.polimi.ingsw.view.gui.controllers;
 
-import com.sun.scenario.effect.Offset;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.*;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
-import it.polimi.ingsw.network.client.ClientController;
-import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
@@ -16,8 +13,6 @@ import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
-import it.polimi.ingsw.view.gui.SetupGUI;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
@@ -33,6 +28,9 @@ import javafx.scene.shape.Circle;
 import java.util.*;
 import java.util.Timer;
 
+/**
+ * Class used to handle the game scene of the GUI.
+ */
 @SuppressWarnings("FieldCanBeLocal")
 public class GameViewController extends ViewController {
 
@@ -102,6 +100,18 @@ public class GameViewController extends ViewController {
     public GridPane summaryContentGrid;
     @FXML
     public ScrollPane chatScrollPane;
+    @FXML
+    public ScrollPane resultsScrollPane;
+    @FXML
+    public GridPane disconnectionPopupGrid;
+    @FXML
+    public Label disconnectionLabel;
+    @FXML
+    public Button disconnectionButton;
+    @FXML
+    public AnchorPane rootAnchorPane;
+    @FXML
+    public GridPane sidePanel;
 
     private Map<String, Content> playerColors;
     private String currentViewedPlayer;
@@ -128,17 +138,21 @@ public class GameViewController extends ViewController {
     private final int cardHeight = 100;
     private final int objectiveWidth = 130;
 
+    public void initialize(){
+        setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
+    }
+
     /**
      * Initializes the game scene and all its base components.
      */
     public void initializeScene(){
         System.out.println(center);
-        playerColors = controller.getPlayerColors();
-        currentViewedPlayer = controller.getLocalPlayerName();
+        playerColors = client.getController().getPlayerColors();
+        currentViewedPlayer = client.getController().getLocalPlayerName();
         int index = 0;
         outerPlayerTagGrid.setVgap(16);
         for(String nickname : playerColors.keySet()){
-            if(!nickname.equals(controller.getLocalPlayerName())) {
+            if(!nickname.equals(client.getController().getLocalPlayerName())) {
                 chatSendButton.getItems().add(new CheckMenuItem(nickname));
             }
             GridPane playerGrid = createPlayerTag(nickname, playerColors.get(nickname));
@@ -153,11 +167,8 @@ public class GameViewController extends ViewController {
             updateScore(nickname, 0);
             index++;
         }
-    }
-
-    @Override
-    public void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings){
-
+        gameBoardPane.setMinWidth(Math.max(cardWidth * 10, rootAnchorPane.getWidth() - sidePanel.getWidth()));
+        gameBoardPane.setMinHeight(Math.max(cardHeight * 10, rootAnchorPane.getHeight() ));
     }
 
     /**
@@ -203,10 +214,10 @@ public class GameViewController extends ViewController {
                 }
             }
             if(nothingSelected){
-                addAll(controller.getRemotePlayerNames());
+                addAll(client.getController().getRemotePlayerNames());
             }
         }};
-        controller.sendMessage(new ChatMessage(message, null, recipients));
+        client.getController().sendMessage(new ChatMessage(message, null, recipients));
     }
 
     /**
@@ -296,7 +307,7 @@ public class GameViewController extends ViewController {
     private void sendStarterSide(BasicCard starterCard){
         starterChoicePopUp.setVisible(false);
         woodenPanePopUpBackground.setVisible(false);
-        controller.sendMessage(new CardPlacementMessage(starterCard, null));
+        client.getController().sendMessage(new CardPlacementMessage(starterCard, null));
     }
 
     /**
@@ -322,8 +333,8 @@ public class GameViewController extends ViewController {
      */
     @FXML
     public void backToMatchBrowser(){
-        controller.backToSetup();
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        client.getController().backToSetup();
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -364,14 +375,14 @@ public class GameViewController extends ViewController {
             objectiveView1.setDisable(true);
             objectiveView2.setDisable(true);
             objectivesRevealPopUp.setVisible(false);
-            controller.sendMessage(new ObjectivesMessage(
+            client.getController().sendMessage(new ObjectivesMessage(
                     Status.REQUEST_SECRET_OBJECTIVES, new ArrayList<>(List.of(objective1))));
         });
         objectiveView2.setOnMouseClicked((mouseEvent) -> {
             objectiveView1.setDisable(true);
             objectiveView2.setDisable(true);
             objectivesRevealPopUp.setVisible(false);
-            controller.sendMessage(new ObjectivesMessage(
+            client.getController().sendMessage(new ObjectivesMessage(
                     Status.REQUEST_SECRET_OBJECTIVES, new ArrayList<>(List.of(objective2))));
         });
         secretObjectivesRevealPane.addColumn(0, objectiveView1);
@@ -388,11 +399,11 @@ public class GameViewController extends ViewController {
      */
     public void updateLocalPlayerCards(List<CardSides> cards) {
         hideStatusLabel(GameGUI.ToastType.PLACE.toString());
-        if(!checkCurrentView(controller.getLocalPlayerName())){
+        if(!checkCurrentView(client.getController().getLocalPlayerName())){
             return;
         }
         cardHandGrid.getChildren().removeIf(c -> !(c == cardSelectionPopup));
-        List<BasicCard> validCards = controller.getLocalPlayerValidCards();
+        List<BasicCard> validCards = client.getController().getLocalPlayerValidCards();
         int index = 0;
         for(CardSides card : cards.stream().limit(3).toList()) {
             ImageView cardView = createDraggableCard(card.frontSide());
@@ -420,7 +431,7 @@ public class GameViewController extends ViewController {
                     cardSelectionPopup.setVisible(false);
                 }
             });
-            cardView.setDisable(!controller.getLocalPlayerName().equals(controller.getPlayerWithTurn()) || isDrawPhase);
+            cardView.setDisable(!client.getController().getLocalPlayerName().equals(client.getController().getPlayerWithTurn()) || isDrawPhase);
             cardSelectionPopup.setVisible(false);
             cardHandGrid.add(cardView, index, 0);
             index++;
@@ -466,7 +477,7 @@ public class GameViewController extends ViewController {
      */
     public void drawCard(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft){
         isDrawPhase = true;
-        updateLocalPlayerCards(controller.getLocalPlayerHand());
+        updateLocalPlayerCards(client.getController().getLocalPlayerHand());
         for(CardType key : drawableCards.keySet()){
             updateViewDeck(drawableCards.get(key), numberOfCardsLeft.get(key), key);
         }
@@ -522,11 +533,11 @@ public class GameViewController extends ViewController {
      * @param placedCards the local player's board.
      */
     public void updateLocalPlayerBoard(List<BasicCard> placedCards){
-        if(!checkCurrentView(controller.getLocalPlayerName())){
+        if(!checkCurrentView(client.getController().getLocalPlayerName())){
             return;
         }
 
-        List<Corner> corners = controller.getLocalPlayerValidCorners();
+        List<Corner> corners = client.getController().getLocalPlayerValidCorners();
         generateBoard(placedCards, corners);
     }
 
@@ -631,7 +642,7 @@ public class GameViewController extends ViewController {
         winnersLabel.setText(sb.toString());
         if(playerSummary.isEmpty()){
             summaryContentGrid.getRowConstraints().remove(3);
-            summaryContentGrid.getChildren().remove(resultGrid.getParent());
+            summaryContentGrid.getChildren().remove(resultsScrollPane);
             matchSummaryGrid.setVisible(true);
             return;
         }
@@ -676,8 +687,11 @@ public class GameViewController extends ViewController {
      */
     private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
         gameBoardPane.getChildren().clear();
-        center = new Point2D(gameBoardScrollPane.getLayoutBounds().getCenterX() - cardWidth / 2d - cornerWidth,
-                gameBoardScrollPane.getLayoutBounds().getCenterY() + cardHeight / 2d - cornerHeight);
+        System.out.println(rootAnchorPane.getWidth());
+        System.out.println(rootAnchorPane.getHeight());
+        gameBoardPane.setMinWidth(Math.max(cardWidth * 20, rootAnchorPane.getWidth() - sidePanel.getWidth()));
+        gameBoardPane.setMinHeight(Math.max(cardWidth * 20, rootAnchorPane.getHeight()));
+        center = new Point2D(gameBoardPane.getWidth() / 2,gameBoardPane.getHeight() / 2);
         int minX = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getX()).min().orElse(0);
         int maxY = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getY()).max().orElse(0);
         double offsetX = Math.abs(minX * (cardWidth - cornerWidth)) - (center.getX() / cardOffsetDivisor);
@@ -746,8 +760,8 @@ public class GameViewController extends ViewController {
             ImageView cardView = getCardImage(card);
             cardView.setDisable(true);
             int finalIndex = index;
-            cardView.setOnMouseClicked((mouseEvent) -> controller.sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
-            cardView.setOnMouseClicked((mouseEvent) -> controller.sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
+            cardView.setOnMouseClicked((mouseEvent) -> client.getController().sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
+            cardView.setOnMouseClicked((mouseEvent) -> client.getController().sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
             if(index == 0){
                 int j = 0;
                 while(j < numberOfCardsLeft && j < maxNumberOfHiddenCards){
@@ -823,7 +837,7 @@ public class GameViewController extends ViewController {
 
         //adds the icon that, when clicked, lets the player
         //see the opponent's board and the back of their hand
-        if(!controller.getLocalPlayerName().equals(nickname)) {
+        if(!client.getController().getLocalPlayerName().equals(nickname)) {
             ImageView viewPlayerIcon = new ImageView();
             viewPlayerIcon.setPreserveRatio(true);
             viewPlayerIcon.setFitWidth(imageWidth - defaultPadding);
@@ -834,19 +848,19 @@ public class GameViewController extends ViewController {
             playerTagViewIcons.put(nickname, viewPlayerIcon);
             viewPlayerIcon.setOnMouseClicked((mouseEvent) -> {
                 if(checkCurrentView(nickname)) {
-                    currentViewedPlayer = controller.getLocalPlayerName();
+                    currentViewedPlayer = client.getController().getLocalPlayerName();
                     gameBoardScrollPane.setHvalue(center.getX() / gameBoardPane.getWidth());
                     gameBoardScrollPane.setVvalue(center.getY() / gameBoardPane.getHeight());
-                    updateLocalPlayerCards(controller.getLocalPlayerHand());
-                    updateLocalPlayerBoard(controller.getLocalPlayerBoard());
+                    updateLocalPlayerCards(client.getController().getLocalPlayerHand());
+                    updateLocalPlayerBoard(client.getController().getLocalPlayerBoard());
                     viewPlayerIcon.getStyleClass().remove("hideBoardIcon");
                     viewPlayerIcon.getStyleClass().add("viewBoardIcon");
                 } else {
                     currentViewedPlayer = nickname;
                     gameBoardScrollPane.setHvalue(center.getX() / gameBoardPane.getWidth());
                     gameBoardScrollPane.setVvalue(center.getY() / gameBoardPane.getHeight());
-                    updateRemotePlayerCards(nickname, controller.getRemotePlayerHand(nickname));
-                    updateRemotePlayerBoard(nickname, controller.getRemotePlayerBoard(nickname));
+                    updateRemotePlayerCards(nickname, client.getController().getRemotePlayerHand(nickname));
+                    updateRemotePlayerBoard(nickname, client.getController().getRemotePlayerBoard(nickname));
                     for(ImageView icon : playerTagViewIcons.values()){
                         icon.getStyleClass().remove("hideBoardIcon");
                         viewPlayerIcon.getStyleClass().add("viewBoardIcon");
@@ -886,7 +900,7 @@ public class GameViewController extends ViewController {
         ImageView draggableCard = getCardImage(card);
         draggableCard.getStyleClass().add("draggableCard");
         draggableCard.setMouseTransparent(true);
-        if(controller.getLocalPlayerValidCards().contains(card)) {
+        if(client.getController().getLocalPlayerValidCards().contains(card)) {
             view.setOnDragDetected((MouseEvent e) -> {
                 if (!dragLayerPane.getChildren().contains(draggableCard)) {
                     dragLayerPane.getChildren().add(draggableCard);
@@ -945,7 +959,7 @@ public class GameViewController extends ViewController {
                     if(draggedCard == null){
                         return;
                     }
-                    controller.sendMessage(new CardPlacementMessage(draggedCard, corner));
+                    client.getController().sendMessage(new CardPlacementMessage(draggedCard, corner));
                 });
             }
         }

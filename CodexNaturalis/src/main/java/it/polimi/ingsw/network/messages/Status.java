@@ -177,6 +177,9 @@ public enum Status {
      */
     RECONNECT(""),
 
+
+    INVALID_RECONNECT("Couldn't reconnect to the previous match. Returning to lobby..."),
+
     /**
      * Client: sends a chat message (which contains the sender, recipient and, naturally, the content of the message itself).
      */

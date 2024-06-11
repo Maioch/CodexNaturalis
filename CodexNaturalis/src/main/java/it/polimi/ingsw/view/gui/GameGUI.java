@@ -6,38 +6,37 @@ import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
-import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
+import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.view.GameView;
 import it.polimi.ingsw.view.gui.controllers.GameViewController;
 import it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.Map;
 
-public class GameGUI extends AbstractGUI implements GameView {
+/**
+ * The GUI associated to the gameplay phase.
+ */
+public class GameGUI implements GameView {
     public enum ToastType{
         TIMEOUT, PLACE, DRAW
     }
 
+    private final SceneManager sceneManager;
+    private final Client client;
+
     /**
      * Constructor for the class.
      *
-     * @param primaryStage the main application stage.
-     * @param currentScene the scene currently displayed.
-     * @param currentLoader the loader of the current scene. Used to get the current scene view controller.
-     * @param controller the client controller.
+     * @param sceneManager the loader of the current scene. Used to get the current scene view client.getController().
      */
-    public GameGUI(Stage primaryStage, Scene currentScene, FXMLLoader currentLoader, ClientController controller) {
-        this.primaryStage = primaryStage;
-        this.currentScene = currentScene;
-        this.currentLoader = currentLoader;
-        this.controller = controller;
+    public GameGUI(SceneManager sceneManager, Client client) {
+        this.sceneManager = sceneManager;
+        this.client = client;
     }
 
     /**
@@ -45,7 +44,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void notifyLastTurn() {
-        currentLoader.<GameViewController>getController().updateStatusLabel("The next turn will be the last");
+        sceneManager.<GameViewController>getController().updateStatusLabel("The next turn will be the last");
     }
 
     /**
@@ -56,8 +55,8 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft) {
-        currentLoader.<GameViewController>getController().drawCard(drawableCards, numberOfCardsLeft);
-        currentLoader.<GameViewController>getController().updateStatusLabel("Draw a card", ToastType.DRAW.toString());
+        sceneManager.<GameViewController>getController().drawCard(drawableCards, numberOfCardsLeft);
+        sceneManager.<GameViewController>getController().updateStatusLabel("Draw a card", ToastType.DRAW.toString());
     }
 
     /**
@@ -66,7 +65,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void showChatMessage(ChatMessage chatMessage) {
-        currentLoader.<GameViewController>getController().showChatMessage(chatMessage.getSender(), chatMessage.getMessage());
+        sceneManager.<GameViewController>getController().showChatMessage(chatMessage.getSender(), chatMessage.getMessage());
     }
 
     /**
@@ -77,8 +76,8 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards) {
-        currentLoader.<GameViewController>getController().placeCard(handCards, placedCards);
-        currentLoader.<GameViewController>getController().updateStatusLabel("Place a card, codex wizard!", ToastType.PLACE.toString());
+        sceneManager.<GameViewController>getController().placeCard(handCards, placedCards);
+        sceneManager.<GameViewController>getController().updateStatusLabel("Place a card, codex wizard!", ToastType.PLACE.toString());
     }
 
     /**
@@ -87,11 +86,11 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void turnChanged(String turnOwner) {
-        currentLoader.<GameViewController>getController().updateStatusLabel(
-                controller.getLocalPlayerName().equals(turnOwner) ?
+        sceneManager.<GameViewController>getController().updateStatusLabel(
+                client.getController().getLocalPlayerName().equals(turnOwner) ?
                 String.format("It's your turn, %s!", turnOwner) :
                 String.format("%s is playing their turn...", turnOwner));
-        currentLoader.<GameViewController>getController().setCurrentTurnOwner(turnOwner);
+        sceneManager.<GameViewController>getController().setCurrentTurnOwner(turnOwner);
     }
 
     /**
@@ -100,7 +99,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void showErrorMessage(String message) {
-        currentLoader.<GameViewController>getController().updateStatusLabel(message);
+        sceneManager.<GameViewController>getController().updateStatusLabel(message);
     }
 
     /**
@@ -110,13 +109,13 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void showUserJoined(String nickname, Content color, boolean isGameFull) {
-        currentLoader.<MatchLobbyViewController>getController().updatePlayers(nickname, color);
-        System.out.println(controller.getPlayerColors());
+        sceneManager.<MatchLobbyViewController>getController().updatePlayers(nickname, color);
+        System.out.println(client.getController().getPlayerColors());
         System.out.println(nickname + isGameFull);
         //forceUpdate(); //fix for repaint issues on windows
         if(isGameFull){
-            changeScene("Game.fxml");
-            currentLoader.<GameViewController>getController().initializeScene();
+            sceneManager.changeScene("Game.fxml", client);
+            sceneManager.<GameViewController>getController().initializeScene();
         }
     }
 
@@ -128,7 +127,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void updateRemotePlayerHand(String nickname, List<BasicCard> handCards) {
-        currentLoader.<GameViewController>getController().updateRemotePlayerCards(nickname, handCards);
+        sceneManager.<GameViewController>getController().updateRemotePlayerCards(nickname, handCards);
     }
 
     /**
@@ -138,7 +137,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void updateLocalPlayerHand(List<CardSides> handCards) {
-        currentLoader.<GameViewController>getController().updateLocalPlayerCards(handCards);
+        sceneManager.<GameViewController>getController().updateLocalPlayerCards(handCards);
     }
 
     /**
@@ -148,8 +147,8 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void requestStarterSide(List<CardSides> playerCards) {
-        currentLoader.<GameViewController>getController().updateLocalPlayerCards(playerCards.subList(1, playerCards.size()));
-        currentLoader.<GameViewController>getController().chooseStarterSide(playerCards.getFirst());
+        sceneManager.<GameViewController>getController().updateLocalPlayerCards(playerCards.subList(1, playerCards.size()));
+        sceneManager.<GameViewController>getController().chooseStarterSide(playerCards.getFirst());
     }
 
     /**
@@ -161,12 +160,12 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void updateBoard(String nickname, List<BasicCard> placedCards, int score) {
-        if(controller.getLocalPlayerName().equals(nickname)) {
-            currentLoader.<GameViewController>getController().updateLocalPlayerBoard(placedCards);
+        if(client.getController().getLocalPlayerName().equals(nickname)) {
+            sceneManager.<GameViewController>getController().updateLocalPlayerBoard(placedCards);
         } else {
-            currentLoader.<GameViewController>getController().updateRemotePlayerBoard(nickname, placedCards);
+            sceneManager.<GameViewController>getController().updateRemotePlayerBoard(nickname, placedCards);
         }
-        currentLoader.<GameViewController>getController().updateScore(nickname, score);
+        sceneManager.<GameViewController>getController().updateScore(nickname, score);
     }
 
     /**
@@ -176,7 +175,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void requestPersonalObjectivesChoice(List<Objective> objectives) {
-        currentLoader.<GameViewController>getController().choosePersonalObjective(
+        sceneManager.<GameViewController>getController().choosePersonalObjective(
                 objectives.getFirst(), objectives.getLast());
     }
 
@@ -187,7 +186,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void showPersonalObjectives(List<Objective> objectives) {
-        currentLoader.<GameViewController>getController().setPersonalObjectives(objectives.getFirst());
+        sceneManager.<GameViewController>getController().setPersonalObjectives(objectives.getFirst());
     }
 
     /**
@@ -197,7 +196,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void showCommonObjectives(List<Objective> objectives) {
-        currentLoader.<GameViewController>getController().setCommonObjectives(
+        sceneManager.<GameViewController>getController().setCommonObjectives(
                 objectives.getFirst(), objectives.getLast());
     }
 
@@ -209,7 +208,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft) {
-        currentLoader.<GameViewController>getController().updateDecks(drawableCards, numberOfCardsLeft);
+        sceneManager.<GameViewController>getController().updateDecks(drawableCards, numberOfCardsLeft);
     }
 
     /**
@@ -221,7 +220,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore) {
-        currentLoader.<GameViewController>getController().addPlayerScoreToSummary(nickname, objectivePoints, finalScore);
+        sceneManager.<GameViewController>getController().addPlayerScoreToSummary(nickname, objectivePoints, finalScore);
     }
 
     /**
@@ -231,7 +230,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void revealWinners(List<String> winners) {
-        currentLoader.<GameViewController>getController().revealWinners(winners);
+        sceneManager.<GameViewController>getController().revealWinners(winners);
     }
 
     /**
@@ -242,7 +241,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void notifyRemotePlayerDisconnected(String nickname, Content color) {
-        currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
+        sceneManager.<GameViewController>getController().updateStatusLabel(String.format(
                 "%s disconnected from the game", nickname));
     }
 
@@ -254,7 +253,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void notifyPlayerLeftLobby(String nickname, Content color) {
-        currentLoader.<MatchLobbyViewController>getController().removePlayer(nickname);
+        sceneManager.<MatchLobbyViewController>getController().removePlayer(nickname);
     }
 
     /**
@@ -264,10 +263,10 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void notifyRemotePlayerReconnected(String nickname) {
-        currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
+        sceneManager.<GameViewController>getController().updateStatusLabel(String.format(
                 "%s reconnected to the game", nickname));
-        currentLoader.<GameViewController>getController().hideStatusLabel(ToastType.TIMEOUT.toString());
-        currentLoader.<GameViewController>getController().setChatDisable(false);
+        sceneManager.<GameViewController>getController().hideStatusLabel(ToastType.TIMEOUT.toString());
+        sceneManager.<GameViewController>getController().setChatDisable(false);
     }
 
     /**
@@ -275,10 +274,10 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void notifyGameTimeout(){
-        currentLoader.<GameViewController>getController().updateStatusLabel(String.format(
+        sceneManager.<GameViewController>getController().updateStatusLabel(String.format(
                 "If no players reconnect in the next %d seconds, you'll win",
                 GameParameters.getForfeitTime()), ToastType.TIMEOUT.toString());
-        currentLoader.<GameViewController>getController().setChatDisable(true);
+        sceneManager.<GameViewController>getController().setChatDisable(true);
     }
 
     /**
@@ -286,8 +285,8 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void notifyGameCanceled(){
-        controller.backToSetup();
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        client.getController().backToSetup();
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -295,7 +294,7 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void notifyTurnSkipped() {
-        currentLoader.<GameViewController>getController().updateStatusLabel(
+        sceneManager.<GameViewController>getController().updateStatusLabel(
                 "The turn has been skipped because the player isn't connected");
     }
 
@@ -304,9 +303,9 @@ public class GameGUI extends AbstractGUI implements GameView {
      */
     @Override
     public void showNoMovesAvailable() {
-        String turnOwner = controller.getPlayerWithTurn();
-        currentLoader.<GameViewController>getController().updateStatusLabel(
-                turnOwner.equals(controller.getLocalPlayerName()) ?
+        String turnOwner = client.getController().getPlayerWithTurn();
+        sceneManager.<GameViewController>getController().updateStatusLabel(
+                turnOwner.equals(client.getController().getLocalPlayerName()) ?
                 String.format("%s, you can no longer make any more moves", turnOwner) :
                 String.format("%s cannot make any more moves", turnOwner)
         );
@@ -314,7 +313,12 @@ public class GameGUI extends AbstractGUI implements GameView {
 
     @Override
     public void showDisconnectionMessage(){
-
+        client.getController().stop();
+        String playerName = client.getController().getLocalPlayerName();
+        int gameId = client.getController().getGameId();
+        client.createController();
+        sceneManager.getController().handleDisconnection(new JoinGameMessage(
+                Status.RECONNECT, playerName, null, null, gameId));
     }
 
     @Override

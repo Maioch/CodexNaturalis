@@ -26,6 +26,7 @@ public class ClientGame {
     private final Object playerWithTurnLock;
     private final EventSubmitter eventSubmitter;
     private final GameView gameView;
+    private final int gameId;
 
     /**
      * Class constructor.
@@ -34,7 +35,7 @@ public class ClientGame {
      * @param eventSubmitter the medium used to submit a player action to the server, mainly to update the player's view.
      * @param gameView       the view (CLI/GUI) associated to the player.
      */
-    public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView, int numberOfPlayers) {
+    public ClientGame(LocalPlayer player, EventSubmitter eventSubmitter, GameView gameView, int numberOfPlayers, int gameId) {
         this.localPlayer = player;
         this.localPlayer.setViewReferences(gameView, eventSubmitter);
         this.gameView = gameView;
@@ -44,6 +45,7 @@ public class ClientGame {
         this.playerWithTurn = null;
         this.numberOfPlayers = numberOfPlayers;
         this.playerWithTurnLock = new Object();
+        this.gameId = gameId;
     }
 
     /**
@@ -63,6 +65,8 @@ public class ClientGame {
     public synchronized int getNumberOfPlayers() {
         return numberOfPlayers;
     }
+
+    public int getGameId() { return gameId; }
 
     /**
      * Returns the summary of all the cards the player can draw in a given moment.

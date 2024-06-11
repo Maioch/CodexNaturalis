@@ -2,18 +2,15 @@ package it.polimi.ingsw.view.gui;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.network.NetworkHandler;
-import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.Client;
+import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.view.SetupView;
 import it.polimi.ingsw.view.gui.controllers.ConnectionViewController;
 import it.polimi.ingsw.view.gui.controllers.MatchBrowserViewController;
 import it.polimi.ingsw.view.gui.controllers.MatchLobbyViewController;
-import it.polimi.ingsw.view.gui.controllers.ViewController;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
@@ -24,37 +21,52 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-public class SetupGUI extends AbstractGUI implements SetupView {
+/**
+ * Class used when the client chooses to play the GUI version of the game; this class represents the GUI for the player
+ * reception phase, before entering an actual game.
+ */
+public class SetupGUI implements SetupView {
+    private SceneManager sceneManager;
+    private final Client client;
 
     /**
      * Constructor for the class.
      */
-    public SetupGUI(Stage stage, Application application) throws IOException {
-        this.controller = new ClientController(this, new GraphicalSubmitter());
-        URL firaLocation = getClass().getResource(filePath + "fonts/FiraSansCondensed-Regular.ttf");
-        URL firaBoldLocation = getClass().getResource(filePath + "fonts/FiraSansCondensed-SemiBold.ttf");
+    public SetupGUI(){
+        this.client = new Client(new GraphicalSubmitter(), this);
+        client.createController();
+    }
+
+    /**
+     * Shows the graphical user interface.
+     *
+     * @param stage the JavaFX stage of the GUI.
+     * @param application the JavaFX application of the running GUI.
+     * @throws IOException if the scene isn't loaded correctly.
+     */
+    public void showInterface(Stage stage, Application application) throws IOException{
+        URL firaLocation = getClass().getResource("/scenes/fonts/FiraSansCondensed-Regular.ttf");
+        URL firaBoldLocation = getClass().getResource("/scenes/fonts/FiraSansCondensed-SemiBold.ttf");
         if(firaLocation != null && firaBoldLocation != null){
             Font.loadFont(firaLocation.toExternalForm(), 14);
             Font.loadFont(firaBoldLocation.toExternalForm(), 14);
         }else{
             System.out.println("Couldn't load the fira font, resorting to fallback system font");
         }
-        this.primaryStage = stage;
         stage.setTitle("Codex Naturalis");
         stage.setMinWidth(1280);
         stage.setMinHeight(720);
         stage.setOnCloseRequest((WindowEvent event) -> System.exit(0));
-        currentLoader = new FXMLLoader(getClass().getResource(filePath + "Connection.fxml"));
-        currentScene = new Scene(currentLoader.load(),1820,980);
-        currentScene.setOnKeyReleased((e) -> {
+        sceneManager = new SceneManager(stage, "Connection.fxml");
+        sceneManager.getScene().setOnKeyReleased((e) -> {
             if(e.getCode() == KeyCode.F12){
                 stage.setFullScreen(!stage.isFullScreen());
             }
         });
-        currentLoader.<ConnectionViewController>getController().setController(controller);
-        currentLoader.<ConnectionViewController>getController().setApplication(application);
-        stage.setScene(currentScene);
-        stage.getIcons().add(new Image(filePath + "images/CodexNaturalisColoredLogo.png"));
+        sceneManager.getController().setClient(client);
+        sceneManager.<ConnectionViewController>getController().setApplication(application);
+        stage.setScene(sceneManager.getScene());
+        stage.getIcons().add(new Image("/scenes/images/CodexNaturalisColoredLogo.png"));
         stage.show();
     }
 
@@ -64,11 +76,11 @@ public class SetupGUI extends AbstractGUI implements SetupView {
      */
     @Override
     public void updateMatchList(List<GameInfo> matchList){
-        if(connectionSettings == null) {
-            connectionSettings = currentLoader.<ConnectionViewController>getController().getConnectionSettings();
+        if(client.getConnectionSettings() == null) {
+            client.setConnectionSettings(sceneManager.<ConnectionViewController>getController().getConnectionSettings());
         }
-        changeScene("MatchBrowser.fxml");
-        currentLoader.<MatchBrowserViewController>getController().addMatches(matchList);
+        sceneManager.changeScene("MatchBrowser.fxml", client);
+        sceneManager.<MatchBrowserViewController>getController().addMatches(matchList);
     }
 
     /**
@@ -77,7 +89,7 @@ public class SetupGUI extends AbstractGUI implements SetupView {
      */
     @Override
     public void newGameSuccess(int gameId){
-        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
+        client.getController().sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
     }
 
     /**
@@ -86,7 +98,7 @@ public class SetupGUI extends AbstractGUI implements SetupView {
      */
     @Override
     public void showCriticalError(String message){
-        currentLoader.<MatchBrowserViewController>getController().showCriticalError(message);
+        sceneManager.<MatchBrowserViewController>getController().showCriticalError(message);
     }
 
     /**
@@ -96,7 +108,7 @@ public class SetupGUI extends AbstractGUI implements SetupView {
      */
     @Override
     public void showJoinGameDialog(List<Content> colors, int gameId){
-        currentLoader.<MatchBrowserViewController>getController().showJoinGameDialog(colors, gameId);
+        sceneManager.<MatchBrowserViewController>getController().showJoinGameDialog(colors, gameId);
     }
 
     /**
@@ -105,7 +117,7 @@ public class SetupGUI extends AbstractGUI implements SetupView {
      */
     @Override
     public void showUserError(String message, int gameId){
-        currentLoader.<MatchBrowserViewController>getController().showUserError(message);
+        sceneManager.<MatchBrowserViewController>getController().showUserError(message);
     }
 
     /**
@@ -113,16 +125,24 @@ public class SetupGUI extends AbstractGUI implements SetupView {
      */
     @Override
     public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers) {
-        changeScene("MatchLobby.fxml");
-        currentLoader.<MatchLobbyViewController>getController().initializeLabel(nickname, color, numberOfPlayers);
-        GameGUI gameGUI = new GameGUI(primaryStage, currentScene, currentLoader, controller);
-        controller.setGameView(gameGUI);
+        sceneManager.changeScene("MatchLobby.fxml", client);
+        sceneManager.<MatchLobbyViewController>getController().initializeLabel(nickname, color, numberOfPlayers);
+        GameGUI gameGUI = new GameGUI(sceneManager, client);
+        client.getController().setGameView(gameGUI);
     }
 
     @Override
-    public void showDisconnectionMessage() {
-        controller.stop();
-        controller = new ClientController(this, new GraphicalSubmitter());
-        currentLoader.<ViewController>getController().handleDisconnection(controller, connectionSettings);
+    public void showDisconnectionMessage(){
+        client.getController().stop();
+        client.createController();
+        sceneManager.getController().handleDisconnection(new Message(Status.REQUEST_GAMES));
+    }
+
+    /**
+     * Shows that the user has unexpectedly disconnected.
+     */
+    @Override
+    public void showReconnectionError(String message) {
+        sceneManager.getController().showReconnectionError(message);
     }
 }

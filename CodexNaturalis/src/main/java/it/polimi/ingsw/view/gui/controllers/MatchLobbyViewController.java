@@ -1,13 +1,12 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.network.client.ClientController;
-import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -16,15 +15,28 @@ import javafx.scene.layout.GridPane;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class used to handle the match lobby scene of the GUI.
+ */
 public class MatchLobbyViewController extends ViewController {
     @FXML
     public Label playerCountText;
     @FXML
     public GridPane playerList;
+    @FXML
+    public GridPane disconnectionPopupGrid;
+    @FXML
+    public Label disconnectionLabel;
+    @FXML
+    public Button disconnectionButton;
 
     private final ToggleGroup group = new ToggleGroup();
     private int currentNumberOfPlayers;
     private int maxNumberOfPlayers;
+
+    public void initialize(){
+        setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
+    }
 
     /**
      * Initializes the player joined counting label on the lobby.
@@ -73,12 +85,7 @@ public class MatchLobbyViewController extends ViewController {
      * Lets the player leave the lobby.
      */
     public void leaveLobby(){
-        controller.backToSetup();
-        controller.sendMessage(new Message(Status.PLAYER_DISCONNECTED));
-    }
-
-    @Override
-    public void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings){
-
+        client.getController().backToSetup();
+        client.getController().sendMessage(new Message(Status.PLAYER_DISCONNECTED));
     }
 }

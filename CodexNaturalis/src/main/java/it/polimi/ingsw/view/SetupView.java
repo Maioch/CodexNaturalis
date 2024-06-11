@@ -6,12 +6,12 @@ import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.network.NetworkHandler;
 
-public interface SetupView {
+public interface SetupView extends ReconnectableView{
     void updateMatchList(List<GameInfo> matchList);
     void newGameSuccess(int gameId);
     void showCriticalError(String message);
     void showJoinGameDialog(List<Content> colors, int gameId);
     void showUserError(String message, int gameId);
     void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers);
-    void showDisconnectionMessage();
+    void showReconnectionError(String message);
 }

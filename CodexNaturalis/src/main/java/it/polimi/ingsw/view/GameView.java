@@ -11,7 +11,7 @@ import it.polimi.ingsw.network.messages.game.ChatMessage;
 import java.util.List;
 import java.util.Map;
 
-public interface GameView {
+public interface GameView extends ReconnectableView{
     void notifyLastTurn();
     void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft);
     void showChatMessage(ChatMessage chatMessage);
@@ -36,6 +36,5 @@ public interface GameView {
     void notifyGameCanceled();
     void notifyTurnSkipped();
     void showNoMovesAvailable();
-    void showDisconnectionMessage();
     void closeView();
 }

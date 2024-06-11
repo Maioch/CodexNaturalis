@@ -2,35 +2,24 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
-import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.network.client.ClientController;
-import it.polimi.ingsw.network.client.ConnectionInitializer;
-import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
-import it.polimi.ingsw.view.gui.GraphicalSubmitter;
-import it.polimi.ingsw.view.gui.SetupGUI;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
-import java.net.MalformedURLException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.*;
 
 /**
- * Class used to handle the march browsing scene for the GUI.
+ * Class used to handle the march browsing scene of the GUI.
  */
 public class MatchBrowserViewController extends ViewController {
     @FXML
@@ -86,6 +75,10 @@ public class MatchBrowserViewController extends ViewController {
     private ToggleGroup gameIdToggleGroup;
     private ToggleGroup colorChoiceToggleGroup;
     private int currentSelectedId;
+
+    public void initialize(){
+        setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
+    }
 
     /**
      * Method that adds all matches to the match list.
@@ -172,7 +165,7 @@ public class MatchBrowserViewController extends ViewController {
      */
     @FXML
     public void refreshMatchList(){
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -209,7 +202,7 @@ public class MatchBrowserViewController extends ViewController {
         }
         String matchName = matchNameTextbox.getText();
         int numberOfPlayers = Integer.parseInt(((RadioButton)playerNumberToggleGroup.getSelectedToggle()).getId());
-        controller.sendMessage(new NewGameMessage(matchName, numberOfPlayers));
+        client.getController().sendMessage(new NewGameMessage(matchName, numberOfPlayers));
     }
 
     /**
@@ -224,7 +217,7 @@ public class MatchBrowserViewController extends ViewController {
             showReconnectGameDialog(gameId);
             return;
         }
-        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
+        client.getController().sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
     }
 
     private void showReconnectGameDialog(int gameId){
@@ -275,6 +268,9 @@ public class MatchBrowserViewController extends ViewController {
                 colorChoiceToggleGroup.getSelectedToggle() == null);
     }
 
+    /**
+     * Checks if the reconnection input is valid. If so, it disables the "reconnect" button.
+     */
     @FXML
     public void checkReconnectInput(){
         String nickname = reconnectNicknameTextbox.getText();
@@ -296,15 +292,18 @@ public class MatchBrowserViewController extends ViewController {
         }
         Content color = Content.valueOf(((RadioButton)colorChoiceToggleGroup.getSelectedToggle()).getUserData().toString());
         String nickname = nicknameTextBox.getText();
-        controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, color, currentSelectedId));
+        client.getController().sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, color, null, currentSelectedId));
     }
 
+    /**
+     * Tries a reconnection to the server.
+     */
     @FXML
     public void tryReconnect(){
         reconnectButton.setDisable(true);
         reconnectNicknameTextbox.setDisable(true);
         String nickname = reconnectNicknameTextbox.getText();
-        controller.sendMessage(new JoinGameMessage(Status.RECONNECT, nickname, null, currentSelectedId));
+        client.getController().sendMessage(new JoinGameMessage(Status.RECONNECT, nickname, null, null, currentSelectedId));
     }
 
     /**
@@ -337,42 +336,23 @@ public class MatchBrowserViewController extends ViewController {
     @FXML
     public void handleOkButton(){
         if (okButton.getUserData().equals("critical")) {
-            controller.sendMessage(new Message(Status.REQUEST_GAMES));
+            client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
         } else {
-            controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, currentSelectedId));
+            client.getController().sendMessage(new IntegerMessage(Status.REQUEST_COLORS, currentSelectedId));
             nicknameTextBox.setDisable(false);
             joinPopupButton.setDisable(true);
             errorPopupGrid.setVisible(false);
         }
     }
 
-    @Override
-    public void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings){
-        disconnectionButton.setOnMouseClicked((mouseEvent -> tryReconnectToServer(controller, connectionSettings)));
-        errorPopupGrid.setVisible(false);
-        disconnectionPopupGrid.setVisible(true);
-    }
-
-    public void tryReconnectToServer(ClientController controller, ConnectionSettings connectionSettings){
-        disconnectionButton.setDisable(true);
-        new Thread(() ->{
-            try {
-                ConnectionInitializer.initializeConnection(connectionSettings, controller);
-                new Thread(controller).start();
-                controller.sendMessage(new Message(Status.REQUEST_PING));
-                controller.sendMessage(new Message(Status.REQUEST_GAMES));
-            } catch (TCPException | MalformedURLException | NotBoundException | RemoteException e) {
-                Platform.runLater(() -> disconnectionLabel.setText("Could not reconnect to the server. Try again"));
-            }
-            Platform.runLater(() -> disconnectionButton.setDisable(false));
-        }).start();
-    }
-
+    /**
+     * Closes the join game popup and gets back to the available games browsing.
+     */
     @FXML
     public void goBackFromPopup(){
         joinPopupGrid.setVisible(false);
         createPopupGrid.setVisible(false);
         reconnectPopUp.setVisible(false);
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 }

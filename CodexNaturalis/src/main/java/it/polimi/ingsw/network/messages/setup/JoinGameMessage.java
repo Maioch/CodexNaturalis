@@ -8,22 +8,27 @@ import it.polimi.ingsw.network.messages.Status;
  * Message sent when a new player joins a game.
  */
 public class JoinGameMessage extends Message {
+
     private final String nickname;
     private final Content color;
-    private final int gameInfo;
+    private final Integer gameInfo;
+    private final Integer gameId;
 
     /**
-     * Constructor for the class.
+     * Class constructor.
+     *
+     * @param status   the status of the message.
      * @param nickname the player's nickname.
-     * @param color the player's color.
-     * @param gameInfo depending on the usage, it can be the id of the match the player is joining
-     *                 or the newly created game's number of players.
+     * @param color    the player's color.
+     * @param gameInfo the newly created game's number of players e qualcos'altro.
+     * @param gameId   the ID of the game.
      */
-    public JoinGameMessage(Status status, String nickname, Content color, int gameInfo){
+    public JoinGameMessage(Status status, String nickname, Content color, Integer gameInfo, Integer gameId){
         super(status);
         this.nickname = nickname;
         this.color = color;
         this.gameInfo = gameInfo;
+        this.gameId = gameId;
     }
 
     /**
@@ -43,7 +48,9 @@ public class JoinGameMessage extends Message {
     /**
      * @return the game's info
      */
-    public int getGameInfo(){
+    public Integer getGameInfo(){
         return gameInfo;
     }
+
+    public Integer getGameId(){ return gameId; }
 }

@@ -32,6 +32,7 @@ public class GameModel{
     private final Map<String,Content> playerData;
     private final List<Objective> commonObjectives;
     private final int numberOfPlayers;
+    private final int gameId;
 
     /**
      * Class constructor.
@@ -42,10 +43,11 @@ public class GameModel{
      * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number
      *                                players allowed.
      */
-    public GameModel(int numberOfPlayers, ServerSubject serverSubject) throws IllegalNumberOfPlayers {
+    public GameModel(int numberOfPlayers, ServerSubject serverSubject, int gameId) throws IllegalNumberOfPlayers {
         if (numberOfPlayers < GameParameters.getMinPlayers() || numberOfPlayers > GameParameters.getMaxPlayers())
             throw new IllegalNumberOfPlayers();
         this.numberOfPlayers = numberOfPlayers;
+        this.gameId = gameId;
         this.serverSubject = serverSubject;
         this.availableColors = new ArrayList<>() {{
             for (Content content : Content.values()) {
@@ -195,10 +197,10 @@ public class GameModel{
         }
         availableColors.remove(color);
         playerData.put(nickname,color);
-        serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname, color, numberOfPlayers));
+        serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname, color, numberOfPlayers, gameId));
         int turnNumber = 1;
         for(Map.Entry<String, Content> entry : playerData.entrySet()) {
-            serverSubject.notifyAll(new JoinGameMessage(Status.NEW_PLAYER_JOINED, entry.getKey(), entry.getValue(), turnNumber));
+            serverSubject.notifyAll(new JoinGameMessage(Status.NEW_PLAYER_JOINED, entry.getKey(), entry.getValue(), turnNumber, gameId));
             turnNumber++;
         }
     }

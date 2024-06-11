@@ -61,7 +61,7 @@ public class GameController implements Runnable{
                           ServerSubject serverSubject,
                           GameInfo gameInfo,
                           Consumer<GameController> endGameProcedure) throws IllegalNumberOfPlayers {
-        this.game = new GameModel(numberOfPlayers, serverSubject);
+        this.game = new GameModel(numberOfPlayers, serverSubject, gameInfo.getGameId());
         this.gameInfo = gameInfo;
         this.serverSubject = serverSubject;
         this.messageQueue = new LinkedList<>();
@@ -122,11 +122,11 @@ public class GameController implements Runnable{
         receivePing(handler);
         handler.setCurrentGame(this);
         serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname,
-                game.getPlayer(nickname).getColor(), game.getNumberOfPlayers()));
+                game.getPlayer(nickname).getColor(), game.getNumberOfPlayers(), gameInfo.getGameId()));
         int turnNumber = 1;
         for(Player player : game.getAllPlayers()){
             serverSubject.notify(nickname, new JoinGameMessage(Status.NEW_PLAYER_JOINED, player.getNickname(),
-                    player.getColor(), turnNumber));
+                    player.getColor(), turnNumber, gameInfo.getGameId()));
             turnNumber++;
         }
         serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards(), game.getNumberOfCardsLeft()));

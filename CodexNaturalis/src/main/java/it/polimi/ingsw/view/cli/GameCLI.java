@@ -9,12 +9,14 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
+import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.view.GameView;
 
 import java.awt.*;
@@ -26,16 +28,21 @@ import java.util.List;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class GameCLI extends AbstractCLI implements GameView {
+
     private Thread readInputThread;
     private final Queue<ChatMessage> chatMessageQueue;
+    private final SetupCLI setupCLI;
     private final int numberOfDeckCardThreshold = 4;
 
     /**
      * Constructor for the class.
      * @param controller the controller for the client that will be using the CLI.
      */
-    public GameCLI(ClientController controller) {
+    public GameCLI(ClientController controller, TerminalSubmitter terminalSubmitter, ConnectionSettings connectionSettings, SetupCLI setupCLI) {
+        this.terminalSubmitter = terminalSubmitter;
+        this.connectionSettings = connectionSettings;
         this.controller = controller;
+        this.setupCLI = setupCLI;
         chatMessageQueue = new LinkedList<>();
     }
 
@@ -477,7 +484,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void showDisconnectionMessage(){
-
+        disconnectionProcedure(setupCLI);
     }
 
     /**
@@ -582,5 +589,15 @@ public class GameCLI extends AbstractCLI implements GameView {
         }else{
             System.out.printf("User %s couldn't be found...\n",argument);
         }
+    }
+
+    /**
+     * Gets the conventionally chosen message to send when the user disconnects in the current scene.
+     *
+     * @return a JoinGameMessage with RECONNECT status.
+     */
+    @Override
+    public Message getReconnectMessage(){
+        return new JoinGameMessage(Status.RECONNECT, controller.getLocalPlayerName(), null, null, controller.getGameId());
     }
 }

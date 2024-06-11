@@ -88,7 +88,7 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                 }
                 case JOIN_GAME -> {
                     if(labeledMessage.message() instanceof JoinGameMessage joinGameMessage){
-                        GameController game = games.getController(joinGameMessage.getGameInfo());
+                        GameController game = games.getController(joinGameMessage.getGameId());
                         if(game == null){
                             labeledMessage.networkHandler().update(new Message(Status.ERROR));
                             break;
@@ -98,9 +98,9 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                 }
                 case RECONNECT -> {
                     if(labeledMessage.message() instanceof JoinGameMessage joinGameMessage){
-                        GameController game = games.getController(joinGameMessage.getGameInfo());
+                        GameController game = games.getController(joinGameMessage.getGameId());
                         if(game == null){
-                            labeledMessage.networkHandler().update(new Message(Status.ERROR));
+                            labeledMessage.networkHandler().update(new Message(Status.INVALID_RECONNECT));
                             break;
                         }
                         game.addMessageToQueue(new StringMessage(Status.RECONNECT, joinGameMessage.getNickname()), labeledMessage.networkHandler());

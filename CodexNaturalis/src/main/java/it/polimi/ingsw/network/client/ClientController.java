@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Class that handles every possible message the client can send to the server.
  */
 public class ClientController extends EventHandler<LabeledMessage> {
+
     private final SetupView setupView;
     private ClientGame game;
     private GameView gameView;
@@ -165,6 +166,12 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
+     * Gets the game's id (identifying integer).
+     * @return the game's id.
+     */
+    public synchronized int getGameId() { return game.getGameId(); }
+
+    /**
      * @param nickname the remote player's nickname.
      * @return the back sides list of the specified player's hand.
      */
@@ -209,6 +216,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
                 continue;
             }
             Message message = labeledMessage.message();
+            System.out.println(message.getStatus());
             synchronized (this) {
                 if (message.getStatus() == Status.PING_ACK){
                     isDisconnected.set(false);
@@ -233,7 +241,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
         if(isDisconnected.get()){
             pingTimer.cancel();
             networkHandler.stop();
-            eventSubmitter.submit(setupView::showDisconnectionMessage);
+            System.out.println(gameView == null);
+            eventSubmitter.submit(((gameView == null) ? setupView : gameView)::showDisconnectionMessage);
             return;
         }
         isDisconnected.set(true);
@@ -281,7 +290,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
                             new LocalPlayer(joinGameMessage.getNickname(), joinGameMessage.getColor()),
                             eventSubmitter,
                             gameView,
-                            joinGameMessage.getGameInfo());
+                            joinGameMessage.getGameInfo(),
+                            joinGameMessage.getGameId());
                     eventSubmitter.submit(() -> sendMessage(new Message(Status.CLIENT_READY)));
                 }
             }
@@ -302,6 +312,9 @@ public class ClientController extends EventHandler<LabeledMessage> {
                     eventSubmitter.submit(() -> setupView.showCriticalError(Status.WRONG_NAME.getMessage()));
             case ERROR ->
                     eventSubmitter.submit(() -> setupView.showCriticalError("The lobby for this match timed out. Please create a new one."));
+            case INVALID_RECONNECT -> {
+                eventSubmitter.submit(() -> setupView.showReconnectionError(Status.INVALID_RECONNECT.getMessage()));
+            }
         }
     }
 

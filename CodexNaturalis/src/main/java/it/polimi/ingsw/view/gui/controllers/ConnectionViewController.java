@@ -2,26 +2,22 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
-import it.polimi.ingsw.view.gui.GraphicalSubmitter;
-import it.polimi.ingsw.view.gui.SetupGUI;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.regex.Pattern;
 
 /**
- * Class used to handle the login scene for the GUI.
+ * Class used to handle the login scene of the GUI.
  */
 public class ConnectionViewController extends ViewController {
     @FXML
@@ -64,10 +60,10 @@ public class ConnectionViewController extends ViewController {
                         ConnectionSettings.ConnectionType.TCP : ConnectionSettings.ConnectionType.RMI;
                 connectionSettings = new ConnectionSettings(ipTextBox.getText(), port, type);
                 System.out.println(connectionSettings.ip());
-                ConnectionInitializer.initializeConnection(connectionSettings, controller);
-                new Thread(controller).start();
-                controller.sendMessage(new Message(Status.REQUEST_PING));
-                controller.sendMessage(new Message(Status.REQUEST_GAMES));
+                ConnectionInitializer.initializeConnection(connectionSettings, client.getController());
+                new Thread(client.getController()).start();
+                client.getController().sendMessage(new Message(Status.REQUEST_PING));
+                client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
             } catch (TCPException e) {
                 setLoginError(e.getMessage());
             } catch (MalformedURLException e) {
@@ -100,7 +96,7 @@ public class ConnectionViewController extends ViewController {
     }
 
     /**
-     * Setter for the controller attribute
+     * Setter for the client.getController() attribute
      * @param application the scene's application
      */
     public void setApplication(Application application){ this.application = application; }
@@ -116,11 +112,6 @@ public class ConnectionViewController extends ViewController {
     @FXML
     public void openRulesLink(){
         application.getHostServices().showDocument(GameParameters.getRulesURL());
-    }
-
-    @Override
-    public void handleDisconnection(ClientController controller, ConnectionSettings connectionSettings){
-
     }
 
     /**
