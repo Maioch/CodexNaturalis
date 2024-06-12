@@ -7,7 +7,9 @@ import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.model.server.Player;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,24 +25,16 @@ public class ObjectiveTest {
      */
     @Test
     void checkObjectiveTest(){
-        Objective referenceContentObjective = CardBuilder.buildObjective(95);
+        Objective referenceContentObjective = CardBuilder.buildObjective(96);
         Objective referencePatternObjective = CardBuilder.buildObjective(87);
         Objective referencePatternObjective2 = CardBuilder.buildObjective(94);
 
-        Player referencePlayer = new Player(
-                "test",
-                Content.RED,
-                new ArrayList<>(Arrays.asList(
-                        CardBuilder.buildCard(72),
-                        CardBuilder.buildCard(73),
-                        CardBuilder.buildCard(74)
-                )),
+        Player referencePlayer = new Player("test", Content.RED, new ArrayList<>(),
                 new ArrayList<>(Arrays.asList(
                         referenceContentObjective,
                         referencePatternObjective
-                )),
-                new ServerSubject()
-        );
+                )), new ServerSubject());
+
         LinkedHashMap<Integer,Location> placements1 = new LinkedHashMap<>(){{
             put(2,Location.TR);
             put(3,Location.TR);
@@ -137,6 +131,27 @@ public class ObjectiveTest {
             assertEquals(objective, sameObjective);
             otherObjective = objective;
         }
+        //noinspection AssertBetweenInconvertibleTypes
         assertNotEquals(otherObjective, "Test");
+    }
+
+    @Test
+    void wrongObjectiveTest(){
+        Objective objective = new Objective(1, 1);
+        assertThrows(RuntimeException.class, () -> objective.new PatternBonus(new HashMap<>(){{
+            put(new Point(0, 0), Content.PEN);
+        }}));
+        assertThrows(RuntimeException.class, () -> objective.new PatternBonus(new HashMap<>(){{
+            put(new Point(0, 0), Content.EMPTY);
+        }}));
+        assertThrows(RuntimeException.class, () -> objective.new PatternBonus(new HashMap<>(){{
+            put(new Point(0, 0), Content.WHITE);
+        }}));
+        assertThrows(RuntimeException.class, () -> objective.new ContentBonus(new ArrayList<>(){{
+            add(Content.WHITE);
+        }}));
+        assertThrows(RuntimeException.class, () -> objective.new ContentBonus(new ArrayList<>(){{
+            add(Content.EMPTY);
+        }}));
     }
 }

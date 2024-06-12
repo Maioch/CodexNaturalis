@@ -15,8 +15,8 @@ public class ObjectivesMessage extends Message {
 
     /**
      * Constructor for the class.
-     * @param personalObjectives the player's personal objective.
-     * @param commonObjectives the common objectives, belonging to all the players.
+     * @param status the message status.
+     * @param objectives the objectives.
      */
     public ObjectivesMessage(Status status, List<Objective> objectives){
         super(status);
@@ -24,7 +24,7 @@ public class ObjectivesMessage extends Message {
     }
 
     /**
-     * @return the player's personal objective.
+     * @return the objectives.
      */
     public List<Objective> getObjectives(){
         return new ArrayList<>(objectives);

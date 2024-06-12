@@ -2,11 +2,9 @@ package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
-import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.client.ClientController;
-import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
@@ -17,11 +15,8 @@ import it.polimi.ingsw.view.SetupView;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.regex.Pattern;
 

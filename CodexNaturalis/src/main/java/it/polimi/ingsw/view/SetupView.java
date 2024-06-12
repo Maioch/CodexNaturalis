@@ -4,7 +4,6 @@ import java.util.List;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.network.NetworkHandler;
 
 public interface SetupView extends ReconnectableView{
     void updateMatchList(List<GameInfo> matchList);

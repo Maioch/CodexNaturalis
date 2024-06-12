@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.server.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.card.corner.Corner;
@@ -79,9 +80,10 @@ public class GoldCardTest {
                     break;
                 case "CORNER":
                     if(playerTest.checkRequirements(goldTest) &&
-                            playerTest.checkIfPlaceable(currentCard.corners.stream().filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow())){
-
-                        playerTest.placeCard(goldTest, currentCard.corners.stream().filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow());
+                            playerTest.checkIfPlaceable(currentCard.corners.stream()
+                                    .filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow())){
+                        playerTest.placeCard(goldTest, currentCard.corners.stream()
+                                .filter(c -> c.getLocation() == Location.TR).findFirst().orElseThrow());
                         assertEquals(2 * nativePoints, goldTest.getPoints());
                         break;
                     }
@@ -110,5 +112,11 @@ public class GoldCardTest {
             assertEquals(gold, sameGold);
             otherGold = gold;
         }
+    }
+
+    @Test
+    void wrongCardTest(){
+        assertThrows(CardException.class, () ->
+                new GoldCard(CardBuilder.buildCard(1).backSide(), new ArrayList<>(List.of(Content.EMPTY))));
     }
 }

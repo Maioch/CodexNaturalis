@@ -4,7 +4,6 @@ import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

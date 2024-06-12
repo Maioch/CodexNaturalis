@@ -60,7 +60,7 @@ public class BasicCard implements Serializable {
                 break;
             }
         }
-        if(corners.size() != 4 || !allLocationsPresent){
+        if(!allLocationsPresent || corners.size() != Location.values().length){
             throw new CardException(
                     String.format("Malformed corner set encountered on card with the following id:%d",cardId));
         }

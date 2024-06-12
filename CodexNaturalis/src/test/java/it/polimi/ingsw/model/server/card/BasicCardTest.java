@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.server.card;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
+import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.corner.Corner;
@@ -222,6 +223,30 @@ public class BasicCardTest {
             if(id == endResource)
                 id = startStarter - 1;
         }
+        //noinspection AssertBetweenInconvertibleTypes
         assertNotEquals(otherFront, "Test");
+    }
+
+    @Test
+    void wrongCardTest(){
+        assertThrows(CardException.class, () -> new BasicCard(1, Content.EMPTY, new HashSet<>(){{
+            for(Location loc : Location.values()) {
+                add(new Corner(Content.WHITE, loc));
+            }
+        }}, 0, new ArrayList<>(), false));
+        assertThrows(CardException.class, () -> new BasicCard(1, Content.RED, new HashSet<>(){{
+            for(Location loc : Location.values()) {
+                add(new Corner(Content.WHITE, loc));
+            }
+        }}, -1, new ArrayList<>(), false));
+        assertThrows(CardException.class, () -> new BasicCard(1, Content.RED, new HashSet<>(){{
+            add(new Corner(Content.WHITE, Location.BL));
+        }}, 0, new ArrayList<>(), false));
+        assertThrows(CardException.class, () -> new BasicCard(1, Content.RED, new HashSet<>(){{
+            for(Location loc : Location.values()) {
+                add(new Corner(Content.WHITE, loc));
+            }
+            add(new Corner(Content.RED, Location.BL));
+        }}, 0, new ArrayList<>(), false));
     }
 }

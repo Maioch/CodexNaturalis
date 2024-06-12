@@ -58,6 +58,7 @@ public class CornerTest {
         assertEquals(c0, c1);
         c1.setX(3);
         assertNotEquals(c0, c1);
+        //noinspection AssertBetweenInconvertibleTypes
         assertNotEquals(c0, "TEST");
     }
 }

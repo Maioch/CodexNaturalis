@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
-import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 
 import java.util.List;

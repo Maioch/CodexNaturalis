@@ -95,10 +95,10 @@ public class GoldCard extends BasicCard {
      */
     @Override
     public boolean equals(Object object){
-        if(this.getClass() != object.getClass())
-            return false;
-        GoldCard other = (GoldCard) object;
-        return super.equals(other);
+        if(object instanceof GoldCard other) {
+            return super.equals(other);
+        }
+        return false;
     }
 
     /**

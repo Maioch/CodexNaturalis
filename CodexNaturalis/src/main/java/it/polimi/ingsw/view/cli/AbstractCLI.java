@@ -8,7 +8,6 @@ import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
-import it.polimi.ingsw.view.ReconnectableView;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

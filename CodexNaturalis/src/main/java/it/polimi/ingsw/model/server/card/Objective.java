@@ -116,6 +116,14 @@ public class Objective implements Serializable {
          * @param sequence list of the bonus' required content.
          */
         public ContentBonus(List<Content> sequence){
+            boolean isValidPattern = sequence.stream()
+                    .filter(x -> x.isEmpty() || x == Content.WHITE)
+                    .findAny()
+                    .isEmpty();
+            if(!isValidPattern){
+                throw new RuntimeException(
+                        String.format("Invalid content in card %d", objectiveId));
+            }
             this.sequence = sequence;
         }
 
@@ -128,14 +136,13 @@ public class Objective implements Serializable {
         public int calculate(Player cardOwner){
             Map<Content, Integer> timesFound = cardOwner.getPlayerContent();
             for(Content content : Content.values()){
-                if(sequence.contains(content)){
-                    int timesFoundInSequence = sequence.stream()
-                            .filter(x -> x == content)
-                            .mapToInt(x -> 1)
-                            .reduce(0,Integer::sum);
+                int timesFoundInSequence = sequence.stream()
+                        .filter(x -> x == content)
+                        .mapToInt(x -> 1)
+                        .sum();
+                if(timesFoundInSequence != 0) {
                     timesFound.put(content, timesFound.get(content) / timesFoundInSequence);
-                }
-                else{
+                } else {
                     timesFound.remove(content);
                 }
             }
@@ -144,7 +151,7 @@ public class Objective implements Serializable {
     }
 
     /**
-     * ContentBonus implements a method that calculates the total amount of points given by an objective that gives
+     * PatternBonus implements a method that calculates the total amount of points given by an objective that gives
      * them per defined pattern occurrence of correctly colored cards; each card can only be used once to calculate
      * this particular bonus.
      */
@@ -180,9 +187,7 @@ public class Objective implements Serializable {
             //Generate a color hashmap from the player's board
             Map<Point,Content> colorHashMap = new HashMap<>(){{
                 for(BasicCard card : cardOwner.getPlacedCards()){
-                    Corner cardBLCorner = card.getAllCorners().stream()
-                            .filter(c -> c.getLocation() == Location.BL)
-                            .findAny().orElseThrow();
+                    Corner cardBLCorner = card.getCorner(Location.BL);
                     Point cardPosition = new Point(cardBLCorner.getX(), cardBLCorner.getY());
                     min.x = Math.min(cardBLCorner.getX(), min.x);
                     min.y = Math.min(cardBLCorner.getY(), min.y);

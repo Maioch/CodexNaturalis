@@ -43,11 +43,13 @@ public abstract class ClientPlayer {
      *
      * @param clientPlayer the instance to copy.
      */
+    @SuppressWarnings("CopyConstructorMissesField")
     public ClientPlayer(ClientPlayer clientPlayer) {
         this.nickname = clientPlayer.nickname;
         this.color = clientPlayer.color;
         this.placedCards = new ArrayList<>(clientPlayer.getPlacedCards());
         this.score = clientPlayer.score;
+        this.turnNumber = clientPlayer.turnNumber;
     }
 
     /**

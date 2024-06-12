@@ -29,6 +29,7 @@ public class PlayerTest {
                 new ArrayList<>(), new ArrayList<>(), new ServerSubject());
         assertEquals(testEqualPlayer, referencePlayer);
         assertNotEquals(testDifferentPlayer, referencePlayer);
+        //noinspection AssertBetweenInconvertibleTypes
         assertNotEquals(testEqualPlayer, "Test");
     }
 

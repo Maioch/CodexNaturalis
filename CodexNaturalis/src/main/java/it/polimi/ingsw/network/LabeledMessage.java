@@ -7,5 +7,4 @@ import it.polimi.ingsw.network.messages.Message;
  * @param networkHandler the handler of the client that sent the message.
  * @param message the message itself.
  */
-public record LabeledMessage(NetworkHandler networkHandler, Message message) {
-}
+public record LabeledMessage(NetworkHandler networkHandler, Message message) {}

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model.server;
 
-import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.model.server.card.BasicCard;
 import it.polimi.ingsw.model.server.card.CardBuilder;
 import it.polimi.ingsw.model.server.card.CardSides;
