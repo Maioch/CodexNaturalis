@@ -110,9 +110,6 @@ public class GameGUI implements GameView {
     @Override
     public void showUserJoined(String nickname, Content color, boolean isGameFull) {
         sceneManager.<MatchLobbyViewController>getController().updatePlayers(nickname, color);
-        System.out.println(client.getController().getPlayerColors());
-        System.out.println(nickname + isGameFull);
-        //forceUpdate(); //fix for repaint issues on windows
         if(isGameFull){
             sceneManager.changeScene("Game.fxml", client);
             sceneManager.<GameViewController>getController().initializeScene();

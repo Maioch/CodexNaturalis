@@ -57,7 +57,7 @@ public class SetupGUI implements SetupView {
         stage.setMinWidth(1280);
         stage.setMinHeight(720);
         stage.setOnCloseRequest((WindowEvent event) -> System.exit(0));
-        sceneManager = new SceneManager(stage, "Connection.fxml");
+        sceneManager = new SceneManager("Connection.fxml");
         sceneManager.getScene().setOnKeyReleased((e) -> {
             if(e.getCode() == KeyCode.F12){
                 stage.setFullScreen(!stage.isFullScreen());

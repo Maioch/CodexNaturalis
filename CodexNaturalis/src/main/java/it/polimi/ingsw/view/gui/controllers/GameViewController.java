@@ -697,8 +697,6 @@ public class GameViewController extends ViewController {
      */
     private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
         gameBoardPane.getChildren().clear();
-        System.out.println(rootAnchorPane.getWidth());
-        System.out.println(rootAnchorPane.getHeight());
         Point2D boardSize = setGameBoardPaneSize();
         Point2D center = new Point2D(boardSize.getX() / 2,
                 boardSize.getY() / 2 );

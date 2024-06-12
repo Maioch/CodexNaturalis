@@ -30,7 +30,7 @@ public class GameModel{
     private final List<Content> availableColors;
     private final Map<String, Content> playerData;
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private final List<Objective> commonObjectives; 
+    private final List<Objective> commonObjectives;
     private final int numberOfPlayers;
     private final int gameId;
 

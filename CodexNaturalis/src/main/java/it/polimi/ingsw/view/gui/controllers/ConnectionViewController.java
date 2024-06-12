@@ -59,7 +59,6 @@ public class ConnectionViewController extends ViewController {
                 ConnectionSettings.ConnectionType type = tcpRadioButton.isSelected() ?
                         ConnectionSettings.ConnectionType.TCP : ConnectionSettings.ConnectionType.RMI;
                 connectionSettings = new ConnectionSettings(ipTextBox.getText(), port, type);
-                System.out.println(connectionSettings.ip());
                 ConnectionInitializer.initializeConnection(connectionSettings, client.getController());
                 new Thread(client.getController()).start();
                 client.getController().sendMessage(new Message(Status.REQUEST_PING));

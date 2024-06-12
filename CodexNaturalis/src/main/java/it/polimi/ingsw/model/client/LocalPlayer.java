@@ -31,6 +31,7 @@ public class LocalPlayer extends ClientPlayer{
         personalObjectives = new ArrayList<>();
         validCorners = new ArrayList<>();
         validCards = new ArrayList<>();
+        handCards = new ArrayList<>();
     }
 
     /**
