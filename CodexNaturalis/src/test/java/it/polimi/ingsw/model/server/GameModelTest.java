@@ -57,9 +57,11 @@ public class GameModelTest {
             gameModel.addPlayerData(playerName, playerContent);
             gameModel.createPlayers();
             player = gameModel.getPlayer(playerName);
+            assertFalse(gameModel.isLastTurn());
             while (gameModel.getDrawableCards().get(CardType.RESOURCE).getFirst() != null) {
                 gameModel.drawCard(player, CardType.RESOURCE, 0);
             }
+            assertFalse(gameModel.isLastTurn());
             while (gameModel.getDrawableCards().get(CardType.RESOURCE).size() != 1) {
                 gameModel.drawCard(player, CardType.RESOURCE, 1);
             }
@@ -67,8 +69,30 @@ public class GameModelTest {
             while (gameModel.getDrawableCards().get(CardType.GOLD).getFirst() != null) {
                 gameModel.drawCard(player, CardType.GOLD, 0);
             }
+            assertFalse(gameModel.isLastTurn());
             while (gameModel.getDrawableCards().get(CardType.GOLD).size() != 1) {
                 gameModel.drawCard(player, CardType.GOLD, 1);
+            }
+            assertTrue(gameModel.isLastTurn());
+            gameModel = new GameModel(players, new ServerSubject(), 0);
+            gameModel.addPlayerData(playerName, playerContent);
+            gameModel.createPlayers();
+            player = gameModel.getPlayer(playerName);
+            assertFalse(gameModel.isLastTurn());
+            while (gameModel.getDrawableCards().get(CardType.GOLD).getFirst() != null) {
+                gameModel.drawCard(player, CardType.GOLD, 0);
+            }
+            assertFalse(gameModel.isLastTurn());
+            while (gameModel.getDrawableCards().get(CardType.GOLD).size() != 1) {
+                gameModel.drawCard(player, CardType.GOLD, 1);
+            }
+            assertFalse(gameModel.isLastTurn());
+            while (gameModel.getDrawableCards().get(CardType.RESOURCE).getFirst() != null) {
+                gameModel.drawCard(player, CardType.RESOURCE, 0);
+            }
+            assertFalse(gameModel.isLastTurn());
+            while (gameModel.getDrawableCards().get(CardType.RESOURCE).size() != 1) {
+                gameModel.drawCard(player, CardType.RESOURCE, 1);
             }
             assertTrue(gameModel.isLastTurn());
         } catch (IllegalNumberOfPlayers e) {
@@ -112,6 +136,16 @@ public class GameModelTest {
                         numberOfPlayers > GameParameters.getMaxPlayers());
             }
         }
+        try {
+            gameModel = new GameModel(2, new ServerSubject(), 0);
+            gameModel.addPlayerData("test", Content.BLUE);
+            GameModel finalGameModel = gameModel;
+            assertThrows(NicknameTakenException.class, () -> finalGameModel.addPlayerData("test",Content.GREEN));
+            assertThrows(GameException.class, () -> finalGameModel.addPlayerData("test2",Content.BLUE));
+        }catch (GameException | NicknameTakenException | GameFullException | IllegalNumberOfPlayers e){
+            fail();
+        }
+
     }
 
     /**
@@ -228,6 +262,131 @@ public class GameModelTest {
             assertTrue(numberOfPlayers < GameParameters.getMinPlayers() ||
                     numberOfPlayers > GameParameters.getMaxPlayers());
             fail(playerNumberFail);
+        }
+    }
+
+    @Test
+    void isLobbyEmptyTest() throws IllegalNumberOfPlayers, GameException, GameFullException, NicknameTakenException{
+        int minPlayers = GameParameters.getMinPlayers();
+        int maxPlayers = GameParameters.getMaxPlayers();
+        assertThrows(IllegalNumberOfPlayers.class, () -> new GameModel(minPlayers - 1, new ServerSubject(), 1));
+        assertThrows(IllegalNumberOfPlayers.class, () -> new GameModel(maxPlayers + 1, new ServerSubject(), 1));
+        GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
+        assertTrue(game.isLobbyEmpty());
+        game.addPlayerData("test", Content.RED);
+        assertFalse(game.isLobbyEmpty());
+    }
+
+    @Test
+    void getNumberOfPlayersTest() throws IllegalNumberOfPlayers{
+        int minPlayers = GameParameters.getMinPlayers();
+        GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
+        assertEquals(minPlayers, game.getNumberOfPlayers());
+    }
+
+    @Test
+    void getLobbyNicknamesTest() throws IllegalNumberOfPlayers, GameException, GameFullException, NicknameTakenException{
+        int minPlayers = GameParameters.getMinPlayers();
+        GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
+        assertEquals(new ArrayList<>(), game.getLobbyNicknames());
+        game.addPlayerData("test", Content.RED);
+        assertEquals(new ArrayList<>(List.of("test")), game.getLobbyNicknames());
+        game.addPlayerData("test1", Content.BLUE);
+        assertEquals(new ArrayList<>(Arrays.asList("test", "test1")), game.getLobbyNicknames());
+    }
+
+    @Test
+    void checkNicknameTest() throws IllegalNumberOfPlayers, GameException, GameFullException, NicknameTakenException{
+        int minPlayers = GameParameters.getMinPlayers();
+        GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
+        assertTrue(game.checkNickname("test"));
+        assertFalse(game.checkNickname("te st"));
+        assertFalse(game.checkNickname(String.format("test%s", GameParameters.getDelimiter())));
+        assertFalse(game.checkNickname(String.format("test%s", GameParameters.getCommandChar())));
+        assertFalse(game.checkNickname("t".repeat(GameParameters.getMaxNicknameLength() + 1)));
+        game.addPlayerData("test", Content.RED);
+        assertFalse(game.checkNickname("test"));
+    }
+
+    @Test
+    void deletePlayerDataTest() throws IllegalNumberOfPlayers, NicknameTakenException, GameFullException, GameException {
+        int minPlayers = GameParameters.getMinPlayers();
+        GameModel gameModel = new GameModel(minPlayers, new ServerSubject(), 0);
+        String nickname = "test";
+        gameModel.addPlayerData(nickname, Content.RED);
+        gameModel.deletePlayerData(nickname);
+        gameModel.deletePlayerData("test2");
+        assertFalse(gameModel.getLobbyNicknames().contains(nickname));
+        assertTrue(gameModel.getAvailableColors().contains(Content.RED));
+    }
+
+    @Test
+    void drawObjectiveCards() throws IllegalNumberOfPlayers {
+        GameModel game = new GameModel(GameParameters.getMinPlayers(), new ServerSubject(), 0);
+        int startCardIndex = GameParameters.getStartCardIndex(CardType.OBJECTIVE);
+        int endCardIndex = GameParameters.getEndCardIndex(CardType.OBJECTIVE);
+        int numberOfObjectives = endCardIndex - startCardIndex;
+        for(int i = 0; i < numberOfObjectives / GameParameters.getNumberOfDrawnSecretObjectives(); i++){
+            game.drawObjectiveCards();
+        }
+        assertThrows(DeckException.class, game::drawObjectiveCards);
+    }
+    
+    @Test
+    void isGameStuckTest() throws IllegalNumberOfPlayers, NicknameTakenException, GameFullException, GameException{
+        int minPlayers = GameParameters.getMinPlayers();
+        GameModel game = new GameModel(minPlayers, new ServerSubject(), 0);
+        assertTrue(game.isGameStuck());
+        game.addPlayerData("test", Content.RED);
+        game.addPlayerData("test1", Content.BLUE);
+        game.createPlayers();
+        assertTrue(game.isGameStuck());
+        Player player = game.getPlayer("test");
+        player.placeStarterCard(CardBuilder.buildCard(GameParameters.getStartCardIndex(CardType.STARTER)).backSide());
+        assertFalse(game.isGameStuck());
+    }
+
+    @Test
+    void getCommonObjectivesTest() throws IllegalNumberOfPlayers, NicknameTakenException, GameFullException, GameException {
+        int minPlayers = GameParameters.getMinPlayers();
+        GameModel game = new GameModel(minPlayers, new ServerSubject(), 0);
+        assertNotNull(game.getCommonObjectives());
+        assertFalse(game.getCommonObjectives().isEmpty());
+        game.addPlayerData("test", Content.GREEN);
+        game.addPlayerData("test1", Content.PURPLE);
+        game.createPlayers();
+        assertEquals(game.getCommonObjectives(), game.getPlayer("test").getObjectives());
+        assertEquals(game.getCommonObjectives(), game.getPlayer("test1").getObjectives());
+    }
+
+    @Test
+    void exceptionDrawCardTest() throws IllegalNumberOfPlayers, NicknameTakenException, GameFullException, GameException{
+        GameModel game = new GameModel(2, new ServerSubject(), 1);
+        game.addPlayerData("test", Content.RED);
+        game.addPlayerData("test1", Content.BLUE);
+        game.createPlayers();
+        try{
+            game.drawCard(game.getPlayer("test"), CardType.STARTER, 0);
+        } catch (GameException e){
+            assertEquals(e.getMessage(), "The given deck type is invalid");
+        }
+        try{
+            game.drawCard(game.getPlayer("test"), CardType.RESOURCE, -1);
+        } catch (GameException e){
+            assertEquals(e.getMessage(), "Invalid draw index");
+        }
+        try{
+            game.drawCard(game.getPlayer("test"), CardType.RESOURCE, GameParameters.getNumberOfVisibleCards() + 1);
+        } catch (GameException e){
+            assertEquals(e.getMessage(), "Invalid draw index");
+        }
+        try{
+            while (game.getDrawableCards().get(CardType.RESOURCE).getFirst() != null) {
+                game.drawCard(game.getPlayer("test"), CardType.RESOURCE, 0);
+            }
+            game.drawCard(game.getPlayer("test"), CardType.RESOURCE, 0);
+        } catch (GameException e){
+            assertEquals(e.getMessage(), "The given deck is empty");
         }
     }
 }

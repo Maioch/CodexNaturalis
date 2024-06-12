@@ -27,7 +27,7 @@ public class Deck<T>{
      * @exception DeckException if the given start-end range is illegal.
      */
     public Deck(Function<Integer,T> factoryMethod, int rangeStart, int rangeEnd) throws DeckException{
-        if (rangeStart > rangeEnd || rangeStart < 0){
+        if (rangeStart > rangeEnd || rangeStart <= 0){
             throw new DeckException("The supplied value range is not valid");
         }
         this.deck = new Stack<>();

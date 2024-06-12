@@ -81,14 +81,18 @@ public class GameParameters {
      *
      * @return the number of secret objectives which the player has to choose from.
      */
-    public static int getNumberOfDrawnSecretObjectives() { return getParameter("numberOfDrawnSecretObjectives").asInt(); }
+    public static int getNumberOfDrawnSecretObjectives() {
+        return getParameter("numberOfDrawnSecretObjectives").asInt();
+    }
 
     /**
      * Returns the time needed for the game to end by forfeit if only one player is connected.
      *
      * @return the time elapsed before the game ends by forfeit.
      */
-    public static int getForfeitTime() { return getParameter("ForfeitTime").asInt(); }
+    public static int getForfeitTime() {
+        return getParameter("ForfeitTime").asInt();
+    }
 
     /**
      * Returns the number of objectives common to all the players.
@@ -131,42 +135,54 @@ public class GameParameters {
      *
      * @return the port associated to the TCP connections from the json file.
      */
-    public static int getTCPPort() { return getParameter("TCPPort").asInt(); }
+    public static int getTCPPort() {
+        return getParameter("TCPPort").asInt();
+    }
 
     /**
      * Returns the port that the player has to enter to use the RMI technology to play the game.
      *
      * @return the port associated to the RMI connections from the json file.
      */
-    public static int getRMIPort() { return getParameter("RMIPort").asInt(); }
+    public static int getRMIPort() {
+        return getParameter("RMIPort").asInt();
+    }
 
     /**
      * Returns the maximum number of characters a player's nickname can contain.
      *
      * @return the maximum length of a nickname from the json file.
      */
-    public static int getMaxNicknameLength() { return getParameter("MaxNicknameLength").asInt(); }
+    public static int getMaxNicknameLength() {
+        return getParameter("MaxNicknameLength").asInt();
+    }
 
     /**
      * Returns the maximum number of characters a player's chat messsage can contain.
      *
      * @return the maximum length of a chat message from the json file.
      */
-    public static int getMaxChatMessageLength() { return getParameter("MaxChatMessageLength").asInt(); }
+    public static int getMaxChatMessageLength() {
+        return getParameter("MaxChatMessageLength").asInt();
+    }
 
     /**
      * Returns the number of seconds of delay between a ping and the next one.
      *
      * @return the pinging period used to guarantee clients' connection.
      */
-    public static int getPingPeriodSeconds(){ return getParameter("PingPeriodSeconds").asInt(); }
+    public static int getPingPeriodSeconds(){
+        return getParameter("PingPeriodSeconds").asInt();
+    }
 
     /**
      * Returns the maximum number of seconds a lobby can stay open before starting the game.
      *
      * @return the time elapsed before a lobby gets removed if the game hasn't started by then.
      */
-    public static int getLobbyTimeout(){ return getParameter("LobbyTimeout").asInt(); }
+    public static int getLobbyTimeout(){
+        return getParameter("LobbyTimeout").asInt();
+    }
 
     /**
      * Returns the special character used for commands in the game's CLI.
@@ -200,14 +216,18 @@ public class GameParameters {
      *
      * @return the body of the "/HELP" command during the setup phase.
      */
-    public static String getSetupHelpBody() { return getParameter("SetupHelpBody").asText(); }
+    public static String getSetupHelpBody() {
+        return getParameter("SetupHelpBody").asText();
+    }
 
     /**
      * Returns the URL of the rules of the game.
      *
      * @return the URL to which players are redirected when they use the "/GETRULES" command.
      */
-    public static String getRulesURL() { return getParameter("RulesURL").asText(); }
+    public static String getRulesURL() {
+        return getParameter("RulesURL").asText();
+    }
 
     /**
      * Returns the formatted title of the game.
@@ -223,7 +243,7 @@ public class GameParameters {
      *
      * @param parameter the parameter to retrieve from the file.
      *
-     * @return          the integer corresponding with the given parameter name.
+     * @return          the node corresponding to the given parameter.
      */
     private static JsonNode getParameter(String parameter){
         ObjectMapper objectMapper = new ObjectMapper();

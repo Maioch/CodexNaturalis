@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.TestUtilities;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.model.server.Player;
-import it.polimi.ingsw.view.cli.CardFormatter;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -118,6 +117,11 @@ public class ObjectiveTest {
         assertEquals(4, referencePatternObjective3.checkObjective());
     }
 
+    @Test
+    void getPointsTest(){
+        Objective objective = CardBuilder.buildObjective(87);
+        assertEquals(2, objective.getPoints());
+    }
 
     @Test
     void equalsTest(){
@@ -133,5 +137,6 @@ public class ObjectiveTest {
             assertEquals(objective, sameObjective);
             otherObjective = objective;
         }
+        assertNotEquals(otherObjective, "Test");
     }
 }

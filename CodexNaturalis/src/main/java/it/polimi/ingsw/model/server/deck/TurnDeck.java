@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 /**
  * TurnDeck is needed to represent resource and gold card decks.
- * Its an extension of Deck which adds a variable number of objects that can be revealed without
+ * It's an extension of Deck which adds a variable number of objects that can be revealed without
  * drawing them from the deck.
  * The visible objects are considered separate from the main stack and calling isEmpty will only inform you
  * of the status of the latter.

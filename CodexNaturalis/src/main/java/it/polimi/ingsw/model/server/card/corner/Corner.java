@@ -139,14 +139,13 @@ public class Corner implements Serializable {
      */
     @Override
     public boolean equals(Object object){
-        if(object.getClass() != this.getClass()){
-            return false;
+        if(object instanceof Corner corner) {
+            return corner.x == this.x && corner.y == this.y &&
+                    corner.visibility == this.visibility &&
+                    corner.content == this.content &&
+                    corner.location == this.location;
         }
-        Corner corner = (Corner) object;
-        return corner.x == this.x && corner.y == this.y &&
-                corner.visibility == this.visibility &&
-                corner.content == this.content &&
-                corner.location == this.location;
+        return false;
     }
 
     /**

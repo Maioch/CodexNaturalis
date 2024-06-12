@@ -2,12 +2,12 @@ package it.polimi.ingsw.model.server.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import it.polimi.ingsw.exceptions.DeckException;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.CardBuilder;
 import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
-import it.polimi.ingsw.model.server.deck.Deck;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -28,6 +28,8 @@ public class DeckTest {
      */
     @Test
     public void repeatedDrawTest() {
+        assertThrows(DeckException.class, () -> new Deck<>(CardBuilder::buildCard, endBasicCards, deckStart));
+        assertThrows(DeckException.class, () -> new Deck<>(CardBuilder::buildCard, 0, endBasicCards));
         Deck<CardSides> deckBasicCards = new Deck<>(CardBuilder::buildCard, deckStart, endBasicCards);
         Deck<Objective> deckObjectives = new Deck<>(CardBuilder::buildObjective, startObjectives, deckEnd);
         for (int i = deckStart; i <= endBasicCards + 1; i++) {

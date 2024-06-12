@@ -128,7 +128,6 @@ public class GameViewController extends ViewController {
     private final Map<String, ImageView> playerTokens = new HashMap<>();
     private final Map<String, GridPane> playerSummary = new HashMap<>();
 
-    private final int cardOffsetDivisor = 3;
     private final int toastGap = 76;
     private final int tokenSize = 30;
     private final int maxNumberOfHiddenCards = 3;
@@ -708,9 +707,9 @@ public class GameViewController extends ViewController {
         int minY = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getY()).min().orElse(0);
         int maxY = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getY()).max().orElse(0);
         double hMax = (0.5 + (maxX * (cardWidth - cornerWidth) + boardPadding) / boardSize.getX());
-        double vMax = (0.5 + (maxY * (cardHeight - cornerHeight) + boardPadding) / boardSize.getY());
+        double vMax = (0.5 + ( - minY * (cardHeight - cornerHeight) + boardPadding) / boardSize.getY());
         double hMin = (0.5 + (minX * (cardWidth - cornerWidth)  - boardPadding) / boardSize.getX());
-        double vMin = (0.5 + (minY * (cardHeight - cornerHeight) - boardPadding) / boardSize.getY());
+        double vMin = (0.5 + ( - maxY * (cardHeight - cornerHeight) - boardPadding) / boardSize.getY());
         xScrollLimiter.setMax(hMax);
         xScrollLimiter.setMin(hMin);
         yScrollLimiter.setMax(vMax);

@@ -3,8 +3,6 @@ package it.polimi.ingsw.model.server.card.corner;
 import static org.junit.jupiter.api.Assertions.*;
 
 import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.card.corner.Corner;
-import it.polimi.ingsw.model.server.card.corner.Location;
 import org.junit.jupiter.api.Test;
 
 public class CornerTest {
@@ -60,5 +58,6 @@ public class CornerTest {
         assertEquals(c0, c1);
         c1.setX(3);
         assertNotEquals(c0, c1);
+        assertNotEquals(c0, "TEST");
     }
 }

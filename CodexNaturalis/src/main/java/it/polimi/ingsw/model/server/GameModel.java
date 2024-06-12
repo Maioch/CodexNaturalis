@@ -21,7 +21,6 @@ import java.util.*;
  * This is used as the model in the MVC pattern.
  */
 public class GameModel{
-
     private final ServerSubject serverSubject;
     private final List<Player> players;
     private final TurnDeck<CardSides> resourceDeck;
@@ -29,8 +28,9 @@ public class GameModel{
     private final Deck<CardSides> starterDeck;
     private final Deck<Objective> objectiveDeck;
     private final List<Content> availableColors;
-    private final Map<String,Content> playerData;
-    private final List<Objective> commonObjectives;
+    private final Map<String, Content> playerData;
+    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+    private final List<Objective> commonObjectives; 
     private final int numberOfPlayers;
     private final int gameId;
 
@@ -118,21 +118,27 @@ public class GameModel{
      *
      * @return true if the game is empty.
      */
-    public synchronized boolean isLobbyEmpty() { return playerData.isEmpty(); }
+    public synchronized boolean isLobbyEmpty() {
+        return playerData.isEmpty();
+    }
 
     /**
      * Return's the number of players connected to this game.
      *
      * @return the players number.
      */
-    public int getNumberOfPlayers() { return numberOfPlayers; }
+    public int getNumberOfPlayers() {
+        return numberOfPlayers;
+    }
 
     /**
      * Returns the nicknames of all the players in this game.
      *
      * @return all the player's nicknames.
      */
-    public synchronized List<String> getLobbyNicknames() { return new ArrayList<>(playerData.keySet()); }
+    public synchronized List<String> getLobbyNicknames() {
+        return new ArrayList<>(playerData.keySet());
+    }
 
     /**
      * Checks the nickname chosen by a new player trying to join the game.
@@ -166,7 +172,7 @@ public class GameModel{
      *
      * @return true if it's the last turn.
      */
-    public  boolean isLastTurn() {
+    public boolean isLastTurn() {
         return (goldDeck.isEmpty() &&
                 goldDeck.getVisibleElements().isEmpty() &&
                 resourceDeck.isEmpty() &&
@@ -349,7 +355,7 @@ public class GameModel{
      *
      * @return true if the game is in deadlock.
      */
-    public  boolean isGameStuck(){
+    public boolean isGameStuck(){
         for(Player player : players){
             if(!player.isPlayerStuck()){
                 return false;

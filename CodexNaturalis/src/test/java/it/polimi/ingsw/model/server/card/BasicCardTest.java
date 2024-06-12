@@ -3,6 +3,7 @@ package it.polimi.ingsw.model.server.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,21 @@ public class BasicCardTest {
             BasicCard card = CardBuilder.buildCard(id).frontSide();
             Content color = CardBuilder.getColor(node);
             assertEquals(color, card.getColor());
+        }
+    }
+
+    @Test
+    void getCornerTest(){
+        for(int id = startResource; id <= endStarter; id++){
+            JsonNode node = CardBuilder.getCardJson(id);
+            BasicCard card = CardBuilder.buildCard(id).frontSide();
+            Set<Corner> actualCorners = CardBuilder.getCorners(node, "cornersFront");
+            for(Location loc : Location.values()){
+                Corner corner = actualCorners.stream()
+                        .filter((c) -> c.getLocation() == loc)
+                        .findFirst().orElse(null);
+                assertEquals(corner, card.getCorner(loc));
+            }
         }
     }
 
@@ -160,11 +176,37 @@ public class BasicCardTest {
     }
 
     @Test
+    void getAllResourcesTest(){
+        for(int id = startResource; id <= GameParameters.getEndCardIndex(CardType.GOLD); id++){
+            CardSides card = CardBuilder.buildCard(id);
+            List<Content> expectedBackResources = new ArrayList<>();
+            JsonNode node = CardBuilder.getCardJson(id);
+            Content cardColor = CardBuilder.getColor(node);
+            expectedBackResources.add(cardColor);
+            assertTrue(card.frontSide().getResources().isEmpty());
+            assertEquals(card.backSide().getResources(), expectedBackResources);
+        }
+        for(int id = GameParameters.getEndCardIndex(CardType.STARTER); id <= endStarter; id++){
+            CardSides card = CardBuilder.buildCard(id);
+            List<Content> expectedFrontResources = new ArrayList<>();
+            JsonNode node = CardBuilder.getCardJson(id);
+            try {
+                List<Content> contentList = CardBuilder.getContentFromArray(node, "resources");
+                expectedFrontResources.addAll(contentList);
+            } catch (NullPointerException n){
+                fail();
+            }
+            assertEquals(card.frontSide().getResources(), expectedFrontResources);
+            assertTrue(card.backSide().getResources().isEmpty());
+        }
+
+    }
+
+    @Test
     void equalsTest(){
         BasicCard otherFront = null;
         BasicCard otherBack = null;
         for(int id = startResource; id <= endStarter; id++){
-            CardSides cardSides = CardBuilder.buildCard(id);
             BasicCard front = CardBuilder.buildCard(id).frontSide();
             BasicCard back = CardBuilder.buildCard(id).backSide();
             if(otherFront != null && otherBack != null){
@@ -180,5 +222,6 @@ public class BasicCardTest {
             if(id == endResource)
                 id = startStarter - 1;
         }
+        assertNotEquals(otherFront, "Test");
     }
 }

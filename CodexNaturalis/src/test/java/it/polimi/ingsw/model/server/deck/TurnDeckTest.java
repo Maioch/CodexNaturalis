@@ -2,9 +2,9 @@ package it.polimi.ingsw.model.server.deck;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import it.polimi.ingsw.exceptions.DeckException;
 import it.polimi.ingsw.model.server.card.CardBuilder;
 import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.deck.TurnDeck;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -22,7 +22,10 @@ public class TurnDeckTest {
      */
     @Test
     void drawVisibleCardTest(){
+        assertThrows(DeckException.class, () -> new TurnDeck<>(
+                CardBuilder::buildCard, deckStart, deckEnd, deckEnd + deckStart));
         TurnDeck<CardSides> deck = new TurnDeck<>(CardBuilder::buildCard, deckStart, deckEnd, numberOfVisibleCards);
+        assertThrows(DeckException.class, () -> deck.drawVisibleElement(numberOfVisibleCards));
         int index = 0;
         try {
             while(!deck.isEmpty()) {

@@ -2,7 +2,6 @@ package it.polimi.ingsw.model.server;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import it.polimi.ingsw.model.server.Content;
 import org.junit.jupiter.api.Test;
 
 public class ContentTest {
@@ -62,5 +61,44 @@ public class ContentTest {
         assertFalse(c6.isEmpty());
         assertFalse(c7.isEmpty());
         assertTrue(c8.isEmpty());
+    }
+
+    @Test
+    void getSymbolTest(){
+        assertEquals("\u001B[41m  \u001B[m", c1.getSymbol());
+        assertEquals("\u001b[42m  \u001b[m", c2.getSymbol());
+        assertEquals("\u001b[44m  \u001b[m", c3.getSymbol());
+        assertEquals("\u001b[45m  \u001b[m", c4.getSymbol());
+        assertEquals("^^", c5.getSymbol());
+        assertEquals("[]", c6.getSymbol());
+        assertEquals("()", c7.getSymbol());
+        assertEquals("\u001b[m  \u001b[m", c8.getSymbol());
+        assertEquals("\u001b[47;1m  \u001b[m", c9.getSymbol());
+    }
+
+    @Test
+    void getTextColorStringTest(){
+        assertEquals("\u001B[31m", c1.getTextColorString());
+        assertEquals("\u001B[32m", c2.getTextColorString());
+        assertEquals("\u001B[34m", c3.getTextColorString());
+        assertEquals("\u001B[35m", c4.getTextColorString());
+        assertEquals("\u001B[0m", c5.getTextColorString());
+        assertEquals("\u001B[0m", c6.getTextColorString());
+        assertEquals("\u001B[0m", c7.getTextColorString());
+        assertEquals("\u001B[0m", c8.getTextColorString());
+        assertEquals("\u001B[0m", c9.getTextColorString());
+    }
+
+    @Test
+    void getHexColorStringTest(){
+        assertEquals("#f14624", c1.getHexColorString());
+        assertEquals("#2d853a", c2.getHexColorString());
+        assertEquals("#5cc7b1", c3.getHexColorString());
+        assertEquals("#8d1a85", c4.getHexColorString());
+        assertEquals("#FFFFFF", c5.getHexColorString());
+        assertEquals("#FFFFFF", c6.getHexColorString());
+        assertEquals("#FFFFFF", c7.getHexColorString());
+        assertEquals("#FFFFFF", c8.getHexColorString());
+        assertEquals("#FFFFFF", c9.getHexColorString());
     }
 }

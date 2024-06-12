@@ -1,18 +1,13 @@
 package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.exceptions.PlayerException;
-import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.model.server.card.*;
 import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,33 +21,15 @@ public class PlayerTest {
      */
     @Test
     public void equalsTest(){
-        Player referencePlayer = new Player(nicknames.getFirst(),
-                colors.getFirst(),
-                new ArrayList<>(Arrays.asList(
-                        CardBuilder.buildCard(32),
-                        CardBuilder.buildCard(45),
-                        CardBuilder.buildCard(67))),
-                new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                        CardBuilder.buildObjective(91))),
-                new ServerSubject());
-        Player testEqualPlayer = new Player(nicknames.getFirst(),
-                colors.getFirst(),
-                new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
-                        CardBuilder.buildCard(45),
-                        CardBuilder.buildCard(67))),
-                new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                        CardBuilder.buildObjective(91))),
-                new ServerSubject());
-        Player testDifferentPlayer = new Player(nicknames.get(1),
-                colors.getFirst(),
-                new ArrayList<>(Arrays.asList(CardBuilder.buildCard(32),
-                        CardBuilder.buildCard(45),
-                        CardBuilder.buildCard(67))),
-                new ArrayList<>(Arrays.asList(CardBuilder.buildObjective(90),
-                        CardBuilder.buildObjective(92))),
-                new ServerSubject());
-        assertEquals(testEqualPlayer,referencePlayer);
-        assertNotEquals(testDifferentPlayer,referencePlayer);
+        Player referencePlayer = new Player(nicknames.getFirst(), colors.getFirst(),
+                new ArrayList<>(), new ArrayList<>(), new ServerSubject());
+        Player testEqualPlayer = new Player(nicknames.getFirst(), colors.getFirst(),
+                new ArrayList<>(), new ArrayList<>(), new ServerSubject());
+        Player testDifferentPlayer = new Player(nicknames.getLast(), colors.getFirst(),
+                new ArrayList<>(), new ArrayList<>(), new ServerSubject());
+        assertEquals(testEqualPlayer, referencePlayer);
+        assertNotEquals(testDifferentPlayer, referencePlayer);
+        assertNotEquals(testEqualPlayer, "Test");
     }
 
     /**
@@ -124,6 +101,18 @@ public class PlayerTest {
         assertEquals(12, playerTest.awardObjectivePoints().get(1));
         assertEquals(12, playerTest.awardObjectivePoints().get(2));
         assertEquals(12, playerTest.awardObjectivePoints().get(3));
+    }
+
+    @Test
+    void getObjectivesTest(){
+        int startObjective = GameParameters.getStartCardIndex(CardType.OBJECTIVE);
+        int endObjective = GameParameters.getEndCardIndex(CardType.OBJECTIVE);
+        List<Objective> objectives = new ArrayList<>();
+        for(; startObjective <= endObjective; startObjective++){
+            objectives.add(CardBuilder.buildObjective(startObjective));
+            Player player = new Player("Test", Content.RED, new ArrayList<>(), objectives, new ServerSubject());
+            assertEquals(objectives, player.getObjectives());
+        }
     }
 
     /**
@@ -227,6 +216,15 @@ public class PlayerTest {
             }
         }};
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), new ServerSubject());
+        for(int i = GameParameters.getStartCardIndex(CardType.GOLD); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
+            Corner cornerTest = new Corner(Content.WHITE, Location.TR);
+            CardSides goldCard = CardBuilder.buildCard(i);
+            BasicCard cardWithRequirements = goldCard.frontSide();
+            playerTest.placeCard(cardWithRequirements, cornerTest);
+            assertTrue(playerTest.getHandCards().contains(goldCard));
+            assertFalse(playerTest.getPlacedCards().contains(cardWithRequirements));
+        }
+        playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), new ServerSubject());
         boolean front = true;
         int coordinates = 0;
         for(CardSides card : cardsForHand){
@@ -253,6 +251,22 @@ public class PlayerTest {
         }
     }
 
+    @Test
+    public void addPersonalObjectiveTest(){
+        List<Objective> objectives = Arrays.asList(CardBuilder.buildObjective(87), CardBuilder.buildObjective(89));
+        Objective personalObjective = CardBuilder.buildObjective(89);
+        Player playerTest = new Player(nicknames.getFirst(),
+                colors.getFirst(),
+                new ArrayList<>(),
+                objectives,
+                new ServerSubject());
+        assertEquals(playerTest.getObjectives(), objectives);
+        playerTest.addPersonalObjectives(List.of(personalObjective));
+        objectives = new ArrayList<>(objectives);
+        objectives.add(personalObjective);
+        assertEquals(playerTest.getObjectives(), objectives);
+    }
+
     /**
      * tests if the addCardToHand method is able to add cards to the player's hand
      */
@@ -263,6 +277,70 @@ public class PlayerTest {
         CardSides card = CardBuilder.buildCard(41);
         playerTest.addCardToHand(card);
         assertTrue(playerTest.getHandCards().contains(card));
+    }
+
+    @Test
+    public void getAllValidCornersTest(){
+        Player referencePlayer = new Player(
+                "test",
+                Content.RED,
+                new ArrayList<>(Arrays.asList(
+                        CardBuilder.buildCard(72),
+                        CardBuilder.buildCard(73),
+                        CardBuilder.buildCard(74)
+                )),
+                new ArrayList<>(),
+                new ServerSubject()
+        );
+        LinkedHashMap<Integer,Location> placements1 = new LinkedHashMap<>(){{
+            put(2,Location.TR);
+            put(3,Location.TR);
+            put(4, Location.TR);
+            put(15, Location.TR);
+            put(5, Location.TL);
+            put(6, Location.BL);
+            put(18, Location.TR);
+            put(7, Location.BR);
+        }};
+
+        BasicCard starter = CardBuilder.buildCard(83).frontSide();
+        starter.setOwner(referencePlayer);
+        referencePlayer.placeStarterCard(starter);
+
+        BasicCard card = TestUtilities.createTestBoard(referencePlayer, placements1, starter,true);
+        referencePlayer.placeCard(CardBuilder.buildCard(1).frontSide(),
+                card.getAllCorners().stream().findFirst().orElseThrow());
+        assertEquals(referencePlayer.getPlacedCards().stream()
+                .flatMap(b -> b.getAllCorners().stream())
+                .filter(referencePlayer::checkIfPlaceable)
+                .toList(), referencePlayer.getAllValidCorners());
+    }
+
+    @Test
+    void getAllValidCardsTest(){
+        int startResources = GameParameters.getStartCardIndex(CardType.RESOURCE);
+        int startGolds = GameParameters.getStartCardIndex(CardType.GOLD);
+        CardSides resourceCard1 = CardBuilder.buildCard(startResources);
+        CardSides resourceCard2 = CardBuilder.buildCard(startResources + 1);
+        CardSides goldCard = CardBuilder.buildCard(startGolds);
+        Player testPlayer = new Player("Test", Content.RED, new ArrayList<>(Arrays.asList(
+                resourceCard1, resourceCard2, goldCard)), new ArrayList<>(), new ServerSubject());
+        List<BasicCard> validCards = testPlayer.getAllValidCards();
+        List<BasicCard> backSides = new ArrayList<>(Arrays.asList(
+                resourceCard1.backSide(), resourceCard2.backSide(), goldCard.backSide()));
+        assertTrue(validCards.containsAll(backSides));
+        assertTrue(validCards.contains(resourceCard1.frontSide()));
+        assertTrue(validCards.contains(resourceCard2.frontSide()));
+        assertFalse(validCards.contains(goldCard.frontSide()));
+    }
+
+    @Test
+    void isPlayerStuckTest(){
+        Player playerTest = new Player("test", Content.RED,
+                new ArrayList<>(List.of(CardBuilder.buildCard(1))), new ArrayList<>(), new ServerSubject());
+        assertTrue(playerTest.isPlayerStuck());
+        playerTest.placeCard(CardBuilder.buildCard(1).backSide(), new Corner(Content.WHITE, Location.TR));
+        assertFalse(playerTest.isPlayerStuck());
     }
 
     /**
@@ -320,12 +398,24 @@ public class PlayerTest {
      */
     @Test
     public void placeStarterCardTest(){
-        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>(), new ServerSubject());
-        BasicCard starterCard = CardBuilder.buildCard(GameParameters.getStartCardIndex(CardType.STARTER)).frontSide();
+        CardSides starterCard = CardBuilder.buildCard(GameParameters.getStartCardIndex(CardType.STARTER));
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(),
+                List.of(starterCard),
+                new ArrayList<>(), new ServerSubject());
         assertTrue(playerTest.getPlacedCards().isEmpty());
-        playerTest.placeStarterCard(starterCard);
+        playerTest.placeStarterCard(starterCard.frontSide());
         assertEquals(playerTest.getPlacedCards().size(),1);
-        assertTrue(playerTest.getPlacedCards().contains(starterCard));
-        assertThrows(PlayerException.class,() -> playerTest.placeStarterCard(starterCard));
+        assertTrue(playerTest.getPlacedCards().contains(starterCard.frontSide()));
+        assertFalse(playerTest.getHandCards().contains(starterCard));
+        Player finalPlayerTest = playerTest;
+        assertThrows(PlayerException.class,() -> finalPlayerTest.placeStarterCard(starterCard.frontSide()));
+        playerTest = new Player(nicknames.getFirst(), colors.getFirst(),
+                new ArrayList<>(),
+                new ArrayList<>(), new ServerSubject());
+        CardSides otherCard = CardBuilder.buildCard(86);
+        assertFalse(playerTest.getHandCards().contains(otherCard));
+        playerTest.placeStarterCard(otherCard.frontSide());
+        assertTrue(playerTest.getPlacedCards().contains(otherCard.frontSide()));
+        assertFalse(playerTest.getHandCards().contains(otherCard));
     }
 }

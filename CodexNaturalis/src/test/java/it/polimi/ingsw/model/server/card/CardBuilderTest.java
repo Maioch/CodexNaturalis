@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.server.card;
 
 import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.card.*;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import org.junit.jupiter.api.Test;
@@ -104,6 +103,7 @@ public class CardBuilderTest {
                 new ArrayList<>(){{add(testColors.getFirst());}}, false);
         assertEquals(correctBack,testBack);
         assertEquals(correctFront,testFront);
+        assertThrows(RuntimeException.class, () -> CardBuilder.getCardJson(0));
     }
 
     /**

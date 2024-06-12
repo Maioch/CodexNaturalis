@@ -97,11 +97,10 @@ public class Objective implements Serializable {
      */
     @Override
     public boolean equals(Object object) {
-        if(object.getClass() != this.getClass()){
-            return false;
+        if(object instanceof Objective objective) {
+            return objective.objectiveId == this.objectiveId;
         }
-        Objective objective = (Objective) object;
-        return objective.objectiveId == this.objectiveId;
+        return false;
     }
 
     /**

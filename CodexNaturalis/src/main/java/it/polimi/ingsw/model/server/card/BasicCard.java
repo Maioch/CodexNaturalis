@@ -6,7 +6,6 @@ import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.Player;
 
-import java.awt.*;
 import java.io.Serializable;
 import java.util.*;
 import java.util.List;
@@ -262,9 +261,9 @@ public class BasicCard implements Serializable {
      */
     @Override
     public boolean equals(Object object){
-        if(object == null || this.getClass() != object.getClass())
-            return false;
-        BasicCard other = (BasicCard) object;
-        return this.cardId == other.cardId && this.isFront == other.isFront;
+        if(object instanceof BasicCard other) {
+            return this.cardId == other.cardId && this.isFront == other.isFront;
+        }
+        return false;
     }
 }

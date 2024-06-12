@@ -381,14 +381,9 @@ public class Player {
      */
     @Override
     public boolean equals(Object object){
-        if(this.getClass() != object.getClass())
-            return false;
-        Player other = (Player) object;
-        return this.nickname.equals(other.nickname) &&
-                this.color == other.color &&
-                this.score == other.score &&
-                this.handCards.equals(other.handCards) &&
-                this.placedCards.equals(other.placedCards) &&
-                this.objectives.equals(other.objectives);
+        if(object instanceof Player other) {
+            return this.nickname.equals(other.nickname);
+        }
+        return false;
     }
 }
