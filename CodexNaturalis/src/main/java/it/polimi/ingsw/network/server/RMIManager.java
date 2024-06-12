@@ -29,6 +29,7 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
      */
     @Override
     public void register(RMIInterface remoteInterface) throws RemoteException {
+        System.out.println("New RMI client connected");
         RMIHandler rmiHandler = new RMIHandler(messageHandler);
         rmiHandler.setReceiver(remoteInterface);
         remoteInterface.setReceiver(rmiHandler);

@@ -1,8 +1,6 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.controller.GamesManager;
-import it.polimi.ingsw.network.NetworkHandler;
-import it.polimi.ingsw.network.RMIHandler;
 import it.polimi.ingsw.network.TCPHandler;
 import it.polimi.ingsw.model.server.GameParameters;
 
@@ -11,11 +9,8 @@ import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.Naming;
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 
 /**
 * Class that acts as interface on the internet. It contains the main method for the server.
@@ -49,7 +44,7 @@ public class Server {
                 System.out.println("TCP server started on port: " + GameParameters.getTCPPort());
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("New client connected");
+                    System.out.println("New TCP client connected");
                     try {
                         TCPHandler tcpHandler = new TCPHandler(clientSocket, serverMessageHandler);
                         new Thread(tcpHandler).start();

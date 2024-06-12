@@ -484,6 +484,9 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     @Override
     public void showDisconnectionMessage(){
+        if (readInputThread != null) {
+            readInputThread.interrupt();
+        }
         disconnectionProcedure(setupCLI);
     }
 

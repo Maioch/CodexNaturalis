@@ -50,10 +50,8 @@ public abstract class ViewController {
      * @param messageToSend the message to send for eventual reconnection.
      */
     public void handleDisconnection(Message messageToSend){
-        disconnectionControls.button().setOnMouseClicked((mouseEvent -> {
-            System.out.println(messageToSend.getStatus());
-            tryReconnectToServer(client.getConnectionSettings(), messageToSend);
-        }));
+        disconnectionControls.button().setOnMouseClicked((mouseEvent ->
+                tryReconnectToServer(client.getConnectionSettings(), messageToSend)));
         disconnectionControls.popupGrid().setVisible(true);
     }
 

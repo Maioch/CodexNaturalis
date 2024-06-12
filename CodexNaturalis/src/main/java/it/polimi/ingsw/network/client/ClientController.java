@@ -159,13 +159,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * @return true whether the game is full or not
-     */
-    public synchronized boolean isGameFull(){
-        return game.isGameFull();
-    }
-
-    /**
      * Gets the game's id (identifying integer).
      * @return the game's id.
      */
@@ -207,7 +200,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
         pingTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                handleDisconnection();
+                handlePings();
             }
         }, periodSeconds * 1000L, periodSeconds * 1000L);
         while(!controllerThread.isInterrupted()) {
@@ -216,7 +209,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
                 continue;
             }
             Message message = labeledMessage.message();
-            System.out.println(message.getStatus());
             synchronized (this) {
                 if (message.getStatus() == Status.PING_ACK){
                     isDisconnected.set(false);
@@ -237,11 +229,10 @@ public class ClientController extends EventHandler<LabeledMessage> {
     /**
      * Handles (eventually) the disconnection of the client.
      */
-    private void handleDisconnection(){
+    private void handlePings(){
         if(isDisconnected.get()){
             pingTimer.cancel();
             networkHandler.stop();
-            System.out.println(gameView == null);
             eventSubmitter.submit(((gameView == null) ? setupView : gameView)::showDisconnectionMessage);
             return;
         }
@@ -312,9 +303,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
                     eventSubmitter.submit(() -> setupView.showCriticalError(Status.WRONG_NAME.getMessage()));
             case ERROR ->
                     eventSubmitter.submit(() -> setupView.showCriticalError("The lobby for this match timed out. Please create a new one."));
-            case INVALID_RECONNECT -> {
-                eventSubmitter.submit(() -> setupView.showReconnectionError(Status.INVALID_RECONNECT.getMessage()));
-            }
+            case INVALID_RECONNECT ->
+                    eventSubmitter.submit(() -> setupView.showReconnectionError(Status.INVALID_RECONNECT.getMessage()));
         }
     }
 
