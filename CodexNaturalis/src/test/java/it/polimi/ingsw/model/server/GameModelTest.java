@@ -35,7 +35,7 @@ public class GameModelTest {
         Content playerContent = Content.RED;
         int players = 2;
         try {
-            gameModel = new GameModel(players, new ServerSubject());
+            gameModel = new GameModel(players, new ServerSubject(), 0);
             gameModel.addPlayerData(playerName, playerContent);
             gameModel.createPlayers();
             Player player = gameModel.getPlayer(playerName);
@@ -53,7 +53,7 @@ public class GameModelTest {
                 previousCard = card;
             }
             assertTrue(gameModel.isLastTurn());
-            gameModel = new GameModel(players, new ServerSubject());
+            gameModel = new GameModel(players, new ServerSubject(), 0);
             gameModel.addPlayerData(playerName, playerContent);
             gameModel.createPlayers();
             player = gameModel.getPlayer(playerName);
@@ -86,7 +86,7 @@ public class GameModelTest {
         GameModel gameModel;
         for (int numberOfPlayers = GameParameters.getMinPlayers(); numberOfPlayers <= GameParameters.getMaxPlayers(); numberOfPlayers++) {
             try {
-                gameModel = new GameModel(numberOfPlayers, new ServerSubject());
+                gameModel = new GameModel(numberOfPlayers, new ServerSubject(), 0);
                 List<Content> colors = new ArrayList<>();
                 for (Content color : Arrays.stream(Content.values()).filter(Content::isColor).toList()) {
                     try {
@@ -123,7 +123,7 @@ public class GameModelTest {
         GameModel gameModel;
         int playersNumber = 2;
         try {
-            gameModel = new GameModel(playersNumber, new ServerSubject());
+            gameModel = new GameModel(playersNumber, new ServerSubject(), 0);
             gameModel.addPlayerData("resource", Content.GREEN);
             gameModel.addPlayerData("gold", Content.RED);
             gameModel.createPlayers();
@@ -178,7 +178,7 @@ public class GameModelTest {
     public void drawCardTest() throws GameException{
         int numberOfPlayers = 2;
         try {
-            GameModel gameModel = new GameModel(numberOfPlayers, new ServerSubject());
+            GameModel gameModel = new GameModel(numberOfPlayers, new ServerSubject(), 0);
             Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
             int index = 0;
             gameModel.drawCard(playerTest, CardType.RESOURCE, index);
@@ -205,7 +205,7 @@ public class GameModelTest {
     public void getWinningPlayersTest() throws GameException, GameFullException, NicknameTakenException{
         int numberOfPlayers = 2;
         try{
-            GameModel gameModel = new GameModel(numberOfPlayers, new ServerSubject());
+            GameModel gameModel = new GameModel(numberOfPlayers, new ServerSubject(), 0);
             ArrayList<String> nicknames = new ArrayList<>(Arrays.asList("test", "test2"));
 
             assertTrue(gameModel.getWinningPlayers().isEmpty());
