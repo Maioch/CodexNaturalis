@@ -14,6 +14,8 @@ import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
@@ -27,6 +29,7 @@ import javafx.scene.shape.Circle;
 
 import java.util.*;
 import java.util.Timer;
+import java.util.function.Consumer;
 
 /**
  * Class used to handle the game scene of the GUI.
@@ -116,8 +119,9 @@ public class GameViewController extends ViewController {
     private Map<String, Content> playerColors;
     private String currentViewedPlayer;
     private BasicCard draggedCard;
-    private Point2D center;
     private boolean isDrawPhase;
+    private ChangeLimiter yScrollLimiter;
+    private ChangeLimiter xScrollLimiter;
     private final List<Label> currentPermanentMessages = new ArrayList<>();
     private final Map<String, Circle> playerTagCircles = new HashMap<>();
     private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
@@ -137,6 +141,7 @@ public class GameViewController extends ViewController {
     private final int cardWidth = 150;
     private final int cardHeight = 100;
     private final int objectiveWidth = 130;
+    private final int boardPadding = 128;
 
     public void initialize(){
         setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
@@ -146,7 +151,6 @@ public class GameViewController extends ViewController {
      * Initializes the game scene and all its base components.
      */
     public void initializeScene(){
-        System.out.println(center);
         playerColors = client.getController().getPlayerColors();
         currentViewedPlayer = client.getController().getLocalPlayerName();
         int index = 0;
@@ -169,6 +173,13 @@ public class GameViewController extends ViewController {
         }
         gameBoardPane.setMinWidth(Math.max(cardWidth * 10, rootAnchorPane.getWidth() - sidePanel.getWidth()));
         gameBoardPane.setMinHeight(Math.max(cardHeight * 10, rootAnchorPane.getHeight() ));
+        setGameBoardPaneSize();
+        gameBoardScrollPane.setHvalue(0.5);
+        gameBoardScrollPane.setVvalue(0.5);
+        xScrollLimiter = new ChangeLimiter(0.5, 0.5, gameBoardScrollPane::setHvalue);
+        yScrollLimiter = new ChangeLimiter(0.5, 0.5, gameBoardScrollPane::setVvalue);
+        gameBoardScrollPane.hvalueProperty().addListener(xScrollLimiter);
+        gameBoardScrollPane.vvalueProperty().addListener(yScrollLimiter);
     }
 
     /**
@@ -689,34 +700,70 @@ public class GameViewController extends ViewController {
         gameBoardPane.getChildren().clear();
         System.out.println(rootAnchorPane.getWidth());
         System.out.println(rootAnchorPane.getHeight());
-        gameBoardPane.setMinWidth(Math.max(cardWidth * 20, rootAnchorPane.getWidth() - sidePanel.getWidth()));
-        gameBoardPane.setMinHeight(Math.max(cardWidth * 20, rootAnchorPane.getHeight()));
-        center = new Point2D(gameBoardPane.getWidth() / 2,gameBoardPane.getHeight() / 2);
+        Point2D boardSize = setGameBoardPaneSize();
+        Point2D center = new Point2D(boardSize.getX() / 2,
+                boardSize.getY() / 2 );
         int minX = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getX()).min().orElse(0);
+        int maxX = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getX()).max().orElse(0);
+        int minY = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getY()).min().orElse(0);
         int maxY = cards.stream().mapToInt(c -> c.getCorner(Location.TL).getY()).max().orElse(0);
-        double offsetX = Math.abs(minX * (cardWidth - cornerWidth)) - (center.getX() / cardOffsetDivisor);
-        double offsetY = maxY * (cardHeight - cornerHeight) - (center.getY() / cardOffsetDivisor);
-        offsetX = Math.max(offsetX, 0);
-        offsetY = Math.max(offsetY, 0);
-        System.out.println(offsetX);
+        double hMax = (0.5 + (maxX * (cardWidth - cornerWidth) + boardPadding) / boardSize.getX());
+        double vMax = (0.5 + (maxY * (cardHeight - cornerHeight) + boardPadding) / boardSize.getY());
+        double hMin = (0.5 + (minX * (cardWidth - cornerWidth)  - boardPadding) / boardSize.getX());
+        double vMin = (0.5 + (minY * (cardHeight - cornerHeight) - boardPadding) / boardSize.getY());
+        xScrollLimiter.setMax(hMax);
+        xScrollLimiter.setMin(hMin);
+        yScrollLimiter.setMax(vMax);
+        yScrollLimiter.setMin(vMin);
         for(BasicCard card : cards) {
             GridPane cardGridPane = createBoardCard(card,validCorners);
-            cardGridPane.setLayoutX(card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX() + offsetX);
-            cardGridPane.setLayoutY(- card.getCorner(Location.TL).getY() * (cardHeight - cornerHeight) + center.getY() + offsetY);
+            cardGridPane.setLayoutX(
+                    card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX() - cardWidth + cornerWidth);
+            cardGridPane.setLayoutY(
+                    -card.getCorner(Location.TL).getY() * (cardHeight - cornerHeight) + center.getY() - cardHeight + cardHeight);
             gameBoardPane.getChildren().add(cardGridPane);
         }
-        /*
-        Pane offsetPane = new Pane();
-        offsetPane.setPrefWidth(offsetX);
-        offsetPane.setPrefHeight(offsetY);
-        System.out.println(offsetX / gameBoardPane.getWidth());
-        gameBoardPane.getChildren().add(offsetPane);
-        offsetPane.setLayoutX(gameBoardPane.getWidth());
-        offsetPane.setLayoutY(gameBoardPane.getHeight());
-        gameBoardScrollPane.setHvalue(gameBoardScrollPane.getHvalue() + offsetX / gameBoardPane.getWidth());
-        gameBoardScrollPane.setVvalue(gameBoardScrollPane.getVvalue() + offsetY / gameBoardPane.getHeight());
-        System.out.println(gameBoardScrollPane.getHvalue() + offsetX / gameBoardPane.getWidth());
-        System.out.println(gameBoardScrollPane.getVvalue() - offsetY / gameBoardPane.getHeight());*/
+    }
+
+    private Point2D setGameBoardPaneSize(){
+        int maxNumberOfPlacedCards =
+                GameParameters.getEndCardIndex(CardType.STARTER) - GameParameters.getStartCardIndex(CardType.RESOURCE);
+        double maxCardsOnBoardWidth = Math.max(maxNumberOfPlacedCards, rootAnchorPane.getWidth() / cardWidth);
+        double maxCardsOnBoardHeight = Math.max(maxNumberOfPlacedCards, rootAnchorPane.getHeight() / cardHeight);
+        double paneWidth = cardWidth * maxCardsOnBoardWidth;
+        double paneHeight = cardHeight * maxCardsOnBoardHeight;
+        gameBoardPane.setPrefWidth(paneWidth);
+        gameBoardPane.setPrefHeight(paneHeight);
+        return new Point2D(paneWidth, paneHeight);
+    }
+
+    private static class ChangeLimiter implements ChangeListener<Number> {
+        private double max;
+        private double  min;
+        private final Consumer<Double> setter;
+
+        public ChangeLimiter(double max, double min, Consumer<Double> setter){
+            this.max = max;
+            this.min = min;
+            this.setter = setter;
+        }
+
+        public void setMax(double max){
+            this.max = max;
+        }
+
+        public void setMin(double min){
+            this.min = min;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+            if(newValue.doubleValue() > max){
+                setter.accept(max);
+            } else if (newValue.doubleValue() < min){
+                setter.accept(min);
+            }
+        }
     }
 
     /**
@@ -849,16 +896,16 @@ public class GameViewController extends ViewController {
             viewPlayerIcon.setOnMouseClicked((mouseEvent) -> {
                 if(checkCurrentView(nickname)) {
                     currentViewedPlayer = client.getController().getLocalPlayerName();
-                    gameBoardScrollPane.setHvalue(center.getX() / gameBoardPane.getWidth());
-                    gameBoardScrollPane.setVvalue(center.getY() / gameBoardPane.getHeight());
+                    gameBoardScrollPane.setHvalue(0.5);
+                    gameBoardScrollPane.setVvalue(0.5);
                     updateLocalPlayerCards(client.getController().getLocalPlayerHand());
                     updateLocalPlayerBoard(client.getController().getLocalPlayerBoard());
                     viewPlayerIcon.getStyleClass().remove("hideBoardIcon");
                     viewPlayerIcon.getStyleClass().add("viewBoardIcon");
                 } else {
                     currentViewedPlayer = nickname;
-                    gameBoardScrollPane.setHvalue(center.getX() / gameBoardPane.getWidth());
-                    gameBoardScrollPane.setVvalue(center.getY() / gameBoardPane.getHeight());
+                    gameBoardScrollPane.setHvalue(0.5);
+                    gameBoardScrollPane.setVvalue(0.5);
                     updateRemotePlayerCards(nickname, client.getController().getRemotePlayerHand(nickname));
                     updateRemotePlayerBoard(nickname, client.getController().getRemotePlayerBoard(nickname));
                     for(ImageView icon : playerTagViewIcons.values()){
