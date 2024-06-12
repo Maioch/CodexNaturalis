@@ -2,6 +2,7 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.model.server.card.*;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
@@ -13,9 +14,11 @@ import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
@@ -179,6 +182,7 @@ public class GameViewController extends ViewController {
         yScrollLimiter = new ChangeLimiter(0.5, 0.5, gameBoardScrollPane::setVvalue);
         gameBoardScrollPane.hvalueProperty().addListener(xScrollLimiter);
         gameBoardScrollPane.vvalueProperty().addListener(yScrollLimiter);
+        chatMessageBox.heightProperty().addListener(c -> chatScrollPane.setVvalue(1));
     }
 
     /**
@@ -195,7 +199,6 @@ public class GameViewController extends ViewController {
         messageLabel.getStyleClass().add("chatMessageLabel");
         chatMessageBox.getChildren().add(senderLabel);
         chatMessageBox.getChildren().add(messageLabel);
-        chatScrollPane.setVvalue(1);
     }
 
     /**
