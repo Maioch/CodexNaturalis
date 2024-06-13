@@ -1,9 +1,12 @@
-package it.polimi.ingsw.model.server.card;
+package it.polimi.ingsw.model.shared.card;
 
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.model.server.TestUtilities;
-import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardBuilder;
+import it.polimi.ingsw.model.shared.card.Objective;
+import it.polimi.ingsw.model.shared.card.corner.Location;
 import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
 

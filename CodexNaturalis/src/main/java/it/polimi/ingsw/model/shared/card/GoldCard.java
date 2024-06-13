@@ -1,7 +1,7 @@
-package it.polimi.ingsw.model.server.card;
+package it.polimi.ingsw.model.shared.card;
 
 import it.polimi.ingsw.exceptions.CardException;
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.Player;
 
 import java.util.ArrayList;

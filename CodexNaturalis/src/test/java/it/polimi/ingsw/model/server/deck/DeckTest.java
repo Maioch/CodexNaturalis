@@ -2,10 +2,10 @@ package it.polimi.ingsw.model.server.deck;
 
 import it.polimi.ingsw.exceptions.DeckException;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.model.server.card.CardBuilder;
-import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.card.CardType;
-import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.shared.card.CardBuilder;
+import it.polimi.ingsw.model.shared.card.CardSides;
+import it.polimi.ingsw.model.shared.card.CardType;
+import it.polimi.ingsw.model.shared.card.Objective;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

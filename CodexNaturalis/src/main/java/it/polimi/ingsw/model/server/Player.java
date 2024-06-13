@@ -1,11 +1,12 @@
 package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.exceptions.PlayerException;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.card.Objective;
-import it.polimi.ingsw.model.server.card.corner.Corner;
-import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardSides;
+import it.polimi.ingsw.model.shared.card.Objective;
+import it.polimi.ingsw.model.shared.card.corner.Corner;
+import it.polimi.ingsw.model.shared.card.corner.Location;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardHandMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;

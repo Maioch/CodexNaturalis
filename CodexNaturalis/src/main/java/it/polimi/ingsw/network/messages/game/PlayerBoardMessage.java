@@ -1,6 +1,6 @@
 package it.polimi.ingsw.network.messages.game;
 
-import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 

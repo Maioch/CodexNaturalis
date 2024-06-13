@@ -54,11 +54,6 @@ public enum Status {
     INVALID_COLOR("The chosen color is already taken. Please enter a different one."),
 
     /**
-     * Server: sends the maximum number of players of the joined game.
-     */
-    NUMBER_OF_PLAYERS(""),
-
-    /**
      * Server: notifies every player that a new one joined the match, sending its color and nickname.
      */
     NEW_PLAYER_JOINED(""),

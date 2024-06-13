@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.client;
 
-import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardSides;
 
 import java.util.ArrayList;
 import java.util.List;

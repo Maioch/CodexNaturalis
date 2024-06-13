@@ -4,12 +4,12 @@ import it.polimi.ingsw.model.client.ClientGame;
 import it.polimi.ingsw.model.client.ClientPlayer;
 import it.polimi.ingsw.model.client.LocalPlayer;
 import it.polimi.ingsw.model.client.RemotePlayer;
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.card.Objective;
-import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardSides;
+import it.polimi.ingsw.model.shared.card.Objective;
+import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.network.EventHandler;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.NetworkHandler;
@@ -151,13 +151,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
      * @return the nickname of the player with turn.
      */
     public synchronized String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
-
-    /**
-     * @return the number of players
-     */
-    public synchronized int getNumberOfPlayers(){
-        return game.getNumberOfPlayers();
-    }
 
     /**
      * Gets the game's id (identifying integer).

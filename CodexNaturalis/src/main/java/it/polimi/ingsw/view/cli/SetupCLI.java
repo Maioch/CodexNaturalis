@@ -2,7 +2,7 @@ package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.client.ConnectionSettings;

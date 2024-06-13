@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.server;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.polimi.ingsw.model.server.card.CardType;
+import it.polimi.ingsw.model.shared.card.CardType;
 
 import java.io.IOException;
 
@@ -158,7 +158,7 @@ public class GameParameters {
     }
 
     /**
-     * Returns the maximum number of characters a player's chat messsage can contain.
+     * Returns the maximum number of characters a player's chat message can contain.
      *
      * @return the maximum length of a chat message from the json file.
      */

@@ -1,13 +1,13 @@
 package it.polimi.ingsw.view.cli;
 
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.card.CardType;
-import it.polimi.ingsw.model.server.card.Objective;
-import it.polimi.ingsw.model.server.card.corner.Corner;
-import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardSides;
+import it.polimi.ingsw.model.shared.card.CardType;
+import it.polimi.ingsw.model.shared.card.Objective;
+import it.polimi.ingsw.model.shared.card.corner.Corner;
+import it.polimi.ingsw.model.shared.card.corner.Location;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;

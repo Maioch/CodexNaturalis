@@ -1,12 +1,16 @@
-package it.polimi.ingsw.model.server.card;
+package it.polimi.ingsw.model.shared.card;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.exceptions.CardException;
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.model.server.card.corner.Corner;
-import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardBuilder;
+import it.polimi.ingsw.model.shared.card.CardSides;
+import it.polimi.ingsw.model.shared.card.CardType;
+import it.polimi.ingsw.model.shared.card.corner.Corner;
+import it.polimi.ingsw.model.shared.card.corner.Location;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

@@ -1,9 +1,10 @@
 package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.exceptions.PlayerException;
-import it.polimi.ingsw.model.server.card.*;
-import it.polimi.ingsw.model.server.card.corner.Corner;
-import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.model.shared.card.*;
+import it.polimi.ingsw.model.shared.card.corner.Corner;
+import it.polimi.ingsw.model.shared.card.corner.Location;
 import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
 

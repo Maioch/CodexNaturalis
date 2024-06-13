@@ -1,9 +1,9 @@
 package it.polimi.ingsw.model.client;
 
-import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardType;
-import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardType;
+import it.polimi.ingsw.model.shared.card.Objective;
 import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 
@@ -22,7 +22,6 @@ public class ClientGame {
     private final List<RemotePlayer> remotePlayers;
     private List<Objective> commonObjectives;
     private ClientPlayer playerWithTurn;
-    private final Object playerWithTurnLock;
     private final EventSubmitter eventSubmitter;
     private final GameView gameView;
     private final int gameId;
@@ -43,7 +42,6 @@ public class ClientGame {
         this.commonObjectives = new ArrayList<>();
         this.playerWithTurn = null;
         this.numberOfPlayers = numberOfPlayers;
-        this.playerWithTurnLock = new Object();
         this.gameId = gameId;
     }
 
@@ -52,7 +50,7 @@ public class ClientGame {
      *
      * @return true if it's full, false otherwise
      */
-    public synchronized boolean isGameFull(){
+    public boolean isGameFull(){
         return remotePlayers.size() + 1 == numberOfPlayers;
     }
 
@@ -61,7 +59,7 @@ public class ClientGame {
      *
      * @return the number of players.
      */
-    public synchronized int getNumberOfPlayers() {
+    public int getNumberOfPlayers() {
         return numberOfPlayers;
     }
 
@@ -99,7 +97,7 @@ public class ClientGame {
      *
      * @return the remote players.
      */
-    public synchronized List<RemotePlayer> getRemotePlayers(){
+    public List<RemotePlayer> getRemotePlayers(){
         return new ArrayList<>(){{
             for(RemotePlayer remotePlayer : remotePlayers){
                 add(new RemotePlayer(remotePlayer));
@@ -122,7 +120,7 @@ public class ClientGame {
      *
      * @return each player's nickname and his color.
      */
-    public synchronized Map<String, Content> getPlayerColors(){
+    public Map<String, Content> getPlayerColors(){
         Map<String, Content> playersColors = new LinkedHashMap<>();
         List<ClientPlayer> players = new ArrayList<>(){{
             add(localPlayer);
@@ -138,7 +136,7 @@ public class ClientGame {
     /**
      * Adds a player to this remote players list.
      */
-    public synchronized void addRemotePlayer(RemotePlayer player){
+    public void addRemotePlayer(RemotePlayer player){
         remotePlayers.add(player);
         player.setViewReferences(gameView, eventSubmitter);
         boolean gameFull = isGameFull();
@@ -152,7 +150,7 @@ public class ClientGame {
      *
      * @param nickname the nickname of the player to remove.
      */
-    public synchronized void removeRemotePlayer(String nickname){
+    public void removeRemotePlayer(String nickname){
         Content playerColor = getPlayerColors().get(nickname) != null ?
                 getPlayerColors().get(nickname) :
                 Content.WHITE;
@@ -176,9 +174,7 @@ public class ClientGame {
      * @return the player that has the turn.
      */
     public ClientPlayer getPlayerWithTurn(){
-        synchronized (playerWithTurnLock) {
-            return playerWithTurn;
-        }
+        return playerWithTurn;
     }
 
     /**
@@ -187,14 +183,12 @@ public class ClientGame {
      * @param nickname the nickname of the player that has the turn.
      */
     public void setPlayerWithTurn(String nickname) {
-        synchronized (playerWithTurnLock) {
-            ClientPlayer remotePlayerWithTurn = remotePlayers.stream()
-                    .filter(p -> p.getNickname().equals(nickname))
-                    .findFirst()
-                    .orElse(null);
-            playerWithTurn = remotePlayerWithTurn == null ? localPlayer : remotePlayerWithTurn;
-        }
-        eventSubmitter.submit(() -> gameView.turnChanged(nickname));
+        ClientPlayer remotePlayerWithTurn = remotePlayers.stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst()
+                .orElse(null);
+        playerWithTurn = remotePlayerWithTurn == null ? localPlayer : remotePlayerWithTurn;
+        eventSubmitter.submit(() -> gameView.turnChanged(playerWithTurn.getNickname()));
     }
 
     /**

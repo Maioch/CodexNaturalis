@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.server.card.corner;
+package it.polimi.ingsw.model.shared.card.corner;
 
 /**
  * Location represents the position of the corner relative to the card (for example: BL -> bottom left, TR -> top right).

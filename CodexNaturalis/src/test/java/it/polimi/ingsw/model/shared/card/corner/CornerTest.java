@@ -1,6 +1,8 @@
-package it.polimi.ingsw.model.server.card.corner;
+package it.polimi.ingsw.model.shared.card.corner;
 
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.model.shared.card.corner.Corner;
+import it.polimi.ingsw.model.shared.card.corner.Location;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

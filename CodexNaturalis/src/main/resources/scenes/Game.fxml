@@ -396,7 +396,8 @@
          </columnConstraints>
          <rowConstraints>
             <RowConstraints minHeight="16.0" prefHeight="16.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="-Infinity" minHeight="470.0" prefHeight="${sidePanel.width * 0.86}" vgrow="SOMETIMES" />
+            <!--suppress XmlUnresolvedReference -->
+             <RowConstraints maxHeight="-Infinity" minHeight="470.0" prefHeight="${sidePanel.width * 0.86}" vgrow="SOMETIMES" />
             <RowConstraints minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="-Infinity" minHeight="116.0" prefHeight="110.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="-Infinity" minHeight="110.0" prefHeight="110.0" vgrow="SOMETIMES" />
@@ -509,7 +510,8 @@
                         </font>
                      </Label>
                      <Pane styleClass="titleDivider" GridPane.rowIndex="1" />
-                     <Pane fx:id="scorePane" prefHeight="${scorePane.width * 1.833}" prefWidth="${scoreGridPane.width}" styleClass="scoreCard" GridPane.rowIndex="2">
+                     <!--suppress XmlUnresolvedReference -->
+                      <Pane fx:id="scorePane" prefHeight="${scorePane.width * 1.833}" prefWidth="${scoreGridPane.width}" styleClass="scoreCard" GridPane.rowIndex="2">
                         <children>
                            <GridPane alignment="CENTER" layoutX="45.0" layoutY="367.0">
                               <columnConstraints>

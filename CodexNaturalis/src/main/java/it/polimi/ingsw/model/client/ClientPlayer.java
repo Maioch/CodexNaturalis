@@ -1,9 +1,9 @@
 package it.polimi.ingsw.model.client;
 
-import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardSides;
+import it.polimi.ingsw.model.shared.card.Objective;
 import it.polimi.ingsw.view.EventSubmitter;
 import it.polimi.ingsw.view.GameView;
 
@@ -140,5 +140,13 @@ public abstract class ClientPlayer {
     public void setFinalScore(Map<Objective, Integer> scoresByObjective, Integer finalScore){
         this.score = finalScore;
         eventSubmitter.submit(() -> gameView.revealFinalSummary(getNickname(), scoresByObjective, score));
+    }
+
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof ClientPlayer other){
+            return this.nickname.equals(other.nickname);
+        }
+        return false;
     }
 }

@@ -12,6 +12,7 @@ import java.net.Socket;
  */
 
 public class TCPHandler extends NetworkHandler implements Runnable{
+
     private final ObjectOutputStream socketOutput;
     private final ObjectInputStream socketInput;
     private Thread handlerThread;

@@ -1,7 +1,7 @@
-package it.polimi.ingsw.model.server.card.corner;
+package it.polimi.ingsw.model.shared.card.corner;
 
 
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
 
 import java.io.Serializable;
 

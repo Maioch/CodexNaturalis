@@ -1,6 +1,6 @@
 package it.polimi.ingsw.network.messages.setup;
 
-import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 

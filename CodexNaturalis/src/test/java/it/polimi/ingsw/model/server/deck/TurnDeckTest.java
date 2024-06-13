@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.server.deck;
 
 import it.polimi.ingsw.exceptions.DeckException;
-import it.polimi.ingsw.model.server.card.CardBuilder;
-import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.shared.card.CardBuilder;
+import it.polimi.ingsw.model.shared.card.CardSides;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

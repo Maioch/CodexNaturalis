@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.server.card;
+package it.polimi.ingsw.model.shared.card;
 
 import it.polimi.ingsw.model.server.Player;
 

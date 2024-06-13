@@ -1,10 +1,10 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.model.server.Content;
-import it.polimi.ingsw.model.server.card.BasicCard;
-import it.polimi.ingsw.model.server.card.CardSides;
-import it.polimi.ingsw.model.server.card.CardType;
-import it.polimi.ingsw.model.server.card.Objective;
+import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.model.shared.card.BasicCard;
+import it.polimi.ingsw.model.shared.card.CardSides;
+import it.polimi.ingsw.model.shared.card.CardType;
+import it.polimi.ingsw.model.shared.card.Objective;
 import it.polimi.ingsw.network.messages.game.ChatMessage;
 
 import java.util.List;

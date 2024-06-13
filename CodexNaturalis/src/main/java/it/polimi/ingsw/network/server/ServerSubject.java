@@ -11,6 +11,7 @@ import java.util.Map;
  * in the game model.
  */
 public class ServerSubject {
+
     private final Map<String, NetworkHandler> networkHandlers;
 
     /**

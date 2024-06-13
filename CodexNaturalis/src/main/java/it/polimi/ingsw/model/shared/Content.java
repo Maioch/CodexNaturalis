@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.server;
+package it.polimi.ingsw.model.shared;
 
 /**
  * Content represents every possible symbol contained in cards.

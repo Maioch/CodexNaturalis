@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.server.card;
+package it.polimi.ingsw.model.shared.card;
 
 /**
 * CardType represents the four possible type of cards in the game.
