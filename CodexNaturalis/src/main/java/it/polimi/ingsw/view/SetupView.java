@@ -1,9 +1,9 @@
 package it.polimi.ingsw.view;
 
-import java.util.List;
-
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.model.server.Content;
+
+import java.util.List;
 
 public interface SetupView extends ReconnectableView{
     void updateMatchList(List<GameInfo> matchList);

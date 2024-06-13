@@ -6,8 +6,11 @@ import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
-import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.network.messages.game.*;
+import it.polimi.ingsw.network.messages.Status;
+import it.polimi.ingsw.network.messages.game.CardHandMessage;
+import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
+import it.polimi.ingsw.network.messages.game.PlayerBoardMessage;
+import it.polimi.ingsw.network.messages.game.PlayerSummaryMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.*;

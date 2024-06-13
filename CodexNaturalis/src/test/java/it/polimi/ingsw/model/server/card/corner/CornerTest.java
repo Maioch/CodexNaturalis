@@ -1,9 +1,9 @@
 package it.polimi.ingsw.model.server.card.corner;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import it.polimi.ingsw.model.server.Content;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CornerTest {
     @Test

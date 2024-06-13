@@ -19,8 +19,9 @@ import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.view.GameView;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.Queue;
+import java.util.*;
 
 /**
  * The CLI associated to the gameplay phase.
@@ -55,7 +56,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         for(CardType cardType : CardType.values()){
             List<BasicCard> deckCardList = drawableCards.get(cardType);
             if(deckCardList != null && !deckCardList.isEmpty()) {
-                System.out.print("\n" + i);
+                System.out.print("\nDeck " + i);
                 if(numberOfCardsLeft.get(cardType) >= numberOfDeckCardThreshold){
                     System.out.printf(" (more than %d cards left in this deck)\n", numberOfDeckCardThreshold);
                 }

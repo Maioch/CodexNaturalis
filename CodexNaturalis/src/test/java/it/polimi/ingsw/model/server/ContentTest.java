@@ -1,8 +1,8 @@
 package it.polimi.ingsw.model.server;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ContentTest {
     private final Content c1 = Content.RED;

@@ -1,7 +1,5 @@
 package it.polimi.ingsw.model.server.deck;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import it.polimi.ingsw.exceptions.DeckException;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.CardBuilder;
@@ -11,6 +9,8 @@ import it.polimi.ingsw.model.server.card.Objective;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Guglielmo Gatti

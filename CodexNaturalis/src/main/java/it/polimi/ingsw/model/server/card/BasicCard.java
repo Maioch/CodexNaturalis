@@ -1,14 +1,13 @@
 package it.polimi.ingsw.model.server.card;
 
 import it.polimi.ingsw.exceptions.CardException;
-import it.polimi.ingsw.model.server.card.corner.Corner;
-import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.Player;
+import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.model.server.card.corner.Location;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**

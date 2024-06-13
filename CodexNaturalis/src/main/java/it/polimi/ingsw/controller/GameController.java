@@ -1,15 +1,9 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.exceptions.*;
-import it.polimi.ingsw.network.LabeledMessage;
-import it.polimi.ingsw.network.NetworkHandler;
-import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.network.messages.game.*;
-import it.polimi.ingsw.network.messages.generic.IntegerMessage;
-import it.polimi.ingsw.network.messages.generic.StringMessage;
-import it.polimi.ingsw.network.messages.setup.GameColorsMessage;
-import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
-import it.polimi.ingsw.network.server.ServerSubject;
+import it.polimi.ingsw.exceptions.GameException;
+import it.polimi.ingsw.exceptions.GameFullException;
+import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
+import it.polimi.ingsw.exceptions.NicknameTakenException;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameModel;
 import it.polimi.ingsw.model.server.GameParameters;
@@ -19,9 +13,18 @@ import it.polimi.ingsw.model.server.card.CardSides;
 import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
+import it.polimi.ingsw.network.LabeledMessage;
+import it.polimi.ingsw.network.NetworkHandler;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
+import it.polimi.ingsw.network.messages.game.*;
+import it.polimi.ingsw.network.messages.generic.IntegerMessage;
+import it.polimi.ingsw.network.messages.generic.StringMessage;
+import it.polimi.ingsw.network.messages.setup.GameColorsMessage;
+import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
+import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 

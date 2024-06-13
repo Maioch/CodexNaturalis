@@ -8,10 +8,11 @@ import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Francesco Nisoli, Guglielmo Gatti, Andrea Fidanza

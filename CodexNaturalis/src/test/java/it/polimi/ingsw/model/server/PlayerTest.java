@@ -2,9 +2,9 @@ package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.exceptions.PlayerException;
 import it.polimi.ingsw.model.server.card.*;
-import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
+import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

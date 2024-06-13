@@ -4,9 +4,7 @@ import it.polimi.ingsw.exceptions.MapperException;
 import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.network.client.Client;
-import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
-import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
@@ -14,7 +12,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.function.Predicate;
 
 /**

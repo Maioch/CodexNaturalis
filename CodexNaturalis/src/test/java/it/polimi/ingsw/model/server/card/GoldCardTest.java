@@ -2,18 +2,19 @@ package it.polimi.ingsw.model.server.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.exceptions.CardException;
-import it.polimi.ingsw.network.server.ServerSubject;
 import it.polimi.ingsw.model.server.Content;
+import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
-import it.polimi.ingsw.model.server.Player;
+import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GoldCardTest {
     private final int startGold = 41;

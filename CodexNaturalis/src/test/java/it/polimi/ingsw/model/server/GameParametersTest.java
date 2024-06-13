@@ -2,6 +2,7 @@ package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.model.server.card.CardType;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameParametersTest {

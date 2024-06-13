@@ -5,7 +5,10 @@ import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Message sent to show the drawable cards.

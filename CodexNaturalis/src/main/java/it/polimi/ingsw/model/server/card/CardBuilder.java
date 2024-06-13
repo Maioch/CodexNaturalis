@@ -2,15 +2,15 @@ package it.polimi.ingsw.model.server.card;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
-import it.polimi.ingsw.model.server.Content;
 
-import java.io.IOException;
-import java.util.*;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
+import java.util.*;
 
 /**
  * CardBuilder creates the cards in the game, by reading their information from a json file.

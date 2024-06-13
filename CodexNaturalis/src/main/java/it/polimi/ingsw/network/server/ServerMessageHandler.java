@@ -5,16 +5,17 @@ import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GamesManager;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.EventHandler;
-import it.polimi.ingsw.network.messages.*;
-import it.polimi.ingsw.network.messages.generic.StringMessage;
+import it.polimi.ingsw.network.LabeledMessage;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
+import it.polimi.ingsw.network.messages.generic.StringMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.MatchListMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
 
-import java.util.*;
+import java.util.List;
 
 /**
 * Class that handles the messages sent by the clients and received by the server.

@@ -2,7 +2,10 @@ package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.model.server.card.*;
+import it.polimi.ingsw.model.server.card.BasicCard;
+import it.polimi.ingsw.model.server.card.CardSides;
+import it.polimi.ingsw.model.server.card.CardType;
+import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
 import it.polimi.ingsw.network.messages.Message;
@@ -24,7 +27,7 @@ import javafx.scene.effect.BlurType;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -32,7 +35,6 @@ import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 
 import java.util.*;
-import java.util.Timer;
 import java.util.function.Consumer;
 
 /**
@@ -551,9 +553,7 @@ public class GameViewController extends ViewController {
         if(!checkCurrentView(client.getController().getLocalPlayerName())){
             return;
         }
-
-        List<Corner> corners = client.getController().getLocalPlayerValidCorners();
-        generateBoard(placedCards, corners);
+        generateBoard(placedCards);
     }
 
     /**
@@ -566,8 +566,7 @@ public class GameViewController extends ViewController {
         if(!checkCurrentView(nickname)){
             return;
         }
-
-        generateBoard(placedCards,new ArrayList<>());
+        generateBoard(placedCards);
     }
 
     /**
@@ -698,9 +697,8 @@ public class GameViewController extends ViewController {
      * Generates the board. This method, always firstly clears the current board.
      *
      * @param cards the board's placed cards.
-     * @param validCorners the boards valid corners.
      */
-    private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
+    private void generateBoard(List<BasicCard> cards){
         gameBoardPane.getChildren().clear();
         currentCornersOnBoard.clear();
         Point2D boardSize = setGameBoardPaneSize();
@@ -719,7 +717,7 @@ public class GameViewController extends ViewController {
         yScrollLimiter.setMax(vMax);
         yScrollLimiter.setMin(vMin);
         for(BasicCard card : cards) {
-            GridPane cardGridPane = createBoardCard(card,validCorners);
+            GridPane cardGridPane = createBoardCard(card);
             cardGridPane.setLayoutX(
                     card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX() - cardWidth / 2d);
             cardGridPane.setLayoutY(
@@ -1021,10 +1019,9 @@ public class GameViewController extends ViewController {
      * A board card, is an already placed card on which other cards could be placed (according to the placing rules).
      *
      * @param card the board card from which create the GridPane.
-     * @param validCorners the list of corners on which placings are admitted.
      * @return the created card board GridPane.
      */
-    private GridPane createBoardCard(BasicCard card, List<Corner> validCorners){
+    private GridPane createBoardCard(BasicCard card){
         GridPane boardCardGrid = new GridPane();
         boardCardGrid.setPrefWidth(cardWidth);
         boardCardGrid.setPrefHeight(cardHeight);

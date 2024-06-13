@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model.server.deck;
 
 import it.polimi.ingsw.exceptions.DeckException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
