@@ -130,30 +130,30 @@ public class ClientGameTest {
         game.addRemotePlayer((RemotePlayer) players.get(2));
         testView.getRecentCalls();
 
-        game.setPlayerWithTurn(nonExistent);
+        game.setPlayerWithTurn(nonExistent, true);
         Map<Method, List<Object>> recentCalls = testView.getRecentCalls();
         assertEquals(recentCalls.entrySet().size(),1);
         List<Object> updateContent = recentCalls.get(getMethod("turnChanged", String.class));
         assertEquals(local, updateContent.getFirst());
         assertEquals(local, game.getPlayerWithTurn().getNickname());
 
-        game.setPlayerWithTurn(remote1);
+        game.setPlayerWithTurn(remote1, true);
         recentCalls = testView.getRecentCalls();
         assertEquals(recentCalls.entrySet().size(),1);
         updateContent = recentCalls.get(getMethod("turnChanged", String.class));
         assertEquals(remote1, updateContent.getFirst());
         assertEquals(remote1, game.getPlayerWithTurn().getNickname());
 
-        game.setPlayerWithTurn(local);
+        game.setPlayerWithTurn(local, true);
         recentCalls = testView.getRecentCalls();
         assertEquals(recentCalls.entrySet().size(),1);
         updateContent = recentCalls.get(getMethod("turnChanged", String.class));
         assertEquals(local, updateContent.getFirst());
         assertEquals(local, game.getPlayerWithTurn().getNickname());
 
-        assertEquals(players.getFirst(), game.getPlayerWithNickname("test"));
-        assertEquals(players.get(1), game.getPlayerWithNickname("test1"));
-        assertEquals(players.get(2), game.getPlayerWithNickname("test2"));
+        game.setPlayerWithTurn(remote1, false);
+        recentCalls = testView.getRecentCalls();
+        assertEquals(recentCalls.entrySet().size(),0);
     }
 
     @Test

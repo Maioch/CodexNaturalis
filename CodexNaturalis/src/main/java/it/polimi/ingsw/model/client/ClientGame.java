@@ -182,13 +182,16 @@ public class ClientGame {
      *
      * @param nickname the nickname of the player that has the turn.
      */
-    public void setPlayerWithTurn(String nickname) {
+    public void setPlayerWithTurn(String nickname, boolean show) {
         ClientPlayer remotePlayerWithTurn = remotePlayers.stream()
                 .filter(p -> p.getNickname().equals(nickname))
                 .findFirst()
                 .orElse(null);
         playerWithTurn = remotePlayerWithTurn == null ? localPlayer : remotePlayerWithTurn;
-        eventSubmitter.submit(() -> gameView.turnChanged(playerWithTurn.getNickname()));
+        String playerNickname = playerWithTurn.getNickname();
+        if (show) {
+            eventSubmitter.submit(() -> gameView.turnChanged(playerNickname));
+        }
     }
 
     /**

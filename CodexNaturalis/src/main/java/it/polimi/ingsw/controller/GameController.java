@@ -134,7 +134,7 @@ public class GameController implements Runnable{
         }
         serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards(), game.getNumberOfCardsLeft()));
         for(Player player : game.getAllPlayers()){
-            serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, player.getNickname()));
+            serverSubject.notify(nickname, new StringMessage(Status.SILENT_TURN_NOTIFICATION, player.getNickname()));
             serverSubject.notify(nickname, new PlayerBoardMessage(player.getPlacedCards(), player.getScore()));
             if(player.getNickname().equals(nickname)){
                 serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, player.getHandCards()));
@@ -547,11 +547,11 @@ public class GameController implements Runnable{
             }
         }
         //last turn of the game
+        serverSubject.notifyAll(new Message(Status.LAST_TURN));
         for (Player player : game.getAllPlayers()) {
             if(game.isGameStuck()){
                 break;
             }
-            serverSubject.notifyAll(new Message(Status.LAST_TURN));
             updateTurn(player.getNickname());
             if(player.isPlayerStuck()){
                 serverSubject.notifyAll(new Message(Status.NO_MOVES));

@@ -327,7 +327,12 @@ public class ClientController extends EventHandler<LabeledMessage> {
             }
             case TURN_NOTIFICATION -> {
                 if (message instanceof StringMessage stringMessage) {
-                    game.setPlayerWithTurn(stringMessage.getString());
+                    game.setPlayerWithTurn(stringMessage.getString(), true);
+                }
+            }
+            case SILENT_TURN_NOTIFICATION -> {
+                if (message instanceof StringMessage stringMessage){
+                    game.setPlayerWithTurn(stringMessage.getString(), false);
                 }
             }
             case DRAW_OPTIONS -> {
@@ -372,7 +377,10 @@ public class ClientController extends EventHandler<LabeledMessage> {
                             validPlacementsMessage.getPlaceableCorners());
                 }
             }
-            case NO_MOVES -> eventSubmitter.submit(() -> gameView.showNoMovesAvailable());
+            case NO_MOVES -> {
+                String player = game.getPlayerWithTurn().getNickname();
+                eventSubmitter.submit(() -> gameView.showNoMovesAvailable(player));
+            }
             case PLACEMENT_OK -> {
                 if (message instanceof PlayerBoardMessage playerBoardMessage) {
                     ClientPlayer playerWithTurn = game.getPlayerWithTurn();

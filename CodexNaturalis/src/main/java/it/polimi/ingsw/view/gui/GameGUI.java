@@ -299,12 +299,11 @@ public class GameGUI implements GameView {
      * Notifies the player that he cannot do any move.
      */
     @Override
-    public void showNoMovesAvailable() {
-        String turnOwner = client.getController().getPlayerWithTurn();
+    public void showNoMovesAvailable(String nickname) {
         sceneManager.<GameViewController>getController().updateStatusLabel(
-                turnOwner.equals(client.getController().getLocalPlayerName()) ?
-                String.format("%s, you can no longer make any more moves", turnOwner) :
-                String.format("%s cannot make any more moves", turnOwner)
+                nickname.equals(client.getController().getLocalPlayerName()) ?
+                String.format("%s, you can no longer make any more moves", nickname) :
+                String.format("%s cannot make any more moves", nickname)
         );
     }
 

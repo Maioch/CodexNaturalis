@@ -74,6 +74,12 @@ public enum Status {
     TURN_NOTIFICATION(""),
 
     /**
+     * Server: sends to every player the username of the player who is supposed to play the turn without updating the view.
+     * Used in reconnection.
+     */
+    SILENT_TURN_NOTIFICATION(""),
+
+    /**
      * Server: sends to the client the player's hand cards.
      * Client: sends the side of the starter card that the player wants to place.
      */

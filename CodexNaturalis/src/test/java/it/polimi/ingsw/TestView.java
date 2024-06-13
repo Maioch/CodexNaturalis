@@ -255,10 +255,10 @@ public class TestView implements SetupView, GameView {
     }
 
     @Override
-    public void showNoMovesAvailable() {
+    public void showNoMovesAvailable(String nickname) {
         try {
-            recentCalls.put(TestView.class.getDeclaredMethod("showNoMovesAvailable"),
-                    new ArrayList<>());
+            recentCalls.put(TestView.class.getDeclaredMethod("showNoMovesAvailable", String.class),
+                    List.of(nickname));
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

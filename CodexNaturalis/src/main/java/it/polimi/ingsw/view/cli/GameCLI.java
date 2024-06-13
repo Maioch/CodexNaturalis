@@ -466,16 +466,15 @@ public class GameCLI extends AbstractCLI implements GameView {
      * Method used to notify the client that someone is out of moves.
      */
     @Override
-    public void showNoMovesAvailable() {
+    public void showNoMovesAvailable(String nickname) {
         Map<String, Content> playerColors = client.getController().getPlayerColors();
         String localPlayerName = client.getController().getLocalPlayerName();
-        String turnOwner = client.getController().getPlayerWithTurn();
-        if(turnOwner.equals(localPlayerName)){
+        if(nickname.equals(localPlayerName)){
             System.out.printf("%s, you can no longer make any more moves ;(\n",
-                    playerColors.get(localPlayerName).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString());
+                    playerColors.get(localPlayerName).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         }else{
             System.out.printf("%s cannot make any more moves ;)\n",
-                    playerColors.get(turnOwner).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString());
+                    playerColors.get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         }
     }
 
