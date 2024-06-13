@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.shared.card;
 
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
 import org.junit.jupiter.api.Test;
