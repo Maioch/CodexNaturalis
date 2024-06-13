@@ -23,10 +23,13 @@ import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
@@ -431,11 +434,11 @@ public class GameViewController extends ViewController {
                     cardSelectionGrid.add(backView, 0, 1);
                     if(!validCards.contains(card.frontSide())){
                         frontView.setDisable(true);
-                        frontView.setEffect(new ColorAdjust(0,0,0,-0.8));
+                        styleInvalidCard(frontView);
                     }
                     if(!validCards.contains(card.backSide())){
                         backView.setDisable(true);
-                        backView.setEffect(new ColorAdjust(0,0,0,-0.8));
+                        styleInvalidCard(backView);
                     }
                     backView.setDisable(!validCards.contains(card.backSide()));
                     GridPane.setColumnIndex(cardSelectionPopup, finalIndex);
@@ -725,6 +728,15 @@ public class GameViewController extends ViewController {
         }
     }
 
+    private void styleInvalidCard(ImageView imageView){
+        imageView.getStyleClass().clear();
+        ColorAdjust colorAdjust = new ColorAdjust(0,-0.7,0,0);
+        DropShadow dropShadow = new DropShadow(
+                BlurType.GAUSSIAN, Color.rgb(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
+        dropShadow.setInput(colorAdjust);
+        imageView.setEffect(dropShadow);
+    }
+
     private Point2D setGameBoardPaneSize(){
         int maxNumberOfPlacedCards =
                 GameParameters.getEndCardIndex(CardType.STARTER) - GameParameters.getStartCardIndex(CardType.RESOURCE);
@@ -808,10 +820,9 @@ public class GameViewController extends ViewController {
             cardView.setDisable(true);
             int finalIndex = index;
             cardView.setOnMouseClicked((mouseEvent) -> client.getController().sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
-            cardView.setOnMouseClicked((mouseEvent) -> client.getController().sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
             if(index == 0){
                 int j = 0;
-                while(j < numberOfCardsLeft && j < maxNumberOfHiddenCards){
+                while(j < numberOfCardsLeft - 1 && j < maxNumberOfHiddenCards){
                     ImageView hiddenCardView = createHiddenCard();
                     deckGrid.add(hiddenCardView, index, 0);
                     hiddenCardView.setTranslateY(-distanceBetweenHiddenCards * j);
