@@ -724,9 +724,9 @@ public class GameViewController extends ViewController {
         for(BasicCard card : cards) {
             GridPane cardGridPane = createBoardCard(card,validCorners);
             cardGridPane.setLayoutX(
-                    card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX() - cardWidth + cornerWidth);
+                    card.getCorner(Location.TL).getX() * (cardWidth - cornerWidth)  + center.getX() - cardWidth / 2d);
             cardGridPane.setLayoutY(
-                    -card.getCorner(Location.TL).getY() * (cardHeight - cornerHeight) + center.getY() - cardHeight + cardHeight);
+                    -card.getCorner(Location.TL).getY() * (cardHeight - cornerHeight) + center.getY());
             gameBoardPane.getChildren().add(cardGridPane);
         }
     }
