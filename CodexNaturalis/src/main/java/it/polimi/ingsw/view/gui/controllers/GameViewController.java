@@ -32,6 +32,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.Timer;
@@ -124,7 +125,6 @@ public class GameViewController extends ViewController {
 
     private Map<String, Content> playerColors;
     private String currentViewedPlayer;
-    private BasicCard draggedCard;
     private boolean isDrawPhase;
     private ChangeLimiter yScrollLimiter;
     private ChangeLimiter xScrollLimiter;
@@ -133,6 +133,7 @@ public class GameViewController extends ViewController {
     private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
     private final Map<String, ImageView> playerTokens = new HashMap<>();
     private final Map<String, GridPane> playerSummary = new HashMap<>();
+    private final List<Pair<Pane,Corner>> currentCornersOnBoard = new ArrayList<>();
 
     private final int toastGap = 76;
     private final int tokenSize = 30;
@@ -147,6 +148,7 @@ public class GameViewController extends ViewController {
     private final int cardHeight = 100;
     private final int objectiveWidth = 130;
     private final int boardPadding = 128;
+    private final int draggableCardSizeDifference = 10;
 
     public void initialize(){
         setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
@@ -703,6 +705,7 @@ public class GameViewController extends ViewController {
      */
     private void generateBoard(List<BasicCard> cards, List<Corner> validCorners){
         gameBoardPane.getChildren().clear();
+        currentCornersOnBoard.clear();
         Point2D boardSize = setGameBoardPaneSize();
         Point2D center = new Point2D(boardSize.getX() / 2,
                 boardSize.getY() / 2 );
@@ -955,9 +958,11 @@ public class GameViewController extends ViewController {
      */
     private ImageView createDraggableCard(BasicCard card) {
         ImageView view = getCardImage(card);
-        ImageView draggableCard = getCardImage(card);
+        Pane draggableCard = new Pane();
+        draggableCard.setPrefWidth(cardWidth - draggableCardSizeDifference);
+        draggableCard.setPrefHeight(cardHeight - draggableCardSizeDifference);
         draggableCard.getStyleClass().add("draggableCard");
-        draggableCard.setMouseTransparent(true);
+        draggableCard.setStyle(String.format("-fx-background-image: url('%s')", CardAssetsProvider.getCardFilePath(card)));
         if(client.getController().getLocalPlayerValidCards().contains(card)) {
             view.setOnDragDetected((MouseEvent e) -> {
                 if (!dragLayerPane.getChildren().contains(draggableCard)) {
@@ -966,12 +971,36 @@ public class GameViewController extends ViewController {
                 draggableCard.setVisible(true);
                 cardSelectionPopup.setVisible(false);
                 view.startFullDrag();
-                draggedCard = card;
             });
         }
-        view.setOnMouseReleased((MouseEvent e) -> draggableCard.setVisible(false));
+        view.setOnMouseReleased((MouseEvent e) -> {
+            if(dragLayerPane.getChildren().contains(draggableCard)){
+                List<Pair<Pane, Corner>> overlappedCorners = new ArrayList<>();
+                for (Pair<Pane, Corner> dragPair : currentCornersOnBoard) {
+                    System.out.println(dragPair.getKey().getBoundsInLocal());
+                    System.out.println(draggableCard.getLayoutBounds());
+                    Bounds draggedCardBounds = draggableCard.localToScreen(draggableCard.getBoundsInLocal());
+                    Bounds cornerBounds = dragPair.getKey().localToScreen(dragPair.getKey().getLayoutBounds());
+                    if (draggedCardBounds.intersects(cornerBounds)) {
+                        if(overlappedCorners.stream().anyMatch(p -> p.getKey().getParent() == dragPair.getKey().getParent())){
+                            draggableCard.setVisible(false);
+                            return;
+                        }
+                        overlappedCorners.add(dragPair);
+                    }
+                }
+                for(Pair<Pane, Corner> dragPair : overlappedCorners){
+                    if(client.getController().getLocalPlayerValidCorners().contains(dragPair.getValue())){
+                        client.getController().sendMessage(
+                                new CardPlacementMessage(card, dragPair.getValue()));
+                        break;
+                    }
+                }
+                draggableCard.setVisible(false);
+            }
+        });
         view.setOnMouseDragged((MouseEvent e) -> {
-            draggableCard.setLayoutX(e.getSceneX() - draggableCard.getFitWidth() / 2);
+            draggableCard.setLayoutX(e.getSceneX() - draggableCard.getWidth() / 2);
             draggableCard.setLayoutY(e.getSceneY() - draggableCard.getLayoutBounds().getHeight() / 2);
         });
         return view;
@@ -1005,21 +1034,24 @@ public class GameViewController extends ViewController {
         boardCardGrid.getStyleClass().add("boardCard");
         boardCardGrid.setStyle(String.format("-fx-background-image: url('%s')", CardAssetsProvider.getCardFilePath(card)));
         //boardCardGrid.setGridLinesVisible(true);
+        RowConstraints rowConstraints = new RowConstraints(cardHeight / 2d);
+        ColumnConstraints columnConstraints = new ColumnConstraints(cardWidth / 2d);
+        rowConstraints.setFillHeight(false);
+        columnConstraints.setFillWidth(false);
         boardCardGrid.getColumnConstraints().addAll(
-                new ColumnConstraints(cardWidth - cornerWidth), new ColumnConstraints(cardWidth - cornerWidth));
+                columnConstraints, columnConstraints);
         boardCardGrid.getRowConstraints().addAll(
-                new RowConstraints(cardHeight - cornerHeight), new RowConstraints(cardHeight - cornerHeight));
+                rowConstraints, rowConstraints);
         for(Corner corner : card.getAllCorners()){
             Pane dragTarget = new Pane();
+            GridPane.setValignment(dragTarget, corner.getLocation().getY() == 1 ? VPos.TOP : VPos.BOTTOM);
+            GridPane.setVgrow(dragTarget, Priority.NEVER);
+            GridPane.setHalignment(dragTarget,  corner.getLocation().getX() == 1 ? HPos.RIGHT : HPos.LEFT);
+            GridPane.setVgrow(dragTarget, Priority.NEVER);
+            dragTarget.setPrefHeight(cornerHeight);
+            dragTarget.setPrefWidth(cornerWidth);
             boardCardGrid.add(dragTarget, corner.getLocation().getX(), 1 - corner.getLocation().getY());
-            if(validCorners.contains(corner)){
-                dragTarget.setOnMouseDragReleased((MouseEvent e) -> {
-                    if(draggedCard == null){
-                        return;
-                    }
-                    client.getController().sendMessage(new CardPlacementMessage(draggedCard, corner));
-                });
-            }
+            currentCornersOnBoard.add(new Pair<>(dragTarget,corner));
         }
         return boardCardGrid;
     }
