@@ -4,7 +4,7 @@ import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
 import it.polimi.ingsw.model.server.Content;
 import it.polimi.ingsw.model.server.GameParameters;
-import it.polimi.ingsw.network.client.ClientController;
+import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
@@ -25,21 +25,22 @@ import java.util.regex.Pattern;
  * reception phase, before entering an actual game.
  */
 public class SetupCLI extends AbstractCLI implements SetupView {
-
+    private final Client client;
     /**
      * Constructor for the class.
      */
-    public SetupCLI(){}
+    public SetupCLI(){
+        CLIActionHandler cliActionHandler = new CLIActionHandler();
+        this.client = new Client(new TerminalSubmitter(cliActionHandler), this);
+        new Thread(cliActionHandler).start();
+    }
 
     /**
-     * The method asks the player the ip address and the port of the server, then it makethem choose if they
+     * The method asks the player the ip address and the port of the server, then it make them choose if they
      * want to connect using socket or RMI protocol: the method then handles the connection.
      */
     public void startCLI(){
-        CLIActionHandler cliActionHandler = new CLIActionHandler();
-        this.terminalSubmitter = new TerminalSubmitter(cliActionHandler);
-        this.controller = new ClientController(this, terminalSubmitter);
-        new Thread(cliActionHandler).start();
+        client.createController();
         boolean isConnected = false;
         while (!isConnected) {
             String ip = readFromInput("Please enter the IP of the server you want to play on: ",
@@ -56,10 +57,10 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                     true);
             ConnectionSettings.ConnectionType type = (protocol == 1) ?
                     ConnectionSettings.ConnectionType.TCP : ConnectionSettings.ConnectionType.RMI;
-            connectionSettings = new ConnectionSettings(ip, port, type);
-            isConnected = tryConnect(controller);
+            client.setConnectionSettings(new ConnectionSettings(ip, port, type));
+            isConnected = tryConnect(client);
             if(isConnected){
-                controller.sendMessage(new Message(Status.REQUEST_GAMES));
+                client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
             }
         }
     }
@@ -118,7 +119,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 }
             }
         }
-        controller.sendMessage(messageToSend);
+        client.getController().sendMessage(messageToSend);
     }
 
     /**
@@ -128,7 +129,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     @Override
     public void newGameSuccess(int gameId){
         System.out.println("You've successfully created a new match! Its ID is: " + gameId);
-        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
+        client.getController().sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
     }
 
     /**
@@ -138,7 +139,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     @Override
     public void showCriticalError(String message){
         System.out.println(message);
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -167,7 +168,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                         && !s.contains(GameParameters.getCommandChar()) && !s.contains(GameParameters.getDelimiter())),
                 this::stringIdentity,
                 true);
-        controller.sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, colors.get(colorIndex), null, gameId));
+        client.getController().sendMessage(new JoinGameMessage(Status.JOIN_GAME, nickname, colors.get(colorIndex), null, gameId));
     }
 
     /**
@@ -179,7 +180,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     @Override
     public void showUserError(String message, int gameId){
         System.out.println(message);
-        controller.sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
+        client.getController().sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
     }
 
     /**
@@ -189,20 +190,20 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers){
         System.out.println("\nYou have successfully joined the game!");
         System.out.printf("It will start when %d players join...\n", numberOfPlayers);
-        GameCLI gameCLI = new GameCLI(controller, terminalSubmitter, connectionSettings, this);
-        controller.setGameView(gameCLI);
+        GameCLI gameCLI = new GameCLI(client);
+        client.getController().setGameView(gameCLI);
     }
 
     @Override
     public void showDisconnectionMessage(){
-        disconnectionProcedure(this);
+        disconnectionProcedure();
     }
 
     @Override
     public void showReconnectionError(String message){
         System.out.println(message);
         readFromInput("Press ENTER to go back to the match list", (s) -> true, this::stringIdentity, false);
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -230,13 +231,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         }
     }
 
-    /**
-     * Gets the conventionally chosen message to send when the user disconnects in the current scene.
-     *
-     * @return a request available games message.
-     */
-    @Override
-    public Message getReconnectMessage(){
-        return new Message(Status.REQUEST_GAMES);
+    public void disconnectionProcedure(){
+        super.disconnectionProcedure(client);
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 }

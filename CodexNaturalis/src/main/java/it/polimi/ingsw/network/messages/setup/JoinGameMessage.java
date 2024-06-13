@@ -20,8 +20,9 @@ public class JoinGameMessage extends Message {
      * @param status   the status of the message.
      * @param nickname the player's nickname.
      * @param color    the player's color.
-     * @param gameInfo the newly created game's number of players e qualcos'altro.
-     * @param gameId   the ID of the game.
+     * @param gameInfo the game's number of players if the status is JOIN_GAME,
+     *                 or the player's turn number if the status is NEW_PLAYER_JOINED
+     * @param gameId   the ID of the game associated with the join request
      */
     public JoinGameMessage(Status status, String nickname, Content color, Integer gameInfo, Integer gameId){
         super(status);

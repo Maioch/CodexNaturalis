@@ -21,7 +21,6 @@ public class ClientGame {
     private final LocalPlayer localPlayer;
     private final List<RemotePlayer> remotePlayers;
     private List<Objective> commonObjectives;
-    private Map<CardType, List<BasicCard>> drawableOptions;
     private ClientPlayer playerWithTurn;
     private final Object playerWithTurnLock;
     private final EventSubmitter eventSubmitter;
@@ -69,31 +68,11 @@ public class ClientGame {
     public int getGameId() { return gameId; }
 
     /**
-     * Returns the summary of all the cards the player can draw in a given moment.
-     * The returned cards are divided by type.
-     *
-     * @return a map that contains all the drawable cards.
-     */
-    public Map<CardType, List<BasicCard>> getDrawableOptions() {
-        return new HashMap<>(){{
-            for(Map.Entry<CardType,List<BasicCard>> entry : drawableOptions.entrySet()) {
-                List<BasicCard> newValue = new ArrayList<>(){{
-                    for(BasicCard card : entry.getValue()){
-                        add(card.copy());
-                    }
-                }};
-                put(entry.getKey(), newValue);
-            }
-        }};
-    }
-
-    /**
      * Updates the cards that can be drawn by a player.
      *
      * @param drawableOptions the cards the player can draw from.
      */
     public void setDrawableOptions(Map<CardType, List<BasicCard>> drawableOptions, Map<CardType,Integer> numberOfCardsLeft) {
-        this.drawableOptions = new HashMap<>(drawableOptions);
         eventSubmitter.submit(() -> gameView.updateDecks(drawableOptions, numberOfCardsLeft));
     }
 
@@ -103,7 +82,6 @@ public class ClientGame {
      * @param drawableOptions the cards the player can draw from.
      */
     public void requestDraw(Map<CardType, List<BasicCard>> drawableOptions, Map<CardType, Integer> numberOfCardsLeft) {
-        this.drawableOptions = new HashMap<>(drawableOptions);
         eventSubmitter.submit(() -> gameView.requestDraw(drawableOptions, numberOfCardsLeft));
     }
 

@@ -3,6 +3,7 @@ package it.polimi.ingsw.view.cli;
 import it.polimi.ingsw.exceptions.MapperException;
 import it.polimi.ingsw.exceptions.TCPException;
 import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.client.ClientController;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.client.ConnectionSettings;
@@ -20,10 +21,6 @@ import java.util.function.Predicate;
  * Abstract class that contains all the methods used to handle the client's inputs.
  */
 public abstract class AbstractCLI {
-    protected ClientController controller;
-    protected TerminalSubmitter terminalSubmitter;
-    protected ConnectionSettings connectionSettings;
-
     /**
      * Method used to read the client's inputs.
      * @param prompt the message printed to ask the client to input something.
@@ -134,11 +131,11 @@ public abstract class AbstractCLI {
      *
      * @return true if the connection is set without errors, false otherwise.
      */
-    protected boolean tryConnect(ClientController currentController){
+    protected boolean tryConnect(Client client){
         try {
-            ConnectionInitializer.initializeConnection(connectionSettings, currentController);
-            new Thread(currentController).start();
-            currentController.sendMessage(new Message(Status.REQUEST_PING));
+            ConnectionInitializer.initializeConnection(client.getConnectionSettings(), client.getController());
+            new Thread(client.getController()).start();
+            client.getController().sendMessage(new Message(Status.REQUEST_PING));
             System.out.println(GameParameters.getTitle());
             return true;
         } catch (TCPException e) {
@@ -156,21 +153,12 @@ public abstract class AbstractCLI {
     /**
      * Shows that the client has disconnected. Tries to reconnect to the server.
      */
-    public void disconnectionProcedure(SetupCLI setupCLI){
-        controller.stop();
-        ClientController newController = new ClientController(setupCLI, terminalSubmitter);
+    protected void disconnectionProcedure(Client client){
+        client.getController().stop();
+        client.createController();
         do {
             readFromInput("\nOh no, your castings seem to not be received by us, codex gods... \nPress ENTER to try to reconnect",
                     (s) -> true, this::stringIdentity, false);
-        } while (!tryConnect(newController));
-        newController.sendMessage(getReconnectMessage());
-        setupCLI.controller = newController;
+        } while (!tryConnect(client));
     }
-
-    /**
-     * Gets the conventionally chosen message to send when the user disconnects in the current scene.
-     *
-     * @return the reconnect message to send.
-     */
-    protected abstract Message getReconnectMessage();
 }

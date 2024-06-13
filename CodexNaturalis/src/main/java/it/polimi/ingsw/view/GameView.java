@@ -35,5 +35,4 @@ public interface GameView extends ReconnectableView{
     void notifyGameCanceled();
     void notifyTurnSkipped();
     void showNoMovesAvailable();
-    void closeView();
 }

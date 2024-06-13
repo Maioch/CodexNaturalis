@@ -317,9 +317,4 @@ public class GameGUI implements GameView {
         sceneManager.getController().handleDisconnection(new JoinGameMessage(
                 Status.RECONNECT, playerName, null, null, gameId));
     }
-
-    @Override
-    public void closeView() {
-
-    }
 }

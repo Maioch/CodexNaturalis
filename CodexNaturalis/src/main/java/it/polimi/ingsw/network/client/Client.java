@@ -20,24 +20,12 @@ public class Client {
         this.eventSubmitter = eventSubmitter;
     }
 
-    public static void main(String[] args) {
-        if(args.length != 0 && args[0].equals("-cli")){
-            new SetupCLI().startCLI();
-        }else{
-            Application.launch(CodexApplication.class, args);
-        }
-    }
-
     public ClientController getController() {
         return controller;
     }
 
     public void createController() {
         this.controller = new ClientController(setupView, eventSubmitter);
-    }
-
-    public EventSubmitter getEventSubmitter() {
-        return eventSubmitter;
     }
 
     public void setConnectionSettings(ConnectionSettings connectionSettings) {
@@ -48,7 +36,11 @@ public class Client {
         return connectionSettings;
     }
 
-    public SetupView getSetupView() {
-        return setupView;
+    public static void main(String[] args) {
+        if(args.length != 0 && args[0].equals("-cli")){
+            new SetupCLI().startCLI();
+        }else{
+            Application.launch(CodexApplication.class, args);
+        }
     }
 }

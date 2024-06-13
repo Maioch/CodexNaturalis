@@ -8,8 +8,7 @@ import it.polimi.ingsw.model.server.card.CardType;
 import it.polimi.ingsw.model.server.card.Objective;
 import it.polimi.ingsw.model.server.card.corner.Corner;
 import it.polimi.ingsw.model.server.card.corner.Location;
-import it.polimi.ingsw.network.client.ClientController;
-import it.polimi.ingsw.network.client.ConnectionSettings;
+import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.game.CardPlacementMessage;
@@ -30,19 +29,16 @@ import java.util.List;
 public class GameCLI extends AbstractCLI implements GameView {
 
     private Thread readInputThread;
+    private final Client client;
     private final Queue<ChatMessage> chatMessageQueue;
-    private final SetupCLI setupCLI;
     private final int numberOfDeckCardThreshold = 4;
 
     /**
      * Constructor for the class.
-     * @param controller the controller for the client that will be using the CLI.
+     * @param client the client for the client that will be using the CLI.
      */
-    public GameCLI(ClientController controller, TerminalSubmitter terminalSubmitter, ConnectionSettings connectionSettings, SetupCLI setupCLI) {
-        this.terminalSubmitter = terminalSubmitter;
-        this.connectionSettings = connectionSettings;
-        this.controller = controller;
-        this.setupCLI = setupCLI;
+    public GameCLI(Client client) {
+        this.client = client;
         chatMessageQueue = new LinkedList<>();
     }
 
@@ -80,7 +76,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                         list.getLast() >= 1 && list.getLast() <= GameParameters.getNumberOfVisibleCards() + 1),
                 this::stringToListInt,
                 true);
-        controller.sendMessage(new DrawChoiceMessage(choice.getLast() - 1, CardType.values()[choice.getFirst() - 1]));
+        client.getController().sendMessage(new DrawChoiceMessage(choice.getLast() - 1, CardType.values()[choice.getFirst() - 1]));
     }
 
     /**
@@ -89,7 +85,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void showChatMessage(ChatMessage chatMessage){
-        if(controller.getPlayerWithTurn().equals(controller.getLocalPlayerName())){
+        if(client.getController().getPlayerWithTurn().equals(client.getController().getLocalPlayerName())){
             chatMessageQueue.add(chatMessage);
         }else{
             printChatMessage(chatMessage.getMessage(), chatMessage.getSender(), chatMessage.getRecipients());
@@ -104,11 +100,11 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     private void printChatMessage(String message, String sender, List<String> recipients){
         StringBuilder sb = new StringBuilder();
-        Map<String, Content> playerColors = controller.getPlayerColors();
+        Map<String, Content> playerColors = client.getController().getPlayerColors();
         sb.append(playerColors.get(sender).getTextColorString())
                 .append(sender)
                 .append(Content.EMPTY.getTextColorString());
-        if(recipients.size() != controller.getRemotePlayerNames().size()) {
+        if(recipients.size() != client.getController().getRemotePlayerNames().size()) {
             sb.append(" says to ");
             for (String recipient : recipients) {
                 sb.append(playerColors.get(sender).getTextColorString())
@@ -129,8 +125,8 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards){
-        List<BasicCard> validCards = controller.getLocalPlayerValidCards();
-        List<Corner> validCorners = controller.getLocalPlayerValidCorners();
+        List<BasicCard> validCards = client.getController().getLocalPlayerValidCards();
+        List<Corner> validCorners = client.getController().getLocalPlayerValidCorners();
         System.out.println("\nPLACEMENT PHASE");
         System.out.println("\nThese are the cards in your hand: ");
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList()));
@@ -162,7 +158,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                 (i -> i >= 1 && i <= validPositions.size()),
                 this::stringToInt,
                 true) - 1;
-        controller.sendMessage(new CardPlacementMessage(validCards.get(cardIndex), validCorners.get(cornerIndex)));
+        client.getController().sendMessage(new CardPlacementMessage(validCards.get(cardIndex), validCorners.get(cornerIndex)));
     }
 
     /**
@@ -175,9 +171,9 @@ public class GameCLI extends AbstractCLI implements GameView {
             ChatMessage chatMessage = chatMessageQueue.poll();
             printChatMessage(chatMessage.getMessage(),chatMessage.getSender(),chatMessage.getRecipients());
         }
-        Map<String, Content> playerColors = controller.getPlayerColors();
+        Map<String, Content> playerColors = client.getController().getPlayerColors();
         String coloredTurnOwner =  playerColors.get(turnOwner).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString();
-        if(!turnOwner.equals(controller.getLocalPlayerName())) {
+        if(!turnOwner.equals(client.getController().getLocalPlayerName())) {
             System.out.printf("\n%s is playing their turn...\n", coloredTurnOwner);
             if(readInputThread == null || !readInputThread.isAlive()) {
                 readInputThread = new Thread(() -> readFromInput("", ((c) -> false), this::stringIdentity, true));
@@ -207,7 +203,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void showUserJoined(String player, Content color, boolean isGameFull){
-        if (!player.equals(controller.getLocalPlayerName())) {
+        if (!player.equals(client.getController().getLocalPlayerName())) {
             System.out.println("   " +  color.getTextColorString() + player + Content.EMPTY.getTextColorString() + " joined your game!");
         }
     }
@@ -255,7 +251,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                 this::stringToInt,
                 true);
         BasicCard chosenStarter = chosenSide == 1 ? starterCard.frontSide() : starterCard.backSide();
-        controller.sendMessage(new CardPlacementMessage(chosenStarter, null));
+        client.getController().sendMessage(new CardPlacementMessage(chosenStarter, null));
     }
 
     /**
@@ -267,7 +263,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void updateBoard(String nickname, List<BasicCard> placedCards, int score){
         System.out.printf("\nHere are %s's current placed cards (centered on his last placed card): \n",
-                controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
+                client.getController().getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         int x = placedCards.isEmpty() ? 0 : placedCards.getLast().getCorner(Location.BL).getX();
         int y = placedCards.isEmpty() ? 0 : placedCards.getLast().getCorner(Location.BL).getY();
         System.out.println(CardFormatter.getPlayerBoardString(placedCards, x, y));
@@ -289,7 +285,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                 l -> l.stream().allMatch(i -> i >= 1 && i <= objectives.size()) && l.size() == numberOfSecretObjectives,
                 this::stringToListInt,
                 true);
-        controller.sendMessage(new ObjectivesMessage(Status.REQUEST_SECRET_OBJECTIVES,
+        client.getController().sendMessage(new ObjectivesMessage(Status.REQUEST_SECRET_OBJECTIVES,
                 chosenObjective.stream().map(i -> objectives.get(i - 1)).toList()));
     }
 
@@ -367,8 +363,8 @@ public class GameCLI extends AbstractCLI implements GameView {
      * Method used to show the client all the objectives, both common and personal.
      */
     private void showObjectives(){
-        showCommonObjectives(controller.getCommonObjectives());
-        showPersonalObjectives(controller.getPersonalObjectives());
+        showCommonObjectives(client.getController().getCommonObjectives());
+        showPersonalObjectives(client.getController().getPersonalObjectives());
     }
 
     /**
@@ -380,7 +376,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore){
         System.out.printf("\nHere's a recap of %s's match: \n",
-                controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
+                client.getController().getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         for(Map.Entry<Objective, Integer> entry : objectivePoints.entrySet()){
             System.out.print(CardFormatter.getObjectiveInfoString(entry.getKey()));
             System.out.println("   • points gained through this objective: " + entry.getValue());
@@ -403,8 +399,8 @@ public class GameCLI extends AbstractCLI implements GameView {
                 s -> s.equalsIgnoreCase("back"),
                 this::stringIdentity,
                 false);
-        controller.backToSetup();
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        client.getController().backToSetup();
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -434,7 +430,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void notifyRemotePlayerReconnected(String nickname) {
         System.out.printf("\n%s is back!",
-                controller.getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
+                client.getController().getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
     }
 
     /**
@@ -443,8 +439,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void notifyGameCanceled(){
         System.out.println("The game took too long to start, and it has been canceled.");
-        controller.backToSetup();
-        controller.sendMessage(new Message(Status.REQUEST_GAMES));
+        client.getController().backToSetup();
+        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -470,9 +466,9 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void showNoMovesAvailable() {
-        Map<String, Content> playerColors = controller.getPlayerColors();
-        String localPlayerName = controller.getLocalPlayerName();
-        String turnOwner = controller.getPlayerWithTurn();
+        Map<String, Content> playerColors = client.getController().getPlayerColors();
+        String localPlayerName = client.getController().getLocalPlayerName();
+        String turnOwner = client.getController().getPlayerWithTurn();
         if(turnOwner.equals(localPlayerName)){
             System.out.printf("%s, you can no longer make any more moves ;(\n",
                     playerColors.get(localPlayerName).getTextColorString() + turnOwner + Content.EMPTY.getTextColorString());
@@ -487,14 +483,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         if (readInputThread != null) {
             readInputThread.interrupt();
         }
-        disconnectionProcedure(setupCLI);
-    }
-
-    /**
-     * Method not implemented for the TUI.
-     */
-    @Override
-    public void closeView() {
+        disconnectionProcedure();
     }
 
     /**
@@ -507,7 +496,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @SuppressWarnings("SlowListContainsAll")
     private void sendChatMessage(String arguments){
-        if(controller.getPlayerWithTurn().equals(controller.getLocalPlayerName())){
+        if(client.getController().getPlayerWithTurn().equals(client.getController().getLocalPlayerName())){
             System.out.println("You cannot send chat messages while your turn is in progress");
             return;
         }
@@ -515,10 +504,10 @@ public class GameCLI extends AbstractCLI implements GameView {
         String[] splitArgs = arguments.split(" ",2);
         String chatMessage = !recipients.isEmpty() ? splitArgs[1] : arguments;
         if(recipients.isEmpty()){
-            recipients = controller.getRemotePlayerNames();
+            recipients = client.getController().getRemotePlayerNames();
         }
-        if(controller.getRemotePlayerNames().containsAll(recipients)){
-            controller.sendMessage(new ChatMessage(chatMessage,null, recipients));
+        if(client.getController().getRemotePlayerNames().containsAll(recipients)){
+            client.getController().sendMessage(new ChatMessage(chatMessage,null, recipients));
         }else{
             System.out.println("Some of the recipients couldn't be found. The message wasn't sent.");
         }
@@ -565,10 +554,11 @@ public class GameCLI extends AbstractCLI implements GameView {
                         break;
                     }
                 }
-                if(controller.getRemotePlayerNames().contains(splitArgs[0])){
-                    System.out.println(CardFormatter.getPlayerBoardString(controller.getRemotePlayerBoard(splitArgs[0]), viewX, viewY));
-                }else if(controller.getLocalPlayerName().equals(splitArgs[0])){
-                    System.out.println(CardFormatter.getPlayerBoardString(controller.getLocalPlayerBoard(), viewX, viewY));
+                if(client.getController().getRemotePlayerNames().contains(splitArgs[0])){
+                    System.out.println(CardFormatter
+                            .getPlayerBoardString(client.getController().getRemotePlayerBoard(splitArgs[0]), viewX, viewY));
+                }else if(client.getController().getLocalPlayerName().equals(splitArgs[0])){
+                    System.out.println(CardFormatter.getPlayerBoardString(client.getController().getLocalPlayerBoard(), viewX, viewY));
                 }else{
                     System.out.printf("User %s couldn't be found...\n", splitArgs[0]);
                 }
@@ -582,11 +572,11 @@ public class GameCLI extends AbstractCLI implements GameView {
      * @param argument the arguments string.
      */
     private void showHandCards(String argument){
-        if(argument.equals(controller.getLocalPlayerName())){
-            List<CardSides> hand = controller.getLocalPlayerHand();
+        if(argument.equals(client.getController().getLocalPlayerName())){
+            List<CardSides> hand = client.getController().getLocalPlayerHand();
             updateLocalPlayerHand(hand);
-        }else if(controller.getRemotePlayerNames().contains(argument)){
-            List<BasicCard> hand = controller.getRemotePlayerHand(argument);
+        }else if(client.getController().getRemotePlayerNames().contains(argument)){
+            List<BasicCard> hand = client.getController().getRemotePlayerHand(argument);
             System.out.printf("These are %s's cards: \n", argument);
             System.out.println("Back side:\n" + CardFormatter.getCardsInfoString(hand.stream().toList()));
         }else{
@@ -594,13 +584,10 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
-    /**
-     * Gets the conventionally chosen message to send when the user disconnects in the current scene.
-     *
-     * @return a JoinGameMessage with RECONNECT status.
-     */
-    @Override
-    public Message getReconnectMessage(){
-        return new JoinGameMessage(Status.RECONNECT, controller.getLocalPlayerName(), null, null, controller.getGameId());
+    public void disconnectionProcedure(){
+        String localPlayerName = client.getController().getLocalPlayerName();
+        int gameId = client.getController().getGameId();
+        disconnectionProcedure(client);
+        client.getController().sendMessage(new JoinGameMessage(Status.RECONNECT, localPlayerName, null, null, gameId));
     }
 }
