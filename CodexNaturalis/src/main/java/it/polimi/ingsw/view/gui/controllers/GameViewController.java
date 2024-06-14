@@ -970,13 +970,14 @@ public class GameViewController extends ViewController {
         }
         view.setOnMouseReleased((MouseEvent e) -> {
             if(dragLayerPane.getChildren().contains(draggableCard)){
+                Bounds draggedCardBounds = draggableCard.localToScene(draggableCard.getLayoutBounds());
+                if(cardHandGrid.intersects(cardHandGrid.sceneToLocal(draggedCardBounds))){
+                    draggableCard.setVisible(false);
+                    return;
+                }
                 List<Pair<Pane, Corner>> overlappedCorners = new ArrayList<>();
                 for (Pair<Pane, Corner> dragPair : currentCornersOnBoard) {
-                    System.out.println(dragPair.getKey().getBoundsInLocal());
-                    System.out.println(draggableCard.getLayoutBounds());
-                    Bounds draggedCardBounds = draggableCard.localToScreen(draggableCard.getBoundsInLocal());
-                    Bounds cornerBounds = dragPair.getKey().localToScreen(dragPair.getKey().getLayoutBounds());
-                    if (draggedCardBounds.intersects(cornerBounds)) {
+                    if (dragPair.getKey().intersects(dragPair.getKey().sceneToLocal(draggedCardBounds))) {
                         if(overlappedCorners.stream().anyMatch(p -> p.getKey().getParent() == dragPair.getKey().getParent())){
                             draggableCard.setVisible(false);
                             return;
@@ -1039,11 +1040,13 @@ public class GameViewController extends ViewController {
         for(Corner corner : card.getAllCorners()){
             Pane dragTarget = new Pane();
             GridPane.setValignment(dragTarget, corner.getLocation().getY() == 1 ? VPos.TOP : VPos.BOTTOM);
+            dragTarget.setTranslateY(corner.getLocation().getY() == 1 ? cornerHeight / 4d : -cornerHeight / 4d);
             GridPane.setVgrow(dragTarget, Priority.NEVER);
             GridPane.setHalignment(dragTarget,  corner.getLocation().getX() == 1 ? HPos.RIGHT : HPos.LEFT);
+            dragTarget.setTranslateX(corner.getLocation().getX() == 1 ? -cornerWidth / 4d : cornerWidth / 4d);
             GridPane.setVgrow(dragTarget, Priority.NEVER);
-            dragTarget.setPrefHeight(cornerHeight);
-            dragTarget.setPrefWidth(cornerWidth);
+            dragTarget.setPrefHeight(cornerHeight / 2d);
+            dragTarget.setPrefWidth(cornerWidth / 2d);
             boardCardGrid.add(dragTarget, corner.getLocation().getX(), 1 - corner.getLocation().getY());
             currentCornersOnBoard.add(new Pair<>(dragTarget,corner));
         }
