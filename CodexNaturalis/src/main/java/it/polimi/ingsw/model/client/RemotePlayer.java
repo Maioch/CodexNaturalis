@@ -47,7 +47,8 @@ public class RemotePlayer extends ClientPlayer {
                 .map(CardSides::backSide)
                 .collect(Collectors.toCollection(ArrayList::new));
         if(show){
-            eventSubmitter.submit(() -> gameView.updateRemotePlayerHand(getNickname(), getHandCards()));
+            List<BasicCard> currentHandCards = getHandCards();
+            eventSubmitter.submit(() -> gameView.updateRemotePlayerHand(getNickname(), currentHandCards));
         }
     }
 
@@ -73,10 +74,9 @@ public class RemotePlayer extends ClientPlayer {
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof RemotePlayer remotePlayer &&
-                remotePlayer.getNickname().equals(this.getNickname()) &&
-                remotePlayer.getHandCards().equals(this.getHandCards()) &&
-                remotePlayer.getColor().equals(this.getColor());
-
+        if(obj instanceof RemotePlayer other){
+            return this.getNickname().equals(other.getNickname());
+        }
+        return false;
     }
 }

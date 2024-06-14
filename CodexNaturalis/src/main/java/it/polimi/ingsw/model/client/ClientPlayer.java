@@ -35,6 +35,7 @@ public abstract class ClientPlayer {
         this.nickname = nickname;
         this.color = color;
         this.score = 0;
+        this.turnNumber = 0;
         this.placedCards = new ArrayList<>();
     }
 
@@ -110,7 +111,8 @@ public abstract class ClientPlayer {
     public synchronized void setPlacedCards(List<BasicCard> placedCards, int score) {
         this.placedCards = new ArrayList<>(placedCards);
         this.score = score;
-        eventSubmitter.submit(() -> gameView.updateBoard(nickname, getPlacedCards(), score));
+        List<BasicCard> currentPlacedCards = getPlacedCards();
+        eventSubmitter.submit(() -> gameView.updateBoard(nickname, currentPlacedCards, score));
     }
 
     /**
@@ -140,13 +142,5 @@ public abstract class ClientPlayer {
     public void setFinalScore(Map<Objective, Integer> scoresByObjective, Integer finalScore){
         this.score = finalScore;
         eventSubmitter.submit(() -> gameView.revealFinalSummary(getNickname(), scoresByObjective, score));
-    }
-
-    @Override
-    public boolean equals(Object object){
-        if(object instanceof ClientPlayer other){
-            return this.nickname.equals(other.nickname);
-        }
-        return false;
     }
 }

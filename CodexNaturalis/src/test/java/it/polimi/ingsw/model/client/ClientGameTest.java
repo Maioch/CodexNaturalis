@@ -1,20 +1,20 @@
 package it.polimi.ingsw.model.client;
 
-import it.polimi.ingsw.TestView;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardBuilder;
 import it.polimi.ingsw.model.shared.card.CardType;
 import it.polimi.ingsw.model.shared.card.Objective;
-import it.polimi.ingsw.view.EventSubmitter;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static it.polimi.ingsw.model.client.Utilities.TestSubmitter;
+import static it.polimi.ingsw.model.client.Utilities.TestView;
+import static it.polimi.ingsw.model.client.Utilities.checkForUpdate;
 
 public class ClientGameTest {
 
@@ -103,15 +103,13 @@ public class ClientGameTest {
         ClientGame game = new ClientGame(new LocalPlayer("test", Content.RED),
                 new TestSubmitter(), testView, 2, 1);
         game.setDrawableOptions(arg1, arg2);
-        Map<Method, List<Object>> recentCalls = testView.getRecentCalls();
-        assertEquals(1, recentCalls.entrySet().size());
-        List<Object> updateContent = recentCalls.get(getMethod("updateDecks", Map.class, Map.class));
-        assertEquals(List.of(arg1, arg2), updateContent);
+        var recentCalls = testView.getRecentCalls();
+        assertEquals(1, recentCalls.size());
+        checkForUpdate(recentCalls, "updateDecks", List.of(arg1, arg2));
         game.requestDraw(arg1, arg2);
         recentCalls = testView.getRecentCalls();
-        assertEquals(1, recentCalls.entrySet().size());
-        updateContent = recentCalls.get(getMethod("requestDraw", Map.class, Map.class));
-        assertEquals(List.of(arg1, arg2), updateContent);
+        assertEquals(1, recentCalls.size());
+        checkForUpdate(recentCalls, "requestDraw", List.of(arg1, arg2));
     }
 
     @Test
@@ -131,29 +129,26 @@ public class ClientGameTest {
         testView.getRecentCalls();
 
         game.setPlayerWithTurn(nonExistent, true);
-        Map<Method, List<Object>> recentCalls = testView.getRecentCalls();
-        assertEquals(recentCalls.entrySet().size(),1);
-        List<Object> updateContent = recentCalls.get(getMethod("turnChanged", String.class));
-        assertEquals(local, updateContent.getFirst());
+        var recentCalls = testView.getRecentCalls();
+        assertEquals(recentCalls.size(),1);
+        checkForUpdate(recentCalls, "turnChanged", List.of(local));
         assertEquals(local, game.getPlayerWithTurn().getNickname());
 
         game.setPlayerWithTurn(remote1, true);
         recentCalls = testView.getRecentCalls();
-        assertEquals(recentCalls.entrySet().size(),1);
-        updateContent = recentCalls.get(getMethod("turnChanged", String.class));
-        assertEquals(remote1, updateContent.getFirst());
+        assertEquals(recentCalls.size(),1);
+        checkForUpdate(recentCalls, "turnChanged", List.of(remote1));
         assertEquals(remote1, game.getPlayerWithTurn().getNickname());
 
         game.setPlayerWithTurn(local, true);
         recentCalls = testView.getRecentCalls();
-        assertEquals(recentCalls.entrySet().size(),1);
-        updateContent = recentCalls.get(getMethod("turnChanged", String.class));
-        assertEquals(local, updateContent.getFirst());
+        assertEquals(recentCalls.size(),1);
+        checkForUpdate(recentCalls, "turnChanged", List.of(local));
         assertEquals(local, game.getPlayerWithTurn().getNickname());
 
         game.setPlayerWithTurn(remote1, false);
         recentCalls = testView.getRecentCalls();
-        assertEquals(recentCalls.entrySet().size(),0);
+        assertEquals(recentCalls.size(),0);
     }
 
     @Test
@@ -163,10 +158,9 @@ public class ClientGameTest {
                 new TestSubmitter(), testView, 2, 1);
         RemotePlayer remotePlayer = new RemotePlayer("test1", Content.BLUE);
         game.addRemotePlayer(remotePlayer);
-        Map<Method, List<Object>> recentCalls = testView.getRecentCalls();
-        assertEquals(1, recentCalls.entrySet().size());
-        List<Object> updateContent = recentCalls.get(getMethod("showUserJoined", String.class, Content.class, boolean.class));
-        assertEquals(List.of("test1", Content.BLUE, game.isGameFull()), updateContent);
+        var recentCalls = testView.getRecentCalls();
+        assertEquals(1, recentCalls.size());
+        checkForUpdate(recentCalls, "showUserJoined", List.of("test1", Content.BLUE, game.isGameFull()));
     }
 
     @Test
@@ -178,15 +172,13 @@ public class ClientGameTest {
         game.addRemotePlayer(remotePlayer);
         testView.getRecentCalls();
         game.removeRemotePlayer("test1");
-        Map<Method, List<Object>> recentCalls = testView.getRecentCalls();
-        assertEquals(1, recentCalls.entrySet().size());
-        List<Object> updateContent = recentCalls.get(getMethod("notifyPlayerLeftLobby", String.class, Content.class));
-        assertEquals(List.of("test1", Content.BLUE), updateContent);
+        var recentCalls = testView.getRecentCalls();
+        assertEquals(1, recentCalls.size());
+        checkForUpdate(recentCalls, "notifyPlayerLeftLobby", List.of("test1", Content.BLUE));
         game.removeRemotePlayer("test1");
         recentCalls = testView.getRecentCalls();
-        assertEquals(1, recentCalls.entrySet().size());
-        updateContent = recentCalls.get(getMethod("notifyPlayerLeftLobby", String.class, Content.class));
-        assertEquals(List.of("test1", Content.WHITE), updateContent);
+        assertEquals(1, recentCalls.size());
+        checkForUpdate(recentCalls, "notifyPlayerLeftLobby", List.of("test1", Content.WHITE));
     }
 
     @Test
@@ -200,24 +192,9 @@ public class ClientGameTest {
                 CardBuilder.buildObjective(91),
                 CardBuilder.buildObjective(92));
         game.setCommonObjectives(objectivesList);
-        Map<Method, List<Object>> recentCalls = testView.getRecentCalls();
-        assertEquals(1, recentCalls.entrySet().size());
-        List<Object> updateContent = recentCalls.get(getMethod("showCommonObjectives", List.class));
-        assertEquals(objectivesList, updateContent.getFirst());
+        var recentCalls = testView.getRecentCalls();
+        assertEquals(1, recentCalls.size());
+        checkForUpdate(recentCalls, "showCommonObjectives", List.of(objectivesList));
         assertEquals(objectivesList, game.getCommonObjectives());
-    }
-
-    private Method getMethod(String name, Class<?>... parameters) {
-        try {
-            return TestView.class.getDeclaredMethod(name, parameters);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static class TestSubmitter implements EventSubmitter{
-        public void submit(Runnable runnable){
-            runnable.run();
-        }
     }
 }

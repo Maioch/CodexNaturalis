@@ -43,7 +43,7 @@ public class LocalPlayer extends ClientPlayer{
     public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
         this.handCards = new ArrayList<>(handCards);
         if(show){
-            eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(getHandCards()));
+            eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(handCards));
         }
     }
 
@@ -69,7 +69,7 @@ public class LocalPlayer extends ClientPlayer{
      */
     public void setPersonalObjectives(List<Objective> personalObjectives) {
         this.personalObjectives.addAll(personalObjectives);
-        eventSubmitter.submit(() -> gameView.showPersonalObjectives(getPersonalObjectives()));
+        eventSubmitter.submit(() -> gameView.showPersonalObjectives(personalObjectives));
     }
 
     /**
@@ -94,14 +94,17 @@ public class LocalPlayer extends ClientPlayer{
     public void requestCardPlacement(List<BasicCard> validCards, List<Corner> validCorners){
         this.validCards = new ArrayList<>(validCards);
         this.validCorners = new ArrayList<>(validCorners);
-        eventSubmitter.submit(() -> gameView.requestPlacement(getHandCards(), getPlacedCards()));
+        List<CardSides> currentHandCards = getHandCards();
+        List<BasicCard> currentPlacedCards = getPlacedCards();
+        eventSubmitter.submit(() -> gameView.requestPlacement(currentHandCards, currentPlacedCards));
     }
 
     /**
      * Requests the starter card assigned to the player.
      */
     public void requestStarterCardPlacement(){
-        eventSubmitter.submit(() -> gameView.requestStarterSide(getHandCards()));
+        List<CardSides> currentHandCards = getHandCards();
+        eventSubmitter.submit(() -> gameView.requestStarterSide(currentHandCards));
     }
 
     /**
@@ -128,5 +131,20 @@ public class LocalPlayer extends ClientPlayer{
                 add(new Corner(corner));
             }
         }};
+    }
+
+    /**
+     * Equals method override to fit the method to this class.
+     *
+     * @param obj player checked.
+     *
+     * @return true if this player is equal to the parameter one.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof LocalPlayer other){
+            return this.getNickname().equals(other.getNickname());
+        }
+        return false;
     }
 }
