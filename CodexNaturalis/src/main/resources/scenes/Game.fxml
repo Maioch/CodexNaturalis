@@ -514,7 +514,7 @@
                             </styleClass>
                         </SplitMenuButton>
                     </GridPane>
-                    <ScrollPane fx:id="chatScrollPane" fitToWidth="true" prefHeight="200.0" prefWidth="200.0"
+                    <ScrollPane fx:id="chatScrollPane" styleClass="chatScrollPane" fitToWidth="true" prefHeight="200.0" prefWidth="200.0"
                                 vvalue="1.0" GridPane.rowIndex="2">
                         <GridPane.margin>
                             <Insets/>

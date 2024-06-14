@@ -277,7 +277,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
                             gameView,
                             joinGameMessage.getGameInfo(),
                             joinGameMessage.getGameId());
-                    eventSubmitter.submit(() -> sendMessage(new Message(Status.CLIENT_READY)));
                 }
             }
             case PLAYER_LEFT_LOBBY -> sendMessage(new Message(Status.REQUEST_GAMES));

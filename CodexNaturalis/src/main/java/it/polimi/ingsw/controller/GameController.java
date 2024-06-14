@@ -119,11 +119,11 @@ public class GameController implements Runnable{
             return;
         }
         serverSubject.subscribe(nickname, handler);
+        receivePing(handler);
+        handler.setCurrentGame(this);
         synchronized (onlyOnePlayerLock){
             onlyOnePlayer = false;
         }
-        receivePing(handler);
-        handler.setCurrentGame(this);
         serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname,
                 game.getPlayer(nickname).getColor(), game.getNumberOfPlayers(), gameInfo.getGameId()));
         int turnNumber = 1;
@@ -397,11 +397,11 @@ public class GameController implements Runnable{
                 timer.schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        gameOver.set(true);
-                        pingTimer.cancel();
-                        serverSubject.notifyAll(new WinnersMessage(playerLeft));
-                        removeHandlers();
-                        synchronized(onlyOnePlayerLock) {
+                        synchronized (onlyOnePlayerLock){
+                            gameOver.set(true);
+                            pingTimer.cancel();
+                            serverSubject.notifyAll(new WinnersMessage(playerLeft));
+                            removeHandlers();
                             onlyOnePlayerLock.notifyAll();
                         }
                     }
@@ -410,6 +410,18 @@ public class GameController implements Runnable{
                     System.out.println("Only one player left, the game will end in " + GameParameters.getForfeitTime() + " seconds");
                     onlyOnePlayerLock.wait();
                     timer.cancel();
+                    if(!gameOver.get()){
+                        synchronized (messageQueue){
+                            LabeledMessage message;
+                            while((message = messageQueue.poll()) != null){
+                                if(message.message().getStatus() == Status.RECONNECT &&
+                                        message.message() instanceof StringMessage reconnectMessage) {
+                                    reconnectPlayer(reconnectMessage.getString(), message.networkHandler());
+                                    break;
+                                }
+                            }
+                        }
+                    }
                 } catch (InterruptedException e) {
                     System.out.println(e.getMessage());
                 }
@@ -701,11 +713,11 @@ public class GameController implements Runnable{
                     if (message instanceof JoinGameMessage joinGameMessage) {
                         acceptPlayer(joinGameMessage.getNickname(), joinGameMessage.getColor(), labeledMessage.networkHandler());
                     }
+                    readyHandlers.add(labeledMessage.networkHandler());
                 }
                 case Status.REQUEST_COLORS ->
                     labeledMessage.networkHandler().update(
                             new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), gameInfo.getGameId()));
-                case Status.CLIENT_READY -> readyHandlers.add(labeledMessage.networkHandler());
                 case Status.PLAYER_DISCONNECTED -> {
                     readyHandlers.remove(labeledMessage.networkHandler());
                     removePlayerFromLobby(labeledMessage.networkHandler());

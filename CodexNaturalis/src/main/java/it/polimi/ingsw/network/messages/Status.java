@@ -59,11 +59,6 @@ public enum Status {
     NEW_PLAYER_JOINED(""),
 
     /**
-     * Client: notifies the server that the client is ready, meaning its view completed its setup.
-     */
-    CLIENT_READY(""),
-
-    /**
      * Server: sends all the available draw options.
      */
     DRAW_OPTIONS(""),

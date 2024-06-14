@@ -91,6 +91,7 @@ public class GameGUI implements GameView {
                 String.format("It's your turn, %s!", turnOwner) :
                 String.format("%s is playing their turn...", turnOwner));
         sceneManager.<GameViewController>getController().setCurrentTurnOwner(turnOwner);
+        sceneManager.<GameViewController>getController().updateLocalPlayerCards(client.getController().getLocalPlayerHand());
     }
 
     /**
