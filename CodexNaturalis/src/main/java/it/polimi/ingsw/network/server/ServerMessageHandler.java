@@ -4,7 +4,7 @@ import it.polimi.ingsw.controller.GameController;
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GamesManager;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.network.EventHandler;
 import it.polimi.ingsw.network.LabeledMessage;
 import it.polimi.ingsw.network.messages.Message;

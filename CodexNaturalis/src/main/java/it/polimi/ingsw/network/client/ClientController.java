@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.client.ClientPlayer;
 import it.polimi.ingsw.model.client.LocalPlayer;
 import it.polimi.ingsw.model.client.RemotePlayer;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.Objective;

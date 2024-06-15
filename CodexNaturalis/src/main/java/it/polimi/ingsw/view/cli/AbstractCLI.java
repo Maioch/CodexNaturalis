@@ -2,7 +2,7 @@ package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.exceptions.MapperException;
 import it.polimi.ingsw.exceptions.TCPException;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.messages.Message;

@@ -61,4 +61,19 @@ public class GameInfo implements Serializable {
     public void setGameStatus(GameStatus gameStatus) {
         this.gameStatus = gameStatus;
     }
+
+    /**
+     * Equals method.
+     *
+     * @param object Object to check.
+     *
+     * @return       true if each immutable field is equals to the corresponding field of object.
+     */
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof GameInfo other){
+            return gameId == other.gameId && gameName.equals(other.gameName);
+        }
+        return false;
+    }
 }

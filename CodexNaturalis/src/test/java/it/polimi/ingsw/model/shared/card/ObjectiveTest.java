@@ -2,7 +2,7 @@ package it.polimi.ingsw.model.shared.card;
 
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.Player;
-import it.polimi.ingsw.model.server.TestUtilities;
+import it.polimi.ingsw.model.server.Utilities;
 import it.polimi.ingsw.model.shared.card.corner.Location;
 import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class ObjectiveTest {
         starter.setOwner(referencePlayer);
         referencePlayer.placeStarterCard(starter);
 
-        TestUtilities.createTestBoard(referencePlayer, placements1, starter,true);
+        Utilities.createTestBoard(referencePlayer, placements1, starter,true);
 
         assertEquals(4, referenceContentObjective.checkObjective());
         assertEquals(4, referencePatternObjective.checkObjective());
@@ -81,7 +81,7 @@ public class ObjectiveTest {
             put(3, Location.BR);
             put(34, Location.BL);
         }};
-        TestUtilities.createTestBoard(referencePlayer, placements2, starter,true);
+        Utilities.createTestBoard(referencePlayer, placements2, starter,true);
 
         assertEquals(6, referencePatternObjective2.checkObjective());
         Objective referencePatternObjective3 = CardBuilder.buildObjective(88);
@@ -106,7 +106,7 @@ public class ObjectiveTest {
             put(15, Location.TL);
             put(16, Location.TL);
         }};
-        TestUtilities.createTestBoard(referencePlayer, placements3, starter,true);
+        Utilities.createTestBoard(referencePlayer, placements3, starter,true);
 
         assertEquals(4, referencePatternObjective3.checkObjective());
     }

@@ -9,7 +9,7 @@ import it.polimi.ingsw.model.shared.card.corner.Location;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class TestUtilities {
+public class Utilities {
 
     /**
      * Helper method used to automatically place a set of cards on the player's board

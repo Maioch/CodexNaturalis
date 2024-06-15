@@ -3,7 +3,7 @@ package it.polimi.ingsw.view.gui.controllers;
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.network.messages.Message;
 import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;

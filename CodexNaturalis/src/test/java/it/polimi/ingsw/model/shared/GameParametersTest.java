@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.server;
+package it.polimi.ingsw.model.shared;
 
 import it.polimi.ingsw.model.shared.card.CardType;
 import org.junit.jupiter.api.Test;

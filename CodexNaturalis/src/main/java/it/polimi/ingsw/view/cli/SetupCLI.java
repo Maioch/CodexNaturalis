@@ -3,7 +3,7 @@ package it.polimi.ingsw.view.cli;
 import it.polimi.ingsw.controller.GameInfo;
 import it.polimi.ingsw.controller.GameStatus;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.network.client.Client;
 import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Class used when the client chooses to play the TUI version of the game; this class represents the CLI for the player

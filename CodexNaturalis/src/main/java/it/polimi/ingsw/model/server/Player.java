@@ -56,7 +56,10 @@ public class Player {
         this.score = 0;
         //DEBUG
         if (nickname.equals("jonny")) {
-            this.score = 20; //nerfed
+            this.score = 19; //nerfed
+        }
+        if (nickname.equals("tronny")) {
+            this.score = 18; //nerfed
         }
         //DEBUG
         //Set the owner for both the regular cards and the objectives

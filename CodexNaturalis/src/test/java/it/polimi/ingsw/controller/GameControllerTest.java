@@ -1,33 +1,38 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
+import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameControllerTest {
-
     @Test
     void getNameTest() throws IllegalNumberOfPlayers {
-        GamesManager manager = new GamesManager();
-        for(int i = 1; i < 6; i++) {
-            manager.addGame(2, "testGame" + i);
-            GameController controller = manager.getController(i);
-            List<GameInfo> gameInfo = manager.getFormattedAvailableMatches();
-            assertEquals(controller.getName(), gameInfo.get(i-1).getGameName());
-        }
+        GameController gameController = new GameController(
+                2,
+                new ServerSubject(),
+                new GameInfo(1,"test", GameStatus.LOBBY),
+                (a) -> {});
+        assertEquals("test", gameController.getName());
     }
 
     @Test
     void getGameStatusTest() throws IllegalNumberOfPlayers {
-        GamesManager manager = new GamesManager();
-        for(int i = 1; i < 6; i++) {
-            manager.addGame(2, "testGame" + i);
-            GameController controller = manager.getController(i);
-            List<GameInfo> gameInfo = manager.getFormattedAvailableMatches();
-            assertEquals(controller.getGameStatus(), gameInfo.get(i-1).getGameStatus());
-        }
+        GameStatus gameStatus = GameStatus.LOBBY;
+        GameController gameController = new GameController(
+                2,
+                new ServerSubject(),
+                new GameInfo(1,"test", gameStatus),
+                (a) -> {});
+        assertEquals(gameStatus, gameController.getGameStatus());
+    }
+
+    @Test
+    void equalsTest() throws IllegalNumberOfPlayers {
+        GameController controller = new GameController(2, new ServerSubject(),
+                new GameInfo(1, "test", GameStatus.LOBBY), (gameController) -> {});
+        assertEquals(new GameController(3, new ServerSubject(),
+                new GameInfo(1, "test", GameStatus.LOBBY), (gameController) -> {}), controller);
     }
 }

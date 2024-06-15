@@ -3,7 +3,7 @@ package it.polimi.ingsw.model.shared.card;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
 

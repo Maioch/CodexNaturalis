@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.server.deck;
 
 import it.polimi.ingsw.exceptions.DeckException;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.model.shared.card.CardBuilder;
 import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.CardType;

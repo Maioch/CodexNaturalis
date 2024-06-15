@@ -3,10 +3,10 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.exceptions.GameException;
 import it.polimi.ingsw.exceptions.GameFullException;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
-import it.polimi.ingsw.exceptions.NicknameTakenException;
+import it.polimi.ingsw.exceptions.NicknameException;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.GameModel;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardSides;
@@ -101,7 +101,7 @@ public class GameController implements Runnable{
         }catch(GameException e){
             serverSubject.unsubscribe(nickname);
             handler.update(new IntegerMessage(Status.INVALID_COLOR, gameInfo.getGameId()));
-        }catch(NicknameTakenException n){
+        }catch(NicknameException n){
             handler.update(new IntegerMessage(Status.INVALID_NICKNAME, gameInfo.getGameId()));
         }
     }
@@ -576,10 +576,21 @@ public class GameController implements Runnable{
             }
         }
         //calculate the final score
+        Map<String, Integer> completedObjectives = new HashMap<>();
         for (Player player : game.getAllPlayers()){
-            player.awardObjectivePoints();
+            completedObjectives.put(
+                    player.getNickname(),
+                    player.awardObjectivePoints().stream().filter(n -> n != 0).toList().size());
         }
         List<String> winners = game.getWinningPlayers();
+        if(winners.size() > 1){
+            winners = winners.stream()
+                    .filter(p -> completedObjectives.values().stream()
+                            .max(Integer::compareTo)
+                            .orElseThrow()
+                            .equals(completedObjectives.get(p)))
+                    .toList();
+        }
         serverSubject.notifyAll(new WinnersMessage(winners));
     }
 
@@ -782,5 +793,20 @@ public class GameController implements Runnable{
         startGame();
         removeHandlers();
         endGameProcedure.accept(this);
+    }
+
+    /**
+     * Equals method.
+     *
+     * @param object Object to check.
+     *
+     * @return       true both controllers have equals game info.
+     */
+    @Override
+    public boolean equals(Object object){
+        if(object instanceof GameController other){
+            return this.gameInfo.equals(other.gameInfo);
+        }
+        return false;
     }
 }

@@ -1,10 +1,14 @@
 package it.polimi.ingsw.model.server;
 
+import it.polimi.ingsw.TestNetworkHandler;
 import it.polimi.ingsw.exceptions.PlayerException;
 import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
+import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
 
@@ -69,6 +73,12 @@ public class PlayerTest {
      */
     @Test
     public void awardObjectivePointsTest(){
+        TestNetworkHandler handler1 = new TestNetworkHandler();
+        TestNetworkHandler handler2 = new TestNetworkHandler();
+        ServerSubject serverSubject = new ServerSubject();
+        serverSubject.subscribe(nicknames.getFirst(),handler1);
+        serverSubject.subscribe(nicknames.get(1),handler2);
+
         Objective referenceContentObjective = CardBuilder.buildObjective(95);
         Objective referenceContentObjective2 = CardBuilder.buildObjective(96);
         Objective referenceContentObjective3 = CardBuilder.buildObjective(97);
@@ -84,7 +94,7 @@ public class PlayerTest {
                         referenceContentObjective3,
                         referenceContentObjective4
                 )),
-                new ServerSubject()
+                serverSubject
         );
 
         int x = 0;
@@ -102,7 +112,16 @@ public class PlayerTest {
         assertEquals(12, playerTest.awardObjectivePoints().get(0));
         assertEquals(12, playerTest.awardObjectivePoints().get(1));
         assertEquals(12, playerTest.awardObjectivePoints().get(2));
+        handler1.getReceivedMessages();
+        handler2.getReceivedMessages();
         assertEquals(12, playerTest.awardObjectivePoints().get(3));
+
+        List<Message> received = handler1.getReceivedMessages();
+        assertEquals(1, received.size());
+        assertEquals(Status.PLAYER_FINAL_SCORE, received.removeFirst().getStatus());
+        received = handler2.getReceivedMessages();
+        assertEquals(1,received.size());
+        assertEquals(Status.PLAYER_FINAL_SCORE, received.removeFirst().getStatus());
     }
 
     @Test
@@ -212,12 +231,18 @@ public class PlayerTest {
      */
     @Test
     public void placeCardTest(){
+        TestNetworkHandler handler1 = new TestNetworkHandler();
+        TestNetworkHandler handler2 = new TestNetworkHandler();
+        ServerSubject serverSubject = new ServerSubject();
+        serverSubject.subscribe(nicknames.getFirst(),handler1);
+        serverSubject.subscribe(nicknames.get(1),handler2);
+
         ArrayList<CardSides> cardsForHand = new ArrayList<>(){{
-            for(int i = 1; i <= 80; i++){
+            for(int i = 1; i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
                 add(CardBuilder.buildCard(i));
             }
         }};
-        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), new ServerSubject());
+        Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), serverSubject);
         for(int i = GameParameters.getStartCardIndex(CardType.GOLD); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
             Corner cornerTest = new Corner(Content.WHITE, Location.TR);
             CardSides goldCard = CardBuilder.buildCard(i);
@@ -226,7 +251,7 @@ public class PlayerTest {
             assertTrue(playerTest.getHandCards().contains(goldCard));
             assertFalse(playerTest.getPlacedCards().contains(cardWithRequirements));
         }
-        playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), new ServerSubject());
+        playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), serverSubject);
         boolean front = true;
         int coordinates = 0;
         for(CardSides card : cardsForHand){
@@ -235,6 +260,18 @@ public class PlayerTest {
             cornerTest.setY(coordinates);
             BasicCard currentCard = front ? card.frontSide() : card.backSide();
             playerTest.placeCard(currentCard, cornerTest);
+
+            List<Message> received = handler1.getReceivedMessages();
+            assertEquals(3,received.size());
+            assertEquals(Status.PLACEMENT_OK, received.removeFirst().getStatus());
+            assertEquals(Status.PLAYER_HAND_BACK, received.removeFirst().getStatus());
+            assertEquals(Status.PLAYER_HAND_CARDS, received.removeFirst().getStatus());
+
+            received = handler2.getReceivedMessages();
+            assertEquals(2, received.size());
+            assertEquals(Status.PLACEMENT_OK, received.removeFirst().getStatus());
+            assertEquals(Status.PLAYER_HAND_BACK, received.removeFirst().getStatus());
+
             front = !front;
             if(!playerTest.checkRequirements(currentCard)) {
                 assertTrue(playerTest.getHandCards().contains(card));
@@ -255,15 +292,29 @@ public class PlayerTest {
 
     @Test
     public void addPersonalObjectiveTest(){
+        TestNetworkHandler handler1 = new TestNetworkHandler();
+        TestNetworkHandler handler2 = new TestNetworkHandler();
+        ServerSubject serverSubject = new ServerSubject();
+        serverSubject.subscribe(nicknames.getFirst(),handler1);
+        serverSubject.subscribe(nicknames.get(1),handler2);
+
         List<Objective> objectives = Arrays.asList(CardBuilder.buildObjective(87), CardBuilder.buildObjective(89));
         Objective personalObjective = CardBuilder.buildObjective(89);
         Player playerTest = new Player(nicknames.getFirst(),
                 colors.getFirst(),
                 new ArrayList<>(),
                 objectives,
-                new ServerSubject());
+                serverSubject);
         assertEquals(playerTest.getObjectives(), objectives);
         playerTest.addPersonalObjectives(List.of(personalObjective));
+
+        List<Message> received = handler1.getReceivedMessages();
+        assertEquals(1,received.size());
+        assertEquals(Status.SECRET_OBJECTIVES, received.removeFirst().getStatus());
+
+        received = handler2.getReceivedMessages();
+        assertTrue(received.isEmpty());
+
         objectives = new ArrayList<>(objectives);
         objectives.add(personalObjective);
         assertEquals(playerTest.getObjectives(), objectives);
@@ -274,11 +325,23 @@ public class PlayerTest {
      */
     @Test
     public void addCardToHandTest(){
-        Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
+        TestNetworkHandler handler1 = new TestNetworkHandler();
+        TestNetworkHandler handler2 = new TestNetworkHandler();
+        ServerSubject serverSubject = new ServerSubject();
+        serverSubject.subscribe(nicknames.getFirst(),handler1);
+        serverSubject.subscribe(nicknames.get(1),handler2);
+
+        Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), serverSubject);
         assertTrue(playerTest.getHandCards().isEmpty());
         CardSides card = CardBuilder.buildCard(41);
         playerTest.addCardToHand(card);
         assertTrue(playerTest.getHandCards().contains(card));
+        List<Message> received = handler1.getReceivedMessages();
+        assertEquals(2,received.size());
+        assertEquals(Status.PLAYER_HAND_BACK, received.removeFirst().getStatus());
+        assertEquals(Status.PLAYER_HAND_CARDS, received.removeFirst().getStatus());
+        received = handler2.getReceivedMessages();
+        assertEquals(Status.PLAYER_HAND_BACK, received.removeFirst().getStatus());
     }
 
     @Test
@@ -309,7 +372,7 @@ public class PlayerTest {
         starter.setOwner(referencePlayer);
         referencePlayer.placeStarterCard(starter);
 
-        BasicCard card = TestUtilities.createTestBoard(referencePlayer, placements1, starter,true);
+        BasicCard card = Utilities.createTestBoard(referencePlayer, placements1, starter,true);
         referencePlayer.placeCard(CardBuilder.buildCard(1).frontSide(),
                 card.getAllCorners().stream().findFirst().orElseThrow());
         assertEquals(referencePlayer.getPlacedCards().stream()
@@ -400,10 +463,16 @@ public class PlayerTest {
      */
     @Test
     public void placeStarterCardTest(){
+        TestNetworkHandler handler1 = new TestNetworkHandler();
+        TestNetworkHandler handler2 = new TestNetworkHandler();
+        ServerSubject serverSubject = new ServerSubject();
+        serverSubject.subscribe(nicknames.getFirst(),handler1);
+        serverSubject.subscribe(nicknames.get(1),handler2);
+
         CardSides starterCard = CardBuilder.buildCard(GameParameters.getStartCardIndex(CardType.STARTER));
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(),
                 List.of(starterCard),
-                new ArrayList<>(), new ServerSubject());
+                new ArrayList<>(), serverSubject);
         assertTrue(playerTest.getPlacedCards().isEmpty());
         playerTest.placeStarterCard(starterCard.frontSide());
         assertEquals(playerTest.getPlacedCards().size(),1);
@@ -413,11 +482,24 @@ public class PlayerTest {
         assertThrows(PlayerException.class,() -> finalPlayerTest.placeStarterCard(starterCard.frontSide()));
         playerTest = new Player(nicknames.getFirst(), colors.getFirst(),
                 new ArrayList<>(),
-                new ArrayList<>(), new ServerSubject());
+                new ArrayList<>(), serverSubject);
         CardSides otherCard = CardBuilder.buildCard(86);
         assertFalse(playerTest.getHandCards().contains(otherCard));
+        handler1.getReceivedMessages();
+        handler2.getReceivedMessages();
         playerTest.placeStarterCard(otherCard.frontSide());
         assertTrue(playerTest.getPlacedCards().contains(otherCard.frontSide()));
         assertFalse(playerTest.getHandCards().contains(otherCard));
+
+        List<Message> received = handler1.getReceivedMessages();
+        assertEquals(3,received.size());
+        assertEquals(Status.PLACEMENT_OK, received.removeFirst().getStatus());
+        assertEquals(Status.PLAYER_HAND_BACK, received.removeFirst().getStatus());
+        assertEquals(Status.PLAYER_HAND_CARDS, received.removeFirst().getStatus());
+
+        received = handler2.getReceivedMessages();
+        assertEquals(2, received.size());
+        assertEquals(Status.PLACEMENT_OK, received.removeFirst().getStatus());
+        assertEquals(Status.PLAYER_HAND_BACK, received.removeFirst().getStatus());
     }
 }

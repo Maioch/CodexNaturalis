@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.exceptions.TCPException;
-import it.polimi.ingsw.model.server.GameParameters;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.messages.Message;
@@ -14,7 +14,6 @@ import javafx.scene.control.*;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.util.regex.Pattern;
 
 /**
  * Class used to handle the login scene of the GUI.

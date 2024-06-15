@@ -3,7 +3,8 @@ package it.polimi.ingsw.model.server;
 import it.polimi.ingsw.exceptions.GameException;
 import it.polimi.ingsw.exceptions.GameFullException;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
-import it.polimi.ingsw.exceptions.NicknameTakenException;
+import it.polimi.ingsw.exceptions.NicknameException;
+import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
@@ -189,14 +190,14 @@ public class GameModel{
      *
      * @throws GameException          if the color chosen by the player is already taken.
      * @throws GameFullException      if the game is full.
-     * @throws NicknameTakenException if the nickname chosen by the player isn't valid.
+     * @throws NicknameException if the nickname chosen by the player isn't valid.
      */
-    public synchronized void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameTakenException {
+    public synchronized void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameException {
         if (isGameFull()) {
             throw new GameFullException();
         }
         if (!checkNickname(nickname)) {
-            throw new NicknameTakenException();
+            throw new NicknameException();
         }
         if (!getAvailableColors().contains(color)) {
             throw new GameException("The chosen color has already been taken");
