@@ -49,8 +49,7 @@ public class CardAssetsProvider {
                     id <= GameParameters.getEndCardIndex(CardType.RESOURCE);
             return isResource ? resourcesBacks.get(card.getColor()) : goldsBacks.get(card.getColor());
         }
-        return "file:" + (Objects.requireNonNull(CardAssetsProvider.class.getResource(
-                (isFront ? frontPath : backPath) + id + ".png"))).getFile();
+        return (isFront ? frontPath : backPath) + id + ".png";
     }
 
     /**
@@ -60,12 +59,10 @@ public class CardAssetsProvider {
      * @return          the path the objective is saved in.
      */
     public static String getObjectiveFilePath(Objective objective){
-        return "file:" + (Objects.requireNonNull(CardAssetsProvider.class.getResource(
-                objectivesPath + objective.getObjectiveId() + ".png"))).getFile();
+        return objectivesPath + objective.getObjectiveId() + ".png";
     }
 
     public static String getHiddenCardFilePath(){
-        return "file:" + (Objects.requireNonNull(CardAssetsProvider.class.getResource(
-                hiddenCardPath + "hiddenCard.png"))).getFile();
+        return hiddenCardPath + "hiddenCard.png";
     }
 }

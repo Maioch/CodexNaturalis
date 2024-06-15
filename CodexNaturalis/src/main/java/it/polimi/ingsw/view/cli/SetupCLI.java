@@ -232,7 +232,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     public void disconnectionProcedure(){
-        super.disconnectionProcedure(client);
+        disconnectionProcedure(client);
         client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 }
