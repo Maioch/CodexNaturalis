@@ -9,12 +9,17 @@ import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
+import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.ParallelTransition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +82,7 @@ public class MatchBrowserViewController extends ViewController {
     private ToggleGroup gameIdToggleGroup;
     private ToggleGroup colorChoiceToggleGroup;
     private int currentSelectedId;
+    private double animationOffset = 200;
 
     public void initialize(){
         setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
@@ -177,6 +183,9 @@ public class MatchBrowserViewController extends ViewController {
     public void requestCreation(){
         joinPopupGrid.setVisible(false);
         createPopupGrid.setVisible(true);
+        Animator.doFadeAnimation(createPopupGrid, true);
+        Animator.doPopAnimation(createPopupGrid.getChildren().getFirst(), animationOffset, true);
+
     }
 
     /**
@@ -224,6 +233,8 @@ public class MatchBrowserViewController extends ViewController {
 
     private void showReconnectGameDialog(int gameId){
         reconnectPopUp.setVisible(true);
+        Animator.doFadeAnimation(reconnectPopUp,true);
+        Animator.doPopAnimation(reconnectPopUp.getChildren().getFirst(),animationOffset,true);
         currentSelectedId = gameId;
     }
 
@@ -235,6 +246,10 @@ public class MatchBrowserViewController extends ViewController {
      */
     public void showJoinGameDialog(List<Content> colors, int gameId){
         currentSelectedId = gameId;
+        if(!createPopupGrid.isVisible() && !joinPopupGrid.isVisible()){
+            Animator.doFadeAnimation(joinPopupGrid,true);
+            Animator.doPopAnimation(joinPopupGrid.getChildren().getFirst(),animationOffset,true);
+        }
         createPopupGrid.setVisible(false);
         colorChoiceToggleGroup = new ToggleGroup();
         colorChoiceGrid.getChildren().clear();
@@ -330,6 +345,8 @@ public class MatchBrowserViewController extends ViewController {
         errorLabel.setText(message);
         okButton.setUserData("non-critical");
         errorPopupGrid.setVisible(true);
+        Animator.doFadeAnimation(errorPopupGrid,true);
+        Animator.doPopAnimation(errorPopupGrid.getChildren().getFirst(),animationOffset,true);
     }
 
     /**
@@ -352,9 +369,19 @@ public class MatchBrowserViewController extends ViewController {
      */
     @FXML
     public void goBackFromPopup(){
-        joinPopupGrid.setVisible(false);
-        createPopupGrid.setVisible(false);
-        reconnectPopUp.setVisible(false);
-        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
+        animateAndHidePopUp(joinPopupGrid);
+        animateAndHidePopUp(createPopupGrid);
+    }
+
+    private void animateAndHidePopUp(GridPane createPopupGrid) {
+        if(createPopupGrid.isVisible()){
+            Animator.doFadeAnimation(createPopupGrid,false).setOnFinished((e) -> {
+                client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
+                joinPopupGrid.setVisible(false);
+                createPopupGrid.setVisible(false);
+                reconnectPopUp.setVisible(false);
+            });
+            Animator.doPopAnimation(createPopupGrid.getChildren().getFirst(),animationOffset,false);
+        }
     }
 }

@@ -87,14 +87,16 @@ public class GameController implements Runnable{
      *
      * @see NetworkHandler
      */
-    private void acceptPlayer(String nickname, Content color, NetworkHandler handler){
+    private boolean acceptPlayer(String nickname, Content color, NetworkHandler handler){
         if(game.checkNickname(nickname)){
+            System.out.println("noooo");
             serverSubject.subscribe(nickname, handler);
         }
         try {
             game.addPlayerData(nickname, color);
             handler.setCurrentGame(this);
             receivePing(handler);
+            return true;
         }catch(GameFullException G){
             serverSubject.unsubscribe(nickname);
             handler.update(new Message(Status.GAME_FULL));
@@ -102,8 +104,10 @@ public class GameController implements Runnable{
             serverSubject.unsubscribe(nickname);
             handler.update(new IntegerMessage(Status.INVALID_COLOR, gameInfo.getGameId()));
         }catch(NicknameException n){
+            System.out.println("asdasdsasa");
             handler.update(new IntegerMessage(Status.INVALID_NICKNAME, gameInfo.getGameId()));
         }
+        return false;
     }
 
     /**
@@ -722,9 +726,13 @@ public class GameController implements Runnable{
             switch (message.getStatus()){
                 case Status.JOIN_GAME -> {
                     if (message instanceof JoinGameMessage joinGameMessage) {
-                        acceptPlayer(joinGameMessage.getNickname(), joinGameMessage.getColor(), labeledMessage.networkHandler());
+                        if(acceptPlayer(
+                                joinGameMessage.getNickname(),
+                                joinGameMessage.getColor(),
+                                labeledMessage.networkHandler())){
+                            readyHandlers.add(labeledMessage.networkHandler());
+                        }
                     }
-                    readyHandlers.add(labeledMessage.networkHandler());
                 }
                 case Status.REQUEST_COLORS ->
                     labeledMessage.networkHandler().update(

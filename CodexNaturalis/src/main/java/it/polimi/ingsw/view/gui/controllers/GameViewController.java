@@ -16,6 +16,7 @@ import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
+import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -133,6 +134,7 @@ public class GameViewController extends ViewController {
     private final Map<String, ImageView> playerTokens = new HashMap<>();
     private final Map<String, GridPane> playerSummary = new HashMap<>();
     private final List<Pair<Pane,Corner>> currentCornersOnBoard = new ArrayList<>();
+    private final double objectivePanelAnimationOffset = -250;
 
     private final int toastGap = 76;
     private final int tokenSize = 30;
@@ -140,7 +142,7 @@ public class GameViewController extends ViewController {
     private final int distanceBetweenHiddenCards = 4;
     private final int distanceBetweenTokens = 4;
     private final int maxVisibleScore = 29;
-    private final long statusLabelShowInterval = 6;
+    private final long statusLabelShowInterval = 4;
     private final int cornerWidth = 34;
     private final int cornerHeight = 41;
     private final int cardWidth = 150;
@@ -325,6 +327,9 @@ public class GameViewController extends ViewController {
         backStarterSidePane.add(frontSide, 0, 0);
         starterChoicePopUp.setVisible(true);
         woodenPanePopUpBackground.setVisible(true);
+        Animator.doScaleAnimation(starterChoicePopUp.getChildren().getFirst(),true);
+        Animator.doFadeAnimation(starterChoicePopUp, true);
+        Animator.doFadeAnimation(woodenPanePopUpBackground, true);
     }
 
     /**
@@ -333,9 +338,13 @@ public class GameViewController extends ViewController {
      * @param starterCard the chose starter card side.
      */
     private void sendStarterSide(BasicCard starterCard){
-        starterChoicePopUp.setVisible(false);
-        woodenPanePopUpBackground.setVisible(false);
-        client.getController().sendMessage(new CardPlacementMessage(starterCard, null));
+        Animator.doScaleAnimation(starterChoicePopUp.getChildren().getFirst(),false);
+        Animator.doFadeAnimation(starterChoicePopUp, false);
+        Animator.doFadeAnimation(woodenPanePopUpBackground, false).setOnFinished(e -> {
+            starterChoicePopUp.setVisible(false);
+            woodenPanePopUpBackground.setVisible(false);
+            client.getController().sendMessage(new CardPlacementMessage(starterCard, null));
+        });
     }
 
     /**
@@ -343,6 +352,7 @@ public class GameViewController extends ViewController {
      */
     @FXML
     public void openObjectivesPane(){
+        Animator.doSlideAnimation(objectivesPane, objectivePanelAnimationOffset, true);
         objectivesPane.setVisible(true);
         objectivesButtonPane.setVisible(false);
     }
@@ -353,7 +363,8 @@ public class GameViewController extends ViewController {
     @FXML
     public void closeObjectivesPane(){
         objectivesButtonPane.setVisible(true);
-        objectivesPane.setVisible(false);
+        Animator.doSlideAnimation(objectivesPane, objectivePanelAnimationOffset, false)
+                .setOnFinished(e -> objectivesPane.setVisible(false));
     }
 
     /**
@@ -400,23 +411,18 @@ public class GameViewController extends ViewController {
         ImageView objectiveView1 = getCardImage(objective1);
         ImageView objectiveView2 = getCardImage(objective2);
         objectiveView1.setOnMouseClicked((mouseEvent) -> {
-            objectiveView1.setDisable(true);
-            objectiveView2.setDisable(true);
-            objectivesRevealPopUp.setVisible(false);
-            client.getController().sendMessage(new ObjectivesMessage(
-                    Status.REQUEST_SECRET_OBJECTIVES, new ArrayList<>(List.of(objective1))));
+            sendObjectiveChoice(objectiveView1, objectiveView2, objective1);
         });
         objectiveView2.setOnMouseClicked((mouseEvent) -> {
-            objectiveView1.setDisable(true);
-            objectiveView2.setDisable(true);
-            objectivesRevealPopUp.setVisible(false);
-            client.getController().sendMessage(new ObjectivesMessage(
-                    Status.REQUEST_SECRET_OBJECTIVES, new ArrayList<>(List.of(objective2))));
+            sendObjectiveChoice(objectiveView1, objectiveView2, objective2);
         });
         secretObjectivesRevealPane.addColumn(0, objectiveView1);
         secretObjectivesRevealPane.addColumn(1, objectiveView2);
         objectivesRevealPopUp.setVisible(true);
         woodenPanePopUpBackground.setVisible(true);
+        Animator.doScaleAnimation(objectivesRevealPopUp.getChildren().getFirst(), true);
+        Animator.doFadeAnimation(objectivesRevealPopUp, true);
+        Animator.doFadeAnimation(woodenPanePopUpBackground, true);
     }
 
     /**
@@ -701,6 +707,8 @@ public class GameViewController extends ViewController {
         }
         resultGrid.add(lowerSummaryGrid, 0, 1);
         matchSummaryGrid.setVisible(true);
+        Animator.doFadeAnimation(matchSummaryGrid,true);
+        Animator.doScaleAnimation(matchSummaryGrid.getChildren().getFirst(),true);
     }
 
     /**
@@ -801,7 +809,20 @@ public class GameViewController extends ViewController {
         int numberOfChildren = notificationToastGrid.getChildren().size();
         notificationToastGrid.add(statusLabel, 1, 0);
         statusLabel.setTranslateY(numberOfChildren * toastGap);
+        Animator.doScaleAnimation(statusLabel,true);
         return statusLabel;
+    }
+
+    private void sendObjectiveChoice(ImageView objectiveView1, ImageView objectiveView2, Objective objectiveToSend){
+        objectiveView1.setDisable(true);
+        objectiveView2.setDisable(true);
+        Animator.doScaleAnimation(objectivesRevealPopUp.getChildren().getFirst(),false);
+        Animator.doFadeAnimation(objectivesRevealPopUp,false);
+        Animator.doFadeAnimation(woodenPanePopUpBackground,false).setOnFinished(e ->{
+            objectivesRevealPopUp.setVisible(false);
+            client.getController().sendMessage(new ObjectivesMessage(
+                    Status.REQUEST_SECRET_OBJECTIVES, new ArrayList<>(List.of(objectiveToSend))));
+        });
     }
 
     /**
@@ -850,12 +871,15 @@ public class GameViewController extends ViewController {
      * @param label the label to remove.
      */
     private void removeMessageLabel(Label label){
-        notificationToastGrid.getChildren().remove(label);
-        int i = 0;
-        for(Node node : notificationToastGrid.getChildren()){
-            node.setTranslateY(i * toastGap);
-            i++;
-        }
+        Animator.doFadeAnimation(label,false).setOnFinished(e -> {
+            notificationToastGrid.getChildren().remove(label);
+            int i = 0;
+            for(Node node : notificationToastGrid.getChildren()){
+                node.setTranslateY(i * toastGap);
+                i++;
+            }
+        });
+
     }
 
     /**
