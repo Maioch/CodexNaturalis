@@ -44,7 +44,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         boolean isConnected = false;
         while (!isConnected) {
             String ip = readFromInput("Please enter the IP of the server you want to play on: ",
-                    (s -> s.length() <= 15 && Pattern.compile("[0-9]{0,3}\\.[0-9]{0,3}\\.[0-9]{0,3}\\.[0.9]{0,3}").matcher(s).find()),
+                    s -> true,
                     this::stringIdentity,
                     true);
             int port = readFromInput("Now enter the Port of the server: ",

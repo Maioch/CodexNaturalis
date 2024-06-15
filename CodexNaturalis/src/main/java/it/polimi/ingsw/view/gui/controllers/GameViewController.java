@@ -195,8 +195,19 @@ public class GameViewController extends ViewController {
      * @param sender  the sender's nickname
      * @param message the message text content.
      */
-    public void showChatMessage(String sender, String message){
+    public void showChatMessage(String sender, List<String> recipients, String message){
         Label senderLabel = new Label(sender + ":");
+        if(recipients.size() != client.getController().getRemotePlayerNames().size()) {
+            StringBuilder senderLabelSB= new StringBuilder();
+            senderLabelSB.append(sender).append(" (to ");
+            for(String nickname : recipients) {
+                senderLabelSB.append(nickname).append(", ");
+            }
+            senderLabelSB.deleteCharAt(senderLabelSB.length()-1);
+            senderLabelSB.deleteCharAt(senderLabelSB.length()-1);
+            senderLabelSB.append("):");
+            senderLabel.setText(senderLabelSB.toString());
+        }
         senderLabel.getStyleClass().add("chatUserLabel");
         senderLabel.setStyle(String.format("-user-color: %s;", playerColors.get(sender).getHexColorString()));
         Label messageLabel = new Label(message);
@@ -415,7 +426,6 @@ public class GameViewController extends ViewController {
      * @param cards the player's hand cards.
      */
     public void updateLocalPlayerCards(List<CardSides> cards) {
-        hideStatusLabel(GameGUI.ToastType.PLACE.toString());
         if(!checkCurrentView(client.getController().getLocalPlayerName())){
             return;
         }

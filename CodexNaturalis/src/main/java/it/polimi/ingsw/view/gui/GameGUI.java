@@ -65,7 +65,10 @@ public class GameGUI implements GameView {
      */
     @Override
     public void showChatMessage(ChatMessage chatMessage) {
-        sceneManager.<GameViewController>getController().showChatMessage(chatMessage.getSender(), chatMessage.getMessage());
+        sceneManager.<GameViewController>getController().showChatMessage(
+                chatMessage.getSender(),
+                chatMessage.getRecipients(),
+                chatMessage.getMessage());
     }
 
     /**
@@ -159,6 +162,7 @@ public class GameGUI implements GameView {
     @Override
     public void updateBoard(String nickname, List<BasicCard> placedCards, int score) {
         if(client.getController().getLocalPlayerName().equals(nickname)) {
+            sceneManager.<GameViewController>getController().hideStatusLabel(GameGUI.ToastType.PLACE.toString());
             sceneManager.<GameViewController>getController().updateLocalPlayerBoard(placedCards);
         } else {
             sceneManager.<GameViewController>getController().updateRemotePlayerBoard(nickname, placedCards);

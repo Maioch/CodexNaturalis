@@ -103,7 +103,7 @@
                             <Font name="FIra Sans Condensed Regular" size="18.0"/>
                         </font>
                     </Button>
-                    <TextField fx:id="ipTextBox" onKeyTyped="#checkIfEnableButton" promptText="Server ip"
+                    <TextField fx:id="ipTextBox" onKeyTyped="#checkIfEnableButton" promptText="Server URL"
                                styleClass="textField" GridPane.columnIndex="1" GridPane.rowIndex="2">
                         <font>
                             <Font name="FIra Sans Condensed Regular" size="18.0"/>
@@ -124,7 +124,7 @@
                             <Insets bottom="16.0"/>
                         </padding>
                     </Label>
-                    <Label alignment="CENTER" prefHeight="21.0" prefWidth="111.0" text="Server IP" textFill="#2f0606"
+                    <Label alignment="CENTER" prefHeight="21.0" prefWidth="111.0" text="Server URL" textFill="#2f0606"
                            GridPane.halignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
                         <font>
                             <Font name="Fira Sans Condensed Regular" size="18.0"/>

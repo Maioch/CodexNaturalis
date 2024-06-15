@@ -48,7 +48,7 @@ public class ConnectionViewController extends ViewController {
         tcpRadioButton.setDisable(true);
         rmiRadioButton.setDisable(true);
         connectButton.setDisable(true);
-        if(!checkAddress(ipTextBox.getText(), portTextBox.getText())){
+        if(!checkAddress(portTextBox.getText())){
             setLoginError("Invalid IP address or Port!");
             return;
         }
@@ -115,11 +115,10 @@ public class ConnectionViewController extends ViewController {
 
     /**
      * Method used to check if the login info inputted by the client are correctly formatted.
-     * @param ip the ip inputted by the client.
      * @param port the port inputted by the client.
      * @return true if the format is correct.
      */
-    private boolean checkAddress(String ip, String port){
+    private boolean checkAddress(String port){
         try{
             int portInt = Integer.parseInt(port);
             if (portInt < 1 || portInt > 65535)
@@ -127,6 +126,6 @@ public class ConnectionViewController extends ViewController {
         } catch (NumberFormatException e) {
             return false;
         }
-        return ip.length() <= 15 && Pattern.compile("[0-9]{0,3}\\.[0-9]{0,3}\\.[0-9]{0,3}\\.[0.9]{0,3}").matcher(ip).find();
+        return true;
     }
 }
