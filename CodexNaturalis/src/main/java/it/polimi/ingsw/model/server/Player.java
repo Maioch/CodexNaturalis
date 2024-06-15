@@ -54,15 +54,6 @@ public class Player {
         this.objectives = new ArrayList<>(objectives);
         this.serverSubject = serverSubject;
         this.score = 0;
-        //DEBUG
-        if (nickname.equals("jonny")) {
-            this.score = 19; //nerfed
-        }
-        if (nickname.equals("tronny")) {
-            this.score = 18; //nerfed
-        }
-        //DEBUG
-        //Set the owner for both the regular cards and the objectives
         for(CardSides card : this.handCards){
             card.backSide().setOwner(this);
             card.frontSide().setOwner(this);
