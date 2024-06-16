@@ -89,7 +89,6 @@ public class GameController implements Runnable{
      */
     private boolean acceptPlayer(String nickname, Content color, NetworkHandler handler){
         if(game.checkNickname(nickname)){
-            System.out.println("noooo");
             serverSubject.subscribe(nickname, handler);
         }
         try {
@@ -104,7 +103,6 @@ public class GameController implements Runnable{
             serverSubject.unsubscribe(nickname);
             handler.update(new IntegerMessage(Status.INVALID_COLOR, gameInfo.getGameId()));
         }catch(NicknameException n){
-            System.out.println("asdasdsasa");
             handler.update(new IntegerMessage(Status.INVALID_NICKNAME, gameInfo.getGameId()));
         }
         return false;
@@ -768,17 +766,17 @@ public class GameController implements Runnable{
             @Override
             public void run() {
                 GameStatus status = GameStatus.LOBBY;
-                    while(status != GameStatus.STARTED && !gameOver.get()){
-                        synchronized (gameInfo) {
-                            status = gameInfo.getGameStatus();
-                        }
-                        if(game.isLobbyEmpty()) {
-                            removeHandlers();
-                            gameOver.set(true);
-                            pingTimer.cancel();
-                            endGameProcedure.accept(GameController.this);
-                        }
+                while(status != GameStatus.STARTED && !gameOver.get()){
+                    synchronized (gameInfo) {
+                        status = gameInfo.getGameStatus();
                     }
+                    if(game.isLobbyEmpty()) {
+                        removeHandlers();
+                        gameOver.set(true);
+                        pingTimer.cancel();
+                        endGameProcedure.accept(GameController.this);
+                    }
+                }
                 }
             }, GameParameters.getLobbyTimeout() * 1000L);
     }

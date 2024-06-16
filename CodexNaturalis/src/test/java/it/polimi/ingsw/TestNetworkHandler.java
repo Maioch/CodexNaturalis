@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TestNetworkHandler extends NetworkHandler {
     private final List<Message> receivedMessages;
@@ -19,9 +21,7 @@ public class TestNetworkHandler extends NetworkHandler {
     public TestNetworkHandler(GameController controller){
         super(new EventHandler<>() {
             @Override
-            public void run() {
-
-            }
+            public void run(){}
         });
         receivedMessages = new ArrayList<>();
         this.controller = controller;
@@ -85,5 +85,7 @@ public class TestNetworkHandler extends NetworkHandler {
     }
 
     @Override
-    public void stop(){}
+    public synchronized void stop(){
+        stopped = true;
+    }
 }
