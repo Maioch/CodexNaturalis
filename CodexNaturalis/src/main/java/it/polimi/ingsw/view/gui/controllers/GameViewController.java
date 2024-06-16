@@ -135,6 +135,7 @@ public class GameViewController extends ViewController {
     private final Map<String, GridPane> playerSummary = new HashMap<>();
     private final List<Pair<Pane,Corner>> currentCornersOnBoard = new ArrayList<>();
     private final double objectivePanelAnimationOffset = -250;
+    private final long showNotificationDelay = 300;
 
     private final int toastGap = 76;
     private final int tokenSize = 30;
@@ -268,14 +269,22 @@ public class GameViewController extends ViewController {
      * @param message the game's state.
      */
     public void updateStatusLabel(String message){
-        Label statusLabel = createStatusLabel(message);
         Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+        timer.schedule(new TimerTask(){
             @Override
             public void run() {
-                Platform.runLater(() -> removeMessageLabel(statusLabel));
+                Platform.runLater(() -> {
+                    Label statusLabel = createStatusLabel(message);
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            Platform.runLater(() -> removeMessageLabel(statusLabel));
+                        }
+                    }, statusLabelShowInterval * 1000);
+                });
             }
-        }, statusLabelShowInterval * 1000);
+        }, showNotificationDelay);
     }
 
     /**
@@ -286,9 +295,17 @@ public class GameViewController extends ViewController {
      * @param messageType the type of the message.
      */
     public void updateStatusLabel(String message, String messageType){
-        Label statusLabel = createStatusLabel(message);
-        statusLabel.setUserData(messageType);
-        currentPermanentMessages.add(statusLabel);
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask(){
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    Label statusLabel = createStatusLabel(message);
+                    statusLabel.setUserData(messageType);
+                    currentPermanentMessages.add(statusLabel);
+                });
+            }
+        }, showNotificationDelay);
     }
 
     /**
@@ -664,6 +681,8 @@ public class GameViewController extends ViewController {
      * @param winners the winner players' nicknames.
      */
     public void revealWinners(List<String> winners){
+        Animator.doFadeAnimation(matchSummaryGrid,true);
+        Animator.doScaleAnimation(matchSummaryGrid.getChildren().getFirst(),true);
         StringBuilder sb = new StringBuilder();
         for(String winner : winners){
             sb.append(winner).append(winner.equals(winners.getLast()) ? " " : ", ");
@@ -707,8 +726,6 @@ public class GameViewController extends ViewController {
         }
         resultGrid.add(lowerSummaryGrid, 0, 1);
         matchSummaryGrid.setVisible(true);
-        Animator.doFadeAnimation(matchSummaryGrid,true);
-        Animator.doScaleAnimation(matchSummaryGrid.getChildren().getFirst(),true);
     }
 
     /**

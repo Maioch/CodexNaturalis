@@ -80,7 +80,7 @@ public class GameGUI implements GameView {
     @Override
     public void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards) {
         sceneManager.<GameViewController>getController().placeCard(handCards, placedCards);
-        sceneManager.<GameViewController>getController().updateStatusLabel("Place a card, codex wizard!", ToastType.PLACE.toString());
+        sceneManager.<GameViewController>getController().updateStatusLabel("Place a card", ToastType.PLACE.toString());
     }
 
     /**
@@ -89,10 +89,9 @@ public class GameGUI implements GameView {
      */
     @Override
     public void turnChanged(String turnOwner) {
-        sceneManager.<GameViewController>getController().updateStatusLabel(
-                client.getController().getLocalPlayerName().equals(turnOwner) ?
-                String.format("It's your turn, %s!", turnOwner) :
-                String.format("%s is playing their turn...", turnOwner));
+        if(!client.getController().getLocalPlayerName().equals(turnOwner)){
+            sceneManager.<GameViewController>getController().updateStatusLabel(String.format("%s is playing their turn...", turnOwner));
+        }
         sceneManager.<GameViewController>getController().setCurrentTurnOwner(turnOwner);
         sceneManager.<GameViewController>getController().updateLocalPlayerCards(client.getController().getLocalPlayerHand());
     }
