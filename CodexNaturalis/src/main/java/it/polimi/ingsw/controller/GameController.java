@@ -721,6 +721,7 @@ public class GameController implements Runnable{
                 }
                 labeledMessage = messageQueue.poll();
             }
+            System.out.println(game.isGameFull());
             readyHandlers.removeIf(NetworkHandler::isDisconnected);
             Message message = labeledMessage.message();
             switch (message.getStatus()){
