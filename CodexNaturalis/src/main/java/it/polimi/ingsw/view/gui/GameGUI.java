@@ -231,6 +231,7 @@ public class GameGUI implements GameView {
      */
     @Override
     public void revealWinners(List<String> winners) {
+        sceneManager.<GameViewController>getController().setChatDisable(true);
         sceneManager.<GameViewController>getController().revealWinners(winners);
     }
 

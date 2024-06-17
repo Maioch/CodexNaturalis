@@ -28,6 +28,7 @@ import javafx.scene.effect.BlurType;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -164,9 +165,16 @@ public class GameViewController extends ViewController {
         currentViewedPlayer = client.getController().getLocalPlayerName();
         int index = 0;
         outerPlayerTagGrid.setVgap(16);
+        chatTextBox.setOnKeyPressed(e -> {
+            if(e.getCode() == KeyCode.ENTER && !chatSendButton.isDisable()){
+                sendChatMessage();
+            }
+        });
         for(String nickname : playerColors.keySet()){
             if(!nickname.equals(client.getController().getLocalPlayerName())) {
-                chatSendButton.getItems().add(new CheckMenuItem(nickname));
+                CheckMenuItem checkMenuItem = new CheckMenuItem(nickname);
+                checkMenuItem.getStyleClass().add("sendButtonEntry");
+                chatSendButton.getItems().add(checkMenuItem);
             }
             GridPane playerGrid = createPlayerTag(nickname, playerColors.get(nickname));
             playersTagsGrid.add(playerGrid, index, 0);
@@ -259,6 +267,8 @@ public class GameViewController extends ViewController {
     public void setChatDisable(boolean disable){
         if(disable){
             chatSendButton.setDisable(true);
+        } else {
+            checkForText();
         }
         chatTextBox.setDisable(disable);
     }
@@ -371,7 +381,7 @@ public class GameViewController extends ViewController {
     public void openObjectivesPane(){
         Animator.doSlideAnimation(objectivesPane, objectivePanelAnimationOffset, true);
         objectivesPane.setVisible(true);
-        objectivesButtonPane.setVisible(false);
+        objectivesButtonPane.setMouseTransparent(true);
     }
 
     /**
@@ -379,9 +389,11 @@ public class GameViewController extends ViewController {
      */
     @FXML
     public void closeObjectivesPane(){
-        objectivesButtonPane.setVisible(true);
         Animator.doSlideAnimation(objectivesPane, objectivePanelAnimationOffset, false)
-                .setOnFinished(e -> objectivesPane.setVisible(false));
+                .setOnFinished(e ->{
+                        objectivesPane.setVisible(false);
+                        objectivesButtonPane.setMouseTransparent(false);
+                });
     }
 
     /**

@@ -234,6 +234,8 @@
 .sendButton{
   -fx-border-radius: 4 4 10 4;
   -fx-background-radius: 4 4 10 4;
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
 }
 .sendButton:hover{
   -fx-border-radius: 4 4 10 4;
@@ -242,6 +244,14 @@
 .sendButton .arrow-button{
   -fx-border-radius: 4 4 10 4;
   -fx-background-radius: 4 4 10 4;
+}
+.sendButton .context-menu{
+  -fx-background-radius: 4;
+}
+.sendButtonEntry{
+  -fx-font-family: "Fira Sans Condensed";
+  -fx-font-size: 12;
+  -fx-text-fill: #2f0606;
 }
 .widerWoodenBoard{
   -fx-background-image: url(images/WoodenFrameWider.png);
@@ -269,7 +279,8 @@
   -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 10, 0.5, 0.0, 0.0);
 }
 .chatScrollPane{
-  -fx-focus-traversable: false;
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
 }
 .chatUserLabel{
   -user-color: red;
