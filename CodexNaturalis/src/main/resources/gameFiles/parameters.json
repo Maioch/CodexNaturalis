@@ -22,7 +22,7 @@
   "MaxNicknameLength" : 12,
   "PingPeriodSeconds" : 10,
   "ForfeitTime" : 120,
-  "LobbyTimeout" : 120,
+  "LobbyTimeout" : 60,
   "CommandChar" : "/",
   "Delimiter" : "-",
   "RulesURL" : "https://studiobombyx.com/assets/CODEX_Rulebook_SD_EN.pdf",
