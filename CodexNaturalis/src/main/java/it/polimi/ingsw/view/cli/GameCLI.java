@@ -280,7 +280,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         int numberOfSecretObjectives = GameParameters.getNumberOfSecretObjectives();
         System.out.printf("\nHere are the available secret objectives (you can choose %d):\n", numberOfSecretObjectives);
         for(int i = 0; i < objectives.size(); i++) {
-            System.out.printf("   %d. %s%n", i + 1, CardFormatter.getObjectiveInfoString(objectives.get(i)));
+            System.out.printf("   %d. %s\n", i + 1, CardFormatter.getObjectiveInfoString(objectives.get(i)));
         }
         List<Integer> chosenObjective = readFromInput("Enter the ID of your chosen objective: ",
                 l -> l.stream().allMatch(i -> i >= 1 && i <= objectives.size()) && l.size() == numberOfSecretObjectives,
@@ -394,8 +394,8 @@ public class GameCLI extends AbstractCLI implements GameView {
         if (readInputThread != null) {
             readInputThread.interrupt();
         }
-        System.out.println("\nThe game is over! The winner is:");
-        winners.forEach(System.out::printf);
+        System.out.println("\nThe game is over! The winner" + ((winners.size() > 1) ? "s are" : " is") + ":");
+        winners.forEach(System.out::println);
         readFromInput("Type BACK when you're ready to return to the main menu: ",
                 s -> s.equalsIgnoreCase("back"),
                 this::stringIdentity,
@@ -430,7 +430,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void notifyRemotePlayerReconnected(String nickname) {
-        System.out.printf("\n%s is back!",
+        System.out.printf("\n%s is back!\n",
                 client.getController().getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
     }
 

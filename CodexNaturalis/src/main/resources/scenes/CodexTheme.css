@@ -319,6 +319,9 @@
 .viewBoardIcon{
   -fx-image: url("images/viewBoardIcon.png");
 }
+.viewBoardIcon:disabled{
+  -fx-opacity: 0.5;
+}
 .playerTagIcon:hover{
   -fx-opacity: 0.5;
 }

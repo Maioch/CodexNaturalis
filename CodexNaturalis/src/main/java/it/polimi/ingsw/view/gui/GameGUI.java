@@ -163,6 +163,7 @@ public class GameGUI implements GameView {
         if(client.getController().getLocalPlayerName().equals(nickname)) {
             sceneManager.<GameViewController>getController().hideStatusLabel(GameGUI.ToastType.PLACE.toString());
             sceneManager.<GameViewController>getController().updateLocalPlayerBoard(placedCards);
+            sceneManager.<GameViewController>getController().enableViewSwitching();
         } else {
             sceneManager.<GameViewController>getController().updateRemotePlayerBoard(nickname, placedCards);
         }

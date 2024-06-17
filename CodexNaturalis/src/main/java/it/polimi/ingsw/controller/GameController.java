@@ -137,6 +137,9 @@ public class GameController implements Runnable{
         serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards(), game.getNumberOfCardsLeft()));
         for(Player player : game.getAllPlayers()){
             serverSubject.notify(nickname, new StringMessage(Status.SILENT_TURN_NOTIFICATION, player.getNickname()));
+            if(player.getPlacedCards().isEmpty()){
+                continue;
+            }
             serverSubject.notify(nickname, new PlayerBoardMessage(player.getPlacedCards(), player.getScore()));
             if(player.getNickname().equals(nickname)){
                 serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, player.getHandCards()));

@@ -75,5 +75,4 @@ public class Animator {
         transition.setRate(1.5);
         return transition;
     }
-
 }

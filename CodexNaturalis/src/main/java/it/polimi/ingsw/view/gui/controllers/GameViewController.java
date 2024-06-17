@@ -574,6 +574,12 @@ public class GameViewController extends ViewController {
         playerToken.setTranslateY(-distanceBetweenTokens * (gridPaneToAddTo.getChildren().size() - 1));
     }
 
+    public void enableViewSwitching(){
+        for(ImageView imageView : playerTagViewIcons.values()){
+            imageView.setDisable(false);
+        }
+    }
+
     /**
      * Updates the resource and gold decks.
      *
@@ -988,6 +994,7 @@ public class GameViewController extends ViewController {
                     viewPlayerIcon.getStyleClass().add("hideBoardIcon");
                 }
             });
+            viewPlayerIcon.setDisable(true);
             playerTagGrid.addColumn(2, viewPlayerIcon);
         }
         return playerTagGrid;
