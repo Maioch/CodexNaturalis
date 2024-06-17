@@ -87,7 +87,7 @@ public class GameController implements Runnable{
      *
      * @see NetworkHandler
      */
-    private boolean acceptPlayer(String nickname, Content color, NetworkHandler handler){
+    private void acceptPlayer(String nickname, Content color, NetworkHandler handler){
         if(game.checkNickname(nickname)){
             serverSubject.subscribe(nickname, handler);
         }
@@ -95,7 +95,6 @@ public class GameController implements Runnable{
             game.addPlayerData(nickname, color);
             handler.setCurrentGame(this);
             receivePing(handler);
-            return true;
         }catch(GameFullException G){
             serverSubject.unsubscribe(nickname);
             handler.update(new Message(Status.GAME_FULL));
@@ -105,7 +104,6 @@ public class GameController implements Runnable{
         }catch(NicknameException n){
             handler.update(new IntegerMessage(Status.INVALID_NICKNAME, gameInfo.getGameId()));
         }
-        return false;
     }
 
     /**
@@ -662,11 +660,11 @@ public class GameController implements Runnable{
      * @param player the player that is drawing.
      */
     private void drawCard(Player player) {
-        boolean drawSuccess = false;
-        Status currentStatus = Status.DRAW;
         if(game.getDrawableCards().values().stream().allMatch(e -> e.getFirst() == null && e.size() == 1)){
             return;
         }
+        boolean drawSuccess = false;
+        Status currentStatus = Status.DRAW;
         while (!drawSuccess){
             CardType typeChosen = null;
             int indexChosen = -1;
@@ -713,8 +711,7 @@ public class GameController implements Runnable{
      */
     private void waitForPlayers(){
         LabeledMessage labeledMessage;
-        List<NetworkHandler> readyHandlers = new ArrayList<>();
-        while(!(game.isGameFull() && readyHandlers.size() == game.getNumberOfPlayers()) && !gameOver.get()){
+        while(!game.isGameFull() && !gameOver.get()){
             synchronized (messageQueue) {
                 if (messageQueue.isEmpty()) {
                     Thread.onSpinWait();
@@ -722,25 +719,20 @@ public class GameController implements Runnable{
                 }
                 labeledMessage = messageQueue.poll();
             }
-            System.out.println(game.isGameFull());
-            readyHandlers.removeIf(NetworkHandler::isDisconnected);
             Message message = labeledMessage.message();
             switch (message.getStatus()){
                 case Status.JOIN_GAME -> {
                     if (message instanceof JoinGameMessage joinGameMessage) {
-                        if(acceptPlayer(
+                        acceptPlayer(
                                 joinGameMessage.getNickname(),
                                 joinGameMessage.getColor(),
-                                labeledMessage.networkHandler())){
-                            readyHandlers.add(labeledMessage.networkHandler());
-                        }
+                                labeledMessage.networkHandler());
                     }
                 }
                 case Status.REQUEST_COLORS ->
                     labeledMessage.networkHandler().update(
                             new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), gameInfo.getGameId()));
                 case Status.PLAYER_DISCONNECTED -> {
-                    readyHandlers.remove(labeledMessage.networkHandler());
                     removePlayerFromLobby(labeledMessage.networkHandler());
                     labeledMessage.networkHandler().update(new Message(Status.PLAYER_LEFT_LOBBY));
                 }

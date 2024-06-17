@@ -16,7 +16,6 @@ import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
-import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

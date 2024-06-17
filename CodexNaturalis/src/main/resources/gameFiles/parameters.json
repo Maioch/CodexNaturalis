@@ -20,7 +20,7 @@
   "RMIPort" : 1099,
   "MaxChatMessageLength" : 512,
   "MaxNicknameLength" : 12,
-  "PingPeriodSeconds" : 10,
+  "PingPeriodSeconds" : 5,
   "ForfeitTime" : 120,
   "LobbyTimeout" : 60,
   "CommandChar" : "/",

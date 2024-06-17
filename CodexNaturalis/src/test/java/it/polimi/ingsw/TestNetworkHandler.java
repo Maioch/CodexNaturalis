@@ -49,26 +49,38 @@ public class TestNetworkHandler extends NetworkHandler {
         controller.addMessageToQueue(message, this);
     }
 
-    public void awaitForMessage(Status expectedStatus, int waitDurationMilliseconds, List<Status> ignoredStatus){
+    public Message awaitForMessage(Status expectedStatus, int waitDurationMilliseconds, List<Status> ignoredStatus){
         try {
             Thread.sleep(waitDurationMilliseconds);
         } catch (InterruptedException e) {
             fail();
         }
-        Status messageStatus;
+        Message message;
         synchronized (this) {
             if(receivedMessages.isEmpty()){
                 fail();
             }
             do {
-                messageStatus = receivedMessages.removeLast().getStatus();
-            } while (ignoredStatus.contains(messageStatus) && !receivedMessages.isEmpty());
+                message = receivedMessages.removeLast();
+            } while (ignoredStatus.contains(message.getStatus()) && !receivedMessages.isEmpty());
         }
-        assertEquals(expectedStatus, messageStatus);
+        assertEquals(expectedStatus, message.getStatus());
+        return message;
     }
 
-    public void awaitForMessage(Status expectedStatus, int waitDurationMilliseconds){
-        awaitForMessage(expectedStatus, waitDurationMilliseconds, new ArrayList<>());
+    public Message awaitForMessage(Status expectedStatus, int waitDurationMilliseconds){
+        return awaitForMessage(expectedStatus, waitDurationMilliseconds, new ArrayList<>());
+    }
+
+    public boolean removeIfStatus(Status expectedStatus, int waitDurationMilliseconds) {
+        try {
+            Thread.sleep(waitDurationMilliseconds);
+        } catch (InterruptedException e) {
+            fail();
+        }
+        synchronized (this){
+            return receivedMessages.removeIf(m -> m.getStatus().equals(expectedStatus));
+        }
     }
 
     @Override

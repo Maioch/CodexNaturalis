@@ -188,8 +188,8 @@ public class GameModel{
      * @param nickname the player's nickname.
      * @param color    the player's color.
      *
-     * @throws GameException          if the color chosen by the player is already taken.
-     * @throws GameFullException      if the game is full.
+     * @throws GameException     if the color chosen by the player is already taken.
+     * @throws GameFullException if the game is full.
      * @throws NicknameException if the nickname chosen by the player isn't valid.
      */
     public synchronized void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameException {

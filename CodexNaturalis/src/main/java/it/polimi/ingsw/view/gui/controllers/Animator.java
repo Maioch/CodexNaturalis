@@ -1,14 +1,12 @@
 package it.polimi.ingsw.view.gui.controllers;
 
-import com.sun.scenario.effect.Offset;
 import javafx.animation.*;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 
 public class Animator {
     private static final Interpolator cubicInterpolator = Interpolator.SPLINE(.02,.68,.33,.95);
 
+    @SuppressWarnings("UnusedReturnValue")
     public static TranslateTransition doPopAnimation(Node node, double offset, boolean popUp) {
         TranslateTransition animation = popUp ?
                 prepareSlideAnimation(0,0,offset, 0):
@@ -36,6 +34,7 @@ public class Animator {
         return animation;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static ScaleTransition doScaleAnimation(Node node, boolean scaleIn) {
         ScaleTransition animation = scaleIn ?
                 prepareScaleAnimation(0,0,1,1):
