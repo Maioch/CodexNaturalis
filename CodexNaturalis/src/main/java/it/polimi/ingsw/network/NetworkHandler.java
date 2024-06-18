@@ -47,6 +47,7 @@ public abstract class NetworkHandler implements Listener {
      * Method to check whether the client is disconnected
      * @return true if the client is disconnected
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public synchronized boolean isDisconnected(){
         return isDisconnected;
     }

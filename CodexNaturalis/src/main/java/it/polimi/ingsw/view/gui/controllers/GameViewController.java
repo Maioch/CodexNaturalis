@@ -438,12 +438,8 @@ public class GameViewController extends ViewController {
     public void choosePersonalObjective(Objective objective1, Objective objective2){
         ImageView objectiveView1 = getCardImage(objective1);
         ImageView objectiveView2 = getCardImage(objective2);
-        objectiveView1.setOnMouseClicked((mouseEvent) -> {
-            sendObjectiveChoice(objectiveView1, objectiveView2, objective1);
-        });
-        objectiveView2.setOnMouseClicked((mouseEvent) -> {
-            sendObjectiveChoice(objectiveView1, objectiveView2, objective2);
-        });
+        objectiveView1.setOnMouseClicked((mouseEvent) -> sendObjectiveChoice(objectiveView1, objectiveView2, objective1));
+        objectiveView2.setOnMouseClicked((mouseEvent) -> sendObjectiveChoice(objectiveView1, objectiveView2, objective2));
         secretObjectivesRevealPane.addColumn(0, objectiveView1);
         secretObjectivesRevealPane.addColumn(1, objectiveView2);
         objectivesRevealPopUp.setVisible(true);

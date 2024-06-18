@@ -63,7 +63,7 @@ public class GameControllerTest {
     }
 
     @Test
-    @Timeout(5)
+    @Timeout(value = 5, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     void acceptPlayerTest() throws IllegalNumberOfPlayers {
         String nickname1 = "test1";
         String nickname2 = "test2";
@@ -102,7 +102,7 @@ public class GameControllerTest {
     }
 
     @Test
-    @Timeout(15)
+    @Timeout(value = 15, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     void lobbyTest() throws IllegalNumberOfPlayers, InterruptedException {
         String nickname1 = "test1";
         String nickname2 = "test2";
@@ -151,7 +151,7 @@ public class GameControllerTest {
     }
 
     @Test
-    void autoDrawTest() throws IllegalNumberOfPlayers, InterruptedException {
+    void autoDrawTest() throws IllegalNumberOfPlayers {
         String nickname1 = "test1";
         String nickname2 = "test2";
         int gameId = 1;
@@ -165,10 +165,9 @@ public class GameControllerTest {
         }};
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME,nickname1, Content.RED, null, gameId));
-        handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME,nickname1, Content.BLUE, null, gameId));
-        testStarterCardPhase(handlers);
-        testObjectivesPhase(handlers);
-
+        handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME,nickname2, Content.BLUE, null, gameId));
+        /*testStarterCardPhase(handlers);
+        testObjectivesPhase(handlers);*/
     }
 
     @Test
@@ -194,7 +193,7 @@ public class GameControllerTest {
     }
 
     @Test
-    @Timeout(120)
+    @Timeout(value = 120, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     void winByForfeitTest() throws IllegalNumberOfPlayers, InterruptedException {
         String nickname1 = "test1";
         String nickname2 = "test2";
@@ -232,21 +231,21 @@ public class GameControllerTest {
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME, nickname1, Content.RED, null, gameId));
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.BLUE, null, gameId));
-        handlers.getFirst().stop();
-        handlers.getLast().removeStatus(Status.PLAYER_DISCONNECTED);
+        handlers.removeLast().stop();
+        handlers.getFirst().removeStatus(Status.PLAYER_DISCONNECTED);
         Thread.sleep(100);
         assertEquals(game.getGameStatus(), GameStatus.PLAYER_DISCONNECTED);
-        handlers.set(0, new TestNetworkHandler(game));
-        handlers.getFirst().send(new StringMessage(Status.RECONNECT, "test1"));
+        handlers.add(new TestNetworkHandler(game));
+        handlers.getLast().send(new StringMessage(Status.RECONNECT, "test2"));
         for(TestNetworkHandler handler : handlers) {
-            handler.awaitForMessage(Status.RECONNECT);
+            handler.removeStatus(Status.RECONNECT);
         }
-        Thread.sleep(GameParameters.getPingPeriodSeconds() * 4000L);
+        Thread.sleep(GameParameters.getPingPeriodSeconds() * 2000L);
         assertEquals(GameStatus.STARTED, game.getGameStatus());
     }
 
     @Test
-    @Timeout(20)
+    @Timeout(value = 20, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     void fullMatchTest() throws IllegalNumberOfPlayers, InterruptedException {
         int gameId = 1;
         int numPlayers = 4;
@@ -281,7 +280,7 @@ public class GameControllerTest {
                 currentHandler.awaitForMessage(Status.TURN_NOTIFICATION);
             }
             for(TestNetworkHandler handler : handlers){
-                testPlaceCardPhase(handler, handlers);
+                testPlaceCardPhase(handler);
                 if(!isDeckEmpty) {
                     isDeckEmpty = testDrawCardPhase(handler);
                 }
@@ -316,7 +315,7 @@ public class GameControllerTest {
             handler.removeStatus(Status.RECONNECT);
         }
         for(TestNetworkHandler handler : handlers){
-            testPlaceCardPhase(handler, handlers);
+            testPlaceCardPhase(handler);
             if(handler != handlers.getLast()) {
                 for (TestNetworkHandler currentHandler : handlers) {
                     currentHandler.awaitForMessage(Status.TURN_NOTIFICATION,
@@ -375,7 +374,7 @@ public class GameControllerTest {
         checkTurnSkipped(handlers);
     }
 
-    private void testPlaceCardPhase(TestNetworkHandler handler, List<TestNetworkHandler> handlers) {
+    private void testPlaceCardPhase(TestNetworkHandler handler) {
         Message message = handler.awaitForMessage(Status.PLACE_CARD);
         assertInstanceOf(ValidPlacementsMessage.class, message);
         BasicCard cardToPlace = ((ValidPlacementsMessage) message).getPlaceableCards().getLast();

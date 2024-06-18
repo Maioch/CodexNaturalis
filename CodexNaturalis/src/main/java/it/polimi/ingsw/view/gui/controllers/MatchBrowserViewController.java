@@ -9,17 +9,12 @@ import it.polimi.ingsw.network.messages.Status;
 import it.polimi.ingsw.network.messages.generic.IntegerMessage;
 import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.messages.setup.NewGameMessage;
-import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.ParallelTransition;
-import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.util.Duration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,7 +77,7 @@ public class MatchBrowserViewController extends ViewController {
     private ToggleGroup gameIdToggleGroup;
     private ToggleGroup colorChoiceToggleGroup;
     private int currentSelectedId;
-    private double animationOffset = 200;
+    private final double animationOffset = 200;
 
     public void initialize(){
         setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
