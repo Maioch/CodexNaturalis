@@ -182,7 +182,7 @@ public class PlayerTest {
     }
 
     /**
-     * assert the functionality of checkIfPlaceable by testing it on all the possible conditions
+     * Assert the functionality of checkIfPlaceable by testing it on all the possible conditions
      */
     @Test
     public void checkIfPlaceableTest(){

@@ -10,8 +10,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class TestNetworkHandler extends NetworkHandler {
     private final List<Message> receivedMessages;
@@ -49,37 +47,70 @@ public class TestNetworkHandler extends NetworkHandler {
         controller.addMessageToQueue(message, this);
     }
 
-    public Message awaitForMessage(Status expectedStatus, int waitDurationMilliseconds, List<Status> ignoredStatus){
-        try {
-            Thread.sleep(waitDurationMilliseconds);
-        } catch (InterruptedException e) {
-            fail();
-        }
-        Message message;
-        synchronized (this) {
-            if(receivedMessages.isEmpty()){
-                fail();
+    /**
+     * Awaits for a message to be received, while ignoring a set list of status messages.
+     * Asserts that the not-ignored message is of the exact expected status.
+     *
+     * @param expectedStatus the expected status of the awaited message
+     * @param ignoredStatus the list of status to ignore.
+     * @return the received message.
+     */
+    public Message awaitForMessage(Status expectedStatus, List<Status> ignoredStatus){
+        Message message = null;
+        boolean empty = true;
+        boolean found = false;
+        while(!found) {
+            //noinspection IdempotentLoopBody
+            while (empty) {
+                synchronized (this) {
+                    empty = receivedMessages.isEmpty();
+                }
             }
-            do {
-                message = receivedMessages.removeLast();
-            } while (ignoredStatus.contains(message.getStatus()) && !receivedMessages.isEmpty());
+            synchronized (this) {
+                message = receivedMessages.removeFirst();
+                found = !ignoredStatus.contains(message.getStatus());
+                empty = receivedMessages.isEmpty();
+            }
         }
         assertEquals(expectedStatus, message.getStatus());
         return message;
     }
 
-    public Message awaitForMessage(Status expectedStatus, int waitDurationMilliseconds){
-        return awaitForMessage(expectedStatus, waitDurationMilliseconds, new ArrayList<>());
+    public Message awaitForMessage(Status expectedStatus){
+        return awaitForMessage(expectedStatus, new ArrayList<>());
     }
 
-    public boolean removeIfStatus(Status expectedStatus, int waitDurationMilliseconds) {
-        try {
+    public void removeStatus(Status expectedStatus) {
+        boolean empty = true;
+        boolean found = false;
+        int listStart = 0;
+        while(!found) {
+            //noinspection IdempotentLoopBody
+            while (empty) {
+                synchronized (this) {
+                    empty = receivedMessages.size() - listStart == 0;
+                }
+            }
+            synchronized (this) {
+                int messageIndex = receivedMessages.stream().map(Message::getStatus).toList().indexOf(expectedStatus);
+                if (messageIndex == -1) {
+                    listStart++;
+                    continue;
+                }
+                receivedMessages.remove(messageIndex);
+                found = true;
+            }
+        }
+    }
+
+    public boolean containsStatus(Status expectedStatus, int waitDurationMilliseconds){
+        try{
             Thread.sleep(waitDurationMilliseconds);
         } catch (InterruptedException e) {
             fail();
         }
-        synchronized (this){
-            return receivedMessages.removeIf(m -> m.getStatus().equals(expectedStatus));
+        synchronized (this) {
+            return receivedMessages.stream().map(Message::getStatus).toList().contains(expectedStatus);
         }
     }
 
