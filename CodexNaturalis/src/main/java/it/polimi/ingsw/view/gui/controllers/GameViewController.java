@@ -16,6 +16,7 @@ import it.polimi.ingsw.network.messages.game.DrawChoiceMessage;
 import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
 import it.polimi.ingsw.view.gui.CardAssetsProvider;
 import it.polimi.ingsw.view.gui.GameGUI;
+import javafx.animation.ScaleTransition;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -33,6 +34,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.transform.Scale;
 import javafx.util.Pair;
 
 import java.util.*;
@@ -329,6 +331,10 @@ public class GameViewController extends ViewController {
         currentPermanentMessages.removeIf(l -> l.getUserData().equals(messageType));
     }
 
+    public void setPlayerStatus(String nickname, boolean connected){
+        playerTagCircles.get(nickname).getParent().getChildrenUnmodifiable().get(1).setDisable(!connected);
+    }
+
     /**
      * Prompts the client to choose the side of its starter to place.
      *
@@ -521,7 +527,6 @@ public class GameViewController extends ViewController {
      * @param placedCards the local player's board.
      */
     public void placeCard(List<CardSides> handCards, List<BasicCard> placedCards){
-        isDrawPhase = false;
         updateLocalPlayerCards(handCards);
         updateLocalPlayerBoard(placedCards);
     }
@@ -538,8 +543,17 @@ public class GameViewController extends ViewController {
         for(CardType key : drawableCards.keySet()){
             updateViewDeck(drawableCards.get(key), numberOfCardsLeft.get(key), key);
         }
-        resourceDeckGrid.getChildren().forEach(n -> n.setDisable(false));
-        goldDeckGrid.getChildren().forEach(n -> n.setDisable(false));
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+               @Override
+               public void run() {
+                   Platform.runLater(() -> {
+                       resourceDeckGrid.getChildren().forEach(n -> n.setDisable(false));
+                       goldDeckGrid.getChildren().forEach(n -> n.setDisable(false));
+                   });
+               }
+        }, showNotificationDelay);
+
     }
 
     /**
@@ -878,7 +892,10 @@ public class GameViewController extends ViewController {
             ImageView cardView = getCardImage(card);
             cardView.setDisable(true);
             int finalIndex = index;
-            cardView.setOnMouseClicked((mouseEvent) -> client.getController().sendMessage(new DrawChoiceMessage(finalIndex, deckType)));
+            cardView.setOnMouseClicked((mouseEvent) -> {
+                isDrawPhase = false;
+                client.getController().sendMessage(new DrawChoiceMessage(finalIndex, deckType));
+            });
             if(index == 0){
                 int j = 0;
                 while(j < numberOfCardsLeft - 1 && j < maxNumberOfHiddenCards){

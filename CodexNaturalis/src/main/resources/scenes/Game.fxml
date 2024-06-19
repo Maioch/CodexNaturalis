@@ -157,7 +157,7 @@
                 <rowConstraints>
                     <RowConstraints maxHeight="Infinity" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 </rowConstraints>
-                <GridPane fx:id="cardHandGrid" styleClass="cardHandPanel" GridPane.columnIndex="1">
+                <GridPane fx:id="cardHandGrid" pickOnBounds="false" styleClass="cardHandPanel" GridPane.columnIndex="1">
                     <columnConstraints>
                         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -172,7 +172,7 @@
                     <padding>
                         <Insets left="32.0" right="32.0" />
                     </padding>
-                    <GridPane fx:id="cardSelectionPopup" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="182.0" styleClass="cardSideSelectionPane" translateY="-250.0" visible="false">
+                    <GridPane fx:id="cardSelectionPopup" maxHeight="Infinity" maxWidth="Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="300.0" prefWidth="182.0" styleClass="cardSideSelectionPane" translateY="-230.0" visible="false">
                         <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         </columnConstraints>

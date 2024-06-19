@@ -246,6 +246,7 @@ public class GameGUI implements GameView {
     public void notifyRemotePlayerDisconnected(String nickname, Content color) {
         sceneManager.<GameViewController>getController().updateStatusLabel(String.format(
                 "%s disconnected from the game", nickname));
+        sceneManager.<GameViewController>getController().setPlayerStatus(nickname,false);
     }
 
     /**
@@ -268,6 +269,7 @@ public class GameGUI implements GameView {
     public void notifyRemotePlayerReconnected(String nickname) {
         sceneManager.<GameViewController>getController().updateStatusLabel(String.format(
                 "%s reconnected to the game", nickname));
+        sceneManager.<GameViewController>getController().setPlayerStatus(nickname,true);
         sceneManager.<GameViewController>getController().hideStatusLabel(ToastType.TIMEOUT.toString());
         sceneManager.<GameViewController>getController().setChatDisable(false);
     }

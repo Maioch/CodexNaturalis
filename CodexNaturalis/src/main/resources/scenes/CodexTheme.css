@@ -316,6 +316,12 @@
   -fx-font-size: 16;
   -fx-text-fill: #FFFFFF;
 }
+.playerTagText:disabled{
+  -fx-font-family: "Fira Sans Condensed SemiBold";
+  -fx-font-size: 16;
+  -fx-text-fill: #FFFFFF;
+  -fx-opacity: 0.5;
+}
 .viewBoardIcon{
   -fx-image: url("images/viewBoardIcon.png");
 }
