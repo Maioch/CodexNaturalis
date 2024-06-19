@@ -1,19 +1,19 @@
 package it.polimi.ingsw.network.server;
 
-import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.controller.GameInfo;
-import it.polimi.ingsw.controller.GamesManager;
+import it.polimi.ingsw.controller.server.GameController;
+import it.polimi.ingsw.controller.server.GameInfo;
+import it.polimi.ingsw.controller.server.GamesManager;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.model.shared.GameParameters;
-import it.polimi.ingsw.network.EventHandler;
-import it.polimi.ingsw.network.LabeledMessage;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
-import it.polimi.ingsw.network.messages.generic.IntegerMessage;
-import it.polimi.ingsw.network.messages.generic.StringMessage;
-import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
-import it.polimi.ingsw.network.messages.setup.MatchListMessage;
-import it.polimi.ingsw.network.messages.setup.NewGameMessage;
+import it.polimi.ingsw.network.shared.EventHandler;
+import it.polimi.ingsw.network.shared.LabeledMessage;
+import it.polimi.ingsw.network.shared.messages.Message;
+import it.polimi.ingsw.network.shared.messages.Status;
+import it.polimi.ingsw.network.shared.messages.generic.IntegerMessage;
+import it.polimi.ingsw.network.shared.messages.generic.StringMessage;
+import it.polimi.ingsw.network.shared.messages.setup.JoinGameMessage;
+import it.polimi.ingsw.network.shared.messages.setup.MatchListMessage;
+import it.polimi.ingsw.network.shared.messages.setup.NewGameMessage;
 
 import java.util.List;
 

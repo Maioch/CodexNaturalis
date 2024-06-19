@@ -7,11 +7,11 @@ import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.Objective;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
-import it.polimi.ingsw.network.messages.Status;
-import it.polimi.ingsw.network.messages.game.CardHandMessage;
-import it.polimi.ingsw.network.messages.game.ObjectivesMessage;
-import it.polimi.ingsw.network.messages.game.PlayerBoardMessage;
-import it.polimi.ingsw.network.messages.game.PlayerSummaryMessage;
+import it.polimi.ingsw.network.shared.messages.Status;
+import it.polimi.ingsw.network.shared.messages.game.CardHandMessage;
+import it.polimi.ingsw.network.shared.messages.game.ObjectivesMessage;
+import it.polimi.ingsw.network.shared.messages.game.PlayerBoardMessage;
+import it.polimi.ingsw.network.shared.messages.game.PlayerSummaryMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.*;
@@ -54,9 +54,6 @@ public class Player {
         this.objectives = new ArrayList<>(objectives);
         this.serverSubject = serverSubject;
         this.score = 0;
-        if(nickname.equals("jonny")){
-            this.score = 50;
-        }
         for(CardSides card : this.handCards){
             card.backSide().setOwner(this);
             card.frontSide().setOwner(this);

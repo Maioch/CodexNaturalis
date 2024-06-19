@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CornerTest {
+
     @Test
     void isSamePositionTest(){
         Corner c0 = new Corner(Content.RED, Location.TR);

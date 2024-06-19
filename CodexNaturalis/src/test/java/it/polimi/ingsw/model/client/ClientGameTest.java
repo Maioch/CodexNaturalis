@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model.client;
 
+import it.polimi.ingsw.TestSubmitter;
+import it.polimi.ingsw.TestView;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardBuilder;
@@ -12,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static it.polimi.ingsw.model.client.Utilities.TestSubmitter;
-import static it.polimi.ingsw.model.client.Utilities.TestView;
-import static it.polimi.ingsw.model.client.Utilities.checkForUpdate;
+import static it.polimi.ingsw.TestView.*;
 
 public class ClientGameTest {
 

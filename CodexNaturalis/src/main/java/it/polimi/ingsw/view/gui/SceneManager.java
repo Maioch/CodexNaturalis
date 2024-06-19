@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view.gui;
 
-import it.polimi.ingsw.network.client.Client;
+import it.polimi.ingsw.core.Client;
 import it.polimi.ingsw.view.gui.controllers.ViewController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

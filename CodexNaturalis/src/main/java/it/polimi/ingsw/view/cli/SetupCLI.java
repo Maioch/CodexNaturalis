@@ -1,16 +1,16 @@
 package it.polimi.ingsw.view.cli;
 
-import it.polimi.ingsw.controller.GameInfo;
-import it.polimi.ingsw.controller.GameStatus;
+import it.polimi.ingsw.controller.server.GameInfo;
+import it.polimi.ingsw.controller.server.GameStatus;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.shared.GameParameters;
-import it.polimi.ingsw.network.client.Client;
+import it.polimi.ingsw.core.Client;
 import it.polimi.ingsw.network.client.ConnectionSettings;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
-import it.polimi.ingsw.network.messages.generic.IntegerMessage;
-import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
-import it.polimi.ingsw.network.messages.setup.NewGameMessage;
+import it.polimi.ingsw.network.shared.messages.Message;
+import it.polimi.ingsw.network.shared.messages.Status;
+import it.polimi.ingsw.network.shared.messages.generic.IntegerMessage;
+import it.polimi.ingsw.network.shared.messages.setup.JoinGameMessage;
+import it.polimi.ingsw.network.shared.messages.setup.NewGameMessage;
 import it.polimi.ingsw.view.SetupView;
 
 import java.awt.*;

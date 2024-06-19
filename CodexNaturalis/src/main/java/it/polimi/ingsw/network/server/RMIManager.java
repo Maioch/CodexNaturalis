@@ -1,9 +1,9 @@
 package it.polimi.ingsw.network.server;
 
-import it.polimi.ingsw.network.EventHandler;
-import it.polimi.ingsw.network.LabeledMessage;
-import it.polimi.ingsw.network.RMIHandler;
-import it.polimi.ingsw.network.RMIInterface;
+import it.polimi.ingsw.network.shared.EventHandler;
+import it.polimi.ingsw.network.shared.LabeledMessage;
+import it.polimi.ingsw.network.shared.RMIHandler;
+import it.polimi.ingsw.network.shared.RMIInterface;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

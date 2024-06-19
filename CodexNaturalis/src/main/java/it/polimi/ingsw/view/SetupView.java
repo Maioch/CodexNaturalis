@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.controller.GameInfo;
+import it.polimi.ingsw.controller.server.GameInfo;
 import it.polimi.ingsw.model.shared.Content;
 
 import java.util.List;

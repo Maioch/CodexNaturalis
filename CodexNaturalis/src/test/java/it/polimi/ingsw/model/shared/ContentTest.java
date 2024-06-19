@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ContentTest {
+
     private final Content c1 = Content.RED;
     private final Content c2 = Content.GREEN;
     private final Content c3 = Content.BLUE;
@@ -15,9 +16,6 @@ public class ContentTest {
     private final Content c8 = Content.EMPTY;
     private final Content c9 = Content.WHITE;
 
-    /**
-     * Tests the isColor method, by checking every possible content value
-     */
     @Test
     void isColorTest(){
         assertTrue(c1.isColor());
@@ -31,9 +29,6 @@ public class ContentTest {
         assertFalse(c8.isColor());
     }
 
-    /**
-     * Tests the isObject method, by checking every possible content value
-     */
     @Test
     void isObjectTest(){
         assertFalse(c1.isObject());
@@ -47,9 +42,6 @@ public class ContentTest {
         assertTrue(c7.isObject());
     }
 
-    /**
-     * Tests the isEmpty method, by checking every possible content value
-     */
     @Test
     void isEmptyTest(){
         assertFalse(c1.isEmpty());

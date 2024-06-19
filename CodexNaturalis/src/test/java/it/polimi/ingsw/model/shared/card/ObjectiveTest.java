@@ -13,16 +13,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Tests for Objective and its Bonus implementations
- * @author Guglielmo Gatti, Francesco Saverio Nisoli
- */
-
 public class ObjectiveTest {
 
-    /**
-     * Testing method that assures a correct computation of the points given by the objective
-     */
     @Test
     void checkObjectiveTest(){
         Objective referenceContentObjective = CardBuilder.buildObjective(96);

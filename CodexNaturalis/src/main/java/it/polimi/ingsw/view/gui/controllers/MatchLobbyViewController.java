@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
+import it.polimi.ingsw.network.shared.messages.Message;
+import it.polimi.ingsw.network.shared.messages.Status;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;

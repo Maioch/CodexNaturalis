@@ -7,8 +7,8 @@ import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
+import it.polimi.ingsw.network.shared.messages.Message;
+import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
 
@@ -17,13 +17,10 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTest {
+
     private final ArrayList<String> nicknames = new ArrayList<>(){{ add("test"); add("test2"); }};
     private final ArrayList<Content> colors = new ArrayList<>(){{ add(Content.RED); }};
 
-    /**
-     * A simple test method that checks if the equals method can correctly determine when different instances of Player
-     * are actually equal or not
-     */
     @Test
     public void equalsTest(){
         Player referencePlayer = new Player(nicknames.getFirst(), colors.getFirst(),
@@ -38,9 +35,6 @@ public class PlayerTest {
         assertNotEquals(testEqualPlayer, "Test");
     }
 
-    /**
-     * Tests whether the content contained in the player's board are computed correctly or not
-     */
     @Test
     public void getPlayerContentTest(){
         ArrayList<CardSides> cardsForHand = new ArrayList<>(){{
@@ -68,9 +62,6 @@ public class PlayerTest {
         assertEquals(expectedResult, playerTest.getPlayerContent());
     }
 
-    /**
-     * A testing method that checks if the points given in the array are correspondingly correct (objective by objective)
-     */
     @Test
     public void awardObjectivePointsTest(){
         TestNetworkHandler handler1 = new TestNetworkHandler();
@@ -136,10 +127,6 @@ public class PlayerTest {
         }
     }
 
-    /**
-     * Verify the functionality of checkRequirements by checking that by placing all the red resource card, all gold cards that
-     * require only red resources are placeable.
-     */
     @Test
     public void checkRequirementsTest(){
         Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
@@ -181,9 +168,6 @@ public class PlayerTest {
         }
     }
 
-    /**
-     * Assert the functionality of checkIfPlaceable by testing it on all the possible conditions
-     */
     @Test
     public void checkIfPlaceableTest(){
         Player referencePlayer = new Player(nicknames.getFirst(),
@@ -226,9 +210,6 @@ public class PlayerTest {
         assertFalse(canBePlaced);
     }
 
-    /**
-     * A testing method that assures the actual placement of a card when certain requirements are satisfied
-     */
     @Test
     public void placeCardTest(){
         TestNetworkHandler handler1 = new TestNetworkHandler();
@@ -320,9 +301,6 @@ public class PlayerTest {
         assertEquals(playerTest.getObjectives(), objectives);
     }
 
-    /**
-     * tests if the addCardToHand method is able to add cards to the player's hand
-     */
     @Test
     public void addCardToHandTest(){
         TestNetworkHandler handler1 = new TestNetworkHandler();
@@ -408,9 +386,6 @@ public class PlayerTest {
         assertFalse(playerTest.isPlayerStuck());
     }
 
-    /**
-     * Tests whether the isCornerPartOfBoard method can correctly assess if a corner is part of the player's board
-     */
     @Test
     public void isCornerPartOfBoardTest(){
         Player playerTest = new Player("test", Content.RED,
@@ -436,9 +411,6 @@ public class PlayerTest {
         }
     }
 
-    /**
-     * Tests whether the isCardInHand method can correctly assess if a card is part of the player's hand
-     */
     @Test
     public void isCardInHandTest(){
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>(), new ServerSubject());
@@ -458,9 +430,6 @@ public class PlayerTest {
         }
     }
 
-    /**
-     * Tests if the starter card placement is successful
-     */
     @Test
     public void placeStarterCardTest(){
         TestNetworkHandler handler1 = new TestNetworkHandler();

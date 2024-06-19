@@ -1,10 +1,12 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.controller.GameController;
-import it.polimi.ingsw.network.EventHandler;
-import it.polimi.ingsw.network.NetworkHandler;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
+import it.polimi.ingsw.controller.client.ClientController;
+import it.polimi.ingsw.controller.server.GameController;
+import it.polimi.ingsw.network.shared.EventHandler;
+import it.polimi.ingsw.network.shared.LabeledMessage;
+import it.polimi.ingsw.network.shared.NetworkHandler;
+import it.polimi.ingsw.network.shared.messages.Message;
+import it.polimi.ingsw.network.shared.messages.Status;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,18 +14,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestNetworkHandler extends NetworkHandler {
+
     private final List<Message> receivedMessages;
-    private final GameController controller;
+    private final GameController gameController;
+    private final ClientController clientController;
     private boolean stopped;
 
-    public TestNetworkHandler(GameController controller){
+    public TestNetworkHandler(GameController gameController){
         super(new EventHandler<>() {
             @Override
             public void run(){}
         });
         receivedMessages = new ArrayList<>();
-        this.controller = controller;
+        this.gameController = gameController;
+        this.clientController = null;
         this.stopped = false;
+    }
+
+    public TestNetworkHandler(ClientController clientController){
+        super(new EventHandler<>() {
+            @Override
+            public void run(){}
+        });
+        receivedMessages = new ArrayList<>();
+        this.gameController = null;
+        this.clientController = clientController;
     }
 
     public TestNetworkHandler(){
@@ -32,7 +47,8 @@ public class TestNetworkHandler extends NetworkHandler {
             public void run(){}
         });
         receivedMessages = new ArrayList<>();
-        this.controller = null;
+        this.gameController = null;
+        this.clientController = null;
     }
 
     public synchronized List<Message> getReceivedMessages() {
@@ -42,9 +58,9 @@ public class TestNetworkHandler extends NetworkHandler {
     }
 
     public void send(Message message){
-        assertNotNull(controller);
+        assertNotNull(gameController);
         assertFalse(stopped);
-        controller.addMessageToQueue(message, this);
+        gameController.addMessageToQueue(message, this);
     }
 
     /**
@@ -52,8 +68,9 @@ public class TestNetworkHandler extends NetworkHandler {
      * Asserts that the not-ignored message is of the exact expected status.
      *
      * @param expectedStatus the expected status of the awaited message
-     * @param ignoredStatus the list of status to ignore.
-     * @return the received message.
+     * @param ignoredStatus  the list of status to ignore.
+     *
+     * @return               the received message.
      */
     public Message awaitForMessage(Status expectedStatus, List<Status> ignoredStatus){
         Message message = null;
@@ -120,8 +137,12 @@ public class TestNetworkHandler extends NetworkHandler {
             return;
         }
         if(message.getStatus() == Status.REQUEST_PING){
-            assertNotNull(controller);
-            controller.receivePing(this);
+            if(gameController == null){
+                assertNotNull(clientController);
+                clientController.addEventToQueue(new LabeledMessage(this, new Message(Status.PING_ACK)));
+            } else {
+                gameController.receivePing(this);
+            }
             return;
         }
         receivedMessages.add(message);

@@ -9,10 +9,10 @@ import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.network.messages.Status;
-import it.polimi.ingsw.network.messages.game.DrawOptionsMessage;
-import it.polimi.ingsw.network.messages.generic.StringMessage;
-import it.polimi.ingsw.network.messages.setup.JoinGameMessage;
+import it.polimi.ingsw.network.shared.messages.Status;
+import it.polimi.ingsw.network.shared.messages.game.DrawOptionsMessage;
+import it.polimi.ingsw.network.shared.messages.generic.StringMessage;
+import it.polimi.ingsw.network.shared.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.*;

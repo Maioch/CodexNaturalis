@@ -246,6 +246,7 @@ public class GameParameters {
      * @return          the node corresponding to the given parameter.
      */
     private static JsonNode getParameter(String parameter){
+        @SuppressWarnings("DuplicatedCode")
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node;
         try {

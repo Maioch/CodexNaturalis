@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model.client;
 
+import it.polimi.ingsw.TestSubmitter;
+import it.polimi.ingsw.TestView;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.shared.card.CardBuilder;
 import it.polimi.ingsw.model.shared.card.CardSides;
@@ -8,11 +10,12 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 
-import static it.polimi.ingsw.model.client.Utilities.*;
+import static it.polimi.ingsw.TestView.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class RemotePlayerTest {
+
     @Test
     void handCardsTest(){
         TestView testView = new TestView();

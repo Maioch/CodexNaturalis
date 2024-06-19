@@ -1,11 +1,11 @@
 package it.polimi.ingsw.view.gui;
 
-import it.polimi.ingsw.controller.GameInfo;
+import it.polimi.ingsw.controller.server.GameInfo;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.network.client.Client;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
-import it.polimi.ingsw.network.messages.generic.IntegerMessage;
+import it.polimi.ingsw.core.Client;
+import it.polimi.ingsw.network.shared.messages.Message;
+import it.polimi.ingsw.network.shared.messages.Status;
+import it.polimi.ingsw.network.shared.messages.generic.IntegerMessage;
 import it.polimi.ingsw.view.SetupView;
 import it.polimi.ingsw.view.gui.controllers.ConnectionViewController;
 import it.polimi.ingsw.view.gui.controllers.MatchBrowserViewController;

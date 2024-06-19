@@ -13,19 +13,8 @@ import java.util.HashSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * class used for testing CardBuilder's functionality.
- * The final variables used to construct the reference cards all refer to the
- * first card of that type from the cards.json file, whose id is specified
- * in the testId field.
- * Each method works by comparing a reference card, built
- * using the constructor,to the card with the same id,
- * built by the Card Builder. if they turn out to be equal, the test is considered
- * successful.
- * @author Guglielmo Gatti
- */
-
 public class CardBuilderTest {
+
     private final ArrayList<Integer> testIds = new ArrayList<>(){{
         add(1);
         add(41);
@@ -87,11 +76,6 @@ public class CardBuilderTest {
         put(new Point(2,2),Content.RED);
     }};
 
-    /**
-     * Test whether CardBuilder is creating resource cards correctly
-     * by creating the same card through the constructor and through cardBuilder
-     * and comparing the results with each other.
-     */
     @Test
     public void buildResourceCardTest(){
         CardSides testCardSides = CardBuilder.buildCard(testIds.getFirst());
@@ -108,9 +92,6 @@ public class CardBuilderTest {
         assertThrows(RuntimeException.class, () -> CardBuilder.getCardJson(0));
     }
 
-    /**
-     * Test whether CardBuilder is creating resource cards correctly
-     */
     @Test
     public void buildGoldCardTest(){
         CardSides testCardSides = CardBuilder.buildCard(testIds.get(1));
@@ -128,9 +109,6 @@ public class CardBuilderTest {
         assertEquals(correctFront,testFront);
     }
 
-    /**
-     * Test whether starter cards are built correctly
-     */
     @Test
     public void buildStarterCardTest(){
         CardSides testCardSides = CardBuilder.buildCard(testIds.get(2));
@@ -146,9 +124,6 @@ public class CardBuilderTest {
         assertEquals(correctFront,testFront);
     }
 
-    /**
-     * Test whether objective cards are built correctly
-     */
     @Test
     public void buildObjectiveCardTest(){
         Objective objective = CardBuilder.buildObjective(testIds.get(3));

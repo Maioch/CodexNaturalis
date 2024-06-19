@@ -10,8 +10,8 @@ import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.CardType;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
+import it.polimi.ingsw.network.shared.messages.Message;
+import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.server.ServerSubject;
 import org.junit.jupiter.api.Test;
 
@@ -21,9 +21,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Guglielmo Gatti
- */
 public class GameModelTest {
 
     private final int resourceSize = GameParameters.getEndCardIndex(CardType.RESOURCE) - GameParameters.getStartCardIndex(CardType.RESOURCE) + 1;
@@ -31,9 +28,6 @@ public class GameModelTest {
     private final String playerNumberFail = "please set a different number of players for the GameModel instance" +
             " or the tests won't be able to run correctly";
 
-    /**
-     * Tests whether the game class can correctly assess whether a game should end during the next turn or not
-     */
     @Test
     public void isLastTurnTest() throws GameException, GameFullException, NicknameException {
         GameModel gameModel;
@@ -108,9 +102,6 @@ public class GameModelTest {
         }
     }
 
-    /**
-     * Tests whether new players can be added to the game as long as it's not full
-     */
     @Test
     public void addPlayerDataTest() throws GameException, NicknameException, IllegalNumberOfPlayers, GameFullException {
         int minPlayers = GameParameters.getMinPlayers();
@@ -183,10 +174,6 @@ public class GameModelTest {
         }
     }
 
-    /**
-     * Tests if the getDrawableCards method returns the correct number of cards when queried.
-     * Doesn't test if the cards are the same due to the decks' order being random.
-     */
     @Test
     public void getDrawableCardsTest() throws GameException, GameFullException, NicknameException {
         GameModel gameModel;
@@ -240,9 +227,6 @@ public class GameModelTest {
         }
     }
 
-    /**
-     * Tests whether cards can be drawn from the Resource card deck and the Gold card deck
-     */
     @Test
     public void drawCardTest() throws GameException{
         String nickname = "test";
@@ -282,9 +266,6 @@ public class GameModelTest {
         }
     }
 
-    /**
-     * A testing method that assures the return of the winning players (who have the maximum number of points)
-     */
     @Test
     public void getWinningPlayersTest() throws GameException, GameFullException, NicknameException {
         int numberOfPlayers = 2;

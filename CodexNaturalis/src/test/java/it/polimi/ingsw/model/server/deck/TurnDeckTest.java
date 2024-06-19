@@ -9,17 +9,12 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Andrea Fidanza
- */
 public class TurnDeckTest {
+
     private final int deckStart = 1;
     private final int deckEnd = 20;
     private final int numberOfVisibleCards = 2;
 
-    /**
-     * Tests the drawVisibleCard method by drawing visible cards until the deck is empty
-     */
     @Test
     void drawVisibleCardTest(){
         assertThrows(DeckException.class, () -> new TurnDeck<>(
@@ -45,9 +40,6 @@ public class TurnDeckTest {
         }
     }
 
-    /**
-     * Tests the getCardOnTop method
-     */
     @Test
     void getCardOnTopTest(){
         TurnDeck<CardSides> deck = new TurnDeck<>(CardBuilder::buildCard, deckStart, deckEnd, numberOfVisibleCards);

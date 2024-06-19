@@ -17,6 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GoldCardTest {
+
     private final int startGold = 41;
     private final int endGold = 80;
 

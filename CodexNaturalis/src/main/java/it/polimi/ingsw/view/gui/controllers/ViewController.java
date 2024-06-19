@@ -1,11 +1,11 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.exceptions.TCPException;
-import it.polimi.ingsw.network.client.Client;
+import it.polimi.ingsw.core.Client;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.client.ConnectionSettings;
-import it.polimi.ingsw.network.messages.Message;
-import it.polimi.ingsw.network.messages.Status;
+import it.polimi.ingsw.network.shared.messages.Message;
+import it.polimi.ingsw.network.shared.messages.Status;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.Button;

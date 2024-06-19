@@ -1,7 +1,7 @@
 package it.polimi.ingsw.network.server;
 
-import it.polimi.ingsw.network.NetworkHandler;
-import it.polimi.ingsw.network.messages.Message;
+import it.polimi.ingsw.network.shared.NetworkHandler;
+import it.polimi.ingsw.network.shared.messages.Message;
 
 import java.util.HashMap;
 import java.util.Map;

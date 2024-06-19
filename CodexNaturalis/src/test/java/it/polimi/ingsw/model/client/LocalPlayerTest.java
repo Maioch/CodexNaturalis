@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model.client;
 
+import it.polimi.ingsw.TestSubmitter;
+import it.polimi.ingsw.TestView;
 import it.polimi.ingsw.model.shared.Content;
 
 import it.polimi.ingsw.model.shared.card.BasicCard;
@@ -12,10 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static it.polimi.ingsw.model.client.Utilities.*;
+import static it.polimi.ingsw.TestView.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LocalPlayerTest {
+
     @Test
     void turnNumberTest(){
         LocalPlayer player = new LocalPlayer("test", Content.RED);

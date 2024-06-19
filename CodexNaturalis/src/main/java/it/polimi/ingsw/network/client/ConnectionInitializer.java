@@ -1,8 +1,9 @@
 package it.polimi.ingsw.network.client;
 
+import it.polimi.ingsw.controller.client.ClientController;
 import it.polimi.ingsw.exceptions.TCPException;
-import it.polimi.ingsw.network.RMIHandler;
-import it.polimi.ingsw.network.TCPHandler;
+import it.polimi.ingsw.network.shared.RMIHandler;
+import it.polimi.ingsw.network.shared.TCPHandler;
 import it.polimi.ingsw.network.server.RMISetup;
 
 import java.io.IOException;

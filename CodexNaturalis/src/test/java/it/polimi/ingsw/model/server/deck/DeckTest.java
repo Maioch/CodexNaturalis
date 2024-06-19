@@ -12,20 +12,14 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Guglielmo Gatti
- */
 public class DeckTest {
+
     private final int deckStart = GameParameters.getStartCardIndex(CardType.RESOURCE);
     private final int endBasicCards = GameParameters.getEndCardIndex(CardType.STARTER);
     private final int startObjectives = GameParameters.getStartCardIndex(CardType.OBJECTIVE);
     private final int deckEnd = GameParameters.getEndCardIndex(CardType.OBJECTIVE);
     private final ArrayList<Integer> ids = new ArrayList<>();
 
-    /**
-     * Tests taking a deck and drawing all the cards from it.
-     * used to test the draw method and the isEmpty method
-     */
     @Test
     public void repeatedDrawTest() {
         assertThrows(DeckException.class, () -> new Deck<>(CardBuilder::buildCard, endBasicCards, deckStart));
@@ -54,9 +48,6 @@ public class DeckTest {
         }
     }
 
-    /**
-     * Helper method for repeatedDrawTest
-     */
     private void checkId(int idToCheck, int deckStart, int deckEnd) {
         for (int id : ids) {
             assertNotEquals(idToCheck, id);

@@ -14,10 +14,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * @author Francesco Nisoli, Guglielmo Gatti, Andrea Fidanza
- */
 public class BasicCardTest {
+
     private final int startResource = 1;
     private final int endResource = 40;
     private final int startStarter = 81;
@@ -80,20 +78,6 @@ public class BasicCardTest {
                 assertEquals(actualSymbols, card.getCardSymbols());
             }
         }
-    }
-    private Map<Content, Integer> getCorrectSymbols(List<Content> permResources, Set<Corner> corners){
-        return new HashMap<>(){{
-            for(Content content : Content.values())
-                put(content, 0);
-            for(Content content : permResources){
-                this.put(content, this.get(content) + 1);
-            }
-            for(Corner corner : corners)
-                if(corner.getVisibility()){
-                    Content content = corner.getContent();
-                    this.put(content, this.get(content) + 1);
-                }
-        }};
     }
 
     @Test
@@ -249,5 +233,20 @@ public class BasicCardTest {
             }
             add(new Corner(Content.RED, Location.BL));
         }}, 0, new ArrayList<>(), false));
+    }
+
+    private Map<Content, Integer> getCorrectSymbols(List<Content> permResources, Set<Corner> corners){
+        return new HashMap<>(){{
+            for(Content content : Content.values())
+                put(content, 0);
+            for(Content content : permResources){
+                this.put(content, this.get(content) + 1);
+            }
+            for(Corner corner : corners)
+                if(corner.getVisibility()){
+                    Content content = corner.getContent();
+                    this.put(content, this.get(content) + 1);
+                }
+        }};
     }
 }
