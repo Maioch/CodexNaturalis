@@ -7,6 +7,9 @@ import it.polimi.ingsw.controller.server.GameInfo;
 import it.polimi.ingsw.controller.server.GameStatus;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.model.shared.card.*;
+import it.polimi.ingsw.model.shared.card.corner.Corner;
+import it.polimi.ingsw.model.shared.card.corner.Location;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static it.polimi.ingsw.TestView.checkForUpdate;
 import static org.junit.jupiter.api.Assertions.*;
@@ -121,6 +125,8 @@ public class ClientControllerTest {
             assertEquals(1, recentCalls.size());
             checkForUpdate(recentCalls, entry.getValue().getKey(), entry.getValue().getValue());
         }
+        controller.addEventToQueue(new LabeledMessage(networkHandler,
+                new Message(Status.PLAYER_LEFT_LOBBY)));
         controller.stop();
     }
 
@@ -130,9 +136,38 @@ public class ClientControllerTest {
         String nick2 = "test1";
         Content color1 = Content.RED;
         Content color2 = Content.BLUE;
-        ClientController controller = new ClientController(new TestView(), new TestSubmitter());
-        TestNetworkHandler networkHandler = new TestNetworkHandler();
+        TestView testView = new TestView();
+        ClientController controller = new ClientController(testView, new TestSubmitter());
+        TestNetworkHandler networkHandler = new TestNetworkHandler(controller);
         controller.setNetworkHandler(networkHandler);
+        controller.setGameView(testView);
+        Map<CardType,List<BasicCard>> drawOptionsCards =
+                Map.of(CardType.RESOURCE,List.of(CardBuilder.buildCard(10).backSide()),
+                        CardType.GOLD,List.of(CardBuilder.buildCard(50).backSide()));
+        Map<CardType,Integer> drawOptionsLeft = Map.of(CardType.RESOURCE, 1, CardType.GOLD, 1);
+        List<CardSides> localHand = List.of(CardBuilder.buildCard(12));
+        List<CardSides> remoteHand = List.of(CardBuilder.buildCard(16));
+        List<Objective> commonObjectives = List.of(CardBuilder.buildObjective(91));
+        List<Objective> secretObjectives = List.of(CardBuilder.buildObjective(92));
+        List<BasicCard> playerBoard = List.of(CardBuilder.buildCard(15).frontSide());
+        List<BasicCard> validCards = List.of(CardBuilder.buildCard(34).frontSide());
+        List<Corner> validCorners = List.of(CardBuilder.buildCard(23).frontSide().getCorner(Location.BL));
+        Map<Objective,Integer> playerSummary = Map.of(CardBuilder.buildObjective(91), 2);
+        List<String> winners = List.of(nick1);
+        Map<String, Long> expectedCalls = Map.of(
+                "showErrorMessage",8L,
+                "requestPersonalObjectivesChoice", 1L,
+                "showNoMovesAvailable", 2L,
+                "notifyLastTurn", 2L,
+                "revealWinners", 1L,
+                "notifyGameCanceled", 2L,
+                "notifyTurnSkipped", 2L,
+                "notifyRemotePlayerDisconnected", 2L,
+                "notifyRemotePlayerReconnected", 1L,
+                "showChatMessage", 1L);
+        new Thread(controller).start();
+
+
         List<Message> gameMessages = List.of(
                 new JoinGameMessage(Status.JOIN_GAME, nick1, Content.RED, 2, 1),
                 new JoinGameMessage(Status.NEW_PLAYER_JOINED, nick1, color1, 1, 1),
@@ -140,38 +175,86 @@ public class ClientControllerTest {
                 new JoinGameMessage(Status.NEW_PLAYER_JOINED, nick2, color2, 2, 1),
                 new StringMessage(Status.TURN_NOTIFICATION, nick1),
                 new StringMessage(Status.SILENT_TURN_NOTIFICATION, nick1),
-                new DrawOptionsMessage(Status.DRAW_OPTIONS, new HashMap<>(), new HashMap<>()),
+                new DrawOptionsMessage(Status.DRAW_OPTIONS, drawOptionsCards, drawOptionsLeft),
                 new Message(Status.INVALID_STARTER_CARD),
-                new CardHandMessage(Status.STARTER_CARD, new ArrayList<>()),
-                new ObjectivesMessage(Status.COMMON_OBJECTIVES, new ArrayList<>()),
+                new CardHandMessage(Status.STARTER_CARD, localHand),
+                new ObjectivesMessage(Status.COMMON_OBJECTIVES, commonObjectives),
+                new ObjectivesMessage(Status.REQUEST_SECRET_OBJECTIVES, new ArrayList<>()),
                 new Message(Status.INVALID_SECRET_OBJECTIVES),
-                new ObjectivesMessage(Status.SECRET_OBJECTIVES, new ArrayList<>()),
-                new ObjectivesMessage(Status.SECRET_OBJECTIVES, new ArrayList<>()),
+                new ObjectivesMessage(Status.SECRET_OBJECTIVES, secretObjectives),
                 new Message(Status.INVALID_PLACE_CARD),
-                new ValidPlacementsMessage(Status.PLACE_CARD, new ArrayList<>(), new ArrayList<>()),
                 new Message(Status.NO_MOVES),
-                new PlayerBoardMessage(new ArrayList<>(), 0),
-                new CardHandMessage(Status.PLAYER_HAND_CARDS,new ArrayList<>()),
-                new CardHandMessage(Status.PLAYER_HAND_BACK,new ArrayList<>()),
+                new ValidPlacementsMessage(Status.PLACE_CARD, validCards, validCorners),
+                new PlayerBoardMessage(playerBoard, 5)
+        );
+
+        for(Message message : gameMessages){
+            controller.addEventToQueue(new LabeledMessage(networkHandler, message));
+            controller.addEventToQueue(new LabeledMessage(networkHandler, new Message(message.getStatus())));
+        }
+        Thread.sleep(1000);
+
+        assertEquals(nick1,controller.getPlayerWithTurn());
+        assertEquals(List.of(nick2), controller.getRemotePlayerNames());
+        assertEquals(playerBoard, controller.getLocalPlayerBoard());
+        assertTrue(controller.getRemotePlayerBoard(nick2).isEmpty());
+        assertEquals(validCards, controller.getLocalPlayerValidCards());
+        assertEquals(validCorners, controller.getLocalPlayerValidCorners());
+        assertEquals(Map.of(nick1,color1,nick2,color2), controller.getPlayerColors());
+        assertEquals(commonObjectives, controller.getCommonObjectives());
+        assertEquals(secretObjectives, controller.getPersonalObjectives());
+        assertEquals(localHand, controller.getLocalPlayerHand());
+
+        new Thread(controller).start();
+
+        localHand = List.of(CardBuilder.buildCard(28));
+
+        gameMessages = List.of(
+                new StringMessage(Status.TURN_NOTIFICATION, nick2),
+                new CardHandMessage(Status.PLAYER_HAND_BACK, remoteHand),
                 new Message(Status.INVALID_DRAW),
-                new DrawOptionsMessage(Status.DRAW, new HashMap<>(), new HashMap<>()),
+                new DrawOptionsMessage(Status.DRAW, drawOptionsCards, drawOptionsLeft),
                 new Message(Status.LAST_TURN),
-                new PlayerSummaryMessage(new HashMap<>(), 0, nick1),
-                new Message(Status.GAME_TIMEOUT_STARTED),
-                new WinnersMessage(new ArrayList<>()),
+                new PlayerSummaryMessage(playerSummary, 8, nick1),
+                new WinnersMessage(winners),
                 new Message(Status.GAME_CANCELED),
                 new Message(Status.TURN_SKIPPED),
+                new StringMessage(Status.TURN_NOTIFICATION, nick1),
+                new CardHandMessage(Status.PLAYER_HAND_CARDS, localHand),
                 new StringMessage(Status.PLAYER_DISCONNECTED, nick2),
-                new StringMessage(Status.PLAYER_LEFT_LOBBY, nick2),
+                new StringMessage(Status.PLAYER_DISCONNECTED, "missing"),
                 new StringMessage(Status.RECONNECT, nick2),
-                new ChatMessage(nick1,nick2, new ArrayList<>()),
-                new Message(Status.REQUEST_PING)
+                new ChatMessage("test",nick2, new ArrayList<>()),
+                new Message(Status.REQUEST_PING),
+                new Message(Status.GAME_TIMEOUT_STARTED)
         );
         for(Message message : gameMessages){
             controller.addEventToQueue(new LabeledMessage(networkHandler, message));
+            controller.addEventToQueue(new LabeledMessage(networkHandler, new Message(message.getStatus())));
         }
-        new Thread(controller).start();
-        Thread.sleep(2000);
+        Thread.sleep(1000);
+
+        assertEquals(localHand, controller.getLocalPlayerHand());
+        assertEquals(remoteHand.stream().map(
+                CardSides::backSide).toList(), controller.getRemotePlayerHand(nick2));
+
+        controller.addEventToQueue(new LabeledMessage(networkHandler,new StringMessage(Status.PLAYER_LEFT_LOBBY, nick2)));
+        controller.addEventToQueue(new LabeledMessage(networkHandler,new Message(Status.PLAYER_LEFT_LOBBY)));
+
+        Thread.sleep(1000);
+
+        assertNull(controller.getPlayerColors().get(nick2));
+        var recentCalls = testView.getRecentCalls();
+
+        Map<String, Long> calls = new HashMap<>(){{
+            for(String string : recentCalls.stream().map(Pair::getKey).distinct().toList())
+                put(string, recentCalls.stream().filter(p -> p.getKey().equals(string)).count());
+        }};
+
+        for(String call : expectedCalls.keySet()){
+            assertEquals(expectedCalls.get(call), calls.get(call));
+        }
+
         controller.stop();
     }
 

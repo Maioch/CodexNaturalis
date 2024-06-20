@@ -1,8 +1,5 @@
-package it.polimi.ingsw.network.server;
+package it.polimi.ingsw.controller.server;
 
-import it.polimi.ingsw.controller.server.GameController;
-import it.polimi.ingsw.controller.server.GameInfo;
-import it.polimi.ingsw.controller.server.GamesManager;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.network.shared.EventHandler;

@@ -3,7 +3,7 @@ package it.polimi.ingsw.core;
 import it.polimi.ingsw.controller.server.GamesManager;
 import it.polimi.ingsw.model.shared.GameParameters;
 import it.polimi.ingsw.network.server.RMIManager;
-import it.polimi.ingsw.network.server.ServerMessageHandler;
+import it.polimi.ingsw.controller.server.ServerMessageHandler;
 import it.polimi.ingsw.network.shared.TCPHandler;
 
 import java.io.IOException;
