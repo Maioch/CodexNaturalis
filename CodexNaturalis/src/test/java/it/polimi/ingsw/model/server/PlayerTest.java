@@ -3,7 +3,7 @@ package it.polimi.ingsw.model.server;
 import it.polimi.ingsw.TestNetworkHandler;
 import it.polimi.ingsw.exceptions.PlayerException;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
@@ -91,7 +91,7 @@ public class PlayerTest {
         int x = 0;
         int y = 0;
 
-        for(int i = GameParameters.getStartCardIndex(CardType.RESOURCE); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
+        for(int i = Parameters.getStartCardIndex(CardType.RESOURCE); i <= Parameters.getEndCardIndex(CardType.GOLD); i++){
             Corner fakeCorner = new Corner(Content.WHITE, Location.TR);
             fakeCorner.setX(x);
             fakeCorner.setY(y);
@@ -117,8 +117,8 @@ public class PlayerTest {
 
     @Test
     void getObjectivesTest(){
-        int startObjective = GameParameters.getStartCardIndex(CardType.OBJECTIVE);
-        int endObjective = GameParameters.getEndCardIndex(CardType.OBJECTIVE);
+        int startObjective = Parameters.getStartCardIndex(CardType.OBJECTIVE);
+        int endObjective = Parameters.getEndCardIndex(CardType.OBJECTIVE);
         List<Objective> objectives = new ArrayList<>();
         for(; startObjective <= endObjective; startObjective++){
             objectives.add(CardBuilder.buildObjective(startObjective));
@@ -131,12 +131,12 @@ public class PlayerTest {
     public void checkRequirementsTest(){
         Player playerTest = new Player("test", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
         ArrayList<BasicCard> resourceCards = new ArrayList<>(){{
-            for(int id = GameParameters.getStartCardIndex(CardType.RESOURCE); id <= GameParameters.getEndCardIndex(CardType.RESOURCE); id++){
+            for(int id = Parameters.getStartCardIndex(CardType.RESOURCE); id <= Parameters.getEndCardIndex(CardType.RESOURCE); id++){
                 add(CardBuilder.buildCard(id).backSide());
             }
         }};
         ArrayList<BasicCard> goldCards = new ArrayList<>(){{
-            for(int id = GameParameters.getStartCardIndex(CardType.GOLD); id <= GameParameters.getEndCardIndex(CardType.GOLD); id++){
+            for(int id = Parameters.getStartCardIndex(CardType.GOLD); id <= Parameters.getEndCardIndex(CardType.GOLD); id++){
                 add(CardBuilder.buildCard(id).frontSide());
             }
         }};
@@ -219,12 +219,12 @@ public class PlayerTest {
         serverSubject.subscribe(nicknames.get(1),handler2);
 
         ArrayList<CardSides> cardsForHand = new ArrayList<>(){{
-            for(int i = 1; i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
+            for(int i = 1; i <= Parameters.getEndCardIndex(CardType.GOLD); i++){
                 add(CardBuilder.buildCard(i));
             }
         }};
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(cardsForHand), new ArrayList<>(), serverSubject);
-        for(int i = GameParameters.getStartCardIndex(CardType.GOLD); i <= GameParameters.getEndCardIndex(CardType.GOLD); i++){
+        for(int i = Parameters.getStartCardIndex(CardType.GOLD); i <= Parameters.getEndCardIndex(CardType.GOLD); i++){
             Corner cornerTest = new Corner(Content.WHITE, Location.TR);
             CardSides goldCard = CardBuilder.buildCard(i);
             BasicCard cardWithRequirements = goldCard.frontSide();
@@ -361,8 +361,8 @@ public class PlayerTest {
 
     @Test
     void getAllValidCardsTest(){
-        int startResources = GameParameters.getStartCardIndex(CardType.RESOURCE);
-        int startGolds = GameParameters.getStartCardIndex(CardType.GOLD);
+        int startResources = Parameters.getStartCardIndex(CardType.RESOURCE);
+        int startGolds = Parameters.getStartCardIndex(CardType.GOLD);
         CardSides resourceCard1 = CardBuilder.buildCard(startResources);
         CardSides resourceCard2 = CardBuilder.buildCard(startResources + 1);
         CardSides goldCard = CardBuilder.buildCard(startGolds);
@@ -416,7 +416,7 @@ public class PlayerTest {
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(), new ArrayList<>(), new ArrayList<>(), new ServerSubject());
         Player playerTest2 = new Player(nicknames.get(1), colors.getFirst(), new ArrayList<>(), new ArrayList<>(), new ServerSubject());
 
-        for(int i = GameParameters.getStartCardIndex(CardType.RESOURCE); i <= GameParameters.getEndCardIndex(CardType.RESOURCE); i++) {
+        for(int i = Parameters.getStartCardIndex(CardType.RESOURCE); i <= Parameters.getEndCardIndex(CardType.RESOURCE); i++) {
             BasicCard cardFront = CardBuilder.buildCard(i).frontSide();
             BasicCard cardBack = CardBuilder.buildCard(i).frontSide();
             CardSides card = new CardSides(cardFront, cardBack);
@@ -438,7 +438,7 @@ public class PlayerTest {
         serverSubject.subscribe(nicknames.getFirst(),handler1);
         serverSubject.subscribe(nicknames.get(1),handler2);
 
-        CardSides starterCard = CardBuilder.buildCard(GameParameters.getStartCardIndex(CardType.STARTER));
+        CardSides starterCard = CardBuilder.buildCard(Parameters.getStartCardIndex(CardType.STARTER));
         Player playerTest = new Player(nicknames.getFirst(), colors.getFirst(),
                 List.of(starterCard),
                 new ArrayList<>(), serverSubject);

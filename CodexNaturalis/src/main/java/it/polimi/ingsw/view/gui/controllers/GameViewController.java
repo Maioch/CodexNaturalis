@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.CardType;
@@ -232,7 +232,7 @@ public class GameViewController extends ViewController {
      */
     @FXML
     public void checkForText(){
-        chatSendButton.setDisable(chatTextBox.getText().isEmpty() || chatTextBox.getText().length() > GameParameters.getMaxChatMessageLength());
+        chatSendButton.setDisable(chatTextBox.getText().isEmpty() || chatTextBox.getText().length() > Parameters.getMaxChatMessageLength());
     }
 
     /**
@@ -797,7 +797,7 @@ public class GameViewController extends ViewController {
 
     private Point2D setGameBoardPaneSize(){
         int maxNumberOfPlacedCards =
-                GameParameters.getEndCardIndex(CardType.STARTER) - GameParameters.getStartCardIndex(CardType.RESOURCE);
+                Parameters.getEndCardIndex(CardType.STARTER) - Parameters.getStartCardIndex(CardType.RESOURCE);
         double maxCardsOnBoardWidth = Math.max(maxNumberOfPlacedCards, rootAnchorPane.getWidth() / cardWidth);
         double maxCardsOnBoardHeight = Math.max(maxNumberOfPlacedCards, rootAnchorPane.getHeight() / cardHeight);
         double paneWidth = cardWidth * maxCardsOnBoardWidth;

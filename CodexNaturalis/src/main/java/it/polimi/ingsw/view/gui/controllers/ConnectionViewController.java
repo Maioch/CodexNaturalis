@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view.gui.controllers;
 
 import it.polimi.ingsw.exceptions.TCPException;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.client.ConnectionSettings;
 import it.polimi.ingsw.network.shared.messages.Message;
@@ -109,7 +109,7 @@ public class ConnectionViewController extends ViewController {
 
     @FXML
     public void openRulesLink(){
-        application.getHostServices().showDocument(GameParameters.getRulesURL());
+        application.getHostServices().showDocument(Parameters.getRulesURL());
     }
 
     /**

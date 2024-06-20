@@ -6,7 +6,7 @@ import it.polimi.ingsw.TestView;
 import it.polimi.ingsw.controller.server.GameInfo;
 import it.polimi.ingsw.controller.server.GameStatus;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static it.polimi.ingsw.TestView.checkForUpdate;
 import static org.junit.jupiter.api.Assertions.*;
@@ -293,7 +292,7 @@ public class ClientControllerTest {
         networkHandler.stop();
         controller.setNetworkHandler(networkHandler);
         new Thread(controller).start();
-        Thread.sleep(GameParameters.getPingPeriodSeconds() * 2500L);
+        Thread.sleep(Parameters.getClientPingPeriodSeconds() * 2500L);
         var recentCalls = testView.getRecentCalls();
         assertEquals(1, recentCalls.size());
         checkForUpdate(recentCalls, "showDisconnectionMessage", new ArrayList<>());

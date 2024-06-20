@@ -4,7 +4,7 @@ import it.polimi.ingsw.exceptions.GameException;
 import it.polimi.ingsw.exceptions.GameFullException;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.exceptions.NicknameException;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
@@ -45,7 +45,7 @@ public class GameModel{
      *                                players allowed.
      */
     public GameModel(int numberOfPlayers, ServerSubject serverSubject, int gameId) throws IllegalNumberOfPlayers {
-        if (numberOfPlayers < GameParameters.getMinPlayers() || numberOfPlayers > GameParameters.getMaxPlayers())
+        if (numberOfPlayers < Parameters.getMinPlayers() || numberOfPlayers > Parameters.getMaxPlayers())
             throw new IllegalNumberOfPlayers();
         this.numberOfPlayers = numberOfPlayers;
         this.gameId = gameId;
@@ -59,27 +59,27 @@ public class GameModel{
         }};
         this.players = new ArrayList<>(numberOfPlayers);
         this.playerData = new LinkedHashMap<>();
-        int numberOfVisibleCards = GameParameters.getNumberOfVisibleCards();
+        int numberOfVisibleCards = Parameters.getNumberOfVisibleCards();
         this.resourceDeck = new TurnDeck<>(
                 CardBuilder::buildCard,
-                GameParameters.getStartCardIndex(CardType.RESOURCE),
-                GameParameters.getEndCardIndex(CardType.RESOURCE),
+                Parameters.getStartCardIndex(CardType.RESOURCE),
+                Parameters.getEndCardIndex(CardType.RESOURCE),
                 numberOfVisibleCards);
         this.goldDeck = new TurnDeck<>(
                 CardBuilder::buildCard,
-                GameParameters.getStartCardIndex(CardType.GOLD),
-                GameParameters.getEndCardIndex(CardType.GOLD),
+                Parameters.getStartCardIndex(CardType.GOLD),
+                Parameters.getEndCardIndex(CardType.GOLD),
                 numberOfVisibleCards);
         this.starterDeck = new Deck<>(
                 CardBuilder::buildCard,
-                GameParameters.getStartCardIndex(CardType.STARTER),
-                GameParameters.getEndCardIndex(CardType.STARTER));
+                Parameters.getStartCardIndex(CardType.STARTER),
+                Parameters.getEndCardIndex(CardType.STARTER));
         this.objectiveDeck = new Deck<>(
                 CardBuilder::buildObjective,
-                GameParameters.getStartCardIndex(CardType.OBJECTIVE),
-                GameParameters.getEndCardIndex(CardType.OBJECTIVE));
+                Parameters.getStartCardIndex(CardType.OBJECTIVE),
+                Parameters.getEndCardIndex(CardType.OBJECTIVE));
         this.commonObjectives = new ArrayList<>() {{
-            for (int i = 0; i < GameParameters.getNumberOfCommonObjectives(); i++) {
+            for (int i = 0; i < Parameters.getNumberOfCommonObjectives(); i++) {
                 add(objectiveDeck.draw());
             }
         }};
@@ -152,9 +152,9 @@ public class GameModel{
     public synchronized boolean checkNickname(String nickname) {
         return !playerData.containsKey(nickname) &&
                 !nickname.contains(" ") &&
-                !nickname.contains(GameParameters.getDelimiter()) &&
-                !nickname.contains(GameParameters.getCommandChar()) &&
-                nickname.length() <= GameParameters.getMaxNicknameLength();
+                !nickname.contains(Parameters.getDelimiter()) &&
+                !nickname.contains(Parameters.getCommandChar()) &&
+                nickname.length() <= Parameters.getMaxNameLength();
     }
 
     /**
@@ -178,7 +178,7 @@ public class GameModel{
                 goldDeck.getVisibleElements().isEmpty() &&
                 resourceDeck.isEmpty() &&
                 resourceDeck.getVisibleElements().isEmpty()) ||
-                players.stream().anyMatch(p -> p.getScore() >= GameParameters.getWinThreshold());
+                players.stream().anyMatch(p -> p.getScore() >= Parameters.getWinThreshold());
     }
 
     /**
@@ -234,10 +234,10 @@ public class GameModel{
         for(Map.Entry<String,Content> entry : playerData.entrySet()) {
             ArrayList<CardSides> handCards = new ArrayList<>() {{
                 add(starterDeck.draw());
-                for (int i = 0; i < GameParameters.getNumberOfGoldCardsInHand(); i++) {
+                for (int i = 0; i < Parameters.getNumberOfGoldCardsInHand(); i++) {
                     add(goldDeck.draw());
                 }
-                for (int i = 0; i < GameParameters.getNumberOfResourceCardsInHand(); i++) {
+                for (int i = 0; i < Parameters.getNumberOfResourceCardsInHand(); i++) {
                     add(resourceDeck.draw());
                 }
             }};
@@ -259,7 +259,7 @@ public class GameModel{
      */
     public List<Objective> drawObjectiveCards(){
         List<Objective> result = new ArrayList<>();
-        for(int i = 0; i < GameParameters.getNumberOfDrawnSecretObjectives(); i++){
+        for(int i = 0; i < Parameters.getNumberOfDrawnSecretObjectives(); i++){
             result.add(objectiveDeck.draw());
         }
         return result;

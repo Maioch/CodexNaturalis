@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.CardType;
@@ -64,7 +64,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                     System.out.printf(" (just %d card(s) left in this deck)\n", numberOfCardsLeft.get(cardType));
                 }
                 String cardOnTop = CardFormatter.getCardString(deckCardList.getFirst());
-                System.out.print(cardOnTop.isEmpty() ? "\n   The deck is empty\n" : cardOnTop);
+                System.out.print(cardOnTop.isEmpty() ? "\n   The deck is empty.\n" : cardOnTop);
                 System.out.print(CardFormatter.getCardsInfoString(deckCardList.subList(1,deckCardList.size())));
             }
             i++;
@@ -74,7 +74,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                 "Choose which card you want by entering its coordinates separated by a space (starting from 1): ",
                 (list -> list.size() == 2 &&
                         list.getFirst() >= 1 && list.getFirst() <= 2 &&
-                        list.getLast() >= 1 && list.getLast() <= GameParameters.getNumberOfVisibleCards() + 1),
+                        list.getLast() >= 1 && list.getLast() <= Parameters.getNumberOfVisibleCards() + 1),
                 this::stringToListInt,
                 true);
         client.getController().sendMessage(new DrawChoiceMessage(choice.getLast() - 1, CardType.values()[choice.getFirst() - 1]));
@@ -133,7 +133,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList()));
         System.out.println("\nBack side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList()));
         System.out.println("Here are the ones you can place: ");
-        int numberOfBackSides = GameParameters.getNumberOfResourceCardsInHand() + GameParameters.getNumberOfGoldCardsInHand();
+        int numberOfBackSides = Parameters.getNumberOfResourceCardsInHand() + Parameters.getNumberOfGoldCardsInHand();
         int maxCardsInHand = (numberOfBackSides) * 2;
         System.out.print("Front side:\n" + CardFormatter.getCardsInfoString(validCards.stream()
                 .limit( numberOfBackSides - maxCardsInHand + validCards.size())
@@ -152,7 +152,7 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println("Here are the coordinates of all the corners where you can place the card: ");
         List<Point> validPositions = validCorners.stream().map(c -> new Point(c.getX(), c.getY())).toList();
         for(int i = 0; i < validPositions.size(); i++){
-            System.out.printf("   %d. (%.0f, %.0f)", i + 1, validPositions.get(i).getX(),validPositions.get(i).getY());
+            System.out.printf("   %d. (%.0f, %.0f)\n", i + 1, validPositions.get(i).getX(),validPositions.get(i).getY());
         }
         System.out.println();
         int cornerIndex = readFromInput("Choose the coordinates you prefer by typing their index: ",
@@ -240,8 +240,8 @@ public class GameCLI extends AbstractCLI implements GameView {
         List<CardSides> handCards = playerCards.stream().skip(1).toList();
         CardSides starterCard = playerCards.getFirst();
         System.out.printf("\nThese are the %d cards in your hand: \n",
-                GameParameters.getNumberOfResourceCardsInHand()
-                        + GameParameters.getNumberOfGoldCardsInHand());
+                Parameters.getNumberOfResourceCardsInHand()
+                        + Parameters.getNumberOfGoldCardsInHand());
         System.out.print("\nFront side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::frontSide).toList()));
         System.out.println("\nBack side:\n" + CardFormatter.getCardsInfoString(handCards.stream().map(CardSides::backSide).toList()));
         System.out.println("\nAnd this is your starter card: ");
@@ -277,7 +277,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void requestPersonalObjectivesChoice(List<Objective> objectives) {
-        int numberOfSecretObjectives = GameParameters.getNumberOfSecretObjectives();
+        int numberOfSecretObjectives = Parameters.getNumberOfSecretObjectives();
         System.out.printf("\nHere are the available secret objectives (you can choose %d):\n", numberOfSecretObjectives);
         for(int i = 0; i < objectives.size(); i++) {
             System.out.printf("   %d. %s\n", i + 1, CardFormatter.getObjectiveInfoString(objectives.get(i)));
@@ -298,7 +298,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     public void showPersonalObjectives(List<Objective> objectives){
         System.out.println("\nThese are your personal objectives: ");
         for(Objective objective : objectives){
-            System.out.print("   • " + CardFormatter.getObjectiveInfoString(objective));
+            System.out.println("   • " + CardFormatter.getObjectiveInfoString(objective));
         }
     }
 
@@ -336,7 +336,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void notifyTurnSkipped() {
-        System.out.println("\nThe turn has been skipped because the player isn't connected");
+        System.out.println("\nThe turn has been skipped because the player isn't connected.");
     }
 
     /**
@@ -345,8 +345,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     public void notifyGameTimeout(){
         System.out.printf(
-                "You're the only player left. If no players reconnect in the next %d seconds, you'll win by forfeit\n",
-                GameParameters.getForfeitTime());
+                "You're the only player left. If no players reconnect in the next %d seconds, you'll win by forfeit.\n",
+                Parameters.getForfeitTime());
     }
 
     /**
@@ -376,7 +376,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      */
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore){
-        System.out.printf("\nHere's a recap of %s's match: \n",
+        System.out.printf("\nHere's a recap of %s's match:\n",
                 client.getController().getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         for(Map.Entry<Objective, Integer> entry : objectivePoints.entrySet()){
             System.out.print(CardFormatter.getObjectiveInfoString(entry.getKey()));
@@ -394,8 +394,12 @@ public class GameCLI extends AbstractCLI implements GameView {
         if (readInputThread != null) {
             readInputThread.interrupt();
         }
-        System.out.println("\nThe game is over! The winner" + ((winners.size() > 1) ? "s are" : " is") + ":");
-        winners.forEach(System.out::println);
+        System.out.print("\nThe game is over! The winner" + ((winners.size() > 1) ? "s are" : " is "));
+        for(String nickname : winners){
+            System.out.printf("%s%s",
+                    client.getController().getPlayerColors().get(nickname) + nickname + Content.EMPTY.getTextColorString(),
+                    (winners.getLast().equals(nickname)) ? ".\n" : ", ");
+        }
         readFromInput("Type BACK when you're ready to return to the main menu: ",
                 s -> s.equalsIgnoreCase("back"),
                 this::stringIdentity,
@@ -452,7 +456,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     @Override
     protected void checkCommand(String command, String argument){
         switch (command.toUpperCase()){
-            case "HELP" -> System.out.println(GameParameters.getGameHelpBody());
+            case "HELP" -> System.out.println(Parameters.getGameHelpBody());
             case "CHAT" -> sendChatMessage(argument);
             case "BOARD" -> showBoard(argument);
             case "HAND" -> showHandCards(argument);
@@ -470,10 +474,10 @@ public class GameCLI extends AbstractCLI implements GameView {
         Map<String, Content> playerColors = client.getController().getPlayerColors();
         String localPlayerName = client.getController().getLocalPlayerName();
         if(nickname.equals(localPlayerName)){
-            System.out.printf("%s, you can no longer make any more moves ;(\n",
+            System.out.printf("%s, you can no longer make any more moves.\n",
                     playerColors.get(localPlayerName).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         }else{
-            System.out.printf("%s cannot make any more moves ;)\n",
+            System.out.printf("%s cannot make any more moves.\n",
                     playerColors.get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
         }
     }
@@ -497,7 +501,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     @SuppressWarnings("SlowListContainsAll")
     private void sendChatMessage(String arguments){
         if(client.getController().getPlayerWithTurn().equals(client.getController().getLocalPlayerName())){
-            System.out.println("You cannot send chat messages while your turn is in progress");
+            System.out.println("You cannot send chat messages while your turn is in progress.");
             return;
         }
         List<String> recipients = extractRecipients(arguments);
@@ -522,9 +526,9 @@ public class GameCLI extends AbstractCLI implements GameView {
         List<String> recipients = new ArrayList<>();
         int indexOfDelimiter = 0;
         while(indexOfDelimiter != -1){
-            indexOfDelimiter = arguments.indexOf(GameParameters.getDelimiter(),indexOfDelimiter);
+            indexOfDelimiter = arguments.indexOf(Parameters.getDelimiter(),indexOfDelimiter);
             if(indexOfDelimiter != -1){
-                int indexOfNextDelimiter = arguments.indexOf(GameParameters.getDelimiter(),indexOfDelimiter + 1);
+                int indexOfNextDelimiter = arguments.indexOf(Parameters.getDelimiter(),indexOfDelimiter + 1);
                 if(indexOfNextDelimiter != -1){
                     recipients.add(arguments.substring(indexOfDelimiter + 1,indexOfNextDelimiter));
                 }
@@ -550,7 +554,7 @@ public class GameCLI extends AbstractCLI implements GameView {
                         viewX = Integer.parseInt(splitArgs[1]);
                         viewY = Integer.parseInt(splitArgs[2]);
                     }catch(NumberFormatException e){
-                        System.out.println("One or more of the supplied coordinates is not a number");
+                        System.out.println("One or more of the supplied coordinates is not a number.");
                         break;
                     }
                 }

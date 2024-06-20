@@ -3,7 +3,7 @@ package it.polimi.ingsw.model.shared.card;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
 
@@ -11,12 +11,14 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * CardBuilder creates the cards in the game, by reading their information from a json file.
  */
 public class CardBuilder {
 
+    private static final Logger logger = Logger.getLogger(Parameters.getLoggerName());
     private static final String fileName = "cards.json";
     private static final String filePath = "/gameFiles/";
 
@@ -51,8 +53,10 @@ public class CardBuilder {
                         yield goldFront.new ObjectBonus(object);
                     }
                     case "NOTHING" -> null;
-                    default ->
-                            throw new IllegalStateException("Unexpected value: " + cardJson.get("bonus").get("type").asText());
+                    default -> {
+                        logger.severe("Unexpected value: " + cardJson.get("bonus").get("type").asText() + "\n");
+                        throw new IllegalStateException();
+                    }
                 };
                 goldFront.setBonus(bonus);
                 cardFront = goldFront;
@@ -63,7 +67,10 @@ public class CardBuilder {
                 cardFront = new BasicCard(cardId, Content.WHITE, frontCornerMap, 0, resources, true);
                 cardBack = new BasicCard(cardId, Content.WHITE, backCornerMap, 0, new ArrayList<>(), false);
             }
-            default -> throw new IllegalStateException("Unexpected value: " + cardJson.get("type").asText());
+            default -> {
+                logger.severe("Unexpected value: " + cardJson.get("type").asText() + "\n");
+                throw new IllegalStateException();
+            }
         }
         return new CardSides(cardFront, cardBack);
     }
@@ -96,8 +103,10 @@ public class CardBuilder {
                 }};
                 yield objective.new PatternBonus(pattern);
             }
-            default ->
-                throw new IllegalStateException("Unexpected value: " + cardJson.get("bonus").get("type").asText());
+            default -> {
+                logger.severe("Unexpected value: " + cardJson.get("bonus").get("type").asText() + "\n");
+                throw new IllegalStateException();
+            }
         };
         objective.setBonus(bonus);
         return objective;
@@ -111,19 +120,21 @@ public class CardBuilder {
      * @return       the json node containing the given card information.
      */
     public static JsonNode getCardJson(int cardId){
-        String cardType = cardId < GameParameters.getStartCardIndex(CardType.OBJECTIVE) ? "placeableCards" : "objectiveCards";
+        String cardType = cardId < Parameters.getStartCardIndex(CardType.OBJECTIVE) ? "placeableCards" : "objectiveCards";
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node;
         try {
             node = objectMapper.readTree(CardBuilder.class.getResource(filePath + fileName)).get(cardType);
         }
         catch(IOException e){
-            throw new RuntimeException(e.getMessage());
+            logger.severe("Couldn't read the json file: " + e.getMessage() + "\n");
+            throw new RuntimeException();
         }
         for(JsonNode subNode : node)
             if(subNode.get("id").asInt() == cardId)
                 return subNode;
-        throw new RuntimeException(String.format("The supplied card id couldn't be found %d",cardId));
+        logger.severe("The supplied card id couldn't be found " + cardId + "\n");
+        throw new RuntimeException();
     }
 
     /**

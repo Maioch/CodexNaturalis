@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view.gui;
 
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.CardType;
@@ -281,7 +281,7 @@ public class GameGUI implements GameView {
     public void notifyGameTimeout(){
         sceneManager.<GameViewController>getController().updateStatusLabel(String.format(
                 "If no players reconnect in the next %d seconds, you'll win",
-                GameParameters.getForfeitTime()), ToastType.TIMEOUT.toString());
+                Parameters.getForfeitTime()), ToastType.TIMEOUT.toString());
         sceneManager.<GameViewController>getController().setChatDisable(true);
     }
 

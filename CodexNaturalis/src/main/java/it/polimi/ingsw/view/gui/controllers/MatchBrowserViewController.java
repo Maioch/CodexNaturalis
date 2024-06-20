@@ -3,7 +3,7 @@ package it.polimi.ingsw.view.gui.controllers;
 import it.polimi.ingsw.controller.server.GameInfo;
 import it.polimi.ingsw.controller.server.GameStatus;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.shared.messages.generic.IntegerMessage;
@@ -190,7 +190,7 @@ public class MatchBrowserViewController extends ViewController {
     public void checkCreateInput(){
         String matchName = matchNameTextbox.getText();
         createPopupButton.setDisable(matchName.isEmpty() ||
-                matchName.length() > GameParameters.getMaxNicknameLength() ||
+                matchName.length() > Parameters.getMaxNameLength() ||
                 playerNumberToggleGroup.getSelectedToggle() == null);
     }
 
@@ -274,9 +274,9 @@ public class MatchBrowserViewController extends ViewController {
     public void checkJoinInput(){
         String nickname = nicknameTextBox.getText();
         joinPopupButton.setDisable(nickname.isEmpty() ||
-                nickname.length() > GameParameters.getMaxNicknameLength() ||
-                nickname.contains(GameParameters.getCommandChar()) ||
-                nickname.contains(GameParameters.getDelimiter()) ||
+                nickname.length() > Parameters.getMaxNameLength() ||
+                nickname.contains(Parameters.getCommandChar()) ||
+                nickname.contains(Parameters.getDelimiter()) ||
                 colorChoiceToggleGroup.getSelectedToggle() == null);
     }
 
@@ -287,7 +287,7 @@ public class MatchBrowserViewController extends ViewController {
     public void checkReconnectInput(){
         String nickname = reconnectNicknameTextbox.getText();
         reconnectButton.setDisable(nickname.isEmpty() ||
-                nickname.length() > GameParameters.getMaxNicknameLength());
+                nickname.length() > Parameters.getMaxNameLength());
     }
 
     /**

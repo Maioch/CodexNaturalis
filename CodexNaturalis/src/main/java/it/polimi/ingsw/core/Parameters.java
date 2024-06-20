@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.shared;
+package it.polimi.ingsw.core;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,12 +7,14 @@ import it.polimi.ingsw.model.shared.card.CardType;
 import java.io.IOException;
 
 /**
- * GameParameters contains static methods used to retrieve the game parameters from a json file.
+ * Parameters contains static methods used to retrieve the application parameters from a json file.
  */
-public class GameParameters {
+public class Parameters {
 
     private final static String filePath = "/gameFiles/";
-    private final static String fileName = "parameters.json";
+    private final static String gameParametersFile = "gameParameters.json";
+    private final static String clientParametersFile = "clientParameters.json";
+    private final static String serverParametersFile = "serverParameters.json";
 
     /**
      * Returns the index of the first card of the parameter type.
@@ -24,7 +26,7 @@ public class GameParameters {
      * @return     the id of the first card of the requested type.
      */
     public static int getStartCardIndex(CardType type){
-        return getParameter(type.toString().toLowerCase() + "CardStartIndex").asInt();
+        return getParameter(gameParametersFile,type.toString().toLowerCase() + "CardStartIndex").asInt();
     }
 
     /**
@@ -37,7 +39,7 @@ public class GameParameters {
      * @return     the id of the last card of the requested type.
      */
     public static int getEndCardIndex(CardType type){
-        return getParameter(type.toString().toLowerCase() + "CardEndIndex").asInt();
+        return getParameter(gameParametersFile,type.toString().toLowerCase() + "CardEndIndex").asInt();
     }
 
     /**
@@ -46,7 +48,7 @@ public class GameParameters {
      * @return the number of visible cards.
      */
     public static int getNumberOfVisibleCards(){
-        return getParameter("numberOfVisibleCards").asInt();
+        return getParameter(gameParametersFile,"numberOfVisibleCards").asInt();
     }
 
     /**
@@ -55,7 +57,7 @@ public class GameParameters {
      * @return the number of gold hand cards from the json file.
      */
     public static int getNumberOfGoldCardsInHand(){
-        return getParameter("numberOfGoldCardsInHand").asInt();
+        return getParameter(gameParametersFile,"numberOfGoldCardsInHand").asInt();
     }
 
     /**
@@ -64,7 +66,7 @@ public class GameParameters {
      * @return the number of resource hand cards from the json file.
      */
     public static int getNumberOfResourceCardsInHand(){
-        return getParameter("numberOfResourceCardsInHand").asInt();
+        return getParameter(gameParametersFile,"numberOfResourceCardsInHand").asInt();
     }
 
     /**
@@ -73,7 +75,7 @@ public class GameParameters {
      * @return the number of secret objectives from the json file.
      */
     public static int getNumberOfSecretObjectives(){
-        return getParameter("numberOfSecretObjectives").asInt();
+        return getParameter(gameParametersFile,"numberOfSecretObjectives").asInt();
     }
 
     /**
@@ -82,7 +84,7 @@ public class GameParameters {
      * @return the number of secret objectives which the player has to choose from.
      */
     public static int getNumberOfDrawnSecretObjectives() {
-        return getParameter("numberOfDrawnSecretObjectives").asInt();
+        return getParameter(gameParametersFile,"numberOfDrawnSecretObjectives").asInt();
     }
 
     /**
@@ -91,7 +93,7 @@ public class GameParameters {
      * @return the time elapsed before the game ends by forfeit.
      */
     public static int getForfeitTime() {
-        return getParameter("ForfeitTime").asInt();
+        return getParameter(serverParametersFile,"forfeitTime").asInt();
     }
 
     /**
@@ -100,7 +102,7 @@ public class GameParameters {
      * @return the number of common objectives from the json file.
      */
     public static int getNumberOfCommonObjectives(){
-        return getParameter("numberOfCommonObjectives").asInt();
+        return getParameter(gameParametersFile,"numberOfCommonObjectives").asInt();
     }
 
     /**
@@ -109,7 +111,7 @@ public class GameParameters {
      * @return the maximum number of players from the json file.
      */
     public static int getMaxPlayers(){
-        return getParameter("maxNumberOfPlayers").asInt();
+        return getParameter(gameParametersFile,"maxNumberOfPlayers").asInt();
     }
 
     /**
@@ -118,7 +120,7 @@ public class GameParameters {
      * @return the minimum number of players from the json file.
      */
     public static int getMinPlayers(){
-        return getParameter("minNumberOfPlayers").asInt();
+        return getParameter(gameParametersFile,"minNumberOfPlayers").asInt();
     }
 
     /**
@@ -127,7 +129,7 @@ public class GameParameters {
      * @return the points threshold required to trigger the last turn from the json file.
      */
     public static int getWinThreshold(){
-        return getParameter("winThreshold").asInt();
+        return getParameter(gameParametersFile,"winThreshold").asInt();
     }
 
     /**
@@ -136,7 +138,7 @@ public class GameParameters {
      * @return the port associated to the TCP connections from the json file.
      */
     public static int getTCPPort() {
-        return getParameter("TCPPort").asInt();
+        return getParameter(serverParametersFile,"tcpPort").asInt();
     }
 
     /**
@@ -145,7 +147,7 @@ public class GameParameters {
      * @return the port associated to the RMI connections from the json file.
      */
     public static int getRMIPort() {
-        return getParameter("RMIPort").asInt();
+        return getParameter(serverParametersFile,"rmiPort").asInt();
     }
 
     /**
@@ -153,8 +155,8 @@ public class GameParameters {
      *
      * @return the maximum length of a nickname from the json file.
      */
-    public static int getMaxNicknameLength() {
-        return getParameter("MaxNicknameLength").asInt();
+    public static int getMaxNameLength() {
+        return getParameter(serverParametersFile,"maxNameLength").asInt();
     }
 
     /**
@@ -163,16 +165,25 @@ public class GameParameters {
      * @return the maximum length of a chat message from the json file.
      */
     public static int getMaxChatMessageLength() {
-        return getParameter("MaxChatMessageLength").asInt();
+        return getParameter(serverParametersFile,"maxChatMessageLength").asInt();
     }
 
     /**
-     * Returns the number of seconds of delay between a ping and the next one.
+     * Returns the number of seconds of delay between a ping and the next one (server side).
      *
      * @return the pinging period used to guarantee clients' connection.
      */
-    public static int getPingPeriodSeconds(){
-        return getParameter("PingPeriodSeconds").asInt();
+    public static int getServerPingPeriodSeconds(){
+        return getParameter(serverParametersFile,"pingPeriodSeconds").asInt();
+    }
+
+    /**
+     * Returns the number of seconds of delay between a ping and the next one (client side).
+     *
+     * @return the pinging period used to guarantee clients' connection.
+     */
+    public static int getClientPingPeriodSeconds(){
+        return getParameter(clientParametersFile,"pingPeriodSeconds").asInt();
     }
 
     /**
@@ -181,7 +192,15 @@ public class GameParameters {
      * @return the time elapsed before a lobby gets removed if the game hasn't started by then.
      */
     public static int getLobbyTimeout(){
-        return getParameter("LobbyTimeout").asInt();
+        return getParameter(serverParametersFile,"lobbyTimeout").asInt();
+    }
+
+    /**
+     * Returns the server logger name.
+     * @return the name of the server logger.
+     */
+    public static String getLoggerName(){
+        return getParameter(serverParametersFile, "loggerName").asText();
     }
 
     /**
@@ -190,7 +209,7 @@ public class GameParameters {
      * @return the prefix used to trigger a command using the CLI version of the game.
      */
     public static String getCommandChar() {
-        return getParameter("CommandChar").asText();
+        return getParameter(clientParametersFile, "commandChar").asText();
     }
 
     /**
@@ -199,7 +218,7 @@ public class GameParameters {
      * @return the char used to separate different arguments of a command.
      */
     public static String getDelimiter() {
-        return getParameter("Delimiter").asText();
+        return getParameter(clientParametersFile, "delimiter").asText();
     }
 
     /**
@@ -208,7 +227,7 @@ public class GameParameters {
      * @return the body of the "/HELP" command during the game phase.
      */
     public static String getGameHelpBody(){
-        return getParameter("GameHelpBody").asText();
+        return getParameter(clientParametersFile, "gameHelpBody").asText();
     }
 
     /**
@@ -217,7 +236,7 @@ public class GameParameters {
      * @return the body of the "/HELP" command during the setup phase.
      */
     public static String getSetupHelpBody() {
-        return getParameter("SetupHelpBody").asText();
+        return getParameter(clientParametersFile, "setupHelpBody").asText();
     }
 
     /**
@@ -226,7 +245,7 @@ public class GameParameters {
      * @return the URL to which players are redirected when they use the "/GETRULES" command.
      */
     public static String getRulesURL() {
-        return getParameter("RulesURL").asText();
+        return getParameter(clientParametersFile, "rulesURL").asText();
     }
 
     /**
@@ -235,7 +254,7 @@ public class GameParameters {
      * @return the title of the game to print on terminal
      */
     public static String getTitle(){
-        return getParameter("GameTitle").asText();
+        return getParameter(clientParametersFile, "gameTitle").asText();
     }
 
     /**
@@ -245,12 +264,12 @@ public class GameParameters {
      *
      * @return          the node corresponding to the given parameter.
      */
-    private static JsonNode getParameter(String parameter){
+    private static JsonNode getParameter(String fileName, String parameter){
         @SuppressWarnings("DuplicatedCode")
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node;
         try {
-            node = objectMapper.readTree(GameParameters.class.getResource(filePath + fileName)).get(parameter);
+            node = objectMapper.readTree(Parameters.class.getResource(filePath + fileName)).get(parameter);
             return node;
         }
         catch(IOException e){

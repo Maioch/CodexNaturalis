@@ -16,8 +16,7 @@ import java.util.function.Function;
 
 public class Deck<T>{
 
-    Stack<T> deck;
-
+    protected Stack<T> deck;
     /**
      * Class constructor.
      *
@@ -64,8 +63,9 @@ public class Deck<T>{
      * @throws DeckException if the deck is empty when the user tries to draw.
      */
     public T draw() throws DeckException{
-        if(this.deck.isEmpty())
+        if(this.deck.isEmpty()) {
             throw new DeckException("Called draw on empty deck");
+        }
         return this.deck.pop();
     }
 }

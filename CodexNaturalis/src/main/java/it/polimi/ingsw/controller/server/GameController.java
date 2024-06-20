@@ -6,7 +6,7 @@ import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.exceptions.NicknameException;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.server.GameModel;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.server.Player;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardSides;
@@ -27,6 +27,7 @@ import it.polimi.ingsw.network.server.ServerSubject;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * GameController is the MVC pattern controller.
@@ -43,6 +44,7 @@ public class GameController implements Runnable{
     private final Consumer<GameController> endGameProcedure;
     private final Object onlyOnePlayerLock;
     private final AtomicBoolean gameOver;
+    private final Logger logger;
     private Timer pingTimer;
     private String playerWithTurn;
     private boolean onlyOnePlayer;
@@ -75,6 +77,7 @@ public class GameController implements Runnable{
         this.gameOver = new AtomicBoolean(false);
         this.pingTimer = null;
         this.playerWithTurn = "";
+        this.logger = Logger.getLogger(Parameters.getLoggerName());
     }
 
     /**
@@ -141,8 +144,8 @@ public class GameController implements Runnable{
             serverSubject.notify(nickname, new PlayerBoardMessage(player.getPlacedCards(), player.getScore()));
             if(player.getNickname().equals(nickname)){
                 serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_CARDS, player.getHandCards()));
-                int numberOfCommonObjectives = GameParameters.getNumberOfCommonObjectives();
-                int numberOfSecretObjectives = GameParameters.getNumberOfSecretObjectives();
+                int numberOfCommonObjectives = Parameters.getNumberOfCommonObjectives();
+                int numberOfSecretObjectives = Parameters.getNumberOfSecretObjectives();
                 if(player.getObjectives().size() == numberOfCommonObjectives + numberOfSecretObjectives){
                     serverSubject.notify(nickname, new ObjectivesMessage(Status.COMMON_OBJECTIVES,
                             game.getCommonObjectives()));
@@ -269,7 +272,7 @@ public class GameController implements Runnable{
         int chatMsgLength = chatMessage.getMessage().length();
         List<String> recipients = chatMessage.getRecipients();
         Message messageToSendBack = new ChatMessage(
-                chatMessage.getMessage().substring(0, Math.min(chatMsgLength, GameParameters.getMaxChatMessageLength())),
+                chatMessage.getMessage().substring(0, Math.min(chatMsgLength, Parameters.getMaxChatMessageLength())),
                 senderNickname,
                 chatMessage.getRecipients());
         for (String nickname : recipients) {
@@ -306,7 +309,7 @@ public class GameController implements Runnable{
                 }
             }
             if(connectedUsers.isEmpty()){
-                System.out.println("No players connected, starting abort procedure");
+                logger.info("Game " + gameInfo.getGameId() + ": No players connected, starting abort procedure.\n");
                 gameOver.set(true);
                 pingTimer.cancel();
                 synchronized (onlyOnePlayerLock) {
@@ -408,9 +411,10 @@ public class GameController implements Runnable{
                             onlyOnePlayerLock.notifyAll();
                         }
                     }
-                }, GameParameters.getForfeitTime() * 1000L);
+                }, Parameters.getForfeitTime() * 1000L);
                 try {
-                    System.out.println("Only one player left, the game will end in " + GameParameters.getForfeitTime() + " seconds");
+                    logger.info(String.format("Game %d: only one player left, the game will end in %d seconds.\n",
+                            gameInfo.getGameId(), Parameters.getForfeitTime()));
                     onlyOnePlayerLock.wait();
                     timer.cancel();
                     if(!gameOver.get()){
@@ -426,7 +430,7 @@ public class GameController implements Runnable{
                         }
                     }
                 } catch (InterruptedException e) {
-                    System.out.println(e.getMessage());
+                    logger.severe(String.format("Game %d: %s", gameInfo.getGameId(), e.getMessage() + "\n"));
                 }
             }
         }
@@ -457,7 +461,7 @@ public class GameController implements Runnable{
                 handleGameDisconnections();
             }
         };
-        int periodSeconds = GameParameters.getPingPeriodSeconds();
+        int periodSeconds = Parameters.getServerPingPeriodSeconds();
         pingTimer = new Timer();
         pingTimer.schedule(pingTask, periodSeconds * 1000L, periodSeconds * 1000L);
         Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
@@ -525,12 +529,12 @@ public class GameController implements Runnable{
             if (message instanceof ObjectivesMessage objectiveMessage){
                 secretObjectives = objectiveMessage.getObjectives();
             } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
-                secretObjectives.addAll(drawnObjectives.subList(0, GameParameters.getNumberOfSecretObjectives()));
+                secretObjectives.addAll(drawnObjectives.subList(0, Parameters.getNumberOfSecretObjectives()));
                 serverSubject.notifyAll(new Message(Status.TURN_SKIPPED));
             }
             chosenObjectives = new ArrayList<>(drawnObjectives);
             chosenObjectives = chosenObjectives.stream().filter(secretObjectives::contains).toList();
-            if(chosenObjectives.size() != GameParameters.getNumberOfSecretObjectives()){
+            if(chosenObjectives.size() != Parameters.getNumberOfSecretObjectives()){
                 continue;
             }
             currentStatus = Status.INVALID_SECRET_OBJECTIVES;
@@ -692,7 +696,7 @@ public class GameController implements Runnable{
                         }
                     }
                 }
-            }while(typeChosen == null || indexChosen < 0 || indexChosen > GameParameters.getNumberOfVisibleCards());
+            }while(typeChosen == null || indexChosen < 0 || indexChosen > Parameters.getNumberOfVisibleCards());
             try{
                 drawSuccess = true;
                 game.drawCard(player, typeChosen, indexChosen);
@@ -753,8 +757,8 @@ public class GameController implements Runnable{
         };
         pingTimer = new Timer();
         pingTimer.schedule(pingTask,
-                GameParameters.getPingPeriodSeconds() * 1000L,
-                GameParameters.getPingPeriodSeconds() * 1000L);
+                Parameters.getServerPingPeriodSeconds() * 1000L,
+                Parameters.getServerPingPeriodSeconds() * 1000L);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -771,7 +775,7 @@ public class GameController implements Runnable{
                     }
                 }
                 }
-            }, GameParameters.getLobbyTimeout() * 1000L);
+            }, Parameters.getLobbyTimeout() * 1000L);
     }
 
     /**
@@ -789,6 +793,7 @@ public class GameController implements Runnable{
         synchronized (gameInfo) {
             gameInfo.setGameStatus(GameStatus.STARTED);
         }
+        logger.info("Game " + gameInfo.getGameId() + " has started.\n");
         initializeGame();
         startGame();
         removeHandlers();

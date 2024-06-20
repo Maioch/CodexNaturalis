@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.server.deck;
 
 import it.polimi.ingsw.exceptions.DeckException;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.CardBuilder;
 import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.CardType;
@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DeckTest {
 
-    private final int deckStart = GameParameters.getStartCardIndex(CardType.RESOURCE);
-    private final int endBasicCards = GameParameters.getEndCardIndex(CardType.STARTER);
-    private final int startObjectives = GameParameters.getStartCardIndex(CardType.OBJECTIVE);
-    private final int deckEnd = GameParameters.getEndCardIndex(CardType.OBJECTIVE);
+    private final int deckStart = Parameters.getStartCardIndex(CardType.RESOURCE);
+    private final int endBasicCards = Parameters.getEndCardIndex(CardType.STARTER);
+    private final int startObjectives = Parameters.getStartCardIndex(CardType.OBJECTIVE);
+    private final int deckEnd = Parameters.getEndCardIndex(CardType.OBJECTIVE);
     private final ArrayList<Integer> ids = new ArrayList<>();
 
     @Test

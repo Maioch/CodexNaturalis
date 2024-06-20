@@ -3,7 +3,7 @@ package it.polimi.ingsw.controller.server;
 import it.polimi.ingsw.TestNetworkHandler;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardType;
 import it.polimi.ingsw.model.shared.card.Objective;
@@ -62,7 +62,7 @@ public class GameControllerTest {
         new Thread(new GameController(2, new ServerSubject(),
                 new GameInfo(1, "test", GameStatus.LOBBY),
                 (g) -> isOk.set(true))).start();
-        Thread.sleep(GameParameters.getLobbyTimeout() * 1000L + 1000L);
+        Thread.sleep(Parameters.getLobbyTimeout() * 1000L + 1000L);
         assertTrue(isOk.get());
     }
 
@@ -199,7 +199,7 @@ public class GameControllerTest {
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.BLUE, null, gameId));
         handlers.getFirst().stop();
         handlers.getLast().stop();
-        Thread.sleep(GameParameters.getPingPeriodSeconds() * 2500L);
+        Thread.sleep(Parameters.getServerPingPeriodSeconds() * 2500L);
         assertTrue(gameEnded.get());
     }
 
@@ -252,7 +252,7 @@ public class GameControllerTest {
         for(TestNetworkHandler handler : handlers) {
             handler.removeStatus(Status.RECONNECT);
         }
-        Thread.sleep(GameParameters.getPingPeriodSeconds() * 2000L);
+        Thread.sleep(Parameters.getServerPingPeriodSeconds() * 2000L);
         assertEquals(GameStatus.STARTED, game.getGameStatus());
     }
 

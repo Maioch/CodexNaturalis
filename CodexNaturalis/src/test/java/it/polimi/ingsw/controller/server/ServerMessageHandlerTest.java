@@ -1,14 +1,12 @@
 package it.polimi.ingsw.controller.server;
 
 import it.polimi.ingsw.TestNetworkHandler;
-import it.polimi.ingsw.core.Server;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.shared.messages.generic.IntegerMessage;
-import it.polimi.ingsw.network.shared.messages.generic.StringMessage;
 import it.polimi.ingsw.network.shared.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.shared.messages.setup.MatchListMessage;
 import it.polimi.ingsw.network.shared.messages.setup.NewGameMessage;
@@ -16,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import java.util.List;
-import java.util.logging.Handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +28,7 @@ public class ServerMessageHandlerTest {
         Message response;
 
         handler.addEventToQueue(new LabeledMessage(user,
-                new NewGameMessage("test", GameParameters.getMaxPlayers() + 1)));
+                new NewGameMessage("test", Parameters.getMaxPlayers() + 1)));
         response = user.awaitForMessage(Status.INVALID_PLAYERS_NUMBER);
         assertNull(gamesManager.getController(1));
 

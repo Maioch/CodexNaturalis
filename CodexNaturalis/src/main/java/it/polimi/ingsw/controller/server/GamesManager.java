@@ -1,12 +1,14 @@
 package it.polimi.ingsw.controller.server;
 
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * GamesManager manages all games created by the clients, by saving them with a unique ID.
@@ -14,12 +16,14 @@ import java.util.Map;
 public class GamesManager{
 
     private final Map<Integer, GameController> games;
+    private final Logger logger;
 
     /**
      * Class constructor.
      */
     public GamesManager(){
         this.games = new HashMap<>();
+        this.logger = Logger.getLogger(Parameters.getLoggerName());
     }
 
     /**
@@ -40,6 +44,7 @@ public class GamesManager{
         GameInfo gameInfo = new GameInfo(gameId, name, GameStatus.LOBBY);
         GameController newController = new GameController(numberOfPlayers, new ServerSubject(), gameInfo, this::deleteGame);
         new Thread(newController).start();
+        logger.info(String.format("New game created: id %d, name \"%s\"\n", gameId, name));
         games.put(gameId, newController);
         return gameId;
     }
@@ -56,6 +61,7 @@ public class GamesManager{
                 .toList();
         for(Integer id : idsToRemove){
             games.remove(id);
+            logger.info("Deleted game " + id + "\n");
         }
     }
 

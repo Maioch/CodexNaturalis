@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller.server;
 
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.network.shared.EventHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.messages.Message;
@@ -66,7 +66,7 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                         try{
                             int nameLength = newGameMessage.getName().length();
                             int gameId = games.addGame(newGameMessage.getNumberOfPlayers(),
-                                    newGameMessage.getName().substring(0, Math.min(nameLength,GameParameters.getMaxNicknameLength())));
+                                    newGameMessage.getName().substring(0, Math.min(nameLength, Parameters.getMaxNameLength())));
                             labeledMessage.networkHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
                         }catch (IllegalNumberOfPlayers e) {
                             List<GameInfo> matches = games.getFormattedAvailableMatches();

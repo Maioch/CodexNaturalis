@@ -4,7 +4,7 @@ package it.polimi.ingsw.model.shared.card;
 import com.fasterxml.jackson.databind.JsonNode;
 import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.model.shared.card.corner.Location;
 import org.junit.jupiter.api.Test;
@@ -163,7 +163,7 @@ public class BasicCardTest {
 
     @Test
     void getAllResourcesTest(){
-        for(int id = startResource; id <= GameParameters.getEndCardIndex(CardType.GOLD); id++){
+        for(int id = startResource; id <= Parameters.getEndCardIndex(CardType.GOLD); id++){
             CardSides card = CardBuilder.buildCard(id);
             List<Content> expectedBackResources = new ArrayList<>();
             JsonNode node = CardBuilder.getCardJson(id);
@@ -172,7 +172,7 @@ public class BasicCardTest {
             assertTrue(card.frontSide().getResources().isEmpty());
             assertEquals(card.backSide().getResources(), expectedBackResources);
         }
-        for(int id = GameParameters.getEndCardIndex(CardType.STARTER); id <= endStarter; id++){
+        for(int id = Parameters.getEndCardIndex(CardType.STARTER); id <= endStarter; id++){
             CardSides card = CardBuilder.buildCard(id);
             List<Content> expectedFrontResources = new ArrayList<>();
             JsonNode node = CardBuilder.getCardJson(id);

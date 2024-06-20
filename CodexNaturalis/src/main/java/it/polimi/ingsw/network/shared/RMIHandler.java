@@ -7,6 +7,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 /**
  * RMI-based NetworkHandler implementation.
@@ -22,6 +23,19 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
      */
     public RMIHandler(EventHandler<LabeledMessage> handler) throws RemoteException{
         super(handler);
+        UnicastRemoteObject.exportObject(this, 0);
+        this.receiverInterface = null;
+        this.executor = Executors.newSingleThreadExecutor();
+    }
+
+    /**
+     * Constructor for the class.
+     * @param handler the message handler to send the received messages to.
+     * @param logger  the logger used to log network events
+     * @throws RemoteException whenever the remote invocation of this method fails.
+     */
+    public RMIHandler(EventHandler<LabeledMessage> handler, Logger logger) throws RemoteException{
+        super(handler, logger);
         UnicastRemoteObject.exportObject(this, 0);
         this.receiverInterface = null;
         this.executor = Executors.newSingleThreadExecutor();
@@ -55,7 +69,9 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
         try {
             UnicastRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException e) {
-            System.err.println("Could not un-export RMI interface");
+            if(logger != null) {
+                logger.severe("Could not un-export RMI interface:\n" + e.getMessage() + "\n");
+            }
         }
     }
 
@@ -71,8 +87,9 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
             try {
                 receiverInterface.receiveUpdate(message);
             } catch (RemoteException e) {
-                System.out.println("Encountered an IO Exception in RMIHandler update");
-                System.out.println(e.getMessage());
+                if(logger != null) {
+                    logger.info("Encountered an IO Exception in RMIHandler:\n" + e.getMessage() + "\n");
+                }
             }
         });
     }

@@ -1,18 +1,19 @@
 package it.polimi.ingsw.model.shared;
 
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.CardType;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GameParametersTest {
+public class ParametersTest {
 
     @Test
     public void getStartCardIndexTest() throws RuntimeException {
-        int result1 = GameParameters.getStartCardIndex(CardType.RESOURCE);
-        int result2 = GameParameters.getStartCardIndex(CardType.GOLD);
-        int result3 = GameParameters.getStartCardIndex(CardType.STARTER);
-        int result4 = GameParameters.getStartCardIndex(CardType.OBJECTIVE);
+        int result1 = Parameters.getStartCardIndex(CardType.RESOURCE);
+        int result2 = Parameters.getStartCardIndex(CardType.GOLD);
+        int result3 = Parameters.getStartCardIndex(CardType.STARTER);
+        int result4 = Parameters.getStartCardIndex(CardType.OBJECTIVE);
 
         assertEquals(result1, 1);
         assertEquals(result2, 41);
@@ -22,10 +23,10 @@ public class GameParametersTest {
 
     @Test
     public void getEndCardIndexTest() throws RuntimeException {
-        int result1 = GameParameters.getEndCardIndex(CardType.RESOURCE);
-        int result2 = GameParameters.getEndCardIndex(CardType.GOLD);
-        int result3 = GameParameters.getEndCardIndex(CardType.STARTER);
-        int result4 = GameParameters.getEndCardIndex(CardType.OBJECTIVE);
+        int result1 = Parameters.getEndCardIndex(CardType.RESOURCE);
+        int result2 = Parameters.getEndCardIndex(CardType.GOLD);
+        int result3 = Parameters.getEndCardIndex(CardType.STARTER);
+        int result4 = Parameters.getEndCardIndex(CardType.OBJECTIVE);
 
         assertEquals(result1, 40);
         assertEquals(result2, 80);
@@ -35,117 +36,122 @@ public class GameParametersTest {
 
     @Test
     public void getNumberOfVisibleCardsTest() throws RuntimeException {
-        assertEquals(GameParameters.getNumberOfVisibleCards(), 2);
+        assertEquals(Parameters.getNumberOfVisibleCards(), 2);
     }
 
     @Test
     public void getNumberOfGoldCardsInHandTest() throws RuntimeException {
-        assertEquals(GameParameters.getNumberOfGoldCardsInHand(), 1);
+        assertEquals(Parameters.getNumberOfGoldCardsInHand(), 1);
     }
 
     @Test
     public void getNumberOfResourceCardsInHandTest() throws RuntimeException {
-        assertEquals(GameParameters.getNumberOfResourceCardsInHand(), 2);
+        assertEquals(Parameters.getNumberOfResourceCardsInHand(), 2);
     }
 
     @Test
     public void getNumberOfSecretObjectivesTest() throws RuntimeException {
-        assertEquals(GameParameters.getNumberOfSecretObjectives(), 1);
+        assertEquals(Parameters.getNumberOfSecretObjectives(), 1);
     }
 
     @Test
     public void getNumberOfDrawnSecretObjectivesTest() throws RuntimeException {
-        assertEquals(GameParameters.getNumberOfDrawnSecretObjectives(), 2);
+        assertEquals(Parameters.getNumberOfDrawnSecretObjectives(), 2);
     }
 
     @Test
     public void getForfeitTimeTest() throws RuntimeException {
-        assertTrue(GameParameters.getForfeitTime() > 0);
+        assertTrue(Parameters.getForfeitTime() > 0);
     }
 
     @Test
     public void getMaxPlayersTest() throws RuntimeException{
-        assertEquals(GameParameters.getMaxPlayers(), 4);
+        assertEquals(Parameters.getMaxPlayers(), 4);
     }
 
     @Test
     public void getMinPlayersTest() throws RuntimeException{
-        assertEquals(GameParameters.getMinPlayers(), 2);
+        assertEquals(Parameters.getMinPlayers(), 2);
     }
 
     @Test
     public void getWinThresholdTest() throws RuntimeException{
-        assertEquals(GameParameters.getWinThreshold(), 20);
+        assertEquals(Parameters.getWinThreshold(), 20);
     }
 
     @Test
     public void getTCPPortTest() throws RuntimeException{
-        assertTrue(GameParameters.getTCPPort() > 0 && GameParameters.getTCPPort() < 65535);
+        assertTrue(Parameters.getTCPPort() > 0 && Parameters.getTCPPort() < 65535);
     }
 
     @Test
     public void getRMIPortTest() throws RuntimeException{
-        assertTrue(GameParameters.getRMIPort() > 0 && GameParameters.getRMIPort() < 65535);
+        assertTrue(Parameters.getRMIPort() > 0 && Parameters.getRMIPort() < 65535);
     }
 
     @Test
-    public void getMaxNicknameLengthTest() throws RuntimeException{
-        assertTrue(GameParameters.getMaxNicknameLength() > 0);
+    public void getMaxNameLengthTest() throws RuntimeException{
+        assertTrue(Parameters.getMaxNameLength() > 0);
     }
 
     @Test
     public void getMaxChatMessageLengthTest() throws RuntimeException{
-        assertTrue(GameParameters.getMaxChatMessageLength() > 0);
+        assertTrue(Parameters.getMaxChatMessageLength() > 0);
     }
 
     @Test
-    public void getPingPeriodSecondsTest() throws RuntimeException{
-        assertTrue(GameParameters.getPingPeriodSeconds() > 0);
+    public void getServerPingPeriodSecondsTest() throws RuntimeException{
+        assertTrue(Parameters.getServerPingPeriodSeconds() > 0);
+    }
+
+    @Test
+    public void getClientPingPeriodSecondsTest() throws RuntimeException{
+        assertTrue(Parameters.getClientPingPeriodSeconds() > 0);
     }
 
     @Test
     public void getLobbyTimeoutTest() throws RuntimeException{
-        assertTrue(GameParameters.getLobbyTimeout() > 0);
+        assertTrue(Parameters.getLobbyTimeout() > 0);
     }
 
     @Test
     public void getCommandCharTest() throws RuntimeException{
-        String result = GameParameters.getCommandChar();
+        String result = Parameters.getCommandChar();
         assertFalse(result.isEmpty());
         assertNotNull(result);
     }
 
     @Test
     public void getDelimiterTest() throws RuntimeException{
-        String result = GameParameters.getDelimiter();
+        String result = Parameters.getDelimiter();
         assertFalse(result.isEmpty());
         assertNotNull(result);
     }
 
     @Test
     public void getGameHelpBodyTest() throws RuntimeException{
-        String result = GameParameters.getGameHelpBody();
+        String result = Parameters.getGameHelpBody();
         assertFalse(result.isEmpty());
         assertNotNull(result);
     }
 
     @Test
     public void getSetupHelpBodyTest() throws RuntimeException{
-        String result = GameParameters.getSetupHelpBody();
+        String result = Parameters.getSetupHelpBody();
         assertFalse(result.isEmpty());
         assertNotNull(result);
     }
 
     @Test
     public void getRulesURLTest() throws RuntimeException{
-        String result = GameParameters.getRulesURL();
+        String result = Parameters.getRulesURL();
         assertFalse(result.isEmpty());
         assertNotNull(result);
     }
 
     @Test
     public void getTitleTest() throws RuntimeException{
-        String result = GameParameters.getTitle();
+        String result = Parameters.getTitle();
         assertFalse(result.isEmpty());
         assertNotNull(result);
     }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 /**
  * TCP-based NetworkHandler implementation.
@@ -28,6 +29,20 @@ public class TCPHandler extends NetworkHandler implements Runnable{
         this.socketInput = new ObjectInputStream(socket.getInputStream());
     }
 
+    /**
+     * Constructor for the class.
+     * @param socket the socket to which the client is connected.
+     * @param handler the message handler that will handle the messages received.
+     */
+    public TCPHandler(Socket socket, EventHandler<LabeledMessage> handler, Logger logger) throws IOException{
+        super(handler, logger);
+        this.socketOutput = new ObjectOutputStream(socket.getOutputStream());
+        this.socketInput = new ObjectInputStream(socket.getInputStream());
+    }
+
+    /**
+     * Stops this handler running thread.
+     */
     @Override
     public void stop(){
         handlerThread.interrupt();
@@ -45,12 +60,15 @@ public class TCPHandler extends NetworkHandler implements Runnable{
                     Message message = (Message) socketInput.readObject();
                     handler.addEventToQueue(new LabeledMessage(this, message));
                 } catch (ClassNotFoundException e) {
-                    System.out.println("Received an invalid message");
+                    if(logger != null) {
+                        logger.warning("Received an invalid message:\n" + e.getMessage() + "\n");
+                    }
                 }
             }
         }catch (IOException e){
-            System.out.println("Encountered an IO Exception in TCPHandler run");
-            System.out.println(e.getMessage());
+            if(logger != null) {
+                logger.info("Encountered an IO Exception in TCPHandler:\n" + e.getMessage() + "\n");
+            }
         }
     }
 
@@ -63,8 +81,9 @@ public class TCPHandler extends NetworkHandler implements Runnable{
         try{
             socketOutput.writeObject(message);
         }catch(IOException e){
-            System.out.println("Encountered an IO Exception in TCPHandler update");
-            System.out.println(e.getMessage());
+            if(logger != null) {
+                logger.info("Encountered an IO Exception in TCPHandler:\n" + e.getMessage() + "\n");
+            }
         }
     }
 }

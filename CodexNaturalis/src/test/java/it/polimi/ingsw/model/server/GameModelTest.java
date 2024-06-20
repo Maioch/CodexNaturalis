@@ -3,7 +3,7 @@ package it.polimi.ingsw.model.server;
 import it.polimi.ingsw.TestNetworkHandler;
 import it.polimi.ingsw.exceptions.*;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardBuilder;
 import it.polimi.ingsw.model.shared.card.CardSides;
@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameModelTest {
 
-    private final int resourceSize = GameParameters.getEndCardIndex(CardType.RESOURCE) - GameParameters.getStartCardIndex(CardType.RESOURCE) + 1;
-    private final int goldSize = GameParameters.getEndCardIndex(CardType.GOLD) - GameParameters.getStartCardIndex(CardType.GOLD) + 1;
+    private final int resourceSize = Parameters.getEndCardIndex(CardType.RESOURCE) - Parameters.getStartCardIndex(CardType.RESOURCE) + 1;
+    private final int goldSize = Parameters.getEndCardIndex(CardType.GOLD) - Parameters.getStartCardIndex(CardType.GOLD) + 1;
     private final String playerNumberFail = "please set a different number of players for the GameModel instance" +
             " or the tests won't be able to run correctly";
 
@@ -43,7 +43,7 @@ public class GameModelTest {
             player.placeStarterCard(starter);
             assertFalse(gameModel.isLastTurn());
             BasicCard previousCard = starter;
-            for (int j = 0; j < GameParameters.getWinThreshold() + 1; j++) {
+            for (int j = 0; j < Parameters.getWinThreshold() + 1; j++) {
                 BasicCard card = CardBuilder.buildCard(10).frontSide();
                 card.setOwner(player);
                 Corner corner = previousCard.getAllCorners().stream()
@@ -96,16 +96,16 @@ public class GameModelTest {
             }
             assertTrue(gameModel.isLastTurn());
         } catch (IllegalNumberOfPlayers e) {
-            assertTrue(players < GameParameters.getMinPlayers() ||
-                    players > GameParameters.getMaxPlayers());
+            assertTrue(players < Parameters.getMinPlayers() ||
+                    players > Parameters.getMaxPlayers());
             fail(playerNumberFail);
         }
     }
 
     @Test
     public void addPlayerDataTest() throws GameException, NicknameException, IllegalNumberOfPlayers, GameFullException {
-        int minPlayers = GameParameters.getMinPlayers();
-        int maxPlayers = GameParameters.getMaxPlayers();
+        int minPlayers = Parameters.getMinPlayers();
+        int maxPlayers = Parameters.getMaxPlayers();
         assertThrows(GameException.class, () -> {
             GameModel wrongGameModel = new GameModel(maxPlayers, new ServerSubject(), 0);
             wrongGameModel.addPlayerData("test", Content.RED);
@@ -159,17 +159,17 @@ public class GameModelTest {
             assertEquals(gameModel.getCommonObjectives(), player.getObjectives());
             List<CardSides> cards = player.getHandCards();
             int firstCardId = cards.getFirst().frontSide().getCardId();
-            assertTrue(firstCardId >= GameParameters.getStartCardIndex(CardType.STARTER) &&
-                    firstCardId <= GameParameters.getEndCardIndex(CardType.STARTER));
-            assertEquals(GameParameters.getNumberOfResourceCardsInHand(), cards.stream().filter(c -> {
+            assertTrue(firstCardId >= Parameters.getStartCardIndex(CardType.STARTER) &&
+                    firstCardId <= Parameters.getEndCardIndex(CardType.STARTER));
+            assertEquals(Parameters.getNumberOfResourceCardsInHand(), cards.stream().filter(c -> {
                 int cardId = c.frontSide().getCardId();
-                return cardId >= GameParameters.getStartCardIndex(CardType.RESOURCE) && cardId <=
-                        GameParameters.getEndCardIndex(CardType.RESOURCE);
+                return cardId >= Parameters.getStartCardIndex(CardType.RESOURCE) && cardId <=
+                        Parameters.getEndCardIndex(CardType.RESOURCE);
             }).toList().size());
-            assertEquals(GameParameters.getNumberOfGoldCardsInHand(), cards.stream().filter(c -> {
+            assertEquals(Parameters.getNumberOfGoldCardsInHand(), cards.stream().filter(c -> {
                 int cardId = c.frontSide().getCardId();
-                return cardId >= GameParameters.getStartCardIndex(CardType.GOLD) && cardId <=
-                        GameParameters.getEndCardIndex(CardType.GOLD);
+                return cardId >= Parameters.getStartCardIndex(CardType.GOLD) && cardId <=
+                        Parameters.getEndCardIndex(CardType.GOLD);
             }).toList().size());
         }
     }
@@ -221,8 +221,8 @@ public class GameModelTest {
             assertEquals(2, currentlyDrawable);
             assertTrue(gameModel.isLastTurn());
         } catch (IllegalNumberOfPlayers e) {
-            assertTrue(playersNumber < GameParameters.getMinPlayers() ||
-                    playersNumber > GameParameters.getMaxPlayers());
+            assertTrue(playersNumber < Parameters.getMinPlayers() ||
+                    playersNumber > Parameters.getMaxPlayers());
             fail(playerNumberFail);
         }
     }
@@ -260,8 +260,8 @@ public class GameModelTest {
             assertEquals(playerTest.getHandCards().size(), 4);
         }
         catch (IllegalNumberOfPlayers e){
-            assertTrue(numberOfPlayers < GameParameters.getMinPlayers() ||
-                    numberOfPlayers > GameParameters.getMaxPlayers());
+            assertTrue(numberOfPlayers < Parameters.getMinPlayers() ||
+                    numberOfPlayers > Parameters.getMaxPlayers());
             fail(playerNumberFail);
         }
     }
@@ -290,16 +290,16 @@ public class GameModelTest {
             assertEquals(nicknames.stream().sorted().toList(), gameModel.getWinningPlayers().stream().sorted().toList());
 
         }catch (IllegalNumberOfPlayers e){
-            assertTrue(numberOfPlayers < GameParameters.getMinPlayers() ||
-                    numberOfPlayers > GameParameters.getMaxPlayers());
+            assertTrue(numberOfPlayers < Parameters.getMinPlayers() ||
+                    numberOfPlayers > Parameters.getMaxPlayers());
             fail(playerNumberFail);
         }
     }
 
     @Test
     void isLobbyEmptyTest() throws IllegalNumberOfPlayers, GameException, GameFullException, NicknameException {
-        int minPlayers = GameParameters.getMinPlayers();
-        int maxPlayers = GameParameters.getMaxPlayers();
+        int minPlayers = Parameters.getMinPlayers();
+        int maxPlayers = Parameters.getMaxPlayers();
         assertThrows(IllegalNumberOfPlayers.class, () -> new GameModel(minPlayers - 1, new ServerSubject(), 1));
         assertThrows(IllegalNumberOfPlayers.class, () -> new GameModel(maxPlayers + 1, new ServerSubject(), 1));
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
@@ -310,14 +310,14 @@ public class GameModelTest {
 
     @Test
     void getNumberOfPlayersTest() throws IllegalNumberOfPlayers{
-        int minPlayers = GameParameters.getMinPlayers();
+        int minPlayers = Parameters.getMinPlayers();
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
         assertEquals(minPlayers, game.getNumberOfPlayers());
     }
 
     @Test
     void getLobbyNicknamesTest() throws IllegalNumberOfPlayers, GameException, GameFullException, NicknameException {
-        int minPlayers = GameParameters.getMinPlayers();
+        int minPlayers = Parameters.getMinPlayers();
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
         assertEquals(new ArrayList<>(), game.getLobbyNicknames());
         game.addPlayerData("test", Content.RED);
@@ -328,13 +328,13 @@ public class GameModelTest {
 
     @Test
     void checkNicknameTest() throws IllegalNumberOfPlayers, GameException, GameFullException, NicknameException {
-        int minPlayers = GameParameters.getMinPlayers();
+        int minPlayers = Parameters.getMinPlayers();
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
         assertTrue(game.checkNickname("test"));
         assertFalse(game.checkNickname("te st"));
-        assertFalse(game.checkNickname(String.format("test%s", GameParameters.getDelimiter())));
-        assertFalse(game.checkNickname(String.format("test%s", GameParameters.getCommandChar())));
-        assertFalse(game.checkNickname("t".repeat(GameParameters.getMaxNicknameLength() + 1)));
+        assertFalse(game.checkNickname(String.format("test%s", Parameters.getDelimiter())));
+        assertFalse(game.checkNickname(String.format("test%s", Parameters.getCommandChar())));
+        assertFalse(game.checkNickname("t".repeat(Parameters.getMaxNameLength() + 1)));
         game.addPlayerData("test", Content.RED);
         assertFalse(game.checkNickname("test"));
     }
@@ -348,7 +348,7 @@ public class GameModelTest {
         serverSubject.subscribe(nickname, handler1);
         serverSubject.subscribe("test2", handler2);
 
-        int minPlayers = GameParameters.getMinPlayers();
+        int minPlayers = Parameters.getMinPlayers();
         GameModel gameModel = new GameModel(minPlayers, serverSubject, 0);
         gameModel.addPlayerData(nickname, Content.RED);
         handler1.getReceivedMessages();
@@ -375,11 +375,11 @@ public class GameModelTest {
 
     @Test
     void drawObjectiveCards() throws IllegalNumberOfPlayers {
-        GameModel game = new GameModel(GameParameters.getMinPlayers(), new ServerSubject(), 0);
-        int startCardIndex = GameParameters.getStartCardIndex(CardType.OBJECTIVE);
-        int endCardIndex = GameParameters.getEndCardIndex(CardType.OBJECTIVE);
+        GameModel game = new GameModel(Parameters.getMinPlayers(), new ServerSubject(), 0);
+        int startCardIndex = Parameters.getStartCardIndex(CardType.OBJECTIVE);
+        int endCardIndex = Parameters.getEndCardIndex(CardType.OBJECTIVE);
         int numberOfObjectives = endCardIndex - startCardIndex;
-        for(int i = 0; i < numberOfObjectives / GameParameters.getNumberOfDrawnSecretObjectives(); i++){
+        for(int i = 0; i < numberOfObjectives / Parameters.getNumberOfDrawnSecretObjectives(); i++){
             game.drawObjectiveCards();
         }
         assertThrows(DeckException.class, game::drawObjectiveCards);
@@ -387,7 +387,7 @@ public class GameModelTest {
     
     @Test
     void isGameStuckTest() throws IllegalNumberOfPlayers, NicknameException, GameFullException, GameException{
-        int minPlayers = GameParameters.getMinPlayers();
+        int minPlayers = Parameters.getMinPlayers();
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 0);
         assertTrue(game.isGameStuck());
         game.addPlayerData("test", Content.RED);
@@ -395,13 +395,13 @@ public class GameModelTest {
         game.createPlayers();
         assertTrue(game.isGameStuck());
         Player player = game.getPlayer("test");
-        player.placeStarterCard(CardBuilder.buildCard(GameParameters.getStartCardIndex(CardType.STARTER)).backSide());
+        player.placeStarterCard(CardBuilder.buildCard(Parameters.getStartCardIndex(CardType.STARTER)).backSide());
         assertFalse(game.isGameStuck());
     }
 
     @Test
     void getCommonObjectivesTest() throws IllegalNumberOfPlayers, NicknameException, GameFullException, GameException {
-        int minPlayers = GameParameters.getMinPlayers();
+        int minPlayers = Parameters.getMinPlayers();
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 0);
         assertNotNull(game.getCommonObjectives());
         assertFalse(game.getCommonObjectives().isEmpty());
@@ -429,7 +429,7 @@ public class GameModelTest {
             assertEquals(e.getMessage(), "Invalid draw index");
         }
         try{
-            game.drawCard(game.getPlayer("test"), CardType.RESOURCE, GameParameters.getNumberOfVisibleCards() + 1);
+            game.drawCard(game.getPlayer("test"), CardType.RESOURCE, Parameters.getNumberOfVisibleCards() + 1);
         } catch (GameException e){
             assertEquals(e.getMessage(), "Invalid draw index");
         }

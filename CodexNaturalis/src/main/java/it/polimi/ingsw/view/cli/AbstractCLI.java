@@ -2,7 +2,7 @@ package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.exceptions.MapperException;
 import it.polimi.ingsw.exceptions.TCPException;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.core.Client;
 import it.polimi.ingsw.network.client.ConnectionInitializer;
 import it.polimi.ingsw.network.shared.messages.Message;
@@ -30,7 +30,7 @@ public abstract class AbstractCLI {
      * @param <T> generic used to return different types of converted inputs.
      */
     protected <T> T readFromInput (String prompt, Predicate<T> checker, Mapper<String, T> mapper, boolean acceptCommands){
-        String commandChar = GameParameters.getCommandChar();
+        String commandChar = Parameters.getCommandChar();
         Scanner scanner = new Scanner(System.in);
         while(true){
             System.out.print(prompt);
@@ -46,7 +46,7 @@ public abstract class AbstractCLI {
                 return null;
             }
             String inputString = scanner.nextLine();
-            boolean isCommand = acceptCommands && inputString.indexOf(GameParameters.getCommandChar()) == 0;
+            boolean isCommand = acceptCommands && inputString.indexOf(Parameters.getCommandChar()) == 0;
             if(!isCommand){
                 try{
                     T mappedInput = mapper.apply(inputString);
@@ -136,7 +136,7 @@ public abstract class AbstractCLI {
             ConnectionInitializer.initializeConnection(client.getConnectionSettings(), client.getController());
             new Thread(client.getController()).start();
             client.getController().sendMessage(new Message(Status.REQUEST_PING));
-            System.out.println(GameParameters.getTitle());
+            System.out.println(Parameters.getTitle());
             return true;
         } catch (TCPException e) {
             System.out.println(e.getMessage());

@@ -1,7 +1,7 @@
 package it.polimi.ingsw.view.gui;
 
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.model.shared.GameParameters;
+import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardType;
 import it.polimi.ingsw.model.shared.card.Objective;
@@ -41,11 +41,11 @@ public class CardAssetsProvider {
     public static String getCardFilePath(BasicCard card){
         int id = card.getCardId();
         boolean isFront = card.isFront();
-        int startIndex = GameParameters.getStartCardIndex(CardType.STARTER);
-        int endIndex = GameParameters.getEndCardIndex(CardType.STARTER);
+        int startIndex = Parameters.getStartCardIndex(CardType.STARTER);
+        int endIndex = Parameters.getEndCardIndex(CardType.STARTER);
         if(!isFront && (id < startIndex || id > endIndex)){
-            boolean isResource = id >= GameParameters.getStartCardIndex(CardType.RESOURCE) &&
-                    id <= GameParameters.getEndCardIndex(CardType.RESOURCE);
+            boolean isResource = id >= Parameters.getStartCardIndex(CardType.RESOURCE) &&
+                    id <= Parameters.getEndCardIndex(CardType.RESOURCE);
             return isResource ? resourcesBacks.get(card.getColor()) : goldsBacks.get(card.getColor());
         }
         return (isFront ? frontPath : backPath) + id + ".png";
