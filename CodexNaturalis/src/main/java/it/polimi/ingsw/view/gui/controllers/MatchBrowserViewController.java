@@ -226,10 +226,15 @@ public class MatchBrowserViewController extends ViewController {
         client.getController().sendMessage(new IntegerMessage(Status.REQUEST_COLORS, gameId));
     }
 
+    /**
+     * Shows a reconnection pop up dialog.
+     *
+     * @param gameId the id of the game on which the user can reconnect.
+     */
     private void showReconnectGameDialog(int gameId){
         reconnectPopUp.setVisible(true);
-        Animator.doFadeAnimation(reconnectPopUp,true);
-        Animator.doPopAnimation(reconnectPopUp.getChildren().getFirst(),animationOffset,true);
+        Animator.doFadeAnimation(reconnectPopUp, true);
+        Animator.doPopAnimation(reconnectPopUp.getChildren().getFirst(), animationOffset,true);
         currentSelectedId = gameId;
     }
 
@@ -243,7 +248,7 @@ public class MatchBrowserViewController extends ViewController {
         currentSelectedId = gameId;
         if(!createPopupGrid.isVisible() && !joinPopupGrid.isVisible()){
             Animator.doFadeAnimation(joinPopupGrid,true);
-            Animator.doPopAnimation(joinPopupGrid.getChildren().getFirst(),animationOffset,true);
+            Animator.doPopAnimation(joinPopupGrid.getChildren().getFirst(), animationOffset,true);
         }
         createPopupGrid.setVisible(false);
         colorChoiceToggleGroup = new ToggleGroup();
@@ -268,7 +273,7 @@ public class MatchBrowserViewController extends ViewController {
     }
 
     /**
-     * By firstly checking the join input, enables the "join" button.
+     * By firstly checking the "join" input (nickname and color choice), enables the "join" button.
      */
     @FXML
     public void checkJoinInput(){
@@ -277,6 +282,7 @@ public class MatchBrowserViewController extends ViewController {
                 nickname.length() > Parameters.getMaxNameLength() ||
                 nickname.contains(Parameters.getCommandChar()) ||
                 nickname.contains(Parameters.getDelimiter()) ||
+                nickname.contains(" ") ||
                 colorChoiceToggleGroup.getSelectedToggle() == null);
     }
 

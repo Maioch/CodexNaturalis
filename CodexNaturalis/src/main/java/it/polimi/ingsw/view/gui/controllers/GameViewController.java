@@ -442,6 +442,8 @@ public class GameViewController extends ViewController {
     public void choosePersonalObjective(Objective objective1, Objective objective2){
         ImageView objectiveView1 = getCardImage(objective1);
         ImageView objectiveView2 = getCardImage(objective2);
+        objectiveView1.setDisable(false);
+        objectiveView2.setDisable(false);
         objectiveView1.setOnMouseClicked((mouseEvent) -> sendObjectiveChoice(objectiveView1, objectiveView2, objective1));
         objectiveView2.setOnMouseClicked((mouseEvent) -> sendObjectiveChoice(objectiveView1, objectiveView2, objective2));
         secretObjectivesRevealPane.addColumn(0, objectiveView1);
@@ -513,7 +515,9 @@ public class GameViewController extends ViewController {
         cardSelectionPopup.setVisible(false);
         int index = 0;
         for(BasicCard card : cards.stream().limit(3).toList()) {
-            cardHandGrid.add(getCardImage(card), index, 0);
+            ImageView cardView = getCardImage(card);
+            cardView.setDisable(true);
+            cardHandGrid.add(cardView, index, 0);
             index++;
         }
     }
@@ -694,6 +698,7 @@ public class GameViewController extends ViewController {
      */
     private void buildObjectiveScorePane(Map<Objective, Integer> summary, HBox objectiveScore, Objective objective) {
         ImageView objectiveView = getCardImage(objective);
+        objectiveView.getStyleClass().remove("cardWithShadow");
         Label objectiveScoreLabel = new Label(String.format("+%d", summary.get(objective)));
         objectiveScoreLabel.setPadding(new Insets(8));
         objectiveScoreLabel.getStyleClass().add("playerScoreLabelBold");
@@ -786,6 +791,11 @@ public class GameViewController extends ViewController {
         }
     }
 
+    /**
+     * Sets the style sheet of a non-placeable card.
+     *
+     * @param imageView the card's image view.
+     */
     private void styleInvalidCard(ImageView imageView){
         imageView.getStyleClass().clear();
         ColorAdjust colorAdjust = new ColorAdjust(0,-0.7,0,0);
@@ -795,6 +805,12 @@ public class GameViewController extends ViewController {
         imageView.setEffect(dropShadow);
     }
 
+    /**
+     * Sets the size of the pane containing the game board.
+     * It's dynamically calculated based on the placed cards disposition.
+     *
+     * @return a 2D point representing the pane width and height (respectively x, y)
+     */
     private Point2D setGameBoardPaneSize(){
         int maxNumberOfPlacedCards =
                 Parameters.getEndCardIndex(CardType.STARTER) - Parameters.getStartCardIndex(CardType.RESOURCE);
@@ -807,25 +823,54 @@ public class GameViewController extends ViewController {
         return new Point2D(paneWidth, paneHeight);
     }
 
+    /**
+     * Class that changes the game board pane limits.
+     * This class contains the max and min size values of the board.
+     */
     private static class ChangeLimiter implements ChangeListener<Number> {
         private double max;
         private double  min;
         private final Consumer<Double> setter;
 
+        /**
+         * Constructor.
+         *
+         * @param max the max size value.
+         * @param min the min size value.
+         * @param setter the method that updates the size values.
+         */
         public ChangeLimiter(double max, double min, Consumer<Double> setter){
             this.max = max;
             this.min = min;
             this.setter = setter;
         }
 
+        /**
+         * Sets the max size value.
+         *
+         * @param max the new max size value.
+         */
         public void setMax(double max){
             this.max = max;
         }
 
+        /**
+         * Sets the min size value.
+         *
+         * @param min the new max size value.
+         */
         public void setMin(double min){
             this.min = min;
         }
 
+        /**
+         * Method launched whenever the board size is changed.
+         *
+         * @param observableValue not used but required by the method signature.
+         * @param oldValue size value before the observation.
+         * @param newValue size value after the observation.
+         *
+         */
         @Override
         public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
             if(newValue.doubleValue() > max){
@@ -855,6 +900,13 @@ public class GameViewController extends ViewController {
         return statusLabel;
     }
 
+    /**
+     * Sends the personal objective choice to the server.
+     *
+     * @param objectiveView1 the first objective option image view.
+     * @param objectiveView2 the second objective option image view.
+     * @param objectiveToSend the objective chose.
+     */
     private void sendObjectiveChoice(ImageView objectiveView1, ImageView objectiveView2, Objective objectiveToSend){
         objectiveView1.setDisable(true);
         objectiveView2.setDisable(true);
@@ -1108,7 +1160,6 @@ public class GameViewController extends ViewController {
         boardCardGrid.setPrefHeight(cardHeight);
         boardCardGrid.getStyleClass().add("boardCard");
         boardCardGrid.setStyle(String.format("-fx-background-image: url('%s')", CardAssetsProvider.getCardFilePath(card)));
-        //boardCardGrid.setGridLinesVisible(true);
         RowConstraints rowConstraints = new RowConstraints(cardHeight / 2d);
         ColumnConstraints columnConstraints = new ColumnConstraints(cardWidth / 2d);
         rowConstraints.setFillHeight(false);
@@ -1141,8 +1192,10 @@ public class GameViewController extends ViewController {
      */
     private ImageView getCardImage(Objective objective) {
         ImageView objectiveView = new ImageView(CardAssetsProvider.getObjectiveFilePath(objective));
+        objectiveView.getStyleClass().add("cardWithShadow");
         objectiveView.setFitWidth(objectiveWidth);
         objectiveView.setPreserveRatio(true);
+        objectiveView.setDisable(true);
         return objectiveView;
     }
 

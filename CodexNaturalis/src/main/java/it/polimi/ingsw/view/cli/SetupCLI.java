@@ -91,7 +91,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
             case -1 -> messageToSend = new Message(Status.REQUEST_GAMES);
             case 0 -> {
                 System.out.println("\nYou're creating a new game: please enter the requested information.");
-                String gameName = readFromInput("   Name: ",
+                String gameName = readFromInput("   Name (less than " + Parameters.getMaxNameLength() + " characters): ",
                         (s -> s.length() <= Parameters.getMaxNameLength()),
                         this::stringIdentity,
                         true);
@@ -161,7 +161,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
                 (i -> i >= 1 && i <= colors.size()),
                 this::stringToInt,
                 true) - 1;
-        String nickname = readFromInput(String.format("Choose your nickname, without including '%s','%s', or spaces: ",
+        String nickname = readFromInput(String.format("Choose your nickname, without including '%s','%s', or spaces (less than " + Parameters.getMaxNameLength() + " characters): ",
                         Parameters.getCommandChar(), Parameters.getDelimiter()),
                 (s -> !s.isBlank() && s.length() < Parameters.getMaxNameLength() && !s.contains(" ")
                         && !s.contains(Parameters.getCommandChar()) && !s.contains(Parameters.getDelimiter())),

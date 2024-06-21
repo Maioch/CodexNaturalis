@@ -5,6 +5,6 @@ public class TCPException extends Exception{
 
     @Override
     public String getMessage(){
-        return "couldn't connect to the server through TCP";
+        return "couldn't connect to the server";
     }
 }

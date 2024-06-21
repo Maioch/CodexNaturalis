@@ -323,6 +323,9 @@ public class GameController implements Runnable{
                 synchronized (gameInfo) {
                     gameInfo.setGameStatus(GameStatus.PLAYER_DISCONNECTED);
                 }
+                if(networkHandler == null){
+                    continue;
+                }
                 if(!networkHandler.isDisconnected()){
                     serverSubject.notifyAll(new StringMessage(Status.PLAYER_DISCONNECTED,
                             game.getAllPlayers().stream()
