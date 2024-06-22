@@ -18,7 +18,7 @@ public class CardAssetsProvider {
     private static final String frontPath = "/scenes/images/cardFronts/";
     private static final String backPath = "/scenes/images/cardBacks/";
     private static final String objectivesPath = "/scenes/images/cardFronts/";
-    private static final String hiddenCardPath = "/scenes/images/";
+    private static final String hiddenCardPath = "/scenes/images/interface/";
     private static final Map<Content, String> resourcesBacks = new HashMap<>(){{
         for(Content content : Arrays.stream(Content.values()).filter(Content::isResource).toList()){
             put(content, backPath + content + "resource.png");

@@ -494,7 +494,9 @@ public class GameViewController extends ViewController {
                     cardSelectionPopup.setVisible(false);
                 }
             });
-            cardView.setDisable(!client.getController().getLocalPlayerName().equals(client.getController().getPlayerWithTurn()) || isDrawPhase);
+            cardView.setDisable(
+                    !client.getController().getLocalPlayerName().equals(client.getController().getPlayerWithTurn())
+                    || isDrawPhase);
             cardSelectionPopup.setVisible(false);
             cardHandGrid.add(cardView, index, 0);
             index++;
@@ -631,6 +633,14 @@ public class GameViewController extends ViewController {
         generateBoard(placedCards);
     }
 
+    public void disableCardHand(){
+        for(Node node : cardHandGrid.getChildren()){
+            if(node != cardSelectionPopup){
+                node.setDisable(true);
+            }
+        }
+    }
+
     /**
      * Sets the current turn owner.
      *
@@ -722,6 +732,7 @@ public class GameViewController extends ViewController {
         if(playerSummary.isEmpty()){
             summaryContentGrid.getRowConstraints().remove(3);
             summaryContentGrid.getChildren().remove(resultsScrollPane);
+            matchSummaryGrid.getColumnConstraints().get(1).setPrefWidth(450);
             matchSummaryGrid.setVisible(true);
             return;
         }
@@ -824,8 +835,9 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Class that changes the game board pane limits.
-     * This class contains the max and min size values of the board.
+     * Class that limits the changes on an ObservableValue by setting a maximum
+     * and a minimum value.
+     * Used to limit how far you can scroll on the board view.
      */
     private static class ChangeLimiter implements ChangeListener<Number> {
         private double max;

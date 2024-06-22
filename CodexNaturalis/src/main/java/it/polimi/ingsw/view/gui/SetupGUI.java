@@ -66,7 +66,7 @@ public class SetupGUI implements SetupView {
         sceneManager.getController().setClient(client);
         sceneManager.<ConnectionViewController>getController().setApplication(application);
         stage.setScene(sceneManager.getScene());
-        stage.getIcons().add(new Image("/scenes/images/CodexNaturalisColoredLogo.png"));
+        stage.getIcons().add(new Image("/scenes/images/interface/codexNaturalisColoredLogo.png"));
         stage.show();
     }
 

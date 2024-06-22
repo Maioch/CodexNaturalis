@@ -283,6 +283,7 @@ public class GameGUI implements GameView {
                 "If no players reconnect in the next %d seconds, you'll win",
                 Parameters.getForfeitTime()), ToastType.TIMEOUT.toString());
         sceneManager.<GameViewController>getController().setChatDisable(true);
+        sceneManager.<GameViewController>getController().disableCardHand();
     }
 
     /**

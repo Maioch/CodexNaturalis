@@ -30,9 +30,10 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
- * GameController is the MVC pattern controller.
- * Each game has one: it allows to change the status of the match model after the occurrence of a player action,
- * and it can also check for special configurations in it.
+ * It contains the game logic and ensures the correct game flow.
+ * Each game has one: it changes the status of the match model based on the requested player interaction.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class GameController implements Runnable{
 
@@ -53,7 +54,8 @@ public class GameController implements Runnable{
      * Class constructor.
      *
      * @param numberOfPlayers         the maximum number of players that can join the game.
-     * @param serverSubject           the object used to notify about a change in the game's model.
+     * @param serverSubject           the object used to notify changes in the game's model
+     *                                as well as requesting a player action.
      * @param gameInfo                the game's information.
      * @param endGameProcedure        the consumer used to delete the game controller when the game ends.
      *
@@ -81,28 +83,22 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Adds a player to the game and then, if the game is full, sends a notification to start the game.
-     * If the nickname isn't already taken, adds the new player to the list of server subjects.
+     * Adds a player to the lobby, if the given nickname and color are valid.
      *
-     * @param nickname                the nickname of the player.
-     * @param color                   the color chosen by the player.
-     * @param handler                 the TCP/RMI handler associated to the new player.
+     * @param nickname the nickname of the player.
+     * @param color    the color of the player.
+     * @param handler  the TCP/RMI handler associated to the new player.
      *
      * @see NetworkHandler
      */
     private void acceptPlayer(String nickname, Content color, NetworkHandler handler){
-        if(game.checkNickname(nickname)){
-            serverSubject.subscribe(nickname, handler);
-        }
         try {
-            game.addPlayerData(nickname, color);
+            game.addPlayerData(nickname, color, handler);
             handler.setCurrentGame(this);
             receivePing(handler);
         }catch(GameFullException G){
-            serverSubject.unsubscribe(nickname);
             handler.update(new Message(Status.GAME_FULL));
         }catch(GameException e){
-            serverSubject.unsubscribe(nickname);
             handler.update(new IntegerMessage(Status.INVALID_COLOR, gameInfo.getGameId()));
         }catch(NicknameException n){
             handler.update(new IntegerMessage(Status.INVALID_NICKNAME, gameInfo.getGameId()));
@@ -110,12 +106,17 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Adds a previously disconnected player back to the game.
+     * Adds a previously disconnected player back to the game. It sends to the player all the information needed to
+     * restore his game status. Finally, it notifies the other player of the successful reconnection.
      *
-     * @param nickname the player to add back.
-     * @param handler  the handler associated to the player.
+     * @param nickname             the player to add back.
+     * @param handler              the handler associated to the player.
+     * @param sendTurnNotification whether the player who's getting reconnected should receive a notification
+     *                             specifying whose turn is being played. this should be disabled every time a player
+     *                             reconnects between two turns (for example, when a single player is left and their
+     *                             turn has already been completed).
      */
-    private void reconnectPlayer(String nickname, NetworkHandler handler){
+    private void reconnectPlayer(String nickname, NetworkHandler handler, boolean sendTurnNotification){
         NetworkHandler userHandler = serverSubject.getNetworkHandler(nickname);
         if(userHandler == null || !userHandler.isDisconnected()){
             handler.update(new Message(Status.WRONG_NAME));
@@ -156,7 +157,9 @@ public class GameController implements Runnable{
                 serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_BACK, player.getBackOnlyCardHand()));
             }
         }
-        serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, playerWithTurn));
+        if(sendTurnNotification) {
+            serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, playerWithTurn));
+        }
         serverSubject.notifyAll(new StringMessage(Status.RECONNECT, nickname));
     }
 
@@ -182,6 +185,8 @@ public class GameController implements Runnable{
      * Gets the game's status.
      *
      * @return the status of the game.
+     *
+     * @see GameStatus
      */
     public GameStatus getGameStatus(){
         synchronized (gameInfo) {
@@ -194,6 +199,9 @@ public class GameController implements Runnable{
      *
      * @param message the message to add.
      * @param handler the player that sent the message.
+     *
+     * @see Message
+     * @see NetworkHandler
      */
     public void addMessageToQueue(Message message, NetworkHandler handler){
         synchronized (messageQueue) {
@@ -205,6 +213,8 @@ public class GameController implements Runnable{
      * Adds the player to the connected users list.
      *
      * @param networkHandler the player that received the ping.
+     *
+     * @see NetworkHandler
      */
     public void receivePing(NetworkHandler networkHandler){
         synchronized (connectedUsers){
@@ -213,13 +223,16 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Polls a message from the message queue.
-     * If it's a chat message, sends it to the corresponding recipients, and then polls another message.
-     * This method implements a timer.
+     * Polls a message from the message queue and returns it only if it is sent by the specified handler,
+     * it ignores the message otherwise. If the handler is disconnected returns a PLAYER_DISCONNECTED message.
+     * It doesn't return CHAT, RECONNECT, JOIN_GAME and REQUEST_COLORS messages as it handles them directly.
      *
      * @param handler the player from which the server expects a message.
      *
      * @return        the polled message.
+     *
+     * @see Status
+     * @see NetworkHandler
      */
     private Message readFromQueue(NetworkHandler handler){
         LabeledMessage labeledMessage;
@@ -242,7 +255,7 @@ public class GameController implements Runnable{
                 }
                 case RECONNECT -> {
                     if(message instanceof StringMessage stringMessage) {
-                        reconnectPlayer(stringMessage.getString(), labeledMessage.networkHandler());
+                        reconnectPlayer(stringMessage.getString(), labeledMessage.networkHandler(), true);
                         continue;
                     }
                 }
@@ -262,7 +275,10 @@ public class GameController implements Runnable{
      * Broadcasts a chat message.
      *
      * @param chatMessage the chat message.
-     * @param handler the handler who sent it.
+     * @param handler     the handler who sent it.
+     *
+     * @see ChatMessage
+     * @see NetworkHandler
      */
     private void broadcastMessage(ChatMessage chatMessage, NetworkHandler handler){
         String senderNickname = game.getAllPlayers().stream()
@@ -282,9 +298,11 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Returns a list of the players that disconnected during the game.
+     * Returns a list of the handlers that aren't in the connected users list.
      *
-     * @return the disconnected players.
+     * @return the disconnected handlers.
+     *
+     * @see NetworkHandler
      */
     private List<NetworkHandler> getDisconnectedHandlers(){
         return game.getLobbyNicknames().stream()
@@ -295,9 +313,13 @@ public class GameController implements Runnable{
 
     /**
      * Checks if any player has disconnected from the game and sends a ping request to all the clients.
-     * If a player doesn't answer to the ping, labels him as "disconnected", then notifies all the others with
+     * If a player doesn't answer to the ping, sets his network handler to disconnected and notifies the others with
      * a PLAYER_DISCONNECTED message.
-     * When the connected players are less than or equal to one, the game will start an ending procedure.
+     * When the connected players are less than one, it sets the game over flag to true and stops the ping timer.
+     * When there is only one player connected, it sets the only one player flag to true.
+     *
+     * @see NetworkHandler
+     * @see Status
      */
     private void handleGameDisconnections(){
         List<NetworkHandler> disconnectedHandlers;
@@ -345,10 +367,8 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Resets all the information about a player that has disconnected from the game; finally requests a ping to
+     * Resets all the information about a player that has disconnected from the lobby; finally requests a ping to
      * each client.
-     * Removes the player from the game model and from the subscribed client list, and notifies everyone that the player
-     * has disconnected.
      */
     private void handleLobbyDisconnections(){
         List<NetworkHandler> disconnectedHandlers;
@@ -363,7 +383,7 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Removes a player from the current lobby.
+     * Removes a player from the lobby.
      *
      * @param networkHandler the player's network handler.
      */
@@ -372,7 +392,6 @@ public class GameController implements Runnable{
                 .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
                 .findFirst().orElse("No players");
         serverSubject.getNetworkHandler(playerNickname).setCurrentGame(null);
-        serverSubject.unsubscribe(playerNickname);
         game.deletePlayerData(playerNickname);
     }
 
@@ -394,6 +413,8 @@ public class GameController implements Runnable{
      * Checks if there's only one player left in the game.
      * If that's true and the game isn't already over, starts a timer at the end of which the game ends and the
      * remaining player is declared the winner.
+     * The game thread will be awakened before the end of the timer if the only player remaining leaves or a disconnected
+     * player reconnects.
      */
     private void checkForOnlyOnePlayer() {
         synchronized (onlyOnePlayerLock) {
@@ -402,6 +423,8 @@ public class GameController implements Runnable{
                         .filter(n -> !serverSubject.getNetworkHandler(n).isDisconnected())
                         .toList();
                 serverSubject.notifyAll(new Message(Status.GAME_TIMEOUT_STARTED));
+                logger.info(String.format("Game %d: only one player left, the game will end in %d seconds.\n",
+                        gameInfo.getGameId(), Parameters.getForfeitTime()));
                 Timer timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
@@ -416,8 +439,6 @@ public class GameController implements Runnable{
                     }
                 }, Parameters.getForfeitTime() * 1000L);
                 try {
-                    logger.info(String.format("Game %d: only one player left, the game will end in %d seconds.\n",
-                            gameInfo.getGameId(), Parameters.getForfeitTime()));
                     onlyOnePlayerLock.wait();
                     timer.cancel();
                     if(!gameOver.get()){
@@ -426,7 +447,7 @@ public class GameController implements Runnable{
                             while((message = messageQueue.poll()) != null){
                                 if(message.message().getStatus() == Status.RECONNECT &&
                                         message.message() instanceof StringMessage reconnectMessage) {
-                                    reconnectPlayer(reconnectMessage.getString(), message.networkHandler());
+                                    reconnectPlayer(reconnectMessage.getString(), message.networkHandler(), false);
                                     break;
                                 }
                             }
@@ -440,7 +461,7 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Updates the players on the status of game turns.
+     * Sets the turn to the specified player and notifies all players.
      *
      * @param nickname the active player.
      */
@@ -451,8 +472,10 @@ public class GameController implements Runnable{
 
     /**
      * Handles the setup of the game.
-     * First checks if all the players are actually connected to the game, then makes them place their starter card and
-     * choose their personal objective.
+     * Creates the actual players in the lobby, starts the game ping procedure
+     * and makes all players place their starter card as well as choosing their personal objective.
+     * Also checks if there's only one player left at the beginning of each turn as well as the game over flag at then
+     * end of each turn.
      */
     private void initializeGame() {
         game.createPlayers();
@@ -470,17 +493,17 @@ public class GameController implements Runnable{
         Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
         serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards, game.getNumberOfCardsLeft()));
         for (Player player : game.getAllPlayers()) {
+            checkForOnlyOnePlayer();
             updateTurn(player.getNickname());
             placeStarterCard(player);
-            checkForOnlyOnePlayer();
             if(gameOver.get()){
                 return;
             }
         }
         for (Player player : game.getAllPlayers()) {
+            checkForOnlyOnePlayer();
             updateTurn(player.getNickname());
             choosePersonalObjective(player);
-            checkForOnlyOnePlayer();
             if(gameOver.get()){
                 return;
             }
@@ -488,8 +511,8 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Handles the starter card placement.
-     * Gets the player's choice about the starter card side to place and places it; if the player isn't connected
+     * Sends to the specified player his hand and requests him to choose which side of the starter card he wants to place.
+     * Receives his choice about the starter card side to place and places it; if the player isn't connected
      * automatically places the card.
      *
      * @param player the player that is placing the starter card.
@@ -513,8 +536,9 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Handles the personal objective choice.
-     * Gets the player's choice about the personal objective and updates the game's model; if the player isn't connected
+     * Sends to the specified player his common objectives and the secret objectives to choose from.
+     * Requests him to choose a secret objective.
+     * Receives his choice about the personal objective and updates the game's model; if the player isn't connected
      * automatically chooses the first objective.
      *
      * @param player the player that is choosing the personal objective.
@@ -549,11 +573,14 @@ public class GameController implements Runnable{
      * Handles the game's progression.
      * Cycles between the players and makes them play their turn, including the last one; computes the final scores
      * and declares the winner.
-     * Also checks if a player is ever stuck (can't make any move).
+     * Also checks if the game is stuck (all players can't make a valid move), if there is only one player left at the
+     * beginning of each turn and if the game over flag is true.
+     * Finally, reveals the winners.
      */
     private void startGame() {
         while (!game.isLastTurn() && !game.isGameStuck()) {
             for (Player player : game.getAllPlayers()) {
+                checkForOnlyOnePlayer();
                 updateTurn(player.getNickname());
                 if(player.isPlayerStuck()){
                     serverSubject.notifyAll(new Message(Status.NO_MOVES));
@@ -562,7 +589,6 @@ public class GameController implements Runnable{
                 if(placeCard(player)) {
                     drawCard(player);
                 }
-                checkForOnlyOnePlayer();
                 if(gameOver.get()){
                     return;
                 }
@@ -574,13 +600,13 @@ public class GameController implements Runnable{
             if(game.isGameStuck()){
                 break;
             }
+            checkForOnlyOnePlayer();
             updateTurn(player.getNickname());
             if(player.isPlayerStuck()){
                 serverSubject.notifyAll(new Message(Status.NO_MOVES));
                 continue;
             }
             placeCard(player);
-            checkForOnlyOnePlayer();
             if(gameOver.get()){
                 return;
             }
@@ -603,11 +629,13 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Handles a generic card placement.
-     * Gets the player's choice about the card to place and where to place it: after checking if the placement is valid,
+     * Sends to the specified player his placeable cards and his valid corners.
+     * Requests him to pick one card to place and one corner.
+     * Receives his choice about the card to place and where to place it: after checking if the placement is valid,
      * places the card; if the player isn't connected, skips his turn.
      *
      * @param player the player that is placing a card.
+     * @return       false if the player disconnected.
      */
     private boolean placeCard(Player player) {
         List<Corner> validPlacements = player.getAllValidCorners();
@@ -658,8 +686,9 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Handles the drawing of a card.
-     * Gets the player's choice about where to draw the card and adds it to the player's hand; if the player isn't
+     * Sends to the specified player the current drawable cards.
+     * Requests him to pick one card from the drawable ones.
+     * Receives his choice about where to draw the card and adds it to the player's hand; if the player isn't
      * connected draws the first available card.
      *
      * @param player the player that is drawing.
@@ -711,8 +740,9 @@ public class GameController implements Runnable{
 
     /**
      * Handles the game when the players are in lobby waiting for it to be full.
-     * Accepts a new player connecting to the game and updates the available game's colors, until a number of ready
-     * clients equal to the player maximum count is reached.
+     * Accepts a new player connecting to the game until the game is full.
+     * Also handles disconnection from the lobby by removing the player from the lobby and notifying all other players.
+     * If the game over flag is true, returns.
      */
     private void waitForPlayers(){
         LabeledMessage labeledMessage;
@@ -746,7 +776,7 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Handles the lobby phase of the game.
+     * Handles the lobby of the game.
      * Periodically sends pings to all the clients and, if one or more disconnected, handles the disconnections; if all
      * clients disconnected, ends the game.
      */
@@ -782,8 +812,7 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Calls all the above methods to correctly run a game.
-     * First ensures that all the players are connected and ready to play, then starts the match.
+     * Waits until there are enough players, then starts the match.
      * When the game ends, uses the consumer to delete the game's controller.
      */
     @Override
@@ -806,9 +835,9 @@ public class GameController implements Runnable{
     /**
      * Equals method.
      *
-     * @param object Object to check.
+     * @param object object to check.
      *
-     * @return       true both controllers have equals game info.
+     * @return       true if both controllers have equals game info.
      */
     @Override
     public boolean equals(Object object){

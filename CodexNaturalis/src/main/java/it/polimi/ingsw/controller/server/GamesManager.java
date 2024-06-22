@@ -11,7 +11,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * GamesManager manages all games created by the clients, by saving them with a unique ID.
+ * Manages all games, by saving them with a unique ID.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class GamesManager{
 
@@ -50,7 +52,7 @@ public class GamesManager{
     }
 
     /**
-     * Removes a game from this list.
+     * Removes a game from the games list.
      *
      * @param game the game to remove.
      */
@@ -66,18 +68,18 @@ public class GamesManager{
     }
 
     /**
-     * Returns the controller of a given game in this list.
+     * Gets the controller of a given game in the games list.
      *
      * @param gameId the game's ID.
      *
-     * @return the game's controller.
+     * @return       the game's controller.
      */
     public synchronized GameController getController(int gameId){
         return games.get(gameId);
     }
 
     /**
-     * Returns a summary of the games in this list, formatted used the GameInfo record.
+     * Gets a summary of the games in the games list, formatted used the GameInfo class.
      *
      * @return a list that contains each game's id along with its name.
      *

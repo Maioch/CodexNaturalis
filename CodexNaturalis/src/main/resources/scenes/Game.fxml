@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
+<?import java.net.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="rootAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" stylesheets="@CodexTheme.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameViewController">
+<AnchorPane fx:id="rootAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.view.gui.controllers.GameViewController">
     <styleClass>
         <String fx:value="mainBg" />
     </styleClass>
@@ -61,7 +62,7 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         </rowConstraints>
                         <ImageView fx:id="objectivesIcon" disable="true" fitHeight="91.0" fitWidth="40.0" onMouseClicked="#openObjectivesPane" pickOnBounds="true" preserveRatio="true" styleClass="objectivesButton" GridPane.halignment="CENTER">
-                            <Image url="@images/objectives.png" />
+                            <Image url="@images/interface/objectives.png" />
                         </ImageView>
                     </GridPane>
                 </GridPane>
@@ -111,7 +112,7 @@
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         </rowConstraints>
                         <ImageView fitHeight="14.0" fitWidth="14.0" onMouseClicked="#closeObjectivesPane" pickOnBounds="true" preserveRatio="true" styleClass="backButton" GridPane.halignment="CENTER">
-                            <Image url="@images/back.png" />
+                            <Image url="@images/interface/back.png" />
                         </ImageView>
                         <Label alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Objectives" textFill="#2f0606" GridPane.columnIndex="1">
                             <font>
@@ -841,4 +842,8 @@
             </Button>
         </GridPane>
     </GridPane>
+   <stylesheets>
+      <URL value="@CodexTheme.css" />
+      <URL value="@Game.css" />
+   </stylesheets>
 </AnchorPane>

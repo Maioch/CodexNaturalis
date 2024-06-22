@@ -5,6 +5,8 @@ package it.polimi.ingsw.controller.server;
  * LOBBY: the game hasn't started yet, waiting for players.
  * STARTED: the game is in progress.
  * PLAYER_DISCONNECTED: one or more players disconnected from the game.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public enum GameStatus {
 
@@ -24,7 +26,7 @@ public enum GameStatus {
     }
 
     /**
-     * Returns the text of the entry, used to print the correct game's status when using the CLI.
+     * Gets the text of the entry, used to print the correct game's status when using the CLI.
      *
      * @return entry's text.
      */

@@ -3,7 +3,9 @@ package it.polimi.ingsw.controller.server;
 import java.io.Serializable;
 
 /**
- * GameInfo is a class used to associate a game with its related information.
+ * Contains general game's information.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class GameInfo implements Serializable {
 
@@ -27,7 +29,7 @@ public class GameInfo implements Serializable {
     }
 
     /**
-     * Returns the id assigned to the game when it was first created.
+     * Gets the id assigned to the game when it was first created.
      *
      * @return the game's id.
      */
@@ -36,7 +38,7 @@ public class GameInfo implements Serializable {
     }
 
     /**
-     * Returns the name chosen by the game's creator.
+     * Gets the name chosen by the game's creator.
      *
      * @return the game's name.
      */
@@ -45,7 +47,7 @@ public class GameInfo implements Serializable {
     }
 
     /**
-     * Returns the current state of the game.
+     * Gets the current state of the game.
      *
      * @return the game's state.
      */
@@ -54,7 +56,7 @@ public class GameInfo implements Serializable {
     }
 
     /**
-     * Updates the game's state when it changes.
+     * Sets the game's state when it changes.
      *
      * @param gameStatus the new game's state.
      */
@@ -65,7 +67,7 @@ public class GameInfo implements Serializable {
     /**
      * Equals method.
      *
-     * @param object Object to check.
+     * @param object object to check.
      *
      * @return       true if each immutable field is equals to the corresponding field of object.
      */

@@ -9,6 +9,7 @@ import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
 import it.polimi.ingsw.model.shared.Content;
+import it.polimi.ingsw.network.shared.NetworkHandler;
 import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.shared.messages.game.DrawOptionsMessage;
 import it.polimi.ingsw.network.shared.messages.generic.StringMessage;
@@ -142,22 +143,6 @@ public class GameModel{
     }
 
     /**
-     * Checks the nickname chosen by a new player trying to join the game.
-     * Checks if the nickname hasn't already been chosen by another player and doesn't contain illegal characters.
-     *
-     * @param nickname the nickname to check.
-     *
-     * @return         ture if the nickname is valid.
-     */
-    public synchronized boolean checkNickname(String nickname) {
-        return !playerData.containsKey(nickname) &&
-                !nickname.contains(" ") &&
-                !nickname.contains(Parameters.getDelimiter()) &&
-                !nickname.contains(Parameters.getCommandChar()) &&
-                nickname.length() <= Parameters.getMaxNameLength();
-    }
-
-    /**
      * Returns the colors available to be chosen by a new player.
      *
      * @return the available colors.
@@ -182,17 +167,19 @@ public class GameModel{
     }
 
     /**
-     * Adds a new player to the game and updates all the information needed, such as the color chosen.
-     * Also notifies through the server subject the addition of the player.
+     * Adds a new player to the lobby, subscribes it to the server subject and updates all the information needed as
+     * well as notifying the other players in the lobby.
      *
      * @param nickname the player's nickname.
      * @param color    the player's color.
+     * @param handler  the player's network handler.
      *
      * @throws GameException     if the color chosen by the player is already taken.
      * @throws GameFullException if the game is full.
-     * @throws NicknameException if the nickname chosen by the player isn't valid.
+     * @throws NicknameException if the nickname chosen is invalid.
      */
-    public synchronized void addPlayerData(String nickname, Content color) throws GameException, GameFullException, NicknameException {
+    public synchronized void addPlayerData(String nickname, Content color, NetworkHandler handler)
+            throws GameException, GameFullException, NicknameException {
         if (isGameFull()) {
             throw new GameFullException();
         }
@@ -202,6 +189,7 @@ public class GameModel{
         if (!getAvailableColors().contains(color)) {
             throw new GameException("The chosen color has already been taken");
         }
+        serverSubject.subscribe(nickname, handler);
         availableColors.remove(color);
         playerData.put(nickname,color);
         serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname, color, numberOfPlayers, gameId));
@@ -213,11 +201,28 @@ public class GameModel{
     }
 
     /**
+     * Checks the nickname chosen by a new player trying to join the game.
+     * Checks if the nickname hasn't already been chosen by another player and doesn't contain illegal characters.
+     *
+     * @param nickname the nickname to check.
+     *
+     * @return         ture if the nickname is valid.
+     */
+    private synchronized boolean checkNickname(String nickname) {
+        return !playerData.containsKey(nickname) &&
+                !nickname.contains(" ") &&
+                !nickname.contains(Parameters.getDelimiter()) &&
+                !nickname.contains(Parameters.getCommandChar()) &&
+                nickname.length() <= Parameters.getMaxNameLength();
+    }
+
+    /**
      * Removes the information about the player associated to the parameter nickname.
      *
      * @param nickname the player's nickname.
      */
     public synchronized void deletePlayerData(String nickname) {
+        serverSubject.unsubscribe(nickname);
         Content color = playerData.remove(nickname);
         if(color != null){
             availableColors.add(color);

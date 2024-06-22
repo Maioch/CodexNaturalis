@@ -36,7 +36,7 @@ public class GameModelTest {
         int players = 2;
         try {
             gameModel = new GameModel(players, new ServerSubject(), 0);
-            gameModel.addPlayerData(playerName, playerContent);
+            gameModel.addPlayerData(playerName, playerContent, new TestNetworkHandler());
             gameModel.createPlayers();
             Player player = gameModel.getPlayer(playerName);
             BasicCard starter = CardBuilder.buildCard(81).backSide();
@@ -54,7 +54,7 @@ public class GameModelTest {
             }
             assertTrue(gameModel.isLastTurn());
             gameModel = new GameModel(players, new ServerSubject(), 0);
-            gameModel.addPlayerData(playerName, playerContent);
+            gameModel.addPlayerData(playerName, playerContent, new TestNetworkHandler());
             gameModel.createPlayers();
             player = gameModel.getPlayer(playerName);
             assertFalse(gameModel.isLastTurn());
@@ -75,7 +75,7 @@ public class GameModelTest {
             }
             assertTrue(gameModel.isLastTurn());
             gameModel = new GameModel(players, new ServerSubject(), 0);
-            gameModel.addPlayerData(playerName, playerContent);
+            gameModel.addPlayerData(playerName, playerContent, new TestNetworkHandler());
             gameModel.createPlayers();
             player = gameModel.getPlayer(playerName);
             assertFalse(gameModel.isLastTurn());
@@ -108,13 +108,13 @@ public class GameModelTest {
         int maxPlayers = Parameters.getMaxPlayers();
         assertThrows(GameException.class, () -> {
             GameModel wrongGameModel = new GameModel(maxPlayers, new ServerSubject(), 0);
-            wrongGameModel.addPlayerData("test", Content.RED);
-            wrongGameModel.addPlayerData("test2", Content.RED);
+            wrongGameModel.addPlayerData("test", Content.RED, new TestNetworkHandler());
+            wrongGameModel.addPlayerData("test2", Content.RED, new TestNetworkHandler());
         });
         assertThrows(NicknameException.class, () -> {
             GameModel wrongGameModel = new GameModel(maxPlayers, new ServerSubject(), 0);
-            wrongGameModel.addPlayerData("test", Content.RED);
-            wrongGameModel.addPlayerData("test", Content.PURPLE);
+            wrongGameModel.addPlayerData("test", Content.RED, new TestNetworkHandler());
+            wrongGameModel.addPlayerData("test", Content.PURPLE, new TestNetworkHandler());
         });
         assertThrows(IllegalNumberOfPlayers.class, () -> new GameModel(maxPlayers + 1, new ServerSubject(), 0));
         for (int numberOfPlayers = minPlayers; numberOfPlayers <= maxPlayers; numberOfPlayers++) {
@@ -127,8 +127,7 @@ public class GameModelTest {
             }};
             GameModel gameModel = new GameModel(numberOfPlayers, serverSubject, 0);
             for (int i = 0; i < numberOfPlayers; i++) {
-                serverSubject.subscribe("test" + i, testNetworkHandlers.get(i));
-                gameModel.addPlayerData("test" + i, Content.values()[i]);
+                gameModel.addPlayerData("test"+ i, Content.values()[i], testNetworkHandlers.get(i));
                 assertFalse(gameModel.getAvailableColors().contains(Content.values()[i]));
                 List<Message> receivedMessages = testNetworkHandlers.get(i).getReceivedMessages();
                 assertEquals(i + 2, receivedMessages.size());
@@ -140,15 +139,15 @@ public class GameModelTest {
                     assertEquals(i + 1, testNetworkHandlers.get(j).getReceivedMessages().size());
                 }
             }
-            assertThrows(GameFullException.class, () -> gameModel.addPlayerData("TEST", Content.RED));
+            assertThrows(GameFullException.class, () -> gameModel.addPlayerData("TEST", Content.RED, new TestNetworkHandler()));
         }
     }
 
     @Test
     void createPlayersTest() throws IllegalNumberOfPlayers, GameFullException, NicknameException, GameException {
         GameModel gameModel = new GameModel(2, new ServerSubject(), 0);
-        gameModel.addPlayerData("test1", Content.RED);
-        gameModel.addPlayerData("test2", Content.PURPLE);
+        gameModel.addPlayerData("test1", Content.RED, new TestNetworkHandler());
+        gameModel.addPlayerData("test2", Content.PURPLE, new TestNetworkHandler());
         assertTrue(gameModel.getAllPlayers().isEmpty());
         gameModel.createPlayers();
         Player player1 = new Player("test1", Content.RED, new ArrayList<>(), new ArrayList<>(), new ServerSubject());
@@ -180,8 +179,8 @@ public class GameModelTest {
         int playersNumber = 2;
         try {
             gameModel = new GameModel(playersNumber, new ServerSubject(), 0);
-            gameModel.addPlayerData("resource", Content.GREEN);
-            gameModel.addPlayerData("gold", Content.RED);
+            gameModel.addPlayerData("resource", Content.GREEN, new TestNetworkHandler());
+            gameModel.addPlayerData("gold", Content.RED, new TestNetworkHandler());
             gameModel.createPlayers();
             Player resource = gameModel.getPlayer("resource");
             Player gold = gameModel.getPlayer("gold");
@@ -275,8 +274,8 @@ public class GameModelTest {
 
             assertTrue(gameModel.getWinningPlayers().isEmpty());
 
-            gameModel.addPlayerData(nicknames.getFirst(), Content.RED);
-            gameModel.addPlayerData(nicknames.get(1), Content.BLUE);
+            gameModel.addPlayerData(nicknames.getFirst(), Content.RED, new TestNetworkHandler());
+            gameModel.addPlayerData(nicknames.get(1), Content.BLUE, new TestNetworkHandler());
             gameModel.createPlayers();
 
             Corner fakeCorner = new Corner(Content.WHITE, Location.TR);
@@ -304,7 +303,7 @@ public class GameModelTest {
         assertThrows(IllegalNumberOfPlayers.class, () -> new GameModel(maxPlayers + 1, new ServerSubject(), 1));
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
         assertTrue(game.isLobbyEmpty());
-        game.addPlayerData("test", Content.RED);
+        game.addPlayerData("test", Content.RED, new TestNetworkHandler());
         assertFalse(game.isLobbyEmpty());
     }
 
@@ -320,9 +319,9 @@ public class GameModelTest {
         int minPlayers = Parameters.getMinPlayers();
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
         assertEquals(new ArrayList<>(), game.getLobbyNicknames());
-        game.addPlayerData("test", Content.RED);
+        game.addPlayerData("test", Content.RED, new TestNetworkHandler());
         assertEquals(new ArrayList<>(List.of("test")), game.getLobbyNicknames());
-        game.addPlayerData("test1", Content.BLUE);
+        game.addPlayerData("test1", Content.BLUE, new TestNetworkHandler());
         assertEquals(new ArrayList<>(Arrays.asList("test", "test1")), game.getLobbyNicknames());
     }
 
@@ -330,13 +329,17 @@ public class GameModelTest {
     void checkNicknameTest() throws IllegalNumberOfPlayers, GameException, GameFullException, NicknameException {
         int minPlayers = Parameters.getMinPlayers();
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 1);
-        assertTrue(game.checkNickname("test"));
-        assertFalse(game.checkNickname("te st"));
-        assertFalse(game.checkNickname(String.format("test%s", Parameters.getDelimiter())));
-        assertFalse(game.checkNickname(String.format("test%s", Parameters.getCommandChar())));
-        assertFalse(game.checkNickname("t".repeat(Parameters.getMaxNameLength() + 1)));
-        game.addPlayerData("test", Content.RED);
-        assertFalse(game.checkNickname("test"));
+        game.addPlayerData("test", Content.RED, new TestNetworkHandler());
+        assertThrows(NicknameException.class,
+                () -> game.addPlayerData("te st", Content.RED, new TestNetworkHandler()));
+        assertThrows(NicknameException.class,
+                () -> game.addPlayerData(String.format("test%s", Parameters.getDelimiter()), Content.RED, new TestNetworkHandler()));
+        assertThrows(NicknameException.class,
+                () -> game.addPlayerData(String.format("test%s", Parameters.getCommandChar()), Content.RED, new TestNetworkHandler()));
+        assertThrows(NicknameException.class,
+                () -> game.addPlayerData("t".repeat(Parameters.getMaxNameLength() + 1), Content.RED, new TestNetworkHandler()));
+        assertThrows(NicknameException.class,
+                () -> game.addPlayerData("test", Content.RED, new TestNetworkHandler()));
     }
 
     @Test
@@ -345,12 +348,11 @@ public class GameModelTest {
         TestNetworkHandler handler1 = new TestNetworkHandler();
         TestNetworkHandler handler2 = new TestNetworkHandler();
         ServerSubject serverSubject = new ServerSubject();
-        serverSubject.subscribe(nickname, handler1);
         serverSubject.subscribe("test2", handler2);
 
         int minPlayers = Parameters.getMinPlayers();
         GameModel gameModel = new GameModel(minPlayers, serverSubject, 0);
-        gameModel.addPlayerData(nickname, Content.RED);
+        gameModel.addPlayerData(nickname, Content.RED, handler1);
         handler1.getReceivedMessages();
         handler2.getReceivedMessages();
         gameModel.deletePlayerData(nickname);
@@ -390,8 +392,8 @@ public class GameModelTest {
         int minPlayers = Parameters.getMinPlayers();
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 0);
         assertTrue(game.isGameStuck());
-        game.addPlayerData("test", Content.RED);
-        game.addPlayerData("test1", Content.BLUE);
+        game.addPlayerData("test", Content.RED, new TestNetworkHandler());
+        game.addPlayerData("test1", Content.BLUE, new TestNetworkHandler());
         game.createPlayers();
         assertTrue(game.isGameStuck());
         Player player = game.getPlayer("test");
@@ -405,8 +407,8 @@ public class GameModelTest {
         GameModel game = new GameModel(minPlayers, new ServerSubject(), 0);
         assertNotNull(game.getCommonObjectives());
         assertFalse(game.getCommonObjectives().isEmpty());
-        game.addPlayerData("test", Content.GREEN);
-        game.addPlayerData("test1", Content.PURPLE);
+        game.addPlayerData("test", Content.GREEN, new TestNetworkHandler());
+        game.addPlayerData("test1", Content.PURPLE, new TestNetworkHandler());
         game.createPlayers();
         assertEquals(game.getCommonObjectives(), game.getPlayer("test").getObjectives());
         assertEquals(game.getCommonObjectives(), game.getPlayer("test1").getObjectives());
@@ -415,8 +417,8 @@ public class GameModelTest {
     @Test
     void exceptionDrawCardTest() throws IllegalNumberOfPlayers, NicknameException, GameFullException, GameException{
         GameModel game = new GameModel(2, new ServerSubject(), 1);
-        game.addPlayerData("test", Content.RED);
-        game.addPlayerData("test1", Content.BLUE);
+        game.addPlayerData("test", Content.RED, new TestNetworkHandler());
+        game.addPlayerData("test1", Content.BLUE, new TestNetworkHandler());
         game.createPlayers();
         try{
             game.drawCard(game.getPlayer("test"), CardType.STARTER, 0);

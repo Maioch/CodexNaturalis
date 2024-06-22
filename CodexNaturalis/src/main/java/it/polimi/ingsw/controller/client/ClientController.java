@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class that handles every possible message the client can send to the server.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class ClientController extends EventHandler<LabeledMessage> {
 
@@ -44,8 +46,9 @@ public class ClientController extends EventHandler<LabeledMessage> {
     private final Timer pingTimer;
 
     /**
-     * Constructor for the class.
-     * @param setupView the object containing all the methods used by the player to access or create a game.
+     * Class constructor.
+     *
+     * @param setupView      the object containing all the methods used by the player to access or create a game.
      * @param eventSubmitter the medium used to send the player's requests to the server.
      */
     public ClientController(SetupView setupView, EventSubmitter eventSubmitter) {
@@ -57,7 +60,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Method that lets the client handler send a specified message.
+     * Lets the client handler send a specified message.
+     *
      * @param message the message the client is sending.
      */
     public void sendMessage(Message message){
@@ -67,7 +71,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Setter for the game view attribute.
+     * Sets the game view attribute and notifies the "this" object.
+     *
      * @param gameView the interface associated to the client.
      */
     public synchronized void setGameView(GameView gameView){
@@ -76,7 +81,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Setter for the network handler attribute.
+     * Sets the network handler attribute.
+     *
      * @param networkHandler the handler associated to the client.
      */
     public void setNetworkHandler(NetworkHandler networkHandler){
@@ -86,29 +92,37 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * @return the client's player nickname.
+     * Gets the local player's nickname.
+     *
+     * @return the local player's nickname.
      */
     public synchronized String getLocalPlayerName(){
         return game.getLocalPlayer().getNickname();
     }
 
     /**
-     * @return all other player's nicknames.
+     * Gets all the remote players' nickname.
+     *
+     * @return all the remote players' nicknames.
      */
     public synchronized List<String> getRemotePlayerNames(){
         return game.getRemotePlayers().stream().map(RemotePlayer::getNickname).toList();
     }
 
     /**
-     * @return the client's player current board.
+     * Gets the local player's current board.
+     *
+     * @return the local player's current board.
      */
     public synchronized List<BasicCard> getLocalPlayerBoard(){
         return game.getLocalPlayer().getPlacedCards();
     }
 
     /**
-     * @param nickname the nickname of a remote player.
-     * @return the specified player's board.
+     * Gets the specified remote player's board.
+     *
+     * @param nickname the nickname of the remote player.
+     * @return         the specified player's board.
      */
     public synchronized List<BasicCard> getRemotePlayerBoard(String nickname){
         return game.getRemotePlayers().stream()
@@ -117,20 +131,26 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * @return the client's player current placeable cards.
+     * Gets the local player's current placeable cards.
+     *
+     * @return the local player's current placeable cards.
      */
     public synchronized List<BasicCard> getLocalPlayerValidCards(){
         return game.getLocalPlayer().getValidCards();
     }
 
     /**
-     * @return the client's player current valid corners.
+     * Gets the local player's current valid corners.
+     *
+     * @return the local player's current valid corners.
      */
     public synchronized List<Corner> getLocalPlayerValidCorners(){
         return game.getLocalPlayer().getValidCorners();
     }
 
     /**
+     * Gets all the players' colors.
+     *
      * @return a map that contains each player's nickname (key), and it's color.
      */
     public synchronized Map<String, Content> getPlayerColors(){
@@ -138,29 +158,38 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * @return the player's common objectives.
+     * Gets the local player's common objectives.
+     *
+     * @return the local player's common objectives.
      */
     public synchronized List<Objective> getCommonObjectives() { return game.getCommonObjectives(); }
 
     /**
-     * @return the player's personal objectives.
+     * Gets the local player's personal objectives.
+     *
+     * @return the local player's personal objectives.
      */
     public synchronized List<Objective> getPersonalObjectives() {return game.getLocalPlayer().getPersonalObjectives(); }
 
     /**
-     * @return the nickname of the player with turn.
+     * Gets the nickname of the player with the turn.
+     *
+     * @return the nickname of the player with the turn.
      */
     public synchronized String getPlayerWithTurn() { return game.getPlayerWithTurn().getNickname(); }
 
     /**
-     * Gets the game's id (identifying integer).
+     * Gets the game's id.
+     *
      * @return the game's id.
      */
     public synchronized int getGameId() { return game.getGameId(); }
 
     /**
+     * Gets the specified remote player's hand.
+     *
      * @param nickname the remote player's nickname.
-     * @return the back sides list of the specified player's hand.
+     * @return         the specified player's hand (back sides only).
      */
     public synchronized List<BasicCard> getRemotePlayerHand(String nickname) {
         return game.getRemotePlayers().stream()
@@ -170,6 +199,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
+     * Gets the local player's hand.
+     *
      * @return the local player's card hand
      */
     public synchronized List<CardSides> getLocalPlayerHand() {
@@ -177,7 +208,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Closes the game view, and sends a "REQUEST_GAME" message.
+     * Sets both the client game model and the game view to null.
      */
     public synchronized void backToSetup() {
         this.game = null;
@@ -185,7 +216,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Main method of the class, used to differentiate between all the possible messages the client can send.
+     * It starts the ping's thread for detecting disconnections and handles messages received on the queue until the
+     * current thread (controller thread) is interrupted.
      */
     @Override
     public void run(){
@@ -217,12 +249,15 @@ public class ClientController extends EventHandler<LabeledMessage> {
         pingTimer.cancel();
     }
 
+    /**
+     * It interrupts the controller's thread.
+     */
     public void stop(){
         controllerThread.interrupt();
     }
 
     /**
-     * Handles (eventually) the disconnection of the client.
+     * Handles the ping's procedure to detect disconnections. If the ping ack is not received, it notifies the view.
      */
     private void handlePings(){
         if(isDisconnected.get()){
@@ -236,7 +271,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Handles a setup message. This method is based on the message status.
+     * Handles a setup message. It notifies the client model or the setup view depending on the message status.
      *
      * @param message the message to handle.
      */
@@ -303,7 +338,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Handles a game message. This method is based on the message status.
+     * Handles a game message. It notifies the client model or the game view depending on the message status.
      *
      * @param message the message to handle.
      */

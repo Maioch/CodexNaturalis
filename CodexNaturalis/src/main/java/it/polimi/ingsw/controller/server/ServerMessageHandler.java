@@ -17,14 +17,17 @@ import java.util.List;
 /**
 * Class that handles the messages sent by the clients and received by the server.
 *
-* @author Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli, Marco Maiocchi
+* @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
 */
 public class ServerMessageHandler extends EventHandler<LabeledMessage> implements Runnable{
     private final GamesManager games;
 
     /**
      * Constructor for the class.
+     *
      * @param games the current list of games.
+     *
+     * @see GamesManager
      */
     public ServerMessageHandler(GamesManager games){
         super();
@@ -32,7 +35,7 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
     }
 
     /**
-     * Overridden run method. It reads the message queue and handles the message according to its status.
+     * Reads the message queue and handles the message according to its status.
      */
     @SuppressWarnings("InfiniteLoopStatement")
     @Override
