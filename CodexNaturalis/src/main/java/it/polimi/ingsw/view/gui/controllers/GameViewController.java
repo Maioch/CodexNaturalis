@@ -19,7 +19,6 @@ import it.polimi.ingsw.view.gui.GameGUI;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.ScheduledService;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
@@ -283,13 +282,12 @@ public class GameViewController extends ViewController {
      * @param message the game's state.
      */
     public void updateStatusLabel(String message){
-        notificationExecutor.schedule(() -> {
+        notificationExecutor.schedule(() ->
             Platform.runLater(() -> {
                 Label statusLabel = createStatusLabel(message);
                 notificationExecutor.schedule(() -> Platform.runLater(() -> removeMessageLabel(statusLabel)),
                         statusLabelShowInterval, TimeUnit.MILLISECONDS);
-            });
-        }, showNotificationDelay, TimeUnit.MILLISECONDS);
+            }), showNotificationDelay, TimeUnit.MILLISECONDS);
 
     }
 
@@ -301,13 +299,12 @@ public class GameViewController extends ViewController {
      * @param messageType the type of the message.
      */
     public void updateStatusLabel(String message, String messageType){
-        notificationExecutor.schedule(() -> {
+        notificationExecutor.schedule(() ->
             Platform.runLater(() -> {
                 Label statusLabel = createStatusLabel(message);
                 statusLabel.setUserData(messageType);
                 currentPermanentMessages.add(statusLabel);
-            });
-        }, showNotificationDelay, TimeUnit.MILLISECONDS);
+            }), showNotificationDelay, TimeUnit.MILLISECONDS);
     }
 
     /**
