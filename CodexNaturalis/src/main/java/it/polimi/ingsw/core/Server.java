@@ -64,6 +64,7 @@ public class Server {
 
     /**
      * Creates a logger file.
+     *
      * @return the created logger.
      */
     private static Logger createLogger() {

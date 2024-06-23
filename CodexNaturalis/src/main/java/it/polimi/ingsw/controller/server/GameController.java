@@ -139,6 +139,9 @@ public class GameController implements Runnable{
         serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards(), game.getNumberOfCardsLeft()));
         for(Player player : game.getAllPlayers()){
             serverSubject.notify(nickname, new StringMessage(Status.SILENT_TURN_NOTIFICATION, player.getNickname()));
+            if(serverSubject.getNetworkHandler(player.getNickname()).isDisconnected()){
+                serverSubject.notify(nickname, new StringMessage(Status.QUIET_PLAYER_DISCONNECTED, player.getNickname()));
+            }
             if(player.getPlacedCards().isEmpty()){
                 continue;
             }
@@ -157,10 +160,10 @@ public class GameController implements Runnable{
                 serverSubject.notify(nickname, new CardHandMessage(Status.PLAYER_HAND_BACK, player.getBackOnlyCardHand()));
             }
         }
+        serverSubject.notifyAll(new StringMessage(Status.RECONNECT, nickname));
         if(sendTurnNotification) {
             serverSubject.notify(nickname, new StringMessage(Status.TURN_NOTIFICATION, playerWithTurn));
         }
-        serverSubject.notifyAll(new StringMessage(Status.RECONNECT, nickname));
     }
 
     /**
@@ -767,9 +770,7 @@ public class GameController implements Runnable{
                 case Status.REQUEST_COLORS ->
                     labeledMessage.networkHandler().update(
                             new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), gameInfo.getGameId()));
-                case Status.PLAYER_DISCONNECTED -> {
-                    removePlayerFromLobby(labeledMessage.networkHandler());
-                }
+                case Status.PLAYER_DISCONNECTED -> removePlayerFromLobby(labeledMessage.networkHandler());
             }
         }
     }

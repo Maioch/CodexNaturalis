@@ -243,9 +243,11 @@ public class GameGUI implements GameView {
      * @param color the player's color.
      */
     @Override
-    public void notifyRemotePlayerDisconnected(String nickname, Content color) {
-        sceneManager.<GameViewController>getController().updateStatusLabel(String.format(
-                "%s disconnected from the game", nickname));
+    public void notifyRemotePlayerDisconnected(String nickname, Content color, boolean quiet) {
+        if(!quiet) {
+            sceneManager.<GameViewController>getController().updateStatusLabel(String.format(
+                    "%s disconnected from the game", nickname));
+        }
         sceneManager.<GameViewController>getController().setPlayerStatus(nickname,false);
     }
 

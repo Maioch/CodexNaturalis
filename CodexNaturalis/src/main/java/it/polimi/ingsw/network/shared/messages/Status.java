@@ -164,6 +164,11 @@ public enum Status {
     PLAYER_DISCONNECTED(""),
 
     /**
+     * Server: the next message will contain the nickname of the player who left. Won't show any notification on the view.
+     */
+    QUIET_PLAYER_DISCONNECTED(""),
+
+    /**
      * Server: a player left the lobby
      */
     PLAYER_LEFT_LOBBY(""),

@@ -28,7 +28,7 @@ public interface GameView extends ReconnectableView{
     void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft);
     void revealFinalSummary(String nickname, Map<Objective,Integer> objectivePoints, int finalScore);
     void revealWinners(List<String> winners);
-    void notifyRemotePlayerDisconnected(String nickname, Content color);
+    void notifyRemotePlayerDisconnected(String nickname, Content color, boolean quiet);
     void notifyPlayerLeftLobby(String nickname, Content color);
     void notifyRemotePlayerReconnected(String nickname);
     void notifyGameTimeout();

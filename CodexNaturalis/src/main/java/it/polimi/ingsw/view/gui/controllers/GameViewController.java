@@ -19,6 +19,7 @@ import it.polimi.ingsw.view.gui.GameGUI;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.ScheduledService;
 import javafx.fxml.FXML;
 import javafx.geometry.*;
 import javafx.scene.Node;
@@ -36,6 +37,9 @@ import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 
 import java.util.*;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -128,14 +132,13 @@ public class GameViewController extends ViewController {
     private boolean isDrawPhase;
     private ChangeLimiter yScrollLimiter;
     private ChangeLimiter xScrollLimiter;
+    private final ScheduledExecutorService notificationExecutor = new ScheduledThreadPoolExecutor(1);
     private final List<Label> currentPermanentMessages = new ArrayList<>();
     private final Map<String, Circle> playerTagCircles = new HashMap<>();
     private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
     private final Map<String, ImageView> playerTokens = new HashMap<>();
     private final Map<String, GridPane> playerSummary = new HashMap<>();
     private final List<Pair<Pane,Corner>> currentCornersOnBoard = new ArrayList<>();
-    private final double objectivePanelAnimationOffset = -250;
-    private final long showNotificationDelay = 300;
 
     private final int toastGap = 76;
     private final int tokenSize = 30;
@@ -143,7 +146,9 @@ public class GameViewController extends ViewController {
     private final int distanceBetweenHiddenCards = 4;
     private final int distanceBetweenTokens = 4;
     private final int maxVisibleScore = 29;
-    private final long statusLabelShowInterval = 4;
+    private final long statusLabelShowInterval = 4000;
+    private final long showNotificationDelay = 300;
+    private final double objectivePanelAnimationOffset = -250;
     private final int cornerWidth = 34;
     private final int cornerHeight = 41;
     private final int cardWidth = 150;
@@ -278,22 +283,14 @@ public class GameViewController extends ViewController {
      * @param message the game's state.
      */
     public void updateStatusLabel(String message){
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask(){
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    Label statusLabel = createStatusLabel(message);
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            Platform.runLater(() -> removeMessageLabel(statusLabel));
-                        }
-                    }, statusLabelShowInterval * 1000);
-                });
-            }
-        }, showNotificationDelay);
+        notificationExecutor.schedule(() -> {
+            Platform.runLater(() -> {
+                Label statusLabel = createStatusLabel(message);
+                notificationExecutor.schedule(() -> Platform.runLater(() -> removeMessageLabel(statusLabel)),
+                        statusLabelShowInterval, TimeUnit.MILLISECONDS);
+            });
+        }, showNotificationDelay, TimeUnit.MILLISECONDS);
+
     }
 
     /**
@@ -304,17 +301,13 @@ public class GameViewController extends ViewController {
      * @param messageType the type of the message.
      */
     public void updateStatusLabel(String message, String messageType){
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask(){
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    Label statusLabel = createStatusLabel(message);
-                    statusLabel.setUserData(messageType);
-                    currentPermanentMessages.add(statusLabel);
-                });
-            }
-        }, showNotificationDelay);
+        notificationExecutor.schedule(() -> {
+            Platform.runLater(() -> {
+                Label statusLabel = createStatusLabel(message);
+                statusLabel.setUserData(messageType);
+                currentPermanentMessages.add(statusLabel);
+            });
+        }, showNotificationDelay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -394,8 +387,8 @@ public class GameViewController extends ViewController {
     public void closeObjectivesPane(){
         Animator.doSlideAnimation(objectivesPane, objectivePanelAnimationOffset, false)
                 .setOnFinished(e ->{
-                        objectivesPane.setVisible(false);
-                        objectivesButtonPane.setMouseTransparent(false);
+                    objectivesPane.setVisible(false);
+                    objectivesButtonPane.setMouseTransparent(false);
                 });
     }
 
@@ -496,7 +489,7 @@ public class GameViewController extends ViewController {
             });
             cardView.setDisable(
                     !client.getController().getLocalPlayerName().equals(client.getController().getPlayerWithTurn())
-                    || isDrawPhase);
+                            || isDrawPhase);
             cardSelectionPopup.setVisible(false);
             cardHandGrid.add(cardView, index, 0);
             index++;
@@ -549,13 +542,13 @@ public class GameViewController extends ViewController {
         }
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
-               @Override
-               public void run() {
-                   Platform.runLater(() -> {
-                       resourceDeckGrid.getChildren().forEach(n -> n.setDisable(false));
-                       goldDeckGrid.getChildren().forEach(n -> n.setDisable(false));
-                   });
-               }
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    resourceDeckGrid.getChildren().forEach(n -> n.setDisable(false));
+                    goldDeckGrid.getChildren().forEach(n -> n.setDisable(false));
+                });
+            }
         }, showNotificationDelay);
 
     }
@@ -610,7 +603,7 @@ public class GameViewController extends ViewController {
 
     /**
      * Updates the local player board, by visually placing the cards.
-     * 
+     *
      * @param placedCards the local player's board.
      */
     public void updateLocalPlayerBoard(List<BasicCard> placedCards){

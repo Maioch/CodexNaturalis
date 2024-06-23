@@ -115,8 +115,8 @@ public class TestView implements SetupView, GameView {
     }
 
     @Override
-    public void notifyRemotePlayerDisconnected(String nickname, Content color) {
-        recentCalls.add(new Pair<>("notifyRemotePlayerDisconnected", List.of(nickname, color)));
+    public void notifyRemotePlayerDisconnected(String nickname, Content color, boolean quiet) {
+        recentCalls.add(new Pair<>("notifyRemotePlayerDisconnected", List.of(nickname, color, quiet)));
     }
 
     @Override
