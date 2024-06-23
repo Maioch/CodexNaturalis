@@ -17,23 +17,26 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
-* Class that acts as interface on the internet. It contains the main method for the server.
+* Acts as interface on the internet. It contains the main method for the server.
 *
-* @author Andrea Fidanza
+* @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
 */
 public class Server {
 
     /**
-     * Main method, entry point for the server. It sets up the message handler and starts listening on the two sockets
-     * corresponding to the tcp and rmi connections. Each accepted connection is handled by a network handler.
+     * Main method, entry point for the server. It sets up the logger, the message handler, the games manager
+     * and the rmi manager. Finally, starts listening on the tcp socket.
+     * Each accepted connection is handled by a network handler.
+     *
+     * @param args not used
      */
-    public static void main(String[] args) throws RemoteException{
+    public static void main(String[] args){
         Logger logger = createLogger();
         GamesManager games = new GamesManager();
         ServerMessageHandler serverMessageHandler = new ServerMessageHandler(games);
-        RMIManager rmiManager = new RMIManager(serverMessageHandler);
-        LocateRegistry.createRegistry(Parameters.getRMIPort());
         try {
+            RMIManager rmiManager = new RMIManager(serverMessageHandler);
+            LocateRegistry.createRegistry(Parameters.getRMIPort());
             Naming.rebind("/RMIManager", rmiManager);
             logger.info("RMI server started on port: " + Parameters.getRMIPort() + "\n");
         } catch(MalformedURLException e) {

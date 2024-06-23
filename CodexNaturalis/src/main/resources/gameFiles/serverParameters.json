@@ -5,6 +5,6 @@
   "maxNameLength" : 12,
   "pingPeriodSeconds" : 5,
   "forfeitTime" : 60,
-  "lobbyTimeout" : 60,
+  "lobbyTimeout" : 30,
   "loggerName" : "Server"
 }

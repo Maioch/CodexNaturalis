@@ -20,6 +20,8 @@ import java.util.List;
 * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
 */
 public class ServerMessageHandler extends EventHandler<LabeledMessage> implements Runnable{
+
+    //the server's GamesManager.
     private final GamesManager games;
 
     /**

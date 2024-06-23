@@ -20,12 +20,13 @@ public class ConnectionInitializer {
 
     /**
      * Method that initializes the TCP connection.
-     * @param settings the server's ip, port and connection type (RMI or TCP).
-     * @param controller the controller that will handle the client.
+     *
+     * @param settings               the server's ip, port and connection type (RMI or TCP).
+     * @param controller             the controller that will handle messages and client model updates.
      * @throws MalformedURLException when the server ip isn't correct.
-     * @throws NotBoundException when the requested object isn't bound.
-     * @throws RemoteException when an RMI connection error occurs.
-     * @throws TCPException when a TCP connection error occurs.
+     * @throws NotBoundException     when the requested object isn't bound.
+     * @throws RemoteException       when an RMI connection error occurs.
+     * @throws TCPException          when a TCP connection error occurs.
      */
     public static void initializeConnection(ConnectionSettings settings, ClientController controller)
             throws TCPException, RemoteException, MalformedURLException, NotBoundException {

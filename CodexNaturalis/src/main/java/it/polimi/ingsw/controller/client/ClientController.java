@@ -35,14 +35,31 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ClientController extends EventHandler<LabeledMessage> {
 
+    //the client's setup view (persists for the entire lifecycle of the program).
     private final SetupView setupView;
+
+    //the current game's local model, if any is being played.
     private ClientGame game;
+
+    //the current game's view, if any is being played.
     private GameView gameView;
+
+    //the current networkHandler.
     private NetworkHandler networkHandler;
+
+    //the lock used to synchronize all actions that use it.
     private final Object networkHandlerLock;
+
+    //the lock used to synchronize all actions that use it
     private final EventSubmitter eventSubmitter;
+
+    //whether the last ping has been answered to by the server.
     private final AtomicBoolean isDisconnected;
+
+    //the thread the clientController runs on.
     private Thread controllerThread;
+
+    //the timer that periodically runs handlePings.
     private final Timer pingTimer;
 
     /**

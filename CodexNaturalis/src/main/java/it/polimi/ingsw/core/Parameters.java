@@ -7,13 +7,22 @@ import it.polimi.ingsw.model.shared.card.CardType;
 import java.io.IOException;
 
 /**
- * Parameters contains static methods used to retrieve the application parameters from a json file.
+ * Contains static methods used to retrieve the application parameters from a json file.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class Parameters {
 
+    //the path where all the parameters are stored, relative to the "resources" folder.
     private final static String filePath = "/gameFiles/";
+
+    //the name of the file containing the game's parameters.
     private final static String gameParametersFile = "gameParameters.json";
+
+    //the name of the file containing the client's parameters.
     private final static String clientParametersFile = "clientParameters.json";
+
+    //the name of the file containing the server's parameters.
     private final static String serverParametersFile = "serverParameters.json";
 
     /**
@@ -23,7 +32,9 @@ public class Parameters {
      *
      * @param type the card type.
      *
-     * @return     the id of the first card of the requested type.
+     * @return     the id of the first card of the specified type.
+     *
+     * @see CardType
      */
     public static int getStartCardIndex(CardType type){
         return getParameter(gameParametersFile,type.toString().toLowerCase() + "CardStartIndex").asInt();
@@ -36,14 +47,16 @@ public class Parameters {
      *
      * @param type the card type.
      *
-     * @return     the id of the last card of the requested type.
+     * @return     the id of the last card of the specified type.
+     *
+     * @see CardType
      */
     public static int getEndCardIndex(CardType type){
         return getParameter(gameParametersFile,type.toString().toLowerCase() + "CardEndIndex").asInt();
     }
 
     /**
-     * Returns the number of cards that can be drawn by both resource and gold decks to show them to the players.
+     * Returns the number of visible cards that can be drawn by both resource and gold decks.
      *
      * @return the number of visible cards.
      */
@@ -54,7 +67,7 @@ public class Parameters {
     /**
      * Returns the number of gold cards each player has in his hand at the start of the game.
      *
-     * @return the number of gold hand cards from the json file.
+     * @return the number of gold hand cards.
      */
     public static int getNumberOfGoldCardsInHand(){
         return getParameter(gameParametersFile,"numberOfGoldCardsInHand").asInt();
@@ -63,7 +76,7 @@ public class Parameters {
     /**
      * Returns the number of resource cards each player has in his hand at the start of the game.
      *
-     * @return the number of resource hand cards from the json file.
+     * @return the number of resource hand cards.
      */
     public static int getNumberOfResourceCardsInHand(){
         return getParameter(gameParametersFile,"numberOfResourceCardsInHand").asInt();
@@ -72,7 +85,7 @@ public class Parameters {
     /**
      * Returns the number of secret objectives each player has.
      *
-     * @return the number of secret objectives from the json file.
+     * @return the number of secret objectives.
      */
     public static int getNumberOfSecretObjectives(){
         return getParameter(gameParametersFile,"numberOfSecretObjectives").asInt();
@@ -97,18 +110,18 @@ public class Parameters {
     }
 
     /**
-     * Returns the number of objectives common to all the players.
+     * Returns the number of objectives common to all players.
      *
-     * @return the number of common objectives from the json file.
+     * @return the number of common objectives.
      */
     public static int getNumberOfCommonObjectives(){
         return getParameter(gameParametersFile,"numberOfCommonObjectives").asInt();
     }
 
     /**
-     * Returns the maximum number of players that can join a game.
+     * Returns the maximum number of players that can take part of a game.
      *
-     * @return the maximum number of players from the json file.
+     * @return the maximum number of players that can take part of a game.
      */
     public static int getMaxPlayers(){
         return getParameter(gameParametersFile,"maxNumberOfPlayers").asInt();
@@ -117,7 +130,7 @@ public class Parameters {
     /**
      * Returns the minimum number of players needed to start a game.
      *
-     * @return the minimum number of players from the json file.
+     * @return the minimum number of players needed to start a game.
      */
     public static int getMinPlayers(){
         return getParameter(gameParametersFile,"minNumberOfPlayers").asInt();
@@ -126,7 +139,7 @@ public class Parameters {
     /**
      * Returns the points threshold at which the game enters its final phase.
      *
-     * @return the points threshold required to trigger the last turn from the json file.
+     * @return the points threshold required to trigger the last turn.
      */
     public static int getWinThreshold(){
         return getParameter(gameParametersFile,"winThreshold").asInt();
@@ -135,7 +148,7 @@ public class Parameters {
     /**
      * Returns the port that the player has to enter to use the TCP technology to play the game.
      *
-     * @return the port associated to the TCP connections from the json file.
+     * @return the port associated to the TCP connections.
      */
     public static int getTCPPort() {
         return getParameter(serverParametersFile,"tcpPort").asInt();
@@ -144,25 +157,25 @@ public class Parameters {
     /**
      * Returns the port that the player has to enter to use the RMI technology to play the game.
      *
-     * @return the port associated to the RMI connections from the json file.
+     * @return the port associated to the RMI connections.
      */
     public static int getRMIPort() {
         return getParameter(serverParametersFile,"rmiPort").asInt();
     }
 
     /**
-     * Returns the maximum number of characters a player's nickname can contain.
+     * Returns the maximum number of characters a name can contain (player name or game name).
      *
-     * @return the maximum length of a nickname from the json file.
+     * @return the maximum length of a name.
      */
     public static int getMaxNameLength() {
         return getParameter(serverParametersFile,"maxNameLength").asInt();
     }
 
     /**
-     * Returns the maximum number of characters a player's chat message can contain.
+     * Returns the maximum number of characters a chat message can contain.
      *
-     * @return the maximum length of a chat message from the json file.
+     * @return the maximum length of a chat message.
      */
     public static int getMaxChatMessageLength() {
         return getParameter(serverParametersFile,"maxChatMessageLength").asInt();
@@ -171,7 +184,7 @@ public class Parameters {
     /**
      * Returns the number of seconds of delay between a ping and the next one (server side).
      *
-     * @return the pinging period used to guarantee clients' connection.
+     * @return the pinging period.
      */
     public static int getServerPingPeriodSeconds(){
         return getParameter(serverParametersFile,"pingPeriodSeconds").asInt();
@@ -180,16 +193,16 @@ public class Parameters {
     /**
      * Returns the number of seconds of delay between a ping and the next one (client side).
      *
-     * @return the pinging period used to guarantee clients' connection.
+     * @return the pinging period.
      */
     public static int getClientPingPeriodSeconds(){
         return getParameter(clientParametersFile,"pingPeriodSeconds").asInt();
     }
 
     /**
-     * Returns the maximum number of seconds a lobby can stay open before starting the game.
+     * Returns the maximum number of seconds a lobby can stay empty.
      *
-     * @return the time elapsed before a lobby gets removed if the game hasn't started by then.
+     * @return the time elapsed before a lobby gets removed if is empty.
      */
     public static int getLobbyTimeout(){
         return getParameter(serverParametersFile,"lobbyTimeout").asInt();
@@ -197,6 +210,7 @@ public class Parameters {
 
     /**
      * Returns the server logger name.
+     *
      * @return the name of the server logger.
      */
     public static String getLoggerName(){
@@ -213,9 +227,9 @@ public class Parameters {
     }
 
     /**
-     * Returns the special character used to separate command's arguments.
+     * Returns the special character used to separate players' nicknames in chat commands in the game's CLI.
      *
-     * @return the char used to separate different arguments of a command.
+     * @return the char used to separate players' nicknames arguments of a chat command.
      */
     public static String getDelimiter() {
         return getParameter(clientParametersFile, "delimiter").asText();
@@ -249,7 +263,7 @@ public class Parameters {
     }
 
     /**
-     * Returns the formatted title of the game.
+     * Returns the formatted title of the game for the CLI mode.
      *
      * @return the title of the game to print on terminal
      */

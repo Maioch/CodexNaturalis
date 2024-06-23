@@ -37,17 +37,40 @@ import java.util.logging.Logger;
  */
 public class GameController implements Runnable{
 
+    //the game's model.
     private final GameModel game;
+
+    //the game's basic information.
     private final GameInfo gameInfo;
+
+    //stores and notifies the networkHandlers.
     private final ServerSubject serverSubject;
+
+    //stores the messages sent by the networkHandlers.
     private final Queue<LabeledMessage> messageQueue;
+
+    //keeps track of which users have answered a ping.
     private final List<NetworkHandler> connectedUsers;
+
+    //run when the game is canceled or the match ends.
     private final Consumer<GameController> endGameProcedure;
+
+    //used to stop the game from continuing when only one player is present.
     private final Object onlyOnePlayerLock;
+
+    //tells whether the game is over.
     private final AtomicBoolean gameOver;
+
+    //logs information about the game.
     private final Logger logger;
+
+    //used to send pings periodically and check for disconnected users.
     private Timer pingTimer;
+
+    //stores which player has the current turn.
     private String playerWithTurn;
+
+    //tells whether there's only one connected player.
     private boolean onlyOnePlayer;
 
     /**

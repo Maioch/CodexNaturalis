@@ -19,7 +19,9 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
 
     /**
      * Constructor for the class.
-     * @param messageHandler the message handler that the messages are going to be forwarded to.
+     *
+     * @param messageHandler   the message handler that the messages are going to be forwarded to.
+     *
      * @throws RemoteException whenever the remote invocation of the method fails.
      */
     public RMIManager(EventHandler<LabeledMessage> messageHandler) throws RemoteException {
@@ -29,6 +31,9 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
 
     /**
      * Remote method that registers an RMI Interface to enable two-way communication between the server and the client.
+     *
+     * @param remoteInterface  the remote interface used to communicate.
+     *
      * @throws RemoteException whenever the remote invocation of the method fails.
      */
     @Override

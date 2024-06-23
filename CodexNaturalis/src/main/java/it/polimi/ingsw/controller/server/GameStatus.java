@@ -9,9 +9,17 @@ package it.polimi.ingsw.controller.server;
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public enum GameStatus {
-
+    /**
+     * The game is waiting to have enough players to start.
+     */
     LOBBY("⏳ lobby"),
+    /**
+     * the game has started
+     */
     STARTED("\uD83D\uDD12 playing"),
+    /**
+     * the game has started, but one or more players have been disconnected.
+     */
     PLAYER_DISCONNECTED("\uD83D\uDDF2 user left");
 
     private final String text;

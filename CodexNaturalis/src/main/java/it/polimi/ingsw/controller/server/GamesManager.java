@@ -17,7 +17,10 @@ import java.util.logging.Logger;
  */
 public class GamesManager{
 
+    //stores the games using their ID as key
     private final Map<Integer, GameController> games;
+
+    //logs info about game creation and deletion
     private final Logger logger;
 
     /**
