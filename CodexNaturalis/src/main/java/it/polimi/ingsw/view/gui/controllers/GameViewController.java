@@ -720,8 +720,8 @@ public class GameViewController extends ViewController {
         sb.append(winners.size() > 1 ? "have" : "has").append(" decoded the Codex!");
         winnersLabel.setText(sb.toString());
         if(playerSummary.isEmpty()){
-            summaryContentGrid.getRowConstraints().remove(3);
             summaryContentGrid.getChildren().remove(resultsScrollPane);
+            summaryContentGrid.getRowConstraints().set(3, new RowConstraints(0));
             matchSummaryGrid.getColumnConstraints().get(1).setPrefWidth(450);
             matchSummaryGrid.setVisible(true);
             return;
