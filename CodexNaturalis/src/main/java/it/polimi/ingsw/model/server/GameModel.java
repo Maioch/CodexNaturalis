@@ -222,12 +222,12 @@ public class GameModel{
      * @param nickname the player's nickname.
      */
     public synchronized void deletePlayerData(String nickname) {
-        serverSubject.unsubscribe(nickname);
         Content color = playerData.remove(nickname);
         if(color != null){
             availableColors.add(color);
             serverSubject.notifyAll(new StringMessage(Status.PLAYER_LEFT_LOBBY, nickname));
         }
+        serverSubject.unsubscribe(nickname);
     }
 
     /**

@@ -85,7 +85,6 @@ public class MatchLobbyViewController extends ViewController {
      * Lets the player leave the lobby.
      */
     public void leaveLobby(){
-        client.getController().backToSetup();
         client.getController().sendMessage(new Message(Status.PLAYER_DISCONNECTED));
     }
 }

@@ -213,6 +213,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     public synchronized void backToSetup() {
         this.game = null;
         this.gameView = null;
+        sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**
@@ -315,7 +316,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
                             joinGameMessage.getGameId());
                 }
             }
-            case PLAYER_LEFT_LOBBY -> sendMessage(new Message(Status.REQUEST_GAMES));
             case GAME_FULL ->
                     eventSubmitter.submit(() -> setupView.showCriticalError(Status.GAME_FULL.getMessage()));
             case INVALID_NICKNAME -> {
@@ -468,6 +468,10 @@ public class ClientController extends EventHandler<LabeledMessage> {
             }
             case PLAYER_LEFT_LOBBY -> {
                 if (message instanceof StringMessage stringMessage) {
+                    if(stringMessage.getString().equals(game.getLocalPlayer().getNickname())) {
+                        backToSetup();
+                        break;
+                    }
                     game.removeRemotePlayer(stringMessage.getString());
                 }
             }

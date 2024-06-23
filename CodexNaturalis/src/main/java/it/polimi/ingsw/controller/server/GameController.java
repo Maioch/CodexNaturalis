@@ -769,7 +769,6 @@ public class GameController implements Runnable{
                             new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), gameInfo.getGameId()));
                 case Status.PLAYER_DISCONNECTED -> {
                     removePlayerFromLobby(labeledMessage.networkHandler());
-                    labeledMessage.networkHandler().update(new Message(Status.PLAYER_LEFT_LOBBY));
                 }
             }
         }
