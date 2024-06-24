@@ -17,6 +17,9 @@ import it.polimi.ingsw.network.shared.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.*;
+import java.util.random.RandomGenerator;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Represents the state of a match.
@@ -48,6 +51,9 @@ public class GameModel{
 
     //stores the names and the colors chosen by the players when the game hasn't started yet.
     private final Map<String, Content> playerData;
+
+    //stores the names and the position of the players in a round of turns.
+    private final Map<String, Integer> turnOrder;
 
     //the game's common objectives.
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
@@ -87,6 +93,7 @@ public class GameModel{
         }};
         this.players = new ArrayList<>(numberOfPlayers);
         this.playerData = new LinkedHashMap<>();
+        this.turnOrder = new LinkedHashMap<>();
         int numberOfVisibleCards = Parameters.getNumberOfVisibleCards();
         this.resourceDeck = new TurnDeck<>(
                 CardBuilder::buildCard,
@@ -224,10 +231,16 @@ public class GameModel{
         availableColors.remove(color);
         playerData.put(nickname,color);
         serverSubject.notify(nickname, new JoinGameMessage(Status.JOIN_GAME, nickname, color, numberOfPlayers, gameId));
-        int turnNumber = 1;
+        List<Integer> availableTurnPositions = IntStream.range(1, numberOfPlayers + 1)
+                .boxed()
+                .filter(n -> !turnOrder.containsValue(n))
+                .toList();
+        int turnNumber = availableTurnPositions.get(new Random().nextInt(availableTurnPositions.size()));
+        turnOrder.put(nickname, turnNumber);
         for(Map.Entry<String, Content> entry : playerData.entrySet()) {
-            serverSubject.notifyAll(new JoinGameMessage(Status.NEW_PLAYER_JOINED, entry.getKey(), entry.getValue(), turnNumber, gameId));
-            turnNumber++;
+            serverSubject.notifyAll(
+                    new JoinGameMessage(Status.NEW_PLAYER_JOINED, entry.getKey(), entry.getValue(),
+                        turnOrder.get(entry.getKey()), gameId));
         }
     }
 
@@ -254,6 +267,7 @@ public class GameModel{
      */
     public synchronized void deletePlayerData(String nickname) {
         Content color = playerData.remove(nickname);
+        turnOrder.remove(nickname);
         if(color != null){
             availableColors.add(color);
             serverSubject.notifyAll(new StringMessage(Status.PLAYER_LEFT_LOBBY, nickname));
@@ -269,7 +283,11 @@ public class GameModel{
      * @see Player
      */
     public synchronized void createPlayers(){
-        for(Map.Entry<String,Content> entry : playerData.entrySet()) {
+        List<Map.Entry<String,Content>> sortedPlayerData = playerData.entrySet()
+                .stream()
+                .sorted((e1,e2) -> Integer.compare(turnOrder.get(e1.getKey()),turnOrder.get(e2.getKey())))
+                .toList();
+        for(Map.Entry<String,Content> entry : sortedPlayerData) {
             ArrayList<CardSides> handCards = new ArrayList<>() {{
                 add(starterDeck.draw());
                 for (int i = 0; i < Parameters.getNumberOfGoldCardsInHand(); i++) {

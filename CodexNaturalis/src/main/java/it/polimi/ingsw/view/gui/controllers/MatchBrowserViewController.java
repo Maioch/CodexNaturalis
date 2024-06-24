@@ -381,6 +381,7 @@ public class MatchBrowserViewController extends ViewController {
     public void goBackFromPopup(){
         animateAndHidePopUp(joinPopupGrid);
         animateAndHidePopUp(createPopupGrid);
+        animateAndHidePopUp(reconnectPopUp);
     }
 
     private void animateAndHidePopUp(GridPane createPopupGrid) {
