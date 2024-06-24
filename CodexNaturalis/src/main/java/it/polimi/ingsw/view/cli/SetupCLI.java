@@ -24,7 +24,10 @@ import java.util.List;
  * reception phase, before entering an actual game.
  */
 public class SetupCLI extends AbstractCLI implements SetupView {
+
+    //the client instance used for the entire program's lifecycle
     private final Client client;
+
     /**
      * Constructor for the class.
      */

@@ -1,19 +1,21 @@
 package it.polimi.ingsw.exceptions;
 
 /**
- * Checked exception class, thrown when a TCP connection error occurs.
- * It is directly caught in the connection initializer which throws it.
+ * Checked exception class, thrown when a TCP error occurs.
  */
 public class TCPException extends Exception{
+
     /**
      * Constructor of the exception.
      */
-    public TCPException(){ super(); }
+    public TCPException(){
+        super();
+    }
 
     /**
      * Gets the message contained in the exception.
      *
-     * @return always the same message (not dynamically chose).
+     * @return always the same message (not dynamically chosen).
      */
     @Override
     public String getMessage(){

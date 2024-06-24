@@ -29,9 +29,16 @@ import java.util.*;
 @SuppressWarnings("FieldCanBeLocal")
 public class GameCLI extends AbstractCLI implements GameView {
 
+    //the thread used to run readInput whenever it has to be interruptible by certain events.
     private Thread readInputThread;
+
+    //the client instance used for the entire program's lifecycle
     private final Client client;
+
+    //holds the chat messages whenever they can't be shown yet due to the user playing their turn.
     private final Queue<ChatMessage> chatMessageQueue;
+
+    //the threshold after which the view is not going to specify how many cards are left when printing the deck.
     private final int numberOfDeckCardThreshold = 4;
 
     /**
@@ -81,7 +88,9 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * A method that shows (prints) a message.
+     * A method that prints a message.
+     * If some messages are received during the turn making, they will all be printed after it's finished.
+     *
      * @param chatMessage contains the sender, the recipients and the message.
      */
     @Override
@@ -257,6 +266,9 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Method used to update the client about another player's board and score.
+     * The board is automatically printed when the player finished their turn, but can be printed
+     * also by launching a /BOARD command.
+     *
      * @param nickname the player's nickname.
      * @param placedCards the players board.
      * @param score the player's score.

@@ -7,11 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Class that implements the observer pattern by interacting with the server listeners, notifying them about changes
+ * Implements the observer pattern by interacting with the network handlers, notifying them about changes
  * in the game model.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
+ *
+ * @see NetworkHandler
  */
 public class ServerSubject {
 
+    //stores the nicknames used to identify the players along with its networkHandlers
     private final Map<String, NetworkHandler> networkHandlers;
 
     /**
@@ -22,17 +27,19 @@ public class ServerSubject {
     }
 
     /**
-     * Method used to add a new client handler to the map.
+     * Adds a new client handler to the map.
      *
      * @param nickname       the nickname of the player associated with the new client.
      * @param networkHandler the object that handles the new client.
+     *
+     * @see NetworkHandler
      */
     public synchronized void subscribe(String nickname, NetworkHandler networkHandler){
         networkHandlers.put(nickname, networkHandler);
     }
 
     /**
-     * Method used to remove a client from the map.
+     * Removes a client from the map.
      *
      * @param nickname the nickname of the player associated with the client.
      */
@@ -41,9 +48,11 @@ public class ServerSubject {
     }
 
     /**
-     * Method used to notify all the clients present in the map.
+     * Notifies all the clients present in the map.
      *
      * @param message the message to send them.
+     *
+     * @see Message
      */
     public synchronized void notifyAll(Message message){
         for(NetworkHandler networkHandler : networkHandlers.values()){
@@ -54,10 +63,12 @@ public class ServerSubject {
     }
 
     /**
-     * Method used to notify a single client present in the map.
+     * Notifies a single client present in the map.
      *
      * @param nickname the nickname of the player associated with the client.
      * @param message  the message to send them.
+     *
+     * @see Message
      */
     public synchronized void notify(String nickname, Message message){
         if(networkHandlers.containsKey(nickname) && !networkHandlers.get(nickname).isDisconnected()){
@@ -71,6 +82,8 @@ public class ServerSubject {
      * @param nickname the nickname of the player associated with the client (NetworkHandler).
      *
      * @return         the handler associated to the client.
+     *
+     * @see NetworkHandler
      */
     public synchronized NetworkHandler getNetworkHandler(String nickname){
         return networkHandlers.get(nickname);

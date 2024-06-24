@@ -5,6 +5,8 @@ import it.polimi.ingsw.network.shared.messages.Status;
 
 /**
  * Message used to handle a new game creation.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class NewGameMessage extends Message {
     private final String name;
@@ -12,7 +14,8 @@ public class NewGameMessage extends Message {
 
     /**
      * Constructor for the class.
-     * @param name of the game, decided by the player creating the match.
+     *
+     * @param name            of the game, decided by the player creating the match.
      * @param numberOfPlayers integer representing the game's number of players.
      */
     public NewGameMessage(String name, int numberOfPlayers) {

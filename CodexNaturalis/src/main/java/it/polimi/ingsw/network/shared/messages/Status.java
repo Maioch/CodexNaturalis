@@ -1,7 +1,7 @@
 package it.polimi.ingsw.network.shared.messages;
 
 /**
- * Enum that represents every possible message. Each message is sent by both the server and the client.
+ * Represents every possible message. Each message is sent by both the server and the client.
  *
  * @author Guglielmo Gatti, Andrea Fidanza, Marco Maiocchi
  */
@@ -178,7 +178,9 @@ public enum Status {
      */
     RECONNECT(""),
 
-
+    /**
+     * Server: the player tried to reconnect to a game that doesn't exist anymore.
+     */
     INVALID_RECONNECT("Couldn't reconnect to the previous match. Returning to lobby..."),
 
     /**
@@ -230,10 +232,20 @@ public enum Status {
 
     private final String message;
 
+    /**
+     * Enum constructor.
+     *
+     * @param message the message associated with the status.
+     */
     Status(String message){
         this.message = message;
     }
 
+    /**
+     * Gets the status message.
+     *
+     * @return the status message.
+     */
     public String getMessage(){
         return message;
     }

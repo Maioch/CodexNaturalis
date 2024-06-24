@@ -18,16 +18,23 @@ import java.util.Scanner;
 import java.util.function.Predicate;
 
 /**
- * Abstract class that contains all the methods used to handle the client's inputs.
+ * Contains all the methods used to handle the client's inputs.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public abstract class AbstractCLI {
     /**
-     * Method used to read the client's inputs.
-     * @param prompt the message printed to ask the client to input something.
-     * @param checker predicate that checks if the client's input is valid.
-     * @param mapper mapper that converts the client's input into the correct requested type.
-     * @return the converted client's input.
-     * @param <T> generic used to return different types of converted inputs.
+     * Reads the client's inputs.
+     *
+     * @param <T>            generic used to return different types of converted inputs.
+     * @param prompt         the message printed to ask the client to input something.
+     * @param checker        predicate that checks if the client's input is valid.
+     * @param mapper         mapper that converts the client's input into the correct requested type.
+     * @param acceptCommands whether commands should be accepted or not
+     *
+     * @return        the converted client's input.
+     *
+     * @see Mapper
      */
     protected <T> T readFromInput (String prompt, Predicate<T> checker, Mapper<String, T> mapper, boolean acceptCommands){
         String commandChar = Parameters.getCommandChar();
@@ -67,15 +74,17 @@ public abstract class AbstractCLI {
     }
 
     /**
-     * Method used to handle a client's command.
-     * @param command the command to handle.
-     * @param argument the arguments associated to the command.
+     * Used to handle a client's command.
+     *
+     * @param command  the command to handle.
+     * @param argument the command's arguments.
      */
     protected abstract void checkCommand(String command, String argument);
 
     /**
-     * Interface for mappers used in readFromInput.
+     * Used to convert a given value to another type in readFromInput.
      * If the conversion doesn't happen successfully, MapperException is thrown.
+     *
      * @param <T> the argument type
      * @param <U> the return type
      */
@@ -85,9 +94,12 @@ public abstract class AbstractCLI {
     }
 
     /**
-     * Method that converts a string to an integer.
-     * @param input the string to convert.
-     * @return the converted input.
+     * Converts a string to an integer.
+     *
+     * @param input            the string to convert.
+     *
+     * @return                 the converted input.
+     *
      * @throws MapperException if the conversion isn't successful.
      */
     protected int stringToInt(String input) throws MapperException{
@@ -99,9 +111,12 @@ public abstract class AbstractCLI {
     }
 
     /**
-     * Method that converts a string to an integer list.
-     * @param input the string to convert.
-     * @return the converted input.
+     * Converts a string to an integer list.
+     *
+     * @param input            the string to convert.
+     *
+     * @return                 the converted input.
+     *
      * @throws MapperException if the conversion isn't successful.
      */
     protected List<Integer> stringToListInt(String input) throws MapperException{
@@ -118,9 +133,11 @@ public abstract class AbstractCLI {
     }
 
     /**
-     * Method used to enable a string type return in the radFromInput method.
+     * Used whenever readFromInput needs to return a string.
+     *
      * @param input the string to return.
-     * @return the same string as the inputted one.
+     *
+     * @return      the same string as the inputted one.
      */
     protected String stringIdentity(String input){
         return input;
@@ -129,7 +146,11 @@ public abstract class AbstractCLI {
     /**
      * Tries to initialize the connection to the server. Could be a reconnection attempt.
      *
-     * @return true if the connection is set without errors, false otherwise.
+     * @param client the client that stores this session's connection settings and controller.
+     *
+     * @return       true if the connection is set without errors, false otherwise.
+     *
+     * @see Client
      */
     protected boolean tryConnect(Client client){
         try {
@@ -152,6 +173,10 @@ public abstract class AbstractCLI {
 
     /**
      * Shows that the client has disconnected. Tries to reconnect to the server.
+     *
+     * @param client the client that keeps track of the current controller.
+     *
+     * @see Client
      */
     protected void disconnectionProcedure(Client client){
         client.getController().stop();

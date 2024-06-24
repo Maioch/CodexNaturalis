@@ -73,10 +73,19 @@ public class MatchBrowserViewController extends ViewController {
     @FXML
     public Label disconnectionLabel;
 
+    //contains all the match browser's entries, grouped by row.
     private final List<List<RadioButton>> radioButtons = new ArrayList<>();
+
+    //used to guarantee that only one row is selected on the match browser.
     private ToggleGroup gameIdToggleGroup;
+
+    //used to guarantee that only one option is selected when choosing the player color.
     private ToggleGroup colorChoiceToggleGroup;
+
+    //stores the id of the game that's currently selected in the match browser.
     private int currentSelectedId;
+
+    //the animation offset used for all the transition which translate a node.
     private final double animationOffset = 200;
 
     public void initialize(){

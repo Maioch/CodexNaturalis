@@ -9,14 +9,20 @@ import java.util.List;
 
 /**
  * Message used to handle a show game request.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class MatchListMessage extends Message {
     private final List<GameInfo> matchList;
 
     /**
      * Constructor for the class.
-     * @param status the status of the message.
+     *
+     * @param status    the status of the message.
      * @param matchList the list of games already created by other clients.
+     *
+     * @see Status
+     * @see GameInfo
      */
     public MatchListMessage(Status status, List<GameInfo> matchList){
         super(status);
@@ -24,8 +30,9 @@ public class MatchListMessage extends Message {
     }
 
     /**
-     * @return a list of the match list (where the integer represents its id, and the string is the nickname
-     * of the player who created the match).
+     * @return the match list.
+     *
+     * @see GameInfo
      */
     public List<GameInfo> getMatchList(){
         return new ArrayList<>(matchList);

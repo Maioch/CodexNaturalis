@@ -14,7 +14,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 /**
- * Class used to initialize the client's connection to the server, both using TCP and RMI.
+ * Initializes the client's connection to the server, using TCP or RMI.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class ConnectionInitializer {
 
@@ -23,10 +25,14 @@ public class ConnectionInitializer {
      *
      * @param settings               the server's ip, port and connection type (RMI or TCP).
      * @param controller             the controller that will handle messages and client model updates.
-     * @throws MalformedURLException when the server ip isn't correct.
+     *
+     * @throws MalformedURLException when the server address correct.
      * @throws NotBoundException     when the requested object isn't bound.
      * @throws RemoteException       when an RMI connection error occurs.
      * @throws TCPException          when a TCP connection error occurs.
+     *
+     * @see ConnectionSettings
+     * @see ClientController
      */
     public static void initializeConnection(ConnectionSettings settings, ClientController controller)
             throws TCPException, RemoteException, MalformedURLException, NotBoundException {

@@ -18,8 +18,14 @@ import java.util.stream.Collectors;
  * them in the CLI.
  */
 public class CardFormatter {
+
+    //the number of characters printed for a card length-wise.
     private final static int cardLength = 7;
-    private final static int cardHeight = 5; //DO NOT CHANGE
+
+    //the number of characters printed for a card height-wise.
+    private final static int cardHeight = 5;
+
+    //the number of cards viewable on each side of the board, excluding the card in the center.
     private final static int boardRadius = 4;
 
     /**

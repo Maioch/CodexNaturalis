@@ -2,6 +2,11 @@ package it.polimi.ingsw.view.cli;
 
 import it.polimi.ingsw.network.shared.EventHandler;
 
+/**
+ *
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
+ */
 public class CLIActionHandler extends EventHandler<Runnable>{
     /**
      * Constructor for the class.

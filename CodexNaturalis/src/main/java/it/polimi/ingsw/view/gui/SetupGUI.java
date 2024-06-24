@@ -22,11 +22,17 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * Class used when the client chooses to play the GUI version of the game; this class represents the GUI for the player
+ * Used when the client chooses to play the GUI version of the game; this class represents the GUI for the player
  * reception phase, before entering an actual game.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class SetupGUI implements SetupView {
+
+    //manages scene changes and obtains the current scene's controller.
     private SceneManager sceneManager;
+
+    //the client instance used for the entire program's lifecycle
     private final Client client;
 
     /**
@@ -40,9 +46,10 @@ public class SetupGUI implements SetupView {
     /**
      * Shows the graphical user interface.
      *
-     * @param stage the JavaFX stage of the GUI.
-     * @param application the JavaFX application of the running GUI.
-     * @throws IOException if the scene isn't loaded correctly.
+     * @param stage         the JavaFX stage of the GUI.
+     * @param application   the JavaFX application of the running GUI.
+     *
+     * @throws IOException  if the scene isn't loaded correctly.
      */
     public void showInterface(Stage stage, Application application) throws IOException{
         URL firaLocation = getClass().getResource("/scenes/fonts/FiraSansCondensed-Regular.ttf");
@@ -72,7 +79,10 @@ public class SetupGUI implements SetupView {
 
     /**
      * Updates the match list browser.
+     *
      * @param matchList the match list.
+     *
+     * @see GameInfo
      */
     @Override
     public void updateMatchList(List<GameInfo> matchList){
@@ -85,6 +95,7 @@ public class SetupGUI implements SetupView {
 
     /**
      * Requests the newly created game's available colors.
+     *
      * @param gameId the ID of the newly created game.
      */
     @Override
@@ -94,6 +105,7 @@ public class SetupGUI implements SetupView {
 
     /**
      * Shows the critical error pop-up.
+     *
      * @param message the error message.
      */
     @Override
@@ -103,8 +115,11 @@ public class SetupGUI implements SetupView {
 
     /**
      * Shows the game join pop-up.
+     *
      * @param colors the list of available colors.
      * @param gameId the game's id.
+     *
+     * @see Content
      */
     @Override
     public void showJoinGameDialog(List<Content> colors, int gameId){
@@ -113,7 +128,9 @@ public class SetupGUI implements SetupView {
 
     /**
      * Shows the user error pop-up.
-     * @param message the error message.
+     *
+     * @param message   the error message.
+     * @param gameId    the ID of the game the client is joining ()NOT USED IN THIS IMPLEMENTATION).
      */
     @Override
     public void showUserError(String message, int gameId){
@@ -122,6 +139,10 @@ public class SetupGUI implements SetupView {
 
     /**
      * Changes the scene, notifying the user that they successfully joined the lobby.
+     *
+     * @param nickname          the local player's nickname.
+     * @param color             the local player's color.
+     * @param numberOfPlayers   the number of players the game will be made of.
      */
     @Override
     public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers) {
@@ -131,6 +152,9 @@ public class SetupGUI implements SetupView {
         client.getController().setGameView(gameGUI);
     }
 
+    /**
+     * Shows that the user has unexpectedly disconnected.
+     */
     @Override
     public void showDisconnectionMessage(){
         client.getController().stop();
@@ -139,7 +163,9 @@ public class SetupGUI implements SetupView {
     }
 
     /**
-     * Shows that the user has unexpectedly disconnected.
+     * Shows a reconnection error pop up.
+     *
+     * @param message the error message to show.
      */
     @Override
     public void showReconnectionError(String message) {

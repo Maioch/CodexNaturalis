@@ -6,6 +6,8 @@ import it.polimi.ingsw.network.shared.messages.Status;
 
 /**
  * Message sent during the draw phase of the game.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class DrawChoiceMessage extends Message {
     private final int index;
@@ -13,8 +15,11 @@ public class DrawChoiceMessage extends Message {
 
     /**
      * Constructor for the class.
-     * @param index integer representing which of the deck's drawable cars is chosen.
+     *
+     * @param index    integer representing which of the deck's drawable cars is chosen.
      * @param cardType the chosen card deck type.
+     *
+     * @see CardType
      */
     public DrawChoiceMessage(int index, CardType cardType) {
         super(Status.DRAW);
@@ -31,6 +36,8 @@ public class DrawChoiceMessage extends Message {
 
     /**
      * @return the card type of the chosen card.
+     *
+     * @see CardType
      */
     public CardType getCardType() {
         return cardType;

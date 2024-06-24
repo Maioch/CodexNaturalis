@@ -9,22 +9,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * RemotePlayer is one of the players connected to the same game as the local client.
+ * Represents one of the players connected to the same game as the local client.
  * It extends ClientPlayer and adds the player's hand cards, but only as a BasicCards array, as the only needed sides
  * are the ones that can be seen by the other players.
  *
  * @see BasicCard
  * @see ClientPlayer
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class RemotePlayer extends ClientPlayer {
 
+    //the player's hand, which only consists of card backs.
     private List<BasicCard> handCards;
 
     /**
      * Class constructor.
      *
      * @param nickname the player's nickname.
-     * @param color the player's color.
+     * @param color    the player's color.
      */
     public RemotePlayer(String nickname, Content color) {
         super(nickname, color);
@@ -41,6 +44,12 @@ public class RemotePlayer extends ClientPlayer {
         this.handCards = new ArrayList<>(remotePlayer.handCards);
     }
 
+    /**
+     * Sets the back sides cards in the player's hand and updates the view if the show flag is true.
+     *
+     * @param handCards the player's hand.
+     * @param show      flag that determines whether to update the view.
+     */
     @Override
     public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
         this.handCards = handCards.stream()
@@ -53,7 +62,7 @@ public class RemotePlayer extends ClientPlayer {
     }
 
     /**
-     * Returns the cards held by the player in his hand.
+     * Gets the back sides cards held by the player in his hand.
      *
      * @return the player's hand cards.
      */

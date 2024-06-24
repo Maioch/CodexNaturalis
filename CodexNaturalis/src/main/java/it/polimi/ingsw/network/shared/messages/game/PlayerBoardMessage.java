@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Message sent to handle a show board request.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class PlayerBoardMessage extends Message {
     private final List<BasicCard> board;
@@ -16,7 +18,11 @@ public class PlayerBoardMessage extends Message {
 
     /**
      * Constructor for the class.
-     * @param board the placed cards of the player.
+     *
+     * @param board       the placed cards of the player.
+     * @param playerScore the player's score.
+     *
+     * @see BasicCard
      */
     public PlayerBoardMessage(List<BasicCard> board, int playerScore){
         super(Status.PLACEMENT_OK);
@@ -26,11 +32,16 @@ public class PlayerBoardMessage extends Message {
 
     /**
      * @return the player's board, as a list of BasicCards.
+     *
+     * @see BasicCard
      */
     public List<BasicCard> getBoard() {
         return new ArrayList<>(board);
     }
 
+    /**
+     * @return the player's score.
+     */
     public int getPlayerScore(){
         return playerScore;
     }

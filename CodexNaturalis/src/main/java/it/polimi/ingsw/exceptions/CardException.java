@@ -8,6 +8,7 @@ package it.polimi.ingsw.exceptions;
  * @see it.polimi.ingsw.model.shared.card.GoldCard
  */
 public class CardException extends RuntimeException {
+
     /**
      * Constructor of the exception.
      *

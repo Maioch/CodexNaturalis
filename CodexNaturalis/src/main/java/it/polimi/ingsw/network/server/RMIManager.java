@@ -12,17 +12,29 @@ import java.util.logging.Logger;
 
 /**
  * Server-side object that provides clients with their unique remote RMI interface.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
+ *
+ * @see RMISetup
+ * @see RMIInterface
  */
 public class RMIManager extends UnicastRemoteObject implements RMISetup {
+
+    //the handler that is going to handle the messages sent to the RMI handlers created by this class
     private final EventHandler<LabeledMessage> messageHandler;
+
+    //the logger that will log info about the RMI handlers
     private final Logger logger;
 
     /**
      * Constructor for the class.
      *
-     * @param messageHandler   the message handler that the messages are going to be forwarded to.
+     * @param messageHandler   the event handler that the messages are going to be forwarded to.
      *
      * @throws RemoteException whenever the remote invocation of the method fails.
+     *
+     * @see EventHandler
+     * @see LabeledMessage
      */
     public RMIManager(EventHandler<LabeledMessage> messageHandler) throws RemoteException {
         this.messageHandler = messageHandler;
@@ -35,6 +47,8 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
      * @param remoteInterface  the remote interface used to communicate.
      *
      * @throws RemoteException whenever the remote invocation of the method fails.
+     *
+     * @see RMIInterface
      */
     @Override
     public void register(RMIInterface remoteInterface) throws RemoteException {

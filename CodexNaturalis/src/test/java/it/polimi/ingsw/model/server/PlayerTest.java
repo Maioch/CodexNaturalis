@@ -1,7 +1,7 @@
 package it.polimi.ingsw.model.server;
 
 import it.polimi.ingsw.TestNetworkHandler;
-import it.polimi.ingsw.exceptions.PlayerException;
+import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.model.shared.card.*;
@@ -448,7 +448,7 @@ public class PlayerTest {
         assertTrue(playerTest.getPlacedCards().contains(starterCard.frontSide()));
         assertFalse(playerTest.getHandCards().contains(starterCard));
         Player finalPlayerTest = playerTest;
-        assertThrows(PlayerException.class,() -> finalPlayerTest.placeStarterCard(starterCard.frontSide()));
+        assertThrows(CardException.class,() -> finalPlayerTest.placeStarterCard(starterCard.frontSide()));
         playerTest = new Player(nicknames.getFirst(), colors.getFirst(),
                 new ArrayList<>(),
                 new ArrayList<>(), serverSubject);

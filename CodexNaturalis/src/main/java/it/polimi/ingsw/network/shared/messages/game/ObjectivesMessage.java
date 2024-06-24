@@ -9,14 +9,20 @@ import java.util.List;
 
 /**
  * Message used to show each objective in a game.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class ObjectivesMessage extends Message {
     private final List<Objective> objectives;
 
     /**
      * Constructor for the class.
-     * @param status the message status.
+     *
+     * @param status     the message status.
      * @param objectives the objectives.
+     *
+     * @see Status
+     * @see Objective
      */
     public ObjectivesMessage(Status status, List<Objective> objectives){
         super(status);
@@ -25,6 +31,8 @@ public class ObjectivesMessage extends Message {
 
     /**
      * @return the objectives.
+     *
+     * @see Objective
      */
     public List<Objective> getObjectives(){
         return new ArrayList<>(objectives);

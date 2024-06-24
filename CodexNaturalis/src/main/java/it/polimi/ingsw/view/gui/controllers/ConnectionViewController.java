@@ -19,6 +19,7 @@ import java.rmi.RemoteException;
  * Class used to handle the login scene of the GUI.
  */
 public class ConnectionViewController extends ViewController {
+
     @FXML
     public TextField portTextBox;
     @FXML
@@ -34,7 +35,10 @@ public class ConnectionViewController extends ViewController {
     @FXML
     public ToggleGroup protocol;
 
+    //the connection settings chosen by the user
     private ConnectionSettings connectionSettings;
+
+    //the application instance, used to open the rulebook's URL.
     private Application application;
 
     /**

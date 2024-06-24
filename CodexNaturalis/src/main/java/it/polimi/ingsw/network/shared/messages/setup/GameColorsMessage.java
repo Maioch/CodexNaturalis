@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * Message sent along with a content value (e.g. the color chosen by the player).
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class GameColorsMessage extends Message {
     private final List<Content> content;
@@ -16,8 +18,12 @@ public class GameColorsMessage extends Message {
 
     /**
      * Constructor for the class.
-     * @param status the message sent.
+     *
+     * @param status  the message sent.
      * @param content the content sent along the message.
+     *
+     * @see Status
+     * @see Content
      */
     public GameColorsMessage(Status status, List<Content> content, int gameId) {
         super(status);
@@ -27,6 +33,8 @@ public class GameColorsMessage extends Message {
 
     /**
      * @return the attached content.
+     *
+     * @see Content
      */
     public List<Content> getContent() {
         return new ArrayList<>(content);

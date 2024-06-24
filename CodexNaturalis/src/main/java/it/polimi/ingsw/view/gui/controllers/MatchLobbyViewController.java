@@ -30,8 +30,13 @@ public class MatchLobbyViewController extends ViewController {
     @FXML
     public Button disconnectionButton;
 
+    //the group that all the player labels are part of.
     private final ToggleGroup group = new ToggleGroup();
+
+    //the number of players that are currently in the lobby.
     private int currentNumberOfPlayers;
+
+    //the number of players required to start the game.
     private int maxNumberOfPlayers;
 
     public void initialize(){

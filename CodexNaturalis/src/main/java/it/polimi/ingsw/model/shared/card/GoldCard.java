@@ -9,18 +9,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * GoldCard is an extension of BasicCard.
- * It's one of the types of cards in the game that need to be treated in a special manner: a gold card can only be
+ * Represents one of the types of cards in the game that need to be treated in a special manner: a gold card can only be
  * placed if the player has on his board a specific amount of visible resources; additionally, the points awarded for their
  * placement can be both a set amount (just like some resource cards), or they can be calculated based on the number of
  * symbols of a given type present on the player's board.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  *
  * @see BasicCard
  */
 
 public class GoldCard extends BasicCard {
 
+    //the resources needed to place the card
     private final List<Content> requirements;
+
+    //the bonus that alters the amount of points given when placing the card, if present.
     private transient Bonus bonus;
     
     /**
@@ -31,6 +35,9 @@ public class GoldCard extends BasicCard {
      * @param requirements   the resources needed on the player's board to place the card.
      *
      * @throws CardException if the requirements parameter isn't valid.
+     *
+     * @see BasicCard
+     * @see Content
     */
     public GoldCard(BasicCard cardTemplate, List<Content> requirements) throws CardException {
         super(cardTemplate.cardId, cardTemplate.color, cardTemplate.corners, cardTemplate.points, cardTemplate.resources, cardTemplate.isFront());
@@ -80,6 +87,9 @@ public class GoldCard extends BasicCard {
      * the total value and then returns it.
      *
      * @return the card's awarded points.
+     *
+     * @see CornerBonus
+     * @see ObjectBonus
      */
     @Override
     public int getPoints(){
@@ -112,12 +122,13 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * CornerBonus implements a method that calculates the total amount of points given by a gold card that gives
-     * them per corner covered by the card itself.
+     * Implements calculate using the amount of corners covered by the gold card
+     * as the multiplier that gets applied to the card's base points.
      */
     public class CornerBonus implements Bonus{
+
         /**
-         * Returns the total amount of points given to the player when he places the card.
+         * Gets the total amount of points given to the player when he places the card.
          *
          * @return the card's awarded points.
          */
@@ -133,8 +144,8 @@ public class GoldCard extends BasicCard {
     }
 
     /**
-     * CornerBonus implements a method that calculates the total amount of points given by a gold card that gives
-     * them per visible object in the board of the player, including the card itself.
+     * Implements calculate using the amount of specified objects found in the gold card owner's board
+     * as the multiplier that gets applied to the card's base points.
      */
     public class ObjectBonus implements Bonus{
         private final Content object;
@@ -149,7 +160,7 @@ public class GoldCard extends BasicCard {
         }
 
         /**
-         * Returns the total amount of points given to the player when he places the card.
+         * Gets the total amount of points given to the player when he places the card.
          *
          * @return the card's awarded points.
          */

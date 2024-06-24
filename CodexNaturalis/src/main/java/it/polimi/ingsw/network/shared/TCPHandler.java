@@ -10,18 +10,28 @@ import java.util.logging.Logger;
 
 /**
  * TCP-based NetworkHandler implementation.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 
 public class TCPHandler extends NetworkHandler implements Runnable{
 
+    //the TCP socket's output.
     private final ObjectOutputStream socketOutput;
+
+    //the TCP socket's input.
     private final ObjectInputStream socketInput;
+
+    //the thread that listens for incoming messages.
     private Thread handlerThread;
 
     /**
-     * Constructor for the class.
-     * @param socket the socket to which the client is connected.
+     * Constructor for the class. It doesn't set the logger (used only by the server).
+     *
+     * @param socket  the socket to which the client is connected.
      * @param handler the message handler that will handle the messages received.
+     *
+     * @see EventHandler
      */
     public TCPHandler(Socket socket, EventHandler<LabeledMessage> handler) throws IOException{
         super(handler);
@@ -31,8 +41,12 @@ public class TCPHandler extends NetworkHandler implements Runnable{
 
     /**
      * Constructor for the class.
-     * @param socket the socket to which the client is connected.
+     *
+     * @param socket  the socket to which the client is connected.
      * @param handler the message handler that will handle the messages received.
+     * @param logger  the logger used to log network events.
+     *
+     * @see EventHandler
      */
     public TCPHandler(Socket socket, EventHandler<LabeledMessage> handler, Logger logger) throws IOException{
         super(handler, logger);
@@ -49,7 +63,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
     }
 
     /**
-     * Main method run by the thread.
+     * Main method run by the thread. Reads from the input stream and add the message read to the event handler's queue.
      */
     @Override
     public void run(){
@@ -73,8 +87,11 @@ public class TCPHandler extends NetworkHandler implements Runnable{
     }
 
     /**
-     * Method used to write a message on the output stream.
+     * Writes a message on the output stream.
+     *
      * @param message the message to write.
+     *
+     * @see Message
      */
     @Override
     public void update(Message message){

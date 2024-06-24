@@ -11,35 +11,53 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * BasicCard represents a side of the simplest card in the game, namely resource cards and starter cards.
+ * Represents a side of the simplest card in the game, namely resource cards and starter cards.
  * Each side has its related card's unique ID, a color and sometimes a points number; it also stores its
  * associated corners.
  * The resources attribute refers only to the resources found in the center of the side, not in the corners: it's
  * treated as a list because some sided have more than one symbol.
  * When the related card is drawn during a game, the player that owns it is also saved in this class.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class BasicCard implements Serializable {
 
+    //the card's id
     protected final int cardId;
+
+    //the card's main resource type
     protected final Content color;
+
+    //the card's corners
     protected final Set<Corner> corners;
+
+    //the number of points awarded when placing the card
     protected final int points;
+
+    //the card's permanent resources (not to be confused with the resources from the card's corners)
     protected final List<Content> resources;
+
+    //whether this is the front or the back of the actual card with the same id.
     protected final boolean isFront;
+
+    //the card's owner
     protected transient Player owner;
 
     /**
      * Class constructor.
      *
-     * @param cardId            the related card's id.
-     * @param color             the side's color.
-     * @param corners           the side's corners.
-     * @param points            the side's points, that will be added to the player's score when he places the related card on
-     *                          his board.
-     * @param resources         the card's central resources.
-     * @param isFront           the attribute used to check if the card is
+     * @param cardId         the related card's id.
+     * @param color          the side's color.
+     * @param corners        the side's corners.
+     * @param points         the side's points, that will be added to the player's score when he places the related card on
+     *                       his board.
+     * @param resources      the card's central resources.
+     * @param isFront        the attribute used to check if the card is
      *
-     * @exception CardException if the given parameters are invalid.
+     * @throws CardException if the given parameters are invalid.
+     *
+     * @see Content
+     * @see Corner
      */
     public BasicCard(
             int cardId,
@@ -91,7 +109,7 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Returns the id of the card related to this side.
+     * Gets the id of the card related to this side.
      *
      * @return the related card's id.
      */
@@ -100,7 +118,7 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Returns the points the card related to this side awards when it's placed by a player.
+     * Gets the points the card related to this side.
      *
      * @return the side's points.
      */
@@ -109,31 +127,36 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Returns the color of the card related to this side.
+     * Gets the color of the card related to this side.
      *
      * @return the related card's color.
+     *
+     * @see Content
      */
     public Content getColor(){
         return this.color;
     }
 
     /**
-     * Returns this side's corner at the specified location.
+     * Gets this side's corner at the specified location.
      *
      * @param loc the corner's location.
      *
      * @return    the requested corner.
      *
      * @see Location
+     * @see Corner
      */
     public Corner getCorner(Location loc){
         return getAllCorners().stream().filter(c -> c.getLocation() == loc).findFirst().orElseThrow();
     }
 
     /**
-     * Returns all the corners of this side.
+     * Gets all the corners of this side.
      *
      * @return the side's corners.
+     *
+     * @see Corner
      */
     public Set<Corner> getAllCorners(){
         Set<Corner> result = new HashSet<>();
@@ -144,20 +167,24 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Returns all the resources of this side's center.
+     * Gets all the resources of this side's center.
      *
      * @return the side's central resources.
+     *
+     * @see Content
      */
     public List<Content> getResources(){
         return new ArrayList<>(this.resources);
     }
 
     /**
-     * Returns a hashmap that associates each content type with the amount of occurrences in the card, by counting
+     * Get a hashmap that associates each content type with the amount of occurrences in the card, by counting
      * from both the ones in the corners and the central resources.
      * This includes white and empty corners too.
      *
      * @return all the side's resources.
+     *
+     * @see Content
      */
     public Map<Content,Integer> getCardSymbols(){
         //Create a list containing all the contents of the card
@@ -175,6 +202,8 @@ public class BasicCard implements Serializable {
      * @param totalContent the list to convert.
      *
      * @return             the converted hashmap.
+     *
+     * @see Content
      */
     protected Map<Content, Integer> getMapFromContentList(List<Content> totalContent){
         Map<Content, Integer> result = new HashMap<>();
@@ -192,6 +221,8 @@ public class BasicCard implements Serializable {
      * Checks if the corner is actually in this side's corner list before the update.
      *
      * @param which the corner to cover.
+     *
+     * @see Corner
      */
     public void coverCornerIfPresent(Corner which){
         for(Corner corner : corners){
@@ -202,10 +233,12 @@ public class BasicCard implements Serializable {
     }
 
     /**
-     * Returns the resources requested by the card to be placed.
+     * Gets the resources requested by the card to be placed.
      * These symbols must appear an adequate number of times on the player's board.
      *
      * @return the requirements needed to place the card.
+     *
+     * @see Content
      */
     public Map<Content, Integer> getRequirements(){
         return getMapFromContentList(new ArrayList<>());
@@ -216,6 +249,8 @@ public class BasicCard implements Serializable {
      * It updates the coordinates of the corners.
      *
      * @param where the corner where the card will be placed.
+     *
+     * @see Corner
      */
     public void place(Corner where){
         for(Corner corner : corners){
@@ -237,6 +272,8 @@ public class BasicCard implements Serializable {
      * Sets the owner of the card related to this side, which represents the player owning it.
      *
      * @param owner the related card's owner.
+     *
+     * @see Player
      */
     public void setOwner(Player owner){
         this.owner = owner;

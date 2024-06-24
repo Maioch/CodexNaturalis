@@ -7,6 +7,8 @@ import it.polimi.ingsw.network.shared.messages.Status;
 
 /**
  * Message sent for a card placement request.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class CardPlacementMessage extends Message {
     private final BasicCard card;
@@ -14,8 +16,12 @@ public class CardPlacementMessage extends Message {
 
     /**
      * Constructor for the class.
-     * @param card the card sent along the message.
+     *
+     * @param card   the card sent along the message.
      * @param corner the corner sent along the message.
+     *
+     * @see BasicCard
+     * @see Corner
      */
     public CardPlacementMessage(BasicCard card, Corner corner) {
         super(Status.PLACE_CARD);
@@ -25,6 +31,8 @@ public class CardPlacementMessage extends Message {
 
     /**
      * @return the card to be placed.
+     *
+     * @see BasicCard
      */
     public BasicCard getCard() {
         return card;
@@ -32,6 +40,8 @@ public class CardPlacementMessage extends Message {
 
     /**
      * @return the corner where the card should be placed.
+     *
+     * @see Corner
      */
     public Corner getCorner() {
         return corner;

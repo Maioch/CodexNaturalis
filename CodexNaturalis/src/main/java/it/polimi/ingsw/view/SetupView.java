@@ -5,9 +5,8 @@ import it.polimi.ingsw.model.shared.Content;
 
 import java.util.List;
 
-
 /**
- * SetupView is a generic interface containing all the headers of the methods used by both the CLI and GUI during
+ * Contains all the headers of the methods used by both the CLI and GUI during
  * the setup phase of the application.
  *
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
@@ -20,7 +19,6 @@ public interface SetupView extends ReconnectableView{
      * @param matchList the list that contains all the available matches.
      *
      * @see GameInfo
-     *
      */
     void updateMatchList(List<GameInfo> matchList);
 
@@ -45,6 +43,8 @@ public interface SetupView extends ReconnectableView{
      *
      * @param colors the list of available colors.
      * @param gameId the ID of the game the client is joining.
+     *
+     * @see Content
      */
     void showJoinGameDialog(List<Content> colors, int gameId);
 
@@ -63,6 +63,8 @@ public interface SetupView extends ReconnectableView{
      * @param nickname        the nickname chosen by the player.
      * @param color           the color chosen by the player.
      * @param numberOfPlayers the number of players that can join the game.
+     *
+     * @see Content
      */
     void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers);
 
@@ -73,5 +75,4 @@ public interface SetupView extends ReconnectableView{
      * @param message the message printed when a client disconnects.
      */
     void showReconnectionError(String message);
-
 }

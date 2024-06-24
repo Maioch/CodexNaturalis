@@ -6,21 +6,29 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * Remote interface used by the client and the server to send messages to each other through the RMI protocol.
+ * Used by the client and the server to send messages to each other through the RMI protocol.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public interface RMIInterface extends Remote {
 
     /**
-     * Remote method used to send messages to a previously set receiver that implements this interface.
-     * @param message the message to send.
+     * Sends messages to a previously set receiver that implements this interface.
+     *
+     * @param message          the message to send.
+     *
      * @throws RemoteException whenever the method invocation fails.
+     *
+     * @see Message
      */
     void receiveUpdate(Message message) throws RemoteException;
 
     /**
-     * Setter for the receiver.
+     * Sets the receiver.
+     *
      * @param receiverInterface the RMIInterface that will receive the messages.
-     * @throws RemoteException whenever the method invocation fails.
+     *
+     * @throws RemoteException  whenever the method invocation fails.
      */
     void setReceiver(RMIInterface receiverInterface) throws RemoteException;
 }

@@ -12,17 +12,32 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ClientPlayer is an abstract class that stores the information about a player's game state.
+ * Stores the information about a player's state.
  * The main information is the nickname, the color, the cards placed and the score.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public abstract class ClientPlayer {
 
+    //the player's position in a round of turns
     private int turnNumber;
+
+    //the player's nickname
     private final String nickname;
+
+    //the player's board
     private List<BasicCard> placedCards;
+
+    //the player's chosen color
     private final Content color;
+
+    //the player's current score
     private int score;
+
+    //the event submitter used to update the view
     protected EventSubmitter eventSubmitter;
+
+    //the current game view
     protected GameView gameView;
 
     /**
@@ -40,7 +55,8 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Class copy-constructor, needed to produce an exact copy of this object.
+     * Class copy-constructor.
+     * The event submitter and the game view are ignored.
      *
      * @param clientPlayer the instance to copy.
      */
@@ -54,7 +70,7 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Returns the turnNumber field.
+     * Gets the turnNumber field.
      *
      * @return the number that represents the order with which the player will play the turn
      */
@@ -72,7 +88,7 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Returns the nickname chosen by the player.
+     * Gets the nickname chosen by the player.
      *
      * @return the player's nickname.
      */
@@ -81,7 +97,7 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Returns the color chosen by the player.
+     * Gets the color chosen by the player.
      *
      * @return the player's color.
      */
@@ -90,7 +106,7 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Returns the current cards placed by the player on his board.
+     * Gets the current cards placed by the player on his board.
      *
      * @return the placed card list.
      */
@@ -103,7 +119,7 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Updates the cards placed by the player on his board and his score.
+     * Sets the cards placed by the player on his board and his score as well as updating the view.
      *
      * @param placedCards the player's placed cards.
      * @param score       the player's score.
@@ -116,17 +132,18 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Updates the cards in the player's hand.
+     * Sets the cards in the player's hand and updates the view if the show flag is true.
      *
      * @param handCards the player's hand.
+     * @param show      flag that determines whether to update the view.
      */
     public abstract void setHandCards(List<CardSides> handCards, boolean show);
 
     /**
-     * Sets the client's game view (CLI/GUI) and event submitter.
+     * Sets the client's game view and event submitter.
      *
      * @param gameView       the client's game view.
-     * @param eventSubmitter the medium used to submit a player action to the server, mainly to update the player's view.
+     * @param eventSubmitter the medium used to submit the changes of the player's state to the view.
      */
     public void setViewReferences(GameView gameView, EventSubmitter eventSubmitter){
         this.gameView = gameView;
@@ -134,7 +151,7 @@ public abstract class ClientPlayer {
     }
 
     /**
-     * Updates the total points gathered by the player at the end of the game.
+     * Sets the total points gathered by the player at the end of the game and updates the view.
      *
      * @param scoresByObjective all the objectives held by the player and the points he made by completing them.
      * @param finalScore        the player's final score.

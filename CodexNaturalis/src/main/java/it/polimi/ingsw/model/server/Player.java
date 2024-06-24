@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.server;
 
-import it.polimi.ingsw.exceptions.PlayerException;
+import it.polimi.ingsw.exceptions.CardException;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardSides;
@@ -18,19 +18,34 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Player represents each one of the 4 possible players in a game.
- * It saves the nickname, the color and his board and hand status during the played turn.
+ * Represents a player in a game.
+ * It saves the nickname, the color, his board and hand status during the played turn.
  * This keeps track of the score and objectives of each player, too.
  * All the methods that update on of the above values, also notify the change to the controller through the server subject.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class Player {
 
+    //stores and notifies the networkHandlers.
     private final ServerSubject serverSubject;
+
+    //the player's nickname.
     private final String nickname;
+
+    //the player's chosen color.
     private final Content color;
+
+    //the player's board.
     private final List<BasicCard> placedCards;
+
+    //the player's hand.
     private final List<CardSides> handCards;
+
+    //the player's objectives, includes both the common and personal ones.
     private final List<Objective> objectives;
+
+    //the player's current score.
     private int score;
 
     /**
@@ -41,6 +56,11 @@ public class Player {
      * @param handCards     the cards held by the player in his hand.
      * @param objectives    the player's objectives for his current game.
      * @param serverSubject the object used to notify about a change in the game's model.
+     *
+     * @see Content
+     * @see CardSides
+     * @see Objective
+     * @see ServerSubject
      */
     public Player(String nickname,
                   Content color,
@@ -64,7 +84,7 @@ public class Player {
     }
 
     /**
-     * Returns the nickname chosen by the player.
+     * Gets the nickname chosen by the player.
      *
      * @return the player's nickname.
      */
@@ -73,7 +93,7 @@ public class Player {
     }
 
     /**
-     * Returns the color chosen by the player.
+     * Gets the color chosen by the player.
      *
      * @return the player's color.
      */
@@ -82,7 +102,7 @@ public class Player {
     }
 
     /**
-     * Returns the updated player's score.
+     * Gets the player's score.
      *
      * @return the player's score.
      */
@@ -91,9 +111,11 @@ public class Player {
     }
 
     /**
-     * Returns all the player's objectives, both common and personal.
+     * Gets all the player's objectives, both common and personal.
      *
      * @return the player's objectives.
+     *
+     * @see Objective
      */
     public List<Objective> getObjectives(){
         return new ArrayList<>(){{
@@ -104,9 +126,11 @@ public class Player {
     }
 
     /**
-     * Returns the cards held by the player in his hand.
+     * Gets the cards held by the player in his hand.
      *
      * @return the player's hand cards.
+     *
+     * @see CardSides
      */
     public List<CardSides> getHandCards(){
         return new ArrayList<>(){{
@@ -119,9 +143,11 @@ public class Player {
     }
 
     /**
-     * Returns the cards placed by the player on his board.
+     * Gets the cards placed by the player on his board.
      *
      * @return the player's placed cards.
+     *
+     * @see BasicCard
      */
     public List<BasicCard> getPlacedCards(){
         return new ArrayList<>(){{
@@ -132,10 +158,12 @@ public class Player {
     }
 
     /**
-     * Returns a list of all the symbols present on the player's board, each with its corresponding number of
+     * Gets a list of all the symbols present on the player's board, each with its corresponding number of
      * occurrences.
      *
      * @return the player's contents.
+     *
+     * @see Content
      */
     public Map<Content,Integer> getPlayerContent(){
         Map<Content, Integer> result = new HashMap<>();
@@ -150,10 +178,12 @@ public class Player {
     }
 
     /**
-     * Updates the player's score by adding the points awarded by his objectives and returns an array where each element
+     * Updates the player's score by adding the points awarded by his objectives and returns a list where each element
      * is the amount of points given by each objective.
      *
      * @return a list with the amount of points given by each objective.
+     *
+     * @see Objective
      */
     public List<Integer> awardObjectivePoints(){
         Map<Objective, Integer> objectivePoints = new LinkedHashMap<>();
@@ -172,6 +202,8 @@ public class Player {
      * @param cardToPlace the card to check.
      *
      * @return            true if the card can be placed on the player's board.
+     *
+     * @see BasicCard
      */
     public boolean checkRequirements(BasicCard cardToPlace){
         Map<Content,Integer> requirements = cardToPlace.getRequirements();
@@ -186,6 +218,8 @@ public class Player {
      * @param corner the card's corner where the new card is going to be placed.
      *
      * @return       true if the card is placeable on the given corner.
+     *
+     * @see Corner
      */
     public boolean checkIfPlaceable(Corner corner){
         //Finds all the corners where a card can't be placed and tests
@@ -208,6 +242,8 @@ public class Player {
      * @param cornersToCheck the list of corners that have to be checked.
      *
      * @return               the list of covered corners.
+     *
+     * @see Corner
      */
     private List<Corner> getAllCoveredCorners(Corner corner, List<Corner> cornersToCheck){
         List<Corner> corners = new ArrayList<>();
@@ -230,11 +266,13 @@ public class Player {
 
     /**
      * Checks if a certain corner is present in the player's board.
-     * This is useful to check if a player's move is valid and for testing purposes.
+     * This is useful to check if a player's move is valid.
      *
      * @param corner the corner to check.
      *
      * @return       true if present, false otherwise.
+     *
+     * @see Corner
      */
     public boolean isCornerPartOfBoard(Corner corner){
         return placedCards.stream()
@@ -249,16 +287,21 @@ public class Player {
      * @param card the card to check.
      *
      * @return     true if present, false otherwise.
+     *
+     * @see BasicCard
      */
     public boolean isCardInHand(BasicCard card){
         return handCards.stream().anyMatch(c -> c.frontSide().equals(card) || c.backSide().equals(card));
     }
 
     /**
-     * Places a new card on a player's board.
+     * Places a new card on a player's board, if the placement specified is legal.
      *
      * @param cardToPlace the card the player wants to place.
      * @param corner      the corner where the new card will be placed.
+     *
+     * @see BasicCard
+     * @see Corner
      */
     public void placeCard(BasicCard cardToPlace, Corner corner){
         if(!checkRequirements(cardToPlace) || !checkIfPlaceable(corner))
@@ -281,12 +324,15 @@ public class Player {
      * Places a starter card chosen on the player's board.
      * The parameter is the side chosen by the player when he's prompted to do so.
      *
-     * @param starterCard      the starter card.
-     * @throws PlayerException if there is already a placed starter card.
+     * @param starterCard    the starter card.
+     *
+     * @throws CardException if there is already a placed starter card.
+     *
+     * @see BasicCard
      */
-    public void placeStarterCard(BasicCard starterCard) throws PlayerException {
+    public void placeStarterCard(BasicCard starterCard) throws CardException {
         if(!placedCards.isEmpty()){
-            throw new PlayerException("A starter card has already been placed.");
+            throw new CardException("A starter card has already been placed.");
         }
         placedCards.add(starterCard);
         Corner startCorner = new Corner(Content.WHITE, Location.TR);
@@ -303,6 +349,8 @@ public class Player {
      * Adds a new card to the player's hand.
      *
      * @param cardSides the card to add to the player's hand.
+     *
+     * @see CardSides
      */
     public void addCardToHand(CardSides cardSides){
         handCards.add(cardSides);
@@ -313,8 +361,11 @@ public class Player {
     }
 
     /**
-     * Method that adds a list of personal objectives to the player.
+     * Adds a list of personal objectives to the player.
+     *
      * @param personalObjectives the objectives to add to the player.
+     *
+     * @see Objective
      */
     public void addPersonalObjectives(List<Objective> personalObjectives){
         List<Objective> commonObjectives = getObjectives();
@@ -330,7 +381,11 @@ public class Player {
     }
 
     /**
+     * Gets all the valid corners.
+     *
      * @return all the corners the player can place a card on.
+     *
+     * @see Corner
      */
     public List<Corner> getAllValidCorners(){
         return placedCards.stream()
@@ -340,7 +395,11 @@ public class Player {
     }
 
     /**
+     * Gets all the valid cards.
+     *
      * @return all the cards n the player's hand that he can place.
+     *
+     * @see BasicCard
      */
     public List<BasicCard> getAllValidCards(){
         List<BasicCard> result = handCards.stream()
@@ -354,6 +413,8 @@ public class Player {
     }
 
     /**
+     * Checks if the player han no legal placements.
+     *
      * @return true if the player has no moves available.
      */
     public boolean isPlayerStuck(){
@@ -361,7 +422,11 @@ public class Player {
     }
 
     /**
+     * Gets all the back sides cards in the player's hand.
+     *
      * @return the list of the back sides of the player's hand.
+     *
+     * @see CardSides
      */
     public List<CardSides> getBackOnlyCardHand(){
         return new ArrayList<>(){{
@@ -374,8 +439,10 @@ public class Player {
 
     /**
      * Equals method.
-     * @param object Object to check.
-     * @return true if each field is equals to each field of object.
+     *
+     * @param object object to check.
+     *
+     * @return       true if each field is equals to each field of object.
      */
     @Override
     public boolean equals(Object object){

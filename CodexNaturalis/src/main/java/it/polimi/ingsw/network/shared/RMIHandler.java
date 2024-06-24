@@ -11,15 +11,28 @@ import java.util.logging.Logger;
 
 /**
  * RMI-based NetworkHandler implementation.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
+ *
+ * @see NetworkHandler
+ * @see RMIInterface
  */
 public class RMIHandler extends NetworkHandler implements RMIInterface{
+
+    //the RMI handler that's going to receive the messages sent by this instance.
     private RMIInterface receiverInterface;
+
+    //the executor used to call remote methods without blocking the caller's thread.
     private final ExecutorService executor;
 
     /**
-     * Constructor for the class.
-     * @param handler the message handler to send the received messages to.
+     * Constructor for the class. It doesn't set the logger (used only by the server).
+     *
+     * @param handler         the message handler to send the received messages to.
+     *
      * @throws RemoteException whenever the remote invocation of this method fails.
+     *
+     * @see EventHandler
      */
     public RMIHandler(EventHandler<LabeledMessage> handler) throws RemoteException{
         super(handler);
@@ -30,9 +43,13 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
 
     /**
      * Constructor for the class.
-     * @param handler the message handler to send the received messages to.
-     * @param logger  the logger used to log network events
+     *
+     * @param handler          the message handler to send the received messages to.
+     * @param logger           the logger used to log network events.
+     *
      * @throws RemoteException whenever the remote invocation of this method fails.
+     *
+     * @see EventHandler
      */
     public RMIHandler(EventHandler<LabeledMessage> handler, Logger logger) throws RemoteException{
         super(handler, logger);
@@ -42,9 +59,13 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
     }
 
     /**
-     * Remote method used to send messages to a previously set receiver that implements this interface.
-     * @param message the message to send.
+     * Sends messages to a previously set receiver that implements this interface.
+     *
+     * @param message          the message to send.
+     *
      * @throws RemoteException whenever the method invocation fails.
+     *
+     * @see Message
      */
     @Override
     public void receiveUpdate(Message message) throws RemoteException {
@@ -52,9 +73,13 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
     }
 
     /**
-     * Setter for the receiver.
+     * Sets the receiver.
+     *
      * @param receiverInterface the RMIInterface that will receive the messages.
-     * @throws RemoteException whenever the method invocation fails.
+     *
+     * @throws RemoteException  whenever the method invocation fails.
+     *
+     * @see RMIInterface
      */
     @Override
     public void setReceiver(RMIInterface receiverInterface) throws RemoteException{
@@ -76,9 +101,12 @@ public class RMIHandler extends NetworkHandler implements RMIInterface{
     }
 
     /**
-     * Method used by local classes (for example, ClientController on the client's side or ServerMessageHandler
+     * Used by local classes (for example, ClientController on the client's side or ServerMessageHandler
      * on the server's) to send messages through the network.
+     *
      * @param message the message to send.
+     *
+     * @see Message
      */
     @Override
     public void update(Message message){

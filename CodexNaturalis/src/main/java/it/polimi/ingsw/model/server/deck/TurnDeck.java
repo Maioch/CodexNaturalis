@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * TurnDeck is needed to represent resource and gold card decks.
+ * Represent resource and gold card decks.
  * It's an extension of Deck which adds a variable number of objects that can be revealed without
  * drawing them from the deck.
  * The visible objects are considered separate from the main stack and calling isEmpty will only inform you
@@ -16,9 +16,12 @@ import java.util.function.Function;
  * @param <T> the type of the objects contained inside the deck.
  *
  * @see Deck
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class TurnDeck<T> extends Deck<T> {
 
+    //the list that contains a number of visible elements drawn from the deck itself.
     private final List<T> visibleElements;
 
     /**
@@ -29,7 +32,7 @@ public class TurnDeck<T> extends Deck<T> {
      * @param rangeEnd                the id to end generating the deck's objects at.
      * @param numberOfVisibleElements the number of visible elements revealed.
      *
-     * @throws DeckException          if the given start-end range is illegal.
+     * @throws DeckException          if the given range is illegal.
      */
     public TurnDeck(
             Function<Integer,T> factoryMethod,
@@ -55,7 +58,7 @@ public class TurnDeck<T> extends Deck<T> {
     }
 
     /**
-     * Returns the cards that has been rendered visible on the board.
+     * Gets the cards that have been rendered visible on the board.
      *
      * @return the list of visible cards.
      */
@@ -64,7 +67,7 @@ public class TurnDeck<T> extends Deck<T> {
     }
 
     /**
-     * Returns the visible card at the given index and replaces it with the top card of the deck, if it's not empty.
+     * Gets the visible card at the given index and replaces it with the top card of the deck, if it's not empty.
      *
      * @param index          the index of the selected visible card.
      * @return               the selected visible card.
@@ -85,6 +88,11 @@ public class TurnDeck<T> extends Deck<T> {
         }
     }
 
+    /**
+     * Gets the number of cards left in the deck, not counting the visible ones.
+     *
+     * @return the number of cards left.
+     */
     public int getNumberOfCardsLeft(){
         return this.deck.size();
     }

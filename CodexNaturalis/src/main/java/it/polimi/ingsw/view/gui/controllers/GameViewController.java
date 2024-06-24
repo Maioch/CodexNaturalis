@@ -126,34 +126,92 @@ public class GameViewController extends ViewController {
     @FXML
     public GridPane sidePanel;
 
-    private Map<String, Content> playerColors;
+    //stores the players' names, along with their colors.
+    private Map<String, Content> playerColors; //TODO: MIGHT BE REMOVED
+
+    //the player whose board and hand are currently being viewed.
     private String currentViewedPlayer;
+
+    //whether the draw phase is currently being player.
     private boolean isDrawPhase;
+
+    //limits the scroll on the Y axis depending on the player's board.
     private ChangeLimiter yScrollLimiter;
+
+    //limits the scroll on the Y axis depending on the player's board.
     private ChangeLimiter xScrollLimiter;
+
+    //used to show toast notifications with a slight delay,
+    //to prevent them from jumping around too much or flooding the screen.
     private final ScheduledExecutorService notificationExecutor = new ScheduledThreadPoolExecutor(1);
+
+    //the permanent toast notifications that are currently being shown.
     private final List<Label> currentPermanentMessages = new ArrayList<>();
+
+    //stores the player nicknames along with the circle used to show their color.
     private final Map<String, Circle> playerTagCircles = new HashMap<>();
+
+    //stores the player nicknames along with the button used to switch the currently viewed player to them.
     private final Map<String, ImageView> playerTagViewIcons = new HashMap<>();
+
+    //stores the player nicknames along with their token.
     private final Map<String, ImageView> playerTokens = new HashMap<>();
+
+    //stores the player nicknames along with the GridPane that contains the summary of their game.
     private final Map<String, GridPane> playerSummary = new HashMap<>();
+
+    //stores the card corners that are currently being shown on the board, along with their respective drag target.
     private final List<Pair<Pane,Corner>> currentCornersOnBoard = new ArrayList<>();
 
+
+    //the gap between each toast notification.
     private final int toastGap = 76;
+
+    //the size for the tokens on the scoreboard.
     private final int tokenSize = 30;
+
+    //the amount of hidden cards shown under the card on top of a deck.
     private final int maxNumberOfHiddenCards = 3;
+
+    //the gap between the hidden cards shown under the card on top of a deck.
     private final int distanceBetweenHiddenCards = 4;
+
+    //the distance between each token on the scoreboard when they're overlapping each other.
     private final int distanceBetweenTokens = 4;
+
+    //the maximum score that can be shown on the scoreboard.
     private final int maxVisibleScore = 29;
+
+    //the interval before a toast notification disappears, in milliseconds.
     private final long statusLabelShowInterval = 4000;
+
+    //the interval before a toast notification is shown, in milliseconds.
     private final long showNotificationDelay = 300;
+
+    //the offset for the objective panel's animation.
     private final double objectivePanelAnimationOffset = -250;
+
+    //the width of a regular card's corner.
     private final int cornerWidth = 34;
+
+    //the height of a regular card's corner.
     private final int cornerHeight = 41;
+
+    //a regular card's width.
     private final int cardWidth = 150;
+
+    //a regular card's height.
     private final int cardHeight = 100;
+
+    //the width of an objective card.
     private final int objectiveWidth = 130;
+
+    //the amount of leftover space on each side of the board,
+    //to prevent the cards from being too close to the edge.
     private final int boardPadding = 128;
+
+    //the size difference between a regular card and one that is being dragged.
+    //used to make card placement a bit easier on the user by making covering two corners from the same card harder.
     private final int draggableCardSizeDifference = 10;
 
     public void initialize(){

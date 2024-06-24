@@ -8,12 +8,15 @@ import java.util.List;
 
 /**
  * Message that contains the winner/s of a game.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class WinnersMessage extends Message {
     private final List<String> winners;
 
     /**
      * Constructor for the class.
+     *
      * @param winners a list of the winners name.
      */
     public WinnersMessage(List<String> winners) {

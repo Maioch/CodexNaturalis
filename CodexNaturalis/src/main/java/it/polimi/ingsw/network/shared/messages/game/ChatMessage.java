@@ -8,6 +8,8 @@ import java.util.List;
 
 /**
  * Message used for a chat usage request.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class ChatMessage extends Message{
     private final String message;
@@ -16,8 +18,9 @@ public class ChatMessage extends Message{
 
     /**
      * Constructor for the class.
-     * @param message the string content.
-     * @param sender the sender's (nick)name.
+     *
+     * @param message    the string content.
+     * @param sender     the sender's (nick)name.
      * @param recipients the recipients' (nick)names.
      */
     public ChatMessage(String message, String sender, List<String> recipients){

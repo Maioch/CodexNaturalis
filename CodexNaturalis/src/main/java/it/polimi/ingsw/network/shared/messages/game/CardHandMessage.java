@@ -9,14 +9,20 @@ import java.util.List;
 
 /**
  * Message sent for a player's hand cards request.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class CardHandMessage extends Message {
     private final List<CardSides> cardHand;
 
     /**
-     * Constructor for the class.
-     * @param status the message sent.
+     * Class constructor.
+     *
+     * @param status   the message status.
      * @param CardHand the cards sent along the message.
+     *
+     * @see Status
+     * @see CardSides
      */
     public CardHandMessage(Status status, List<CardSides> CardHand) {
         super(status);
@@ -24,7 +30,9 @@ public class CardHandMessage extends Message {
     }
 
     /**
-     * @return the player's hand cards.
+     * @return the hand's cards.
+     *
+     * @see CardSides
      */
     public List<CardSides> getCardHand() {
         return new ArrayList<>(){{

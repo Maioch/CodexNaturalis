@@ -8,6 +8,7 @@ package it.polimi.ingsw.exceptions;
  * @see it.polimi.ingsw.model.server.deck.TurnDeck
  */
 public class DeckException extends RuntimeException {
+
     /**
      * Constructor of the exception.
      *

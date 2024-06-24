@@ -5,11 +5,11 @@ package it.polimi.ingsw.exceptions;
  * In general, this case is not severe and will be caught (and managed).
  */
 public class IllegalNumberOfPlayers extends Exception{
+
     /**
      * Constructor of the exception.
      */
-    public IllegalNumberOfPlayers(){
-    }
+    public IllegalNumberOfPlayers(){}
 
     /**
      * Gets the message contained in the exception.

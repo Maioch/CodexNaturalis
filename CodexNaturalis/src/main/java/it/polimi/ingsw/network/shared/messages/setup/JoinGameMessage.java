@@ -6,6 +6,8 @@ import it.polimi.ingsw.network.shared.messages.Status;
 
 /**
  * Message sent when a new player joins a game.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class JoinGameMessage extends Message {
 
@@ -21,8 +23,10 @@ public class JoinGameMessage extends Message {
      * @param nickname the player's nickname.
      * @param color    the player's color.
      * @param gameInfo the game's number of players if the status is JOIN_GAME,
-     *                 or the player's turn number if the status is NEW_PLAYER_JOINED
-     * @param gameId   the ID of the game associated with the join request
+     *                 or the player's turn number if the status is NEW_PLAYER_JOINED.
+     * @param gameId   the ID of the game associated with the join request.
+     *
+     * @see Content
      */
     public JoinGameMessage(Status status, String nickname, Content color, Integer gameInfo, Integer gameId){
         super(status);
@@ -41,17 +45,22 @@ public class JoinGameMessage extends Message {
 
     /**
      * @return the player's color.
+     *
+     * @see Content
      */
     public Content getColor(){
         return color;
     }
 
     /**
-     * @return the game's info
+     * @return the game's info.
      */
     public Integer getGameInfo(){
         return gameInfo;
     }
 
+    /**
+     * @return the game's id.
+     */
     public Integer getGameId(){ return gameId; }
 }

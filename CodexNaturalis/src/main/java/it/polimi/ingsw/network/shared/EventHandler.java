@@ -4,11 +4,13 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
-* Abstract class that handles events by saving them in a queue.
+* Handles events following the FIFO principle by saving them in a queue.
 *
 * @author Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli, Marco Maiocchi
 */
 public abstract class EventHandler<T> implements Runnable{
+
+    //stores the events which have yet to be handled.
     private final Queue<T> eventQueue;
 
     /**
@@ -19,7 +21,8 @@ public abstract class EventHandler<T> implements Runnable{
     }
 
     /**
-     * Synchronized method that adds an event to the events queue.
+     * Enqueues an event to the events queue.
+     *
      * @param event the event to add.
      */
     public synchronized void addEventToQueue(T event){
@@ -27,7 +30,8 @@ public abstract class EventHandler<T> implements Runnable{
     }
 
     /**
-     * Synchronized method that reads and removes the oldest event from the queue.
+     * Gets and dequeues an event from the queue.
+     *
      * @return the read event.
      */
     public synchronized T getEventFromQueue(){

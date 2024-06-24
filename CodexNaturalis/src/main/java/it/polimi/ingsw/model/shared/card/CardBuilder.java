@@ -14,12 +14,22 @@ import java.util.*;
 import java.util.logging.Logger;
 
 /**
- * CardBuilder creates the cards in the game, by reading their information from a json file.
+ * Creates the cards and the objectives in the game, by reading their information from a json file.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
+ *
+ * @see CardSides
+ * @see Objective
  */
 public class CardBuilder {
 
+    //used to log issues with the card creation process.
     private static final Logger logger = Logger.getLogger(Parameters.getLoggerName());
+
+    //the file that describes the game's cards.
     private static final String fileName = "cards.json";
+
+    //the path where the file describing the cards is found.
     private static final String filePath = "/gameFiles/";
 
     /**
@@ -28,6 +38,8 @@ public class CardBuilder {
      * @param cardId the card's ID.
      *
      * @return       the card created.
+     *
+     * @see CardSides
      */
     public static CardSides buildCard(int cardId) {
         BasicCard cardFront;
@@ -81,6 +93,8 @@ public class CardBuilder {
      * @param cardId the card's ID.
      *
      * @return       the card created.
+     *
+     * @see Objective
      */
     public static Objective buildObjective(int cardId){
         JsonNode cardJson = getCardJson(cardId);
@@ -113,7 +127,7 @@ public class CardBuilder {
     }
 
     /**
-     * Returns a cards information by reading it from the json file.
+     * Gets a cards information by reading it from the json file.
      *
      * @param cardId the card id.
      *
@@ -138,19 +152,21 @@ public class CardBuilder {
     }
 
     /**
-     * Returns the color of a card.
+     * Gets the color of a card.
      * If it's a starter card, returns white.
      *
      * @param cardJson json node that represents the card.
      *
      * @return         the card's color.
+     *
+     * @see Content
      */
     static Content getColor(JsonNode cardJson){
         return cardJson.has("color") ? Content.valueOf(cardJson.get("color").asText()) : Content.WHITE;
     }
 
     /**
-     * Returns the points the card awards.
+     * Gets the points the card awards.
      *
      * @param cardJson json node that represents the card.
      *
@@ -161,11 +177,14 @@ public class CardBuilder {
     }
 
     /**
-     * Returns a HashMap containing every location with the corresponding corner read from the json file.
+     * Gets a HashMap containing every location with the corresponding corner read from the json file.
      *
      * @param cardJson  json node that represents the card.
      * @param fieldName field to read.
+     *
      * @return          the corners HashMap.
+     *
+     * @see Corner
      */
     static Set<Corner> getCorners(JsonNode cardJson, String fieldName){
         JsonNode cornersJson = cardJson.get(fieldName);
@@ -182,7 +201,9 @@ public class CardBuilder {
      * @param cardJson  json node that represents the card.
      * @param arrayName the name of the array property.
      *
-     * @return a list containing the same elements as the JSON array, converted from string to Content.
+     * @return          a list containing the same elements as the JSON array, converted from string to Content.
+     *
+     * @see Content
      */
     static List<Content> getContentFromArray(JsonNode cardJson, String arrayName){
         return new ArrayList<>() {{
@@ -193,7 +214,7 @@ public class CardBuilder {
     }
 
     /**
-     * Returns the bonus type.
+     * Gets the bonus type.
      *
      * @param cardJson json node that represents the card.
      *
@@ -204,10 +225,13 @@ public class CardBuilder {
     }
 
     /**
-     * Returns the object required for the bonus.
+     * Gets the object required for the bonus.
      *
      * @param cardJson json node that represents the card.
+     *
      * @return         the object.
+     *
+     * @see Content
      */
     static Content getBonusContent(JsonNode cardJson){
         return Content.valueOf(cardJson.get("bonus").get("object").asText());

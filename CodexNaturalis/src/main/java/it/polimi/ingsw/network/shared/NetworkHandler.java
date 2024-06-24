@@ -5,18 +5,30 @@ import it.polimi.ingsw.controller.server.GameController;
 import java.util.logging.Logger;
 
 /**
- * Class that represents the objects that handle each client connected to the server.
+ * Represents the objects that handle each client connected to the server.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public abstract class NetworkHandler implements Listener {
 
+    //the handler that's supposed to handle the received messages.
     protected final EventHandler<LabeledMessage> handler;
+
+    //the logger that, when present, will log info about this handler's state.
     protected final Logger logger;
+
+    //the handler's current game, if it's part of any.
     private GameController currentGame;
+
+    //whether the handler is considered disconnected
     private boolean isDisconnected;
 
     /**
      * Constructor for the class.
+     *
      * @param handler the message handler associated to the client.
+     *
+     * @see EventHandler
      */
     public NetworkHandler(EventHandler<LabeledMessage> handler) {
         this.currentGame = null;
@@ -27,8 +39,11 @@ public abstract class NetworkHandler implements Listener {
 
     /**
      * Constructor for the class.
+     *
      * @param handler the message handler associated to the client.
-     * @param logger  the logger used to log network events
+     * @param logger  the logger used to log network events.
+     *
+     * @see EventHandler
      */
     public NetworkHandler(EventHandler<LabeledMessage> handler, Logger logger) {
         this.currentGame = null;
@@ -38,7 +53,11 @@ public abstract class NetworkHandler implements Listener {
     }
 
     /**
+     * Gets the game controller associated to this handler.
+     *
      * @return the game that the player associated to this handler is in.
+     *
+     * @see GameController
      */
     public GameController getCurrentGame(){
         return currentGame;
@@ -46,22 +65,26 @@ public abstract class NetworkHandler implements Listener {
 
     /**
      * Setter for the currentGame attribute.
+     *
      * @param currentGame the game associated to the handler.
+     *
+     * @see GameController
      */
     public void setCurrentGame(GameController currentGame){
         this.currentGame = currentGame;
     }
 
     /**
-     * Sets the disconnected flag to true
+     * Sets the disconnected flag to true.
      */
     public synchronized void setDisconnected(){
         this.isDisconnected = true;
     }
 
     /**
-     * Method to check whether the client is disconnected
-     * @return true if the client is disconnected
+     * Checks whether the client is disconnected.
+     *
+     * @return true if the client is disconnected.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public synchronized boolean isDisconnected(){

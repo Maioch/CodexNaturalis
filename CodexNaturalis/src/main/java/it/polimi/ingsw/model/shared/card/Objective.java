@@ -13,14 +13,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Objective represents the cards in the game that are the player's target during a game, that, when fulfilled, award
- * a large amount of points.
+ * Represents the objective cards of the game.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class Objective implements Serializable {
 
+    //the objective's id.
     private final int objectiveId;
+
+    //the points awarded by fulfilling the objective once.
     private final int points;
+
+    //the bonus that yields the multiplier with which the total awarded points are going to be calculated.
     private transient Bonus bonus;
+
+    //the player who owns the objective
     private transient Player owner;
 
     /**
@@ -58,35 +66,44 @@ public class Objective implements Serializable {
     }
 
     /**
-     * Returns the ID of the card
+     * Gets the ID of the card
      *
      * @return the card's ID.
      */
-    public int getObjectiveId() { return this.objectiveId; }
+    public int getObjectiveId() {
+        return this.objectiveId;
+    }
 
     /**
-     * Returns the objectives' base points.
+     * Gets the objectives' base points.
      *
      * @return the card's points.
      */
-    public int getPoints() { return this.points; }
+    public int getPoints() {
+        return this.points;
+    }
 
     /**
      * Sets the bonus type associated to this objective.
      *
      * @param bonus the card's bonus type.
      *
+     * @see Bonus
      * @see ContentBonus
      * @see PatternBonus
      */
     public void setBonus(Bonus bonus) { this.bonus = bonus; }
 
     /**
-     * Sets the player that owns the objective, used to obtain the player's board to calculate the multiplier.
+     * Sets the player that owns the objective.
      *
      * @param owner the card's owner.
+     *
+     * @see Player
      */
-    public void setOwner(Player owner) { this.owner = owner; }
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
 
     /**
      * Equals method override to fit the method to this class.
@@ -104,8 +121,8 @@ public class Objective implements Serializable {
     }
 
     /**
-     * ContentBonus implements a method that calculates the total amount of points given by an objective that gives
-     * them per content sequences present in the player's board.
+     * Implements calculate using the amount of specified objects found in the objective owner's board
+     * as the multiplier that gets applied to the objective's base points.
      */
     public class ContentBonus implements Bonus{
         private final List<Content> sequence;
@@ -128,7 +145,7 @@ public class Objective implements Serializable {
         }
 
         /**
-         * Returns the total amount of points given to the player when he satisfies the objective.
+         * Gets the total amount of points given to the player when he satisfies the objective.
          *
          * @return the card's awarded points.
          */
@@ -151,9 +168,8 @@ public class Objective implements Serializable {
     }
 
     /**
-     * PatternBonus implements a method that calculates the total amount of points given by an objective that gives
-     * them per defined pattern occurrence of correctly colored cards; each card can only be used once to calculate
-     * this particular bonus.
+     * Implements calculate by counting the specified pattern occurrences on the objective owner's board;
+     * each card can only be used once to calculate this particular bonus.
      */
     public class PatternBonus implements Bonus{
         private final Map<Point, Content> pattern;
@@ -176,7 +192,7 @@ public class Objective implements Serializable {
         }
 
         /**
-         * Returns the total amount of points given to the player when he satisfies the objective.
+         * Gets the total amount of points given to the player when he satisfies the objective.
          *
          * @return the card's awarded points.
          */

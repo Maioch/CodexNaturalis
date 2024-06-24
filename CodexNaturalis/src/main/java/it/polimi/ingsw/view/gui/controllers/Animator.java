@@ -3,7 +3,14 @@ package it.polimi.ingsw.view.gui.controllers;
 import javafx.animation.*;
 import javafx.scene.Node;
 
+/**
+ * Provides static methods used to perform animations on the GUI.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
+ */
 public class Animator {
+
+    //the interpolator used for all the animations done by this class
     private static final Interpolator cubicInterpolator = Interpolator.SPLINE(.02,.68,.33,.95);
 
     @SuppressWarnings("UnusedReturnValue")

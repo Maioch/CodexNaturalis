@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * Message containing the player's placeable corners and cards.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class ValidPlacementsMessage extends Message {
     private final List<Corner> corners;
@@ -17,9 +19,14 @@ public class ValidPlacementsMessage extends Message {
 
     /**
      * Constructor for the message.
-     * @param status status of the message.
-     * @param cards placeable cards.
+     *
+     * @param status  status of the message.
+     * @param cards   placeable cards.
      * @param corners placeable corners.
+     *
+     * @see Status
+     * @see BasicCard
+     * @see Corner
      */
     public ValidPlacementsMessage(Status status, List<BasicCard> cards, List<Corner> corners) {
         super(status);
@@ -29,6 +36,8 @@ public class ValidPlacementsMessage extends Message {
 
     /**
      * @return a list of the placeable corners.
+     *
+     * @see Corner
      */
     public List<Corner> getPlaceableCorners(){
         return new ArrayList<>(corners);
@@ -36,6 +45,8 @@ public class ValidPlacementsMessage extends Message {
 
     /**
      * @return a list of the placeable cards.
+     *
+     * @see BasicCard
      */
     public List<BasicCard> getPlaceableCards(){
         return new ArrayList<>(cards);

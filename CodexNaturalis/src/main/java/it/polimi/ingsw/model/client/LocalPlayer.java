@@ -10,14 +10,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * LocalPlayer is the player associated to the local machine.
+ * Represents the player associated to the local machine.
  * It saves the player's hand cards and his personal objectives.
+ *
+ * @see ClientPlayer
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class LocalPlayer extends ClientPlayer{
 
+    //the player's hand.
     private List<CardSides> handCards;
+
+    //the player's personal objectives.
     private final List<Objective> personalObjectives;
+
+    //the cards from the player's hand that can be placed.
     private List<BasicCard> validCards;
+
+    //the corners from the player's board where cards can be placed.
     private List<Corner> validCorners;
 
     /**
@@ -35,9 +46,10 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Updates all the cards held by the player in his hand.
+     * Sets the cards in the player's hand and updates the view if the show flag is true.
      *
-     * @param handCards the player's hand cards.
+     * @param handCards the player's hand.
+     * @param show      flag that determines whether to update the view.
      */
     @Override
     public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
@@ -48,7 +60,7 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Returns all the cards held by the player in his hand.
+     * Gets all the cards held by the player in his hand.
      *
      * @return the player's hand.
      */
@@ -63,7 +75,7 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Sets the player's objectives not shared with the others.
+     * Sets the player's objectives not shared with the others and updates the view.
      *
      * @param personalObjectives the player's personal objectives.
      */
@@ -73,7 +85,7 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Returns the player's objectives not shared with the others.
+     * Gets the player's objectives not shared with the others.
      *
      * @return the player's personal objectives.
      */
@@ -86,7 +98,8 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Requests all the valid card placements and the cards that can actually be placed.
+     * Updates the valid cards and the valid corners of the player and
+     * requests him to place a card using the event submitter.
      *
      * @param validCards   the cards that can be placed.
      * @param validCorners the corners where the player can place a new card.
@@ -100,7 +113,7 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Requests the starter card assigned to the player.
+     * Requests the player to place the starter card assigned to him using the event submitter.
      */
     public void requestStarterCardPlacement(){
         List<CardSides> currentHandCards = getHandCards();
@@ -108,7 +121,7 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Returns all the cards in the player's hand he can place.
+     * Gets all the cards in the player's hand he can place.
      *
      * @return the player's placeable cards.
      */
@@ -121,7 +134,7 @@ public class LocalPlayer extends ClientPlayer{
     }
 
     /**
-     * Returns all the corners in the player's board he can place on.
+     * Gets all the corners in the player's board he can place on.
      *
      * @return the corners where cards can be placed.
      */
