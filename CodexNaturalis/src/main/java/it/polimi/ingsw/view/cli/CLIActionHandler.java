@@ -1,6 +1,6 @@
 package it.polimi.ingsw.view.cli;
 
-import it.polimi.ingsw.network.shared.EventHandler;
+import it.polimi.ingsw.core.EventHandler;
 
 /**
  *

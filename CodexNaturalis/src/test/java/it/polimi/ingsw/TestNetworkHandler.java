@@ -2,7 +2,7 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.controller.client.ClientController;
 import it.polimi.ingsw.controller.server.GameController;
-import it.polimi.ingsw.network.shared.EventHandler;
+import it.polimi.ingsw.core.EventHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.NetworkHandler;
 import it.polimi.ingsw.network.shared.messages.Message;

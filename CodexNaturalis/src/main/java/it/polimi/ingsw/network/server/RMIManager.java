@@ -1,7 +1,7 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.core.Parameters;
-import it.polimi.ingsw.network.shared.EventHandler;
+import it.polimi.ingsw.core.EventHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.RMIHandler;
 import it.polimi.ingsw.network.shared.RMIInterface;

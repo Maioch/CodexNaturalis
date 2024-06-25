@@ -1,6 +1,7 @@
 package it.polimi.ingsw.network.shared;
 
 import it.polimi.ingsw.controller.server.GameController;
+import it.polimi.ingsw.core.EventHandler;
 
 import java.util.logging.Logger;
 

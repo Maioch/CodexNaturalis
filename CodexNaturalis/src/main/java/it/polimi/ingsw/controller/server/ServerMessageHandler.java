@@ -2,7 +2,7 @@ package it.polimi.ingsw.controller.server;
 
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.core.Parameters;
-import it.polimi.ingsw.network.shared.EventHandler;
+import it.polimi.ingsw.core.EventHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.network.shared;
 
+import it.polimi.ingsw.core.EventHandler;
 import it.polimi.ingsw.network.shared.messages.Message;
 
 import java.io.IOException;

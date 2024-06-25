@@ -10,7 +10,7 @@ import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.Objective;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
-import it.polimi.ingsw.network.shared.EventHandler;
+import it.polimi.ingsw.core.EventHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.NetworkHandler;
 import it.polimi.ingsw.network.shared.messages.Message;

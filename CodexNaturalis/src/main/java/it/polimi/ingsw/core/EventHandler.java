@@ -1,4 +1,4 @@
-package it.polimi.ingsw.network.shared;
+package it.polimi.ingsw.core;
 
 import java.util.LinkedList;
 import java.util.Queue;
