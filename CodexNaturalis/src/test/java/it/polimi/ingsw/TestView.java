@@ -135,11 +135,6 @@ public class TestView implements SetupView, GameView {
     }
 
     @Override
-    public void notifyGameCanceled() {
-        recentCalls.add(new Pair<>("notifyGameCanceled", new ArrayList<>()));
-    }
-
-    @Override
     public void notifyTurnSkipped() {
         recentCalls.add(new Pair<>("notifyTurnSkipped", new ArrayList<>()));
     }

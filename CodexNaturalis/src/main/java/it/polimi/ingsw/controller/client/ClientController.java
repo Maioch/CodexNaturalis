@@ -478,7 +478,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
                     eventSubmitter.submit(() -> gameView.revealWinners(winnersMessage.getWinners()));
                 }
             }
-            case GAME_CANCELED -> eventSubmitter.submit(() -> gameView.notifyGameCanceled());
             case TURN_SKIPPED -> eventSubmitter.submit(() -> gameView.notifyTurnSkipped());
             case PLAYER_DISCONNECTED, QUIET_PLAYER_DISCONNECTED -> {
                 if (message instanceof StringMessage stringMessage) {

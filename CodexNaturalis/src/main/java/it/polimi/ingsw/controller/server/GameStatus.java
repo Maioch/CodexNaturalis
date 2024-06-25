@@ -9,6 +9,7 @@ package it.polimi.ingsw.controller.server;
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public enum GameStatus {
+
     /**
      * The game is waiting to have enough players to start.
      */

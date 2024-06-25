@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Contains all the methods used in the CLI to format cards, player boards and objectives.
+ * Provides static methods used in the CLI to format cards, player boards and objectives.
  * This class is needed to give a visual representation of the game's state to the player using the command line interface.
  *
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
@@ -38,6 +38,8 @@ public class CardFormatter {
      * @param viewY       the board's center Y coordinate.
      *
      * @return            the formatted player's board.
+     *
+     * @see BasicCard
      */
     public static String getPlayerBoardString(List<BasicCard> placedCards, int viewX, int viewY){
         StringBuilder sb = new StringBuilder();
@@ -93,6 +95,8 @@ public class CardFormatter {
      * @param objective the objective to explain.
      *
      * @return          the formatted objective's message.
+     *
+     * @see Objective
      */
     public static String getObjectiveInfoString(Objective objective){
         return String.format("gain %d points every time %s",
@@ -109,6 +113,8 @@ public class CardFormatter {
      * @param cards the cards whose information needs to be printed.
      *
      * @return      the formatted card's description.
+     *
+     * @see BasicCard
      */
     public static String getCardsInfoString(List<BasicCard> cards){
         StringBuilder sb = new StringBuilder();
@@ -147,6 +153,8 @@ public class CardFormatter {
      * @param card the card to print.
      *
      * @return     the formatted card.
+     *
+     * @see BasicCard
      */
     public static String getCardString(BasicCard card){
         if(card == null){

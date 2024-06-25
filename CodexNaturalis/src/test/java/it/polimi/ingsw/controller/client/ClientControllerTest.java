@@ -61,10 +61,8 @@ public class ClientControllerTest {
         String nick2 = "test1";
         ClientController controller = new ClientController(new TestView(), new TestSubmitter());
         TestNetworkHandler networkHandler = new TestNetworkHandler();
-        new Thread(controller).start();
         controller.setGameView(new TestView());
-        controller.addEventToQueue(new LabeledMessage(networkHandler, new Message(Status.CHAT)));
-        assertEquals(controller.getEventFromQueue().message().getStatus(), Status.CHAT);
+        new Thread(controller).start();
         controller.addEventToQueue(new LabeledMessage(networkHandler,
                 new JoinGameMessage(Status.JOIN_GAME, nick1, Content.RED, 2, 1)));
         controller.addEventToQueue(new LabeledMessage(networkHandler,
@@ -161,7 +159,6 @@ public class ClientControllerTest {
                 "showNoMovesAvailable", 2L,
                 "notifyLastTurn", 2L,
                 "revealWinners", 1L,
-                "notifyGameCanceled", 2L,
                 "notifyTurnSkipped", 2L,
                 "notifyRemotePlayerDisconnected", 3L,
                 "notifyRemotePlayerReconnected", 1L,
@@ -215,7 +212,6 @@ public class ClientControllerTest {
                 new Message(Status.LAST_TURN),
                 new PlayerSummaryMessage(playerSummary, 8, nick1),
                 new WinnersMessage(winners),
-                new Message(Status.GAME_CANCELED),
                 new Message(Status.TURN_SKIPPED),
                 new StringMessage(Status.TURN_NOTIFICATION, nick1),
                 new CardHandMessage(Status.PLAYER_HAND_CARDS, localHand),

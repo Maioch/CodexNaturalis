@@ -30,7 +30,7 @@ public interface SetupView extends ReconnectableView{
     void newGameSuccess(int gameId);
 
     /**
-     * Allows a custom error message to be printed, following a critical error.
+     * Allows a custom error message to be shown, following a critical error.
      * An error is "critical" when the client must be returned to the match selection interface, after its occurrence.
      *
      * @param message the custom message.
@@ -49,7 +49,7 @@ public interface SetupView extends ReconnectableView{
     void showJoinGameDialog(List<Content> colors, int gameId);
 
     /**
-     * Allows a custom error message to be printed, following a non-critical error.
+     * Allows a custom error message to be shown, following a non-critical error.
      * Used when the client chooses an invalid nickname or color.
      *
      * @param message the custom message.

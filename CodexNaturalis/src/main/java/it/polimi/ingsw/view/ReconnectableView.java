@@ -8,8 +8,7 @@ package it.polimi.ingsw.view;
 public interface ReconnectableView {
 
     /**
-     * Show a message of disconnection.
-     * This occurs if the client has not received a ping ack (from the server) for a parametrically-specified amount of time.
+     * Show a disconnection message.
      */
     void showDisconnectionMessage();
 }

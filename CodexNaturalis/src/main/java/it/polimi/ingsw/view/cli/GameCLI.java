@@ -91,6 +91,8 @@ public class GameCLI extends AbstractCLI implements GameView {
      * If some messages are received during the turn making, they will all be printed after it's finished.
      *
      * @param chatMessage contains the sender, the recipients and the message.
+     *
+     * @see ChatMessage
      */
     @Override
     public void showChatMessage(ChatMessage chatMessage){
@@ -104,8 +106,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     /**
      * Builds the default message string, used by the method above to print a message.
      *
-     * @param message the client's message
-     * @param sender the sender of the message.
+     * @param message    the client's message
+     * @param sender     the sender of the message.
      * @param recipients the recipients of the message.
      */
     private void printChatMessage(String message, String sender, List<String> recipients){
@@ -128,12 +130,6 @@ public class GameCLI extends AbstractCLI implements GameView {
         System.out.println(sb.append(": ").append(message));
     }
 
-    /**
-     * Requests the client to place a card.
-     *
-     * @param handCards the client's hand cards.
-     * @param placedCards the client's placed cards.
-     */
     @Override
     public void requestPlacement(List<CardSides> handCards, List<BasicCard> placedCards){
         List<BasicCard> validCards = client.getController().getLocalPlayerValidCards();
@@ -172,11 +168,6 @@ public class GameCLI extends AbstractCLI implements GameView {
         client.getController().sendMessage(new CardPlacementMessage(validCards.get(cardIndex), validCorners.get(cornerIndex)));
     }
 
-    /**
-     * Notifies the client about a turn change.
-     *
-     * @param turnOwner the client that is playing its turn.
-     */
     @Override
     public void turnChanged(String turnOwner){
         while(!chatMessageQueue.isEmpty()){
@@ -469,16 +460,6 @@ public class GameCLI extends AbstractCLI implements GameView {
     public void notifyRemotePlayerReconnected(String nickname) {
         System.out.printf("\n%s is back!\n",
                 client.getController().getPlayerColors().get(nickname).getTextColorString() + nickname + Content.EMPTY.getTextColorString());
-    }
-
-    /**
-     * Notifies that the game has been cancelled.
-     */
-    @Override
-    public void notifyGameCanceled(){
-        System.out.println("The game took too long to start, and it has been canceled.");
-        client.getController().backToSetup();
-        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
     }
 
     /**

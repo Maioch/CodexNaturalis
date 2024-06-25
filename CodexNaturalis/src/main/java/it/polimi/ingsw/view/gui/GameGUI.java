@@ -357,15 +357,6 @@ public class GameGUI implements GameView {
     }
 
     /**
-     * Notifies that the game has canceled.
-     */
-    @Override
-    public void notifyGameCanceled(){
-        client.getController().backToSetup();
-        client.getController().sendMessage(new Message(Status.REQUEST_GAMES));
-    }
-
-    /**
      * Notifies that the expected turn has been skipped.
      */
     @Override
