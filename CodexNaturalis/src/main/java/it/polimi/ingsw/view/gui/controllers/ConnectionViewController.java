@@ -17,6 +17,8 @@ import java.rmi.RemoteException;
 
 /**
  * Class used to handle the login scene of the GUI.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class ConnectionViewController extends ViewController {
 
@@ -42,7 +44,7 @@ public class ConnectionViewController extends ViewController {
     private Application application;
 
     /**
-     * Method used to handle the client's connection to the server, using the information inputted in the login module.
+     * Connects the client to the server, using the information inputted in the login module.
      */
     @FXML
     public void connectButtonHandler(){
@@ -78,12 +80,18 @@ public class ConnectionViewController extends ViewController {
         }).start();
     }
 
+    /**
+     * Gets the current connection settings (chose by the user).
+     *
+     * @return the current connection settings.
+     */
     public ConnectionSettings getConnectionSettings(){
         return connectionSettings;
     }
 
     /**
-     * Method used to handle the error message to be shown to the client in case of incorrect login information.
+     * Sets the error message to be shown to the client in case of incorrect login information.
+     *
      * @param errorPrompt the error message to show.
      */
     private void setLoginError(String errorPrompt){
@@ -98,27 +106,33 @@ public class ConnectionViewController extends ViewController {
     }
 
     /**
-     * Setter for the client.getController() attribute
+     * Sets the application attribute
+     *
      * @param application the scene's application
      */
     public void setApplication(Application application){ this.application = application; }
 
     /**
-     * Method used to disable the "connect" button if the client hasn't inputted both the ip and the port.
+     * Disables the "connect" button if the client hasn't inputted both the ip and the port.
      */
     @FXML
     public void checkIfEnableButton(){
         connectButton.setDisable(ipTextBox.getText().isEmpty() || portTextBox.getText().isEmpty());
     }
 
+    /**
+     * Opens the game rules PDF resource.
+     */
     @FXML
     public void openRulesLink(){
         application.getHostServices().showDocument(Parameters.getRulesURL());
     }
 
     /**
-     * Method used to check if the login info inputted by the client are correctly formatted.
+     * Checks if the login info inputted by the client are correctly formatted.
+     *
      * @param port the port inputted by the client.
+     *
      * @return true if the format is correct.
      */
     private boolean checkAddress(String port){

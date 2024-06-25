@@ -22,6 +22,8 @@ import java.util.List;
 /**
  * Class used when the client chooses to play the TUI version of the game; this class represents the CLI for the player
  * reception phase, before entering an actual game.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class SetupCLI extends AbstractCLI implements SetupView {
 
@@ -38,7 +40,7 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * The method asks the player the ip address and the port of the server, then it make them choose if they
+     * Asks the player the ip address and the port of the server, then it make them choose if they
      * want to connect using socket or RMI protocol: the method then handles the connection.
      */
     public void startCLI(){
@@ -68,9 +70,10 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * This method handles the first step of the player's reception, printing a list of all the available matches
+     * Handles the first step of the player's reception, printing a list of all the available matches
      * along with the index; it then asks the index of the game the player wants to join: if the player enters "0", the
      * method also handles the creation of a new game.
+     *
      * @param matchList the list of all available matches.
      */
     @Override
@@ -125,7 +128,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * Method used to inform a player that requested a new game creation that the process was successful.
+     * Informs the player that requested a new game creation that the process was successful.
+     *
      * @param gameId the ID of the new game created, printed by the method.
      */
     @Override
@@ -135,7 +139,8 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * Method that prints a custom critical error message and returns the client to the match selection.
+     * Prints a custom critical error message and returns the client to the match selection.
+     *
      * @param message the message to print.
      */
     @Override
@@ -145,9 +150,10 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * This method handles the second step of the player's reception: it makes the player choose a color from
+     * Handles the second step of the player's reception: it makes the player choose a color from
      * those available in the game he's trying to join, then it asks the player to choose his nickname.
      * This method is used also with a player that just created a new game.
+     *
      * @param colors the list of a match's available colors.
      * @param gameId the id of the game the player is trying to join.
      */
@@ -174,10 +180,11 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * Method that prints a custom error message and returns the client to the color selection.
+     * Prints a custom error message and returns the client to the color selection.
      * This method is usually called when the player chooses an invalid color or nickname.
+     *
      * @param message the message printed by the method.
-     * @param gameId the id of the game the player is trying to join.
+     * @param gameId  the id of the game the player is trying to join.
      */
     @Override
     public void showUserError(String message, int gameId){
@@ -186,7 +193,11 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * Method that notifies the player that he successfully joined his desired game.
+     * Notifies the player that he successfully joined his desired game.
+     *
+     * @param nickname          the local player's nickname.
+     * @param color             the local player's color.
+     * @param numberOfPlayers   the number of players the game will be made of.
      */
     @Override
     public void showSuccessfulJoin(String nickname, Content color, int numberOfPlayers){
@@ -196,11 +207,19 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         client.getController().setGameView(gameCLI);
     }
 
+    /**
+     * Shows a disconnection message.
+     */
     @Override
     public void showDisconnectionMessage(){
         disconnectionProcedure();
     }
 
+    /**
+     * Shows the reconnection error.
+     *
+     * @param message the message printed when a client disconnects.
+     */
     @Override
     public void showReconnectionError(String message){
         System.out.println(message);
@@ -209,9 +228,10 @@ public class SetupCLI extends AbstractCLI implements SetupView {
     }
 
     /**
-     * Method used to handle the "REFRESH" command that may be inputted by the player; this command refreshes the available
+     * Handles the "REFRESH" command that may be inputted by the player; this command refreshes the available
      * games list given to the player.
-     * @param command the command inputted by the client.
+     *
+     * @param command  the command inputted by the client.
      * @param argument the arguments of the player inputted command.
      */
     @Override
@@ -233,6 +253,9 @@ public class SetupCLI extends AbstractCLI implements SetupView {
         }
     }
 
+    /**
+     * Applies the disconnection procedures and goes back to the game selection.
+     */
     public void disconnectionProcedure(){
         disconnectionProcedure(client);
         client.getController().sendMessage(new Message(Status.REQUEST_GAMES));

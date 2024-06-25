@@ -43,6 +43,8 @@ import java.util.function.Consumer;
 
 /**
  * Class used to handle the game scene of the GUI.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class GameViewController extends ViewController {
@@ -214,12 +216,15 @@ public class GameViewController extends ViewController {
     //used to make card placement a bit easier on the user by making covering two corners from the same card harder.
     private final int draggableCardSizeDifference = 10;
 
+    /**
+     * Initializes the game scene view.
+     */
     public void initialize(){
         setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
     }
 
     /**
-     * Initializes the game scene and all its base components.
+     * Initializes the game scene and all its base components to a deeper level.
      */
     public void initializeScene(){
         playerColors = client.getController().getPlayerColors();
@@ -263,6 +268,7 @@ public class GameViewController extends ViewController {
 
     /**
      * Shows a new chat message.
+     * The message is inserted into the chat message box.
      *
      * @param sender  the sender's nickname
      * @param message the message text content.
@@ -321,7 +327,7 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Method that set the disable field of the chat components. It will not enable the chat button.
+     * Sets the disable field of the chat components. It will not enable the chat button.
      *
      * @param disable the boolean to set.
      */
@@ -377,6 +383,12 @@ public class GameViewController extends ViewController {
         currentPermanentMessages.removeIf(l -> l.getUserData().equals(messageType));
     }
 
+    /**
+     * Sets the current specified player status circle, which depends on its current connection state.
+     *
+     * @param nickname the specified player's nickname.
+     * @param connected the boolean flagging if the player is now connected or not.
+     */
     public void setPlayerStatus(String nickname, boolean connected){
         playerTagCircles.get(nickname).getParent().getChildrenUnmodifiable().get(1).setDisable(!connected);
     }
@@ -575,7 +587,7 @@ public class GameViewController extends ViewController {
     /**
      * Places a card in the board view.
      *
-     * @param handCards the local player's hand cards.
+     * @param handCards   the local player's hand cards.
      * @param placedCards the local player's board.
      */
     public void placeCard(List<CardSides> handCards, List<BasicCard> placedCards){
@@ -586,7 +598,7 @@ public class GameViewController extends ViewController {
     /**
      * Lets the local player draw a card.
      *
-     * @param drawableCards the list of drawable cards, for each type.
+     * @param drawableCards     the list of drawable cards, for each type.
      * @param numberOfCardsLeft the number of remaining cards, for each type.
      */
     public void drawCard(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft){
@@ -611,7 +623,7 @@ public class GameViewController extends ViewController {
     /**
      * Updates the score board, by positioning at the correct position the player's token.
      *
-     * @param nickname the nickname of the player of which the score has to be updated.
+     * @param nickname    the nickname of the player of which the score has to be updated.
      * @param playerScore the new player's score.
      */
     public void updateScore(String nickname, int playerScore){
@@ -635,6 +647,9 @@ public class GameViewController extends ViewController {
         playerToken.setTranslateY(-distanceBetweenTokens * (gridPaneToAddTo.getChildren().size() - 1));
     }
 
+    /**
+     * Enables all the icons in the players' tags.
+     */
     public void enableViewSwitching(){
         for(ImageView imageView : playerTagViewIcons.values()){
             imageView.setDisable(false);
@@ -671,7 +686,7 @@ public class GameViewController extends ViewController {
     /**
      * Updates a certain remote player's board, by visually placing the cards.
      *
-     * @param nickname the remote player's nickname.
+     * @param nickname    the remote player's nickname.
      * @param placedCards the remote player's board.
      */
     public void updateRemotePlayerBoard(String nickname, List<BasicCard> placedCards){
@@ -681,6 +696,9 @@ public class GameViewController extends ViewController {
         generateBoard(placedCards);
     }
 
+    /**
+     * Disables the cards in hand (except the ones in the selection popup).
+     */
     public void disableCardHand(){
         for(Node node : cardHandGrid.getChildren()){
             if(node != cardSelectionPopup){
@@ -705,8 +723,8 @@ public class GameViewController extends ViewController {
      * Adds a players score to the game summary.
      * The game summary contains the objectives (and its points made) of each player.
      *
-     * @param nickname the player's nickname.
-     * @param summary the map linking the player's objectives to the points each made.
+     * @param nickname   the player's nickname.
+     * @param summary    the map linking the player's objectives to the points each made.
      * @param finalScore the player's final score.
      */
     public void addPlayerScoreToSummary(String nickname, Map<Objective, Integer> summary, int finalScore){
@@ -750,9 +768,9 @@ public class GameViewController extends ViewController {
     /**
      * Builds an objective-score pane, which includes its image and points label.
      *
-     * @param summary a map that links objectives to its respective points makings.
+     * @param summary        a map that links objectives to its respective points makings.
      * @param objectiveScore the HBox representing the single objective pane to build on.
-     * @param objective the objective represented in the pane to build.
+     * @param objective      the objective represented in the pane to build.
      */
     private void buildObjectiveScorePane(Map<Objective, Integer> summary, HBox objectiveScore, Objective objective) {
         ImageView objectiveView = getCardImage(objective);
@@ -818,7 +836,8 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Generates the board. This method, always firstly clears the current board.
+     * Generates the board.
+     * This method always firstly clears the current board.
      *
      * @param cards the board's placed cards.
      */
@@ -895,8 +914,8 @@ public class GameViewController extends ViewController {
         /**
          * Constructor.
          *
-         * @param max the max size value.
-         * @param min the min size value.
+         * @param max    the max size value.
+         * @param min    the min size value.
          * @param setter the method that updates the size values.
          */
         public ChangeLimiter(double max, double min, Consumer<Double> setter){
@@ -927,8 +946,8 @@ public class GameViewController extends ViewController {
          * Method launched whenever the board size is changed.
          *
          * @param observableValue not used but required by the method signature.
-         * @param oldValue size value before the observation.
-         * @param newValue size value after the observation.
+         * @param oldValue        size value before the observation.
+         * @param newValue        size value after the observation.
          *
          */
         @Override
@@ -945,7 +964,8 @@ public class GameViewController extends ViewController {
      * Creates the status label.
      *
      * @param message the message written in the label.
-     * @return the created label.
+     *
+     * @return        the created label.
      */
     private Label createStatusLabel(String message){
         Label statusLabel = new Label(message);
@@ -963,8 +983,8 @@ public class GameViewController extends ViewController {
     /**
      * Sends the personal objective choice to the server.
      *
-     * @param objectiveView1 the first objective option image view.
-     * @param objectiveView2 the second objective option image view.
+     * @param objectiveView1  the first objective option image view.
+     * @param objectiveView2  the second objective option image view.
      * @param objectiveToSend the objective chose.
      */
     private void sendObjectiveChoice(ImageView objectiveView1, ImageView objectiveView2, Objective objectiveToSend){
@@ -980,7 +1000,8 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Helper method that updates the view of a specified deck.
+     * Updates the view of a specified deck.
+     * It's a helper method.
      *
      * @param cards             the list of card in the deck
      * @param numberOfCardsLeft the number of card left
@@ -1023,7 +1044,8 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Helper method that removes the given label from the notification toast.
+     * Removes the given label from the notification toast.
+     * It's a helper method.
      *
      * @param label the label to remove.
      */
@@ -1141,7 +1163,8 @@ public class GameViewController extends ViewController {
      * This card, is used to let the player place cards by drag-and-drop (which is a user-friendly UI approach).
      *
      * @param card the card from which create the draggable ImageView.
-     * @return the created ImageView.
+     *
+     * @return     the created ImageView.
      */
     private ImageView createDraggableCard(BasicCard card) {
         ImageView view = getCardImage(card);
@@ -1212,7 +1235,8 @@ public class GameViewController extends ViewController {
      * A board card, is an already placed card on which other cards could be placed (according to the placing rules).
      *
      * @param card the board card from which create the GridPane.
-     * @return the created card board GridPane.
+     *
+     * @return     the created card board GridPane.
      */
     private GridPane createBoardCard(BasicCard card){
         GridPane boardCardGrid = new GridPane();
@@ -1245,9 +1269,10 @@ public class GameViewController extends ViewController {
     }
 
     /**
-     * Crates an ImageView containing an objective with the needed measures.
+     * Creates an ImageView containing an objective with the needed measures.
      *
      * @param objective the objective to represent.
+     *
      * @return          the ImageView containing the objective.
      */
     private ImageView getCardImage(Objective objective) {
@@ -1263,6 +1288,7 @@ public class GameViewController extends ViewController {
      * Checks if the given player is the one currently viewed.
      *
      * @param nickname the player name
+     *
      * @return         true if the given player is the one currently viewed.
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

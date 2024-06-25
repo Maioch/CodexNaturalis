@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller.server;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.core.EventHandler;
+import it.polimi.ingsw.network.server.HandlerManager;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
@@ -21,6 +22,9 @@ import java.util.List;
 */
 public class ServerMessageHandler extends EventHandler<LabeledMessage> implements Runnable{
 
+    //the server's HandlerManager
+    private final HandlerManager handlerManager;
+
     //the server's GamesManager.
     private final GamesManager games;
 
@@ -31,8 +35,9 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
      *
      * @see GamesManager
      */
-    public ServerMessageHandler(GamesManager games){
+    public ServerMessageHandler(GamesManager games, HandlerManager handlerManager){
         super();
+        this.handlerManager = handlerManager;
         this.games = games;
     }
 
@@ -110,6 +115,7 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                         game.wakeUpAfterReconnect();
                     }
                 }
+                case PING_ACK -> handlerManager.receivePing(labeledMessage.networkHandler());
             }
         }
     }

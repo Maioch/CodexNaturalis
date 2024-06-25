@@ -23,6 +23,7 @@ import java.util.function.Predicate;
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public abstract class AbstractCLI {
+
     /**
      * Reads the client's inputs.
      *
@@ -32,7 +33,7 @@ public abstract class AbstractCLI {
      * @param mapper         mapper that converts the client's input into the correct requested type.
      * @param acceptCommands whether commands should be accepted or not
      *
-     * @return        the converted client's input.
+     * @return               the converted client's input.
      *
      * @see Mapper
      */

@@ -3,6 +3,7 @@ package it.polimi.ingsw.controller.server;
 import it.polimi.ingsw.TestNetworkHandler;
 import it.polimi.ingsw.model.shared.Content;
 import it.polimi.ingsw.core.Parameters;
+import it.polimi.ingsw.network.server.HandlerManager;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
@@ -22,7 +23,7 @@ public class ServerMessageHandlerTest {
     @Timeout(value = 20, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
     void runTest() throws InterruptedException {
         GamesManager gamesManager = new GamesManager();
-        ServerMessageHandler handler = new ServerMessageHandler(gamesManager);
+        ServerMessageHandler handler = new ServerMessageHandler(gamesManager, new HandlerManager());
         new Thread(handler).start();
         TestNetworkHandler user = new TestNetworkHandler();
         Message response;
@@ -62,6 +63,8 @@ public class ServerMessageHandlerTest {
 
         handler.addEventToQueue(new LabeledMessage(user, new Message(Status.REQUEST_PING)));
         user.awaitForMessage(Status.PING_ACK);
+
+        handler.addEventToQueue(new LabeledMessage(user, new Message(Status.PING_ACK)));
 
         handler.addEventToQueue(new LabeledMessage(user, new Message(Status.JOIN_GAME)));
         handler.addEventToQueue(new LabeledMessage(user,

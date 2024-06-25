@@ -117,6 +117,8 @@ public class ClientControllerTest {
                         new Pair<>("showReconnectionError", List.of(Status.INVALID_RECONNECT.getMessage())))
         );
         new Thread(controller).start();
+        controller.addEventToQueue(new LabeledMessage(networkHandler, new Message(Status.REQUEST_PING)));
+        networkHandler.removeStatus(Status.PING_ACK);
         for(var entry : setupMessagesTest.entrySet()){
             controller.addEventToQueue(new LabeledMessage(networkHandler, entry.getKey()));
             Thread.sleep(500);

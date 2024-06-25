@@ -24,7 +24,9 @@ import java.util.Queue;
 import java.util.*;
 
 /**
- * The CLI associated to the gameplay phase.
+ * Handles the gameplay phase of the game, when the client chooses the CLI version.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class GameCLI extends AbstractCLI implements GameView {
@@ -42,18 +44,15 @@ public class GameCLI extends AbstractCLI implements GameView {
     private final int numberOfDeckCardThreshold = 4;
 
     /**
-     * Constructor for the class.
-     * @param client the client for the client that will be using the CLI.
+     * Class constructor.
+     *
+     * @param client the client that is using the CLI.
      */
     public GameCLI(Client client) {
         this.client = client;
         chatMessageQueue = new LinkedList<>();
     }
 
-    /**
-     * Method that asks for a draw choice.
-     * @param drawableCards the list of drawable options.
-     */
     @Override
     public void requestDraw(Map<CardType, List<BasicCard>> drawableCards, Map<CardType, Integer> numberOfCardsLeft){
         System.out.println();
@@ -88,7 +87,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * A method that prints a message.
+     * Prints a chat message.
      * If some messages are received during the turn making, they will all be printed after it's finished.
      *
      * @param chatMessage contains the sender, the recipients and the message.
@@ -104,6 +103,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Builds the default message string, used by the method above to print a message.
+     *
      * @param message the client's message
      * @param sender the sender of the message.
      * @param recipients the recipients of the message.
@@ -130,6 +130,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Requests the client to place a card.
+     *
      * @param handCards the client's hand cards.
      * @param placedCards the client's placed cards.
      */
@@ -172,7 +173,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method that notifies the client about a turn change.
+     * Notifies the client about a turn change.
+     *
      * @param turnOwner the client that is playing its turn.
      */
     @Override
@@ -198,7 +200,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method that prints an error message.
+     * Prints an error message.
+     *
      * @param message the message to print.
      */
     @Override
@@ -207,9 +210,11 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method that notifies the client about a new player that joined its game.
-     * @param player the new player's nickname.
-     * @param color the new player's color.
+     * Notifies the client about a new player that joined its game.
+     *
+     * @param player     the new player's nickname.
+     * @param color      the new player's color.
+     * @param isGameFull the boolean flagging if the game is full or not.
      */
     @Override
     public void showUserJoined(String player, Content color, boolean isGameFull){
@@ -220,6 +225,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Method not implemented for the TUI to prevent message flooding.
+     *
      * @param nickname //
      * @param handCards //
      */
@@ -228,7 +234,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to update the client about its current hand.
+     * Updates the client about its current hand.
+     *
      * @param handCards the player's hand cards.
      */
     @Override
@@ -241,7 +248,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to request the starter card's placement at the start of the match.
+     * Requests the starter card's placement at the start of the match.
+     *
      * @param playerCards the list of cards owned by the player.
      */
     @Override
@@ -265,13 +273,13 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to update the client about another player's board and score.
+     * Updates the client about another player's board and score.
      * The board is automatically printed when the player finished their turn, but can be printed
      * also by launching a /BOARD command.
      *
-     * @param nickname the player's nickname.
+     * @param nickname    the player's nickname.
      * @param placedCards the players board.
-     * @param score the player's score.
+     * @param score       the player's score.
      */
     @Override
     public void updateBoard(String nickname, List<BasicCard> placedCards, int score){
@@ -284,7 +292,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to request the personal objective choice.
+     * Requests the personal objective choice.
+     *
      * @param objectives the objectives to choose from.
      */
     @Override
@@ -303,7 +312,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to show the client its personal objectives.
+     * Shows the client its personal objectives.
+     *
      * @param objectives the player's personal objectives.
      */
     @Override
@@ -315,7 +325,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to show the client the common objectives.
+     * Shows the client the common objectives.
+     *
      * @param objectives the common objectives.
      */
     @Override
@@ -329,14 +340,15 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Method not implemented for the TUI to prevent message flooding.
-     * @param drawableCards //
+     *
+     * @param drawableCards     //
      * @param numberOfCardsLeft //
      */
     @Override
     public void updateDecks(Map<CardType, List<BasicCard>> drawableCards, Map<CardType,Integer> numberOfCardsLeft){}
 
     /**
-     * Method used to notify the players that it's time for the last game's turn.
+     * Notifies the players that it's time for the last game's turn.
      */
     @Override
     public void notifyLastTurn(){
@@ -344,7 +356,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to notify the players that the turn has been skipped.
+     * Notifies the players that the turn has been skipped.
      */
     @Override
     public void notifyTurnSkipped() {
@@ -362,7 +374,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to show the client a legend of the symbols printed in the CLI.
+     * Shows the local player a legend of the symbols printed in the CLI.
      */
     private void showSymbols(){
         for(Content content : Content.values()){
@@ -373,7 +385,7 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to show the client all the objectives, both common and personal.
+     * Shows to the local player all the objectives, both common and personal.
      */
     private void showObjectives(){
         showCommonObjectives(client.getController().getCommonObjectives());
@@ -381,10 +393,11 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to show the client a player's game recap.
-     * @param nickname the player's nickname.
-     * @param objectivePoints a map containing all the player's objectives and related scores.
-     * @param finalScore the player's final score.
+     * Shows to the local player a player's game recap.
+     *
+     * @param nickname          the player's nickname.
+     * @param objectivePoints   a map containing all the player's objectives and related scores.
+     * @param finalScore        the player's final score.
      */
     @Override
     public void revealFinalSummary(String nickname, Map<Objective, Integer> objectivePoints, int finalScore){
@@ -398,7 +411,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to show game's winners to the client; it also enables the client to return to the main menu.
+     * Shows game's winners to the local player; it also enables the client to return to the main menu.
+     *
      * @param winners the list of winners.
      */
     @Override
@@ -422,7 +436,10 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Notifies that a player has disconnected.
+     *
      * @param nickname the disconnected player's nickname.
+     * @param color    the disconnected player's color.
+     * @param quiet    flag that determines whether to update the status label (true for update).
      */
     @Override
     public void notifyRemotePlayerDisconnected(String nickname, Content color, boolean quiet) {
@@ -434,6 +451,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Notifies that a player has left the lobby.
+     *
      * @param nickname the player's nickname.
      * @param color the player's color.
      */
@@ -444,6 +462,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Notifies that a player has reconnected.
+     *
      * @param nickname the player's nickname.
      */
     @Override
@@ -463,7 +482,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to handle all the possible client's commands.
+     * Handles all the possible client's commands.
+     *
      * @param command the command to handle.
      * @param argument the arguments associated to the command.
      */
@@ -481,7 +501,9 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Method used to notify the client that someone is out of moves.
+     * Notifies the client that someone is out of moves.
+     *
+     * @param nickname the nickname of the stuck player.
      */
     @Override
     public void showNoMovesAvailable(String nickname) {
@@ -496,6 +518,9 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    /**
+     * Shows that the local player has suddenly disconnected.
+     */
     @Override
     public void showDisconnectionMessage(){
         if (readInputThread != null) {
@@ -510,6 +535,7 @@ public class GameCLI extends AbstractCLI implements GameView {
      * The "nicks", are the nicknames of the players to which the message will be sent.
      * If the nicknames aren't specified, the message will be sent to all the players.
      * The nicks MUST be interspersed by "/" slashes.
+     * 
      * @param arguments the entire string input that comes after "/CHAT" label-command.
      */
     @SuppressWarnings("SlowListContainsAll")
@@ -533,7 +559,9 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Extracts the recipients of a written chat command.
+     *
      * @param arguments the arguments string.
+     *
      * @return the list of recipients nicknames.
      */
     private List<String> extractRecipients(String arguments){
@@ -554,6 +582,7 @@ public class GameCLI extends AbstractCLI implements GameView {
 
     /**
      * Shows the board as specified in the written command.
+     *
      * @param arguments the arguments string.
      */
     private void showBoard(String arguments){
@@ -586,7 +615,8 @@ public class GameCLI extends AbstractCLI implements GameView {
     }
 
     /**
-     * Shows the hand card as specified in written the command.
+     * Shows the hand card as specified in the written  command.
+     *
      * @param argument the arguments string.
      */
     private void showHandCards(String argument){
@@ -602,6 +632,9 @@ public class GameCLI extends AbstractCLI implements GameView {
         }
     }
 
+    /**
+     * Applies the disconnection procedures and tries to reconnect.
+     */
     public void disconnectionProcedure(){
         String localPlayerName = client.getController().getLocalPlayerName();
         int gameId = client.getController().getGameId();

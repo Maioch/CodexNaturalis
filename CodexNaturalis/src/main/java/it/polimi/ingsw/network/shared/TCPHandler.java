@@ -23,6 +23,9 @@ public class TCPHandler extends NetworkHandler implements Runnable{
     //the TCP socket's input.
     private final ObjectInputStream socketInput;
 
+    //the TCP socket
+    private final Socket socket;
+
     //the thread that listens for incoming messages.
     private Thread handlerThread;
 
@@ -36,6 +39,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
      */
     public TCPHandler(Socket socket, EventHandler<LabeledMessage> handler) throws IOException{
         super(handler);
+        this.socket = socket;
         this.socketOutput = new ObjectOutputStream(socket.getOutputStream());
         this.socketInput = new ObjectInputStream(socket.getInputStream());
     }
@@ -51,6 +55,7 @@ public class TCPHandler extends NetworkHandler implements Runnable{
      */
     public TCPHandler(Socket socket, EventHandler<LabeledMessage> handler, Logger logger) throws IOException{
         super(handler, logger);
+        this.socket = socket;
         this.socketOutput = new ObjectOutputStream(socket.getOutputStream());
         this.socketInput = new ObjectInputStream(socket.getInputStream());
     }
@@ -80,9 +85,17 @@ public class TCPHandler extends NetworkHandler implements Runnable{
                     }
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e){
             if(logger != null) {
                 logger.info("Encountered an IO Exception in TCPHandler:\n" + e.getMessage() + "\n");
+            }
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                if(logger != null) {
+                    logger.info("Couldn't close the socket:\n" + e.getMessage() + "\n");
+                }
             }
         }
     }

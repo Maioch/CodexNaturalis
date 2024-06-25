@@ -22,6 +22,8 @@ import java.util.List;
 
 /**
  * Class used to handle the march browsing scene of the GUI.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class MatchBrowserViewController extends ViewController {
     @FXML
@@ -93,7 +95,8 @@ public class MatchBrowserViewController extends ViewController {
     }
 
     /**
-     * Method that adds all matches to the match list.
+     * Adds all matches to the match list grid pane.
+     *
      * @param matchList the list of matches.
      */
     public void addMatches(List<GameInfo> matchList){
@@ -126,7 +129,8 @@ public class MatchBrowserViewController extends ViewController {
     }
 
     /**
-     * Method used to add CSS effects and method callbacks to the matches list entries.
+     * Adds CSS effects and method callbacks to the matches list entries.
+     *
      * @param button the entry to stylize.
      */
     private void setupMatchListButton(RadioButton button){
@@ -142,7 +146,8 @@ public class MatchBrowserViewController extends ViewController {
     }
 
     /**
-     * Method that disables the newly selected row.
+     * Disables the newly selected row.
+     *
      * @param mouseEvent the event that causes the method run.
      */
     private void disableButtonRow(MouseEvent mouseEvent){
@@ -384,6 +389,11 @@ public class MatchBrowserViewController extends ViewController {
         animateAndHidePopUp(reconnectPopUp);
     }
 
+    /**
+     * Animates the popup fade, occurring when the user closes it.
+     *
+     * @param createPopupGrid the popup grid pane which is used to let the user create a game.
+     */
     private void animateAndHidePopUp(GridPane createPopupGrid) {
         if(createPopupGrid.isVisible()){
             Animator.doFadeAnimation(createPopupGrid,false).setOnFinished((e) -> {
@@ -392,7 +402,7 @@ public class MatchBrowserViewController extends ViewController {
                 createPopupGrid.setVisible(false);
                 reconnectPopUp.setVisible(false);
             });
-            Animator.doPopAnimation(createPopupGrid.getChildren().getFirst(),animationOffset,false);
+            Animator.doPopAnimation(createPopupGrid.getChildren().getFirst(), animationOffset, false);
         }
     }
 }

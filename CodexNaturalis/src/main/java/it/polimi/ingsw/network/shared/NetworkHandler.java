@@ -21,6 +21,9 @@ public abstract class NetworkHandler implements Listener {
     //the handler's current game, if it's part of any.
     private GameController currentGame;
 
+    //the game attribute's lock
+    private final Object gameLock = new Object();
+
     //whether the handler is considered disconnected
     private boolean isDisconnected;
 
@@ -61,7 +64,9 @@ public abstract class NetworkHandler implements Listener {
      * @see GameController
      */
     public GameController getCurrentGame(){
-        return currentGame;
+        synchronized (gameLock) {
+            return currentGame;
+        }
     }
 
     /**
@@ -72,7 +77,9 @@ public abstract class NetworkHandler implements Listener {
      * @see GameController
      */
     public void setCurrentGame(GameController currentGame){
-        this.currentGame = currentGame;
+        synchronized (gameLock) {
+            this.currentGame = currentGame;
+        }
     }
 
     /**

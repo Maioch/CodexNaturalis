@@ -17,6 +17,8 @@ import java.util.List;
 
 /**
  * Class used to handle the match lobby scene of the GUI.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class MatchLobbyViewController extends ViewController {
     @FXML
@@ -39,6 +41,9 @@ public class MatchLobbyViewController extends ViewController {
     //the number of players required to start the game.
     private int maxNumberOfPlayers;
 
+    /**
+     * Initializes the lobby scene view.
+     */
     public void initialize(){
         setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
     }
@@ -46,7 +51,9 @@ public class MatchLobbyViewController extends ViewController {
     /**
      * Initializes the player joined counting label on the lobby.
      *
-     * @param numberOfPlayers the number of current joined player.
+     * @param player            the name of the first player to insert in the lobby view.
+     * @param color             the color of the first player to insert in the lobby view.
+     * @param numberOfPlayers   the number of current joined players.
      */
     public void initializeLabel(String player, Content color, int numberOfPlayers){
         currentNumberOfPlayers = 0;
@@ -58,6 +65,7 @@ public class MatchLobbyViewController extends ViewController {
      * Updates the player count text. Adds the joined player's name.
      *
      * @param player the newly joined player.
+     * @param color the newly joined player's color.
      */
     public void updatePlayers(String player, Content color){
         currentNumberOfPlayers++;

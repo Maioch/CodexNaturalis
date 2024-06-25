@@ -256,6 +256,11 @@ public class ClientController extends EventHandler<LabeledMessage> {
             synchronized (this) {
                 if (message.getStatus() == Status.PING_ACK){
                     isDisconnected.set(false);
+                    continue;
+                }
+                if(message.getStatus() == Status.REQUEST_PING){
+                    sendMessage(new Message(Status.PING_ACK));
+                    continue;
                 }
                 if (game == null) {
                     handleSetupMessage(message);
@@ -505,7 +510,6 @@ public class ClientController extends EventHandler<LabeledMessage> {
                     eventSubmitter.submit(() -> gameView.showChatMessage(chatMessage));
                 }
             }
-            case REQUEST_PING -> sendMessage(new Message(Status.PING_ACK));
         }
     }
 }

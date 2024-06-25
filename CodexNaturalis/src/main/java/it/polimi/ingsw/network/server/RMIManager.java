@@ -23,6 +23,9 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
     //the handler that is going to handle the messages sent to the RMI handlers created by this class
     private final EventHandler<LabeledMessage> messageHandler;
 
+    //keeps track of and manages all the created handlers
+    private final HandlerManager handlerManager;
+
     //the logger that will log info about the RMI handlers
     private final Logger logger;
 
@@ -36,8 +39,9 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
      * @see EventHandler
      * @see LabeledMessage
      */
-    public RMIManager(EventHandler<LabeledMessage> messageHandler) throws RemoteException {
+    public RMIManager(EventHandler<LabeledMessage> messageHandler, HandlerManager handlerManager) throws RemoteException {
         this.messageHandler = messageHandler;
+        this.handlerManager = handlerManager;
         this.logger = Logger.getLogger(Parameters.getLoggerName());
     }
 
@@ -56,5 +60,6 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
         RMIHandler rmiHandler = new RMIHandler(messageHandler, logger);
         rmiHandler.setReceiver(remoteInterface);
         remoteInterface.setReceiver(rmiHandler);
+        handlerManager.addHandler(rmiHandler);
     }
 }

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.core;
 
 import it.polimi.ingsw.controller.server.GamesManager;
+import it.polimi.ingsw.network.server.HandlerManager;
 import it.polimi.ingsw.network.server.RMIManager;
 import it.polimi.ingsw.controller.server.ServerMessageHandler;
 import it.polimi.ingsw.network.shared.TCPHandler;
@@ -32,10 +33,11 @@ public class Server {
      */
     public static void main(String[] args){
         Logger logger = createLogger();
+        HandlerManager handlerManager = new HandlerManager();
         GamesManager games = new GamesManager();
-        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(games);
+        ServerMessageHandler serverMessageHandler = new ServerMessageHandler(games, handlerManager);
         try {
-            RMIManager rmiManager = new RMIManager(serverMessageHandler);
+            RMIManager rmiManager = new RMIManager(serverMessageHandler, handlerManager);
             LocateRegistry.createRegistry(Parameters.getRMIPort());
             Naming.rebind("/RMIManager", rmiManager);
             logger.info("RMI server started on port: " + Parameters.getRMIPort() + "\n");
@@ -54,6 +56,7 @@ public class Server {
                     try {
                         TCPHandler tcpHandler = new TCPHandler(clientSocket, serverMessageHandler, logger);
                         new Thread(tcpHandler).start();
+                        handlerManager.addHandler(tcpHandler);
                     } catch (IOException e) {
                         logger.warning("Encountered an IO exception when creating the TCP handler:\n" + e.getMessage() + "\n");
                     }

@@ -14,8 +14,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Class that implements all the methods to format a card or the player's board, necessary operation to print
- * them in the CLI.
+ * Contains all the methods used in the CLI to format cards, player boards and objectives.
+ * This class is needed to give a visual representation of the game's state to the player using the command line interface.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class CardFormatter {
 
@@ -29,11 +31,13 @@ public class CardFormatter {
     private final static int boardRadius = 4;
 
     /**
-     * Method used to format a player's board.
-     * @param placedCards the player's placed cards.
-     * @param viewX the X coordinate to which the board is centered.
-     * @param viewY the Y coordinate to which the board is centered.
-     * @return the formatted board.
+     * Formats the player's board.
+     *
+     * @param placedCards the player's current placed cards.
+     * @param viewX       the board's center X coordinate.
+     * @param viewY       the board's center Y coordinate.
+     *
+     * @return            the formatted player's board.
      */
     public static String getPlayerBoardString(List<BasicCard> placedCards, int viewX, int viewY){
         StringBuilder sb = new StringBuilder();
@@ -84,9 +88,11 @@ public class CardFormatter {
     }
 
     /**
-     * Method that formats the message sent to explain an objective.
+     * Formats the sentence that explains when an objective awards its points.
+     *
      * @param objective the objective to explain.
-     * @return the message that represents the objective.
+     *
+     * @return          the formatted objective's message.
      */
     public static String getObjectiveInfoString(Objective objective){
         return String.format("gain %d points every time %s",
@@ -95,9 +101,14 @@ public class CardFormatter {
     }
 
     /**
-     * Method that formats the card info printed under its visual representation.
-     * @param cards all the cards that need to be printed.
-     * @return the formatted card's description.
+     * Formats the card information, such as the points it awards, the resources required to place it and the eventual
+     * bonus type.
+     * This information are printed under the card's visual representation whenever the player needs to see the cards
+     * in his hand, for whatever reason.
+     *
+     * @param cards the cards whose information needs to be printed.
+     *
+     * @return      the formatted card's description.
      */
     public static String getCardsInfoString(List<BasicCard> cards){
         StringBuilder sb = new StringBuilder();
@@ -130,9 +141,12 @@ public class CardFormatter {
     }
 
     /**
-     * Gets the textual representation of a card.
-     * @param card the card to format.
-     * @return the string representing the formatted card.
+     * Formats the given card.
+     * Returns the visual representation of the card with all it's related symbols.
+     *
+     * @param card the card to print.
+     *
+     * @return     the formatted card.
      */
     public static String getCardString(BasicCard card){
         if(card == null){
@@ -197,9 +211,12 @@ public class CardFormatter {
     }
 
     /**
-     * A method that gets a certain card bonus info.
-     * @param cardId the id of the card we want to get the info from.
-     * @return a formatted string of the bonus info.
+     * Formats the given card's bonus information.
+     * The strings returned are used to complement ones returned by other methods in this class.
+     *
+     * @param cardId the card whose bonus information needs to be printed.
+     *
+     * @return       the formatted bonus information.
      */
     private static String getBonusInfo(int cardId){
         JsonNode bonusNode = CardBuilder.getCardJson(cardId).get("bonus");
@@ -249,9 +266,11 @@ public class CardFormatter {
     }
 
     /**
-     * A method that gets a certain card native points.
-     * @param cardId the id of the card we want to get the infos from.
-     * @return the native points of the card.
+     * Gets the points awarded by the given card.
+     *
+     * @param cardId the card whose points are needed.
+     *
+     * @return       the card's awarded points.
      */
     private static int getNativePoints(int cardId){
         return CardBuilder.getPoints(CardBuilder.getCardJson(cardId));

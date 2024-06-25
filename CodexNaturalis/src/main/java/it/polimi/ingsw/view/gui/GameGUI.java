@@ -331,7 +331,7 @@ public class GameGUI implements GameView {
     }
 
     /**
-     * Notifies that a remoted player has reconnected.
+     * Notifies that a remote player has reconnected.
      *
      * @param nickname the player's nickname.
      */

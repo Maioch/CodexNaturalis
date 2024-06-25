@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Timeout;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -170,6 +171,7 @@ public class GameControllerTest {
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME,nickname1, Content.RED, null, gameId));
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME,nickname2, Content.BLUE, null, gameId));
+        handlers = getPlayerInOrder(handlers, 2);
         testStarterCardPhase(handlers);
         testObjectivesPhase(handlers);
         testPlaceCardPhase(handlers.getFirst());
@@ -220,7 +222,9 @@ public class GameControllerTest {
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME, nickname1, Content.RED, null, gameId));
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.BLUE, null, gameId));
+        handlers = getPlayerInOrder(handlers, 2);
         handlers.getFirst().stop();
+        Thread.sleep(Parameters.getServerPingPeriodSeconds() * 2000L);
         handlers.getLast().removeStatus(Status.DECLARE_WINNER);
         Thread.sleep(100);
         assertTrue(gameEnded.get());
@@ -266,16 +270,23 @@ public class GameControllerTest {
         GameController game = new GameController(numPlayers, serverSubject,
                 new GameInfo(gameId, "test", GameStatus.LOBBY),
                 (g) -> isGameEnded.set(true));
-        List<TestNetworkHandler> handlers = new ArrayList<>(){{
+        List<TestNetworkHandler> handlers = new ArrayList<>();
+        List<TestNetworkHandler> finalHandlers = handlers;
+        Map<TestNetworkHandler, String> playersNames = new HashMap<>(){{
             for(int i = 0; i < numPlayers; i++){
-                add(new TestNetworkHandler(game));
+                TestNetworkHandler handler = new TestNetworkHandler(game);
+                finalHandlers.add(handler);
+                put(handler, "test" + i);
             }
         }};
         new Thread(game).start();
         for(int i = 0; i < numPlayers; i++) {
-            handlers.get(i).send(new JoinGameMessage(Status.JOIN_GAME,"test" + i, Content.values()[i], null, gameId));
+            handlers.get(i).send(new JoinGameMessage(Status.JOIN_GAME, playersNames.get(handlers.get(i)),
+                    Content.values()[i], null, gameId));
         }
-        handlers.removeLast().stop();
+        handlers = getPlayerInOrder(handlers, numPlayers);
+        TestNetworkHandler disconnectedHandler = handlers.removeLast();
+        disconnectedHandler.stop();
         for(TestNetworkHandler handler : handlers) {
             handler.removeStatus(Status.PLAYER_DISCONNECTED);
         }
@@ -286,7 +297,9 @@ public class GameControllerTest {
         }
         testObjectivesPhase(handlers);
         checkTurnSkipped(handlers);
-        handlers.get(1).send(new ChatMessage("TEST", null, List.of("test0", "test2", "test3")));
+        TestNetworkHandler sender = handlers.get(1);
+        handlers.get(1).send(new ChatMessage("TEST", null, playersNames.entrySet().stream()
+                .filter(e -> e.getKey() != sender).map(Map.Entry::getValue).toList()));
         for(TestNetworkHandler handler : handlers) {
             handler.removeStatus(Status.CHAT);
         }
@@ -320,7 +333,7 @@ public class GameControllerTest {
         handlers.add(new TestNetworkHandler(game));
         handlers.getLast().send(new StringMessage(Status.RECONNECT, "test5"));
         handlers.getLast().awaitForMessage(Status.WRONG_NAME);
-        handlers.getLast().send(new StringMessage(Status.RECONNECT, "test3"));
+        handlers.getLast().send(new StringMessage(Status.RECONNECT, playersNames.get(disconnectedHandler)));
         List<Status> expectedStatus = List.of(Status.JOIN_GAME, Status.NEW_PLAYER_JOINED, Status.DRAW_OPTIONS,
                 Status.SILENT_TURN_NOTIFICATION, Status.PLACEMENT_OK, Status.PLAYER_HAND_CARDS, Status.COMMON_OBJECTIVES,
                 Status.SECRET_OBJECTIVES, Status.PLAYER_HAND_BACK, Status.TURN_NOTIFICATION);
@@ -422,5 +435,21 @@ public class GameControllerTest {
         for(TestNetworkHandler handler : handlers) {
             handler.awaitForMessage(Status.TURN_SKIPPED);
         }
+    }
+
+    private List<TestNetworkHandler> getPlayerInOrder(List<TestNetworkHandler> handlers, int numPlayers) throws InterruptedException{
+        Thread.sleep(100);
+        TestNetworkHandler[] orderedHandlers = new TestNetworkHandler[numPlayers];
+        List<Integer> turnPosition = new ArrayList<>();
+        for(int i = 0; i < numPlayers; i++) {
+            JoinGameMessage message = (JoinGameMessage)handlers.getLast()
+                    .awaitForMessage(Status.NEW_PLAYER_JOINED, List.of(Status.JOIN_GAME));
+            int position = message.getGameInfo();
+            turnPosition.add(position);
+        }
+        for(int i = 0; i < numPlayers; i++) {
+            orderedHandlers[turnPosition.get(i) - 1] = handlers.get(i);
+        }
+        return Arrays.stream(orderedHandlers).collect(Collectors.toList());
     }
 }
