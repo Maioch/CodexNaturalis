@@ -36,7 +36,7 @@ public class ClientControllerTest {
     void sendMessageTest() {
         ClientController controller = new ClientController(new TestView(), new TestSubmitter());
         TestNetworkHandler networkHandler = new TestNetworkHandler();
-        controller.setNetworkHandler(networkHandler);
+        controller.setExchangeHandler(networkHandler);
         controller.sendMessage(new Message(Status.CHAT));
         assertEquals(Status.CHAT, networkHandler.getReceivedMessages().getFirst().getStatus());
     }
@@ -89,7 +89,7 @@ public class ClientControllerTest {
         TestView testView = new TestView();
         ClientController controller = new ClientController(testView, new TestSubmitter());
         TestNetworkHandler networkHandler = new TestNetworkHandler(controller);
-        controller.setNetworkHandler(networkHandler);
+        controller.setExchangeHandler(networkHandler);
         Map<Message, Pair<String, List<Object>>> setupMessagesTest = Map.ofEntries(
                 Map.entry(new MatchListMessage(Status.REQUEST_GAMES, List.of(new GameInfo(1, "test", GameStatus.LOBBY))),
                         new Pair<>("updateMatchList", List.of(List.of(new GameInfo(1, "test", GameStatus.LOBBY))))),
@@ -138,7 +138,7 @@ public class ClientControllerTest {
         TestView testView = new TestView();
         ClientController controller = new ClientController(testView, new TestSubmitter());
         TestNetworkHandler networkHandler = new TestNetworkHandler(controller);
-        controller.setNetworkHandler(networkHandler);
+        controller.setExchangeHandler(networkHandler);
         controller.setGameView(testView);
         Map<CardType, List<BasicCard>> drawOptionsCards =
                 Map.of(CardType.RESOURCE, List.of(CardBuilder.buildCard(10).backSide()),
@@ -259,7 +259,7 @@ public class ClientControllerTest {
         ClientController controller = new ClientController(new TestView(), new TestSubmitter());
         TestNetworkHandler networkHandler = new TestNetworkHandler();
         new Thread(controller).start();
-        controller.setNetworkHandler(networkHandler);
+        controller.setExchangeHandler(networkHandler);
         controller.setGameView(new TestView());
         controller.addEventToQueue(new LabeledMessage(networkHandler,
                 new JoinGameMessage(Status.JOIN_GAME, "test", Content.RED, 2, 1)));
@@ -289,7 +289,7 @@ public class ClientControllerTest {
         ClientController controller = new ClientController(testView, new TestSubmitter());
         TestNetworkHandler networkHandler = new TestNetworkHandler();
         networkHandler.stop();
-        controller.setNetworkHandler(networkHandler);
+        controller.setExchangeHandler(networkHandler);
         new Thread(controller).start();
         Thread.sleep(Parameters.getClientPingPeriodSeconds() * 2500L);
         var recentCalls = testView.getRecentCalls();

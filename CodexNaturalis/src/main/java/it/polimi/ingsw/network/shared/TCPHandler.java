@@ -10,12 +10,12 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 /**
- * TCP-based NetworkHandler implementation.
+ * TCP-based ExchangeHandler implementation.
  *
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 
-public class TCPHandler extends NetworkHandler implements Runnable{
+public class TCPHandler extends ExchangeHandler implements Runnable{
 
     //the TCP socket's output.
     private final ObjectOutputStream socketOutput;

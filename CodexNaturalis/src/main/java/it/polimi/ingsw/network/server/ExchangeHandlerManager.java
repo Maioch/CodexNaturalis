@@ -1,7 +1,7 @@
 package it.polimi.ingsw.network.server;
 
 import it.polimi.ingsw.core.Parameters;
-import it.polimi.ingsw.network.shared.NetworkHandler;
+import it.polimi.ingsw.network.shared.ExchangeHandler;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
 
@@ -14,16 +14,16 @@ import java.util.TimerTask;
  * Keeps track of all the handlers, handles disconnections when a handler isn't part of a game,
  * and stops the handlers that are considered disconnected.
  */
-public class HandlerManager {
+public class ExchangeHandlerManager {
 
-    private final List<NetworkHandler> handlers ;
-    private final List<NetworkHandler> handlersToCheck;
-    private final List<NetworkHandler> connectedHandlers;
+    private final List<ExchangeHandler> handlers ;
+    private final List<ExchangeHandler> handlersToCheck;
+    private final List<ExchangeHandler> connectedHandlers;
 
     /**
      * Class constructor.
      */
-    public HandlerManager(){
+    public ExchangeHandlerManager(){
         handlers = new ArrayList<>();
         handlersToCheck = new ArrayList<>();
         connectedHandlers = new ArrayList<>();
@@ -42,7 +42,7 @@ public class HandlerManager {
      *
      * @param handler the handler to add.
      */
-    public void addHandler(NetworkHandler handler){
+    public void addHandler(ExchangeHandler handler){
         synchronized (handlers) {
             handlers.add(handler);
         }
@@ -53,7 +53,7 @@ public class HandlerManager {
      *
      * @param handler the handler to add.
      */
-    public void receivePing(NetworkHandler handler){
+    public void receivePing(ExchangeHandler handler){
         synchronized (connectedHandlers) {
             connectedHandlers.add(handler);
         }
@@ -65,7 +65,7 @@ public class HandlerManager {
      */
     private void handleSetupDisconnections(){
         synchronized (connectedHandlers) {
-            for(NetworkHandler handler : handlersToCheck) {
+            for(ExchangeHandler handler : handlersToCheck) {
                 if (!connectedHandlers.contains(handler)) {
                     handler.setDisconnected();
                 }
@@ -74,13 +74,13 @@ public class HandlerManager {
             handlersToCheck.clear();
         }
         synchronized (handlers) {
-            for (NetworkHandler handler : handlers) {
+            for (ExchangeHandler handler : handlers) {
                 if (handler.getCurrentGame() == null) {
                     handlersToCheck.add(handler);
                 }
             }
         }
-        for (NetworkHandler handler : handlersToCheck) {
+        for (ExchangeHandler handler : handlersToCheck) {
             handler.update(new Message(Status.REQUEST_PING));
         }
     }

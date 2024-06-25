@@ -9,7 +9,7 @@ import it.polimi.ingsw.model.shared.card.*;
 import it.polimi.ingsw.model.server.deck.Deck;
 import it.polimi.ingsw.model.server.deck.TurnDeck;
 import it.polimi.ingsw.model.shared.Content;
-import it.polimi.ingsw.network.shared.NetworkHandler;
+import it.polimi.ingsw.network.shared.ExchangeHandler;
 import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.shared.messages.game.DrawOptionsMessage;
 import it.polimi.ingsw.network.shared.messages.generic.StringMessage;
@@ -17,8 +17,6 @@ import it.polimi.ingsw.network.shared.messages.setup.JoinGameMessage;
 import it.polimi.ingsw.network.server.ServerSubject;
 
 import java.util.*;
-import java.util.random.RandomGenerator;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -28,7 +26,7 @@ import java.util.stream.IntStream;
  */
 public class GameModel{
 
-    //stores and notifies the networkHandlers.
+    //stores and notifies the exchangeHandlers.
     private final ServerSubject serverSubject;
 
     //the game's players.
@@ -69,14 +67,14 @@ public class GameModel{
      * Class constructor.
      *
      * @param numberOfPlayers         the number of players requested by the creator of the game.
-     * @param serverSubject           the object used to notify the network handlers.
+     * @param serverSubject           the object used to notify the exchange handlers.
      * @param gameId                  the id of this game.
      *
      * @throws IllegalNumberOfPlayers if the number of players requested isn't between the minimum and maximum number
      *                                allowed.
      *
      * @see ServerSubject
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
     public GameModel(int numberOfPlayers, ServerSubject serverSubject, int gameId) throws IllegalNumberOfPlayers {
         if (numberOfPlayers < Parameters.getMinPlayers() || numberOfPlayers > Parameters.getMaxPlayers())
@@ -206,17 +204,17 @@ public class GameModel{
      *
      * @param nickname           the player's nickname.
      * @param color              the player's color.
-     * @param handler            the player's network handler.
+     * @param handler            the player's exchange handler.
      *
      * @throws GameException     if the color chosen by the player is already taken.
      * @throws GameFullException if the game is full.
      * @throws NicknameException if the nickname chosen is invalid.
      *
      * @see Content
-     * @see NetworkHandler
+     * @see ExchangeHandler
      * @see ServerSubject
      */
-    public synchronized void addPlayerData(String nickname, Content color, NetworkHandler handler)
+    public synchronized void addPlayerData(String nickname, Content color, ExchangeHandler handler)
             throws GameException, GameFullException, NicknameException {
         if (isGameFull()) {
             throw new GameFullException();

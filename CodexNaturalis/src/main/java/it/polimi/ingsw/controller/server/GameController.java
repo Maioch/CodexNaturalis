@@ -13,8 +13,8 @@ import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.CardType;
 import it.polimi.ingsw.model.shared.card.Objective;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
+import it.polimi.ingsw.network.shared.ExchangeHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
-import it.polimi.ingsw.network.shared.NetworkHandler;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.shared.messages.game.*;
@@ -43,14 +43,14 @@ public class GameController implements Runnable{
     //the game's basic information.
     private final GameInfo gameInfo;
 
-    //stores and notifies the networkHandlers.
+    //stores and notifies the exchangeHandlers.
     private final ServerSubject serverSubject;
 
-    //stores the messages sent by the networkHandlers.
+    //stores the messages sent by the exchangeHandlers.
     private final Queue<LabeledMessage> messageQueue;
 
     //keeps track of which users have answered a ping.
-    private final List<NetworkHandler> connectedUsers;
+    private final List<ExchangeHandler> connectedUsers;
 
     //run when the game is canceled or the match ends.
     private final Consumer<GameController> endGameProcedure;
@@ -112,9 +112,9 @@ public class GameController implements Runnable{
      * @param color    the color of the player.
      * @param handler  the TCP/RMI handler associated to the new player.
      *
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
-    private void acceptPlayer(String nickname, Content color, NetworkHandler handler){
+    private void acceptPlayer(String nickname, Content color, ExchangeHandler handler){
         try {
             game.addPlayerData(nickname, color, handler);
             handler.setCurrentGame(this);
@@ -139,8 +139,8 @@ public class GameController implements Runnable{
      *                             reconnects between two turns (for example, when a single player is left and their
      *                             turn has already been completed).
      */
-    private void reconnectPlayer(String nickname, NetworkHandler handler, boolean sendTurnNotification){
-        NetworkHandler userHandler = serverSubject.getNetworkHandler(nickname);
+    private void reconnectPlayer(String nickname, ExchangeHandler handler, boolean sendTurnNotification){
+        ExchangeHandler userHandler = serverSubject.getExchangeHandler(nickname);
         if(userHandler == null || !userHandler.isDisconnected()){
             handler.update(new Message(Status.WRONG_NAME));
             return;
@@ -162,7 +162,7 @@ public class GameController implements Runnable{
         serverSubject.notify(nickname, new DrawOptionsMessage(Status.DRAW_OPTIONS, game.getDrawableCards(), game.getNumberOfCardsLeft()));
         for(Player player : game.getAllPlayers()){
             serverSubject.notify(nickname, new StringMessage(Status.SILENT_TURN_NOTIFICATION, player.getNickname()));
-            if(serverSubject.getNetworkHandler(player.getNickname()).isDisconnected()){
+            if(serverSubject.getExchangeHandler(player.getNickname()).isDisconnected()){
                 serverSubject.notify(nickname, new StringMessage(Status.QUIET_PLAYER_DISCONNECTED, player.getNickname()));
             }
             if(player.getPlacedCards().isEmpty()){
@@ -227,9 +227,9 @@ public class GameController implements Runnable{
      * @param handler the player that sent the message.
      *
      * @see Message
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
-    public void addMessageToQueue(Message message, NetworkHandler handler){
+    public void addMessageToQueue(Message message, ExchangeHandler handler){
         synchronized (messageQueue) {
             messageQueue.add(new LabeledMessage(handler, message));
         }
@@ -238,13 +238,13 @@ public class GameController implements Runnable{
     /**
      * Adds the player to the connected users list.
      *
-     * @param networkHandler the player that received the ping.
+     * @param exchangeHandler the player that received the ping.
      *
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
-    public void receivePing(NetworkHandler networkHandler){
+    public void receivePing(ExchangeHandler exchangeHandler){
         synchronized (connectedUsers){
-            connectedUsers.add(networkHandler);
+            connectedUsers.add(exchangeHandler);
         }
     }
 
@@ -258,9 +258,9 @@ public class GameController implements Runnable{
      * @return        the polled message.
      *
      * @see Status
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
-    private Message readFromQueue(NetworkHandler handler){
+    private Message readFromQueue(ExchangeHandler handler){
         LabeledMessage labeledMessage;
         while(handler != null && !handler.isDisconnected()){
             synchronized(messageQueue) {
@@ -275,23 +275,23 @@ public class GameController implements Runnable{
             switch (message.getStatus()){
                 case CHAT -> {
                     if (message instanceof ChatMessage chatMessage) {
-                        broadcastMessage(chatMessage, labeledMessage.networkHandler());
+                        broadcastMessage(chatMessage, labeledMessage.exchangeHandler());
                         continue;
                     }
                 }
                 case RECONNECT -> {
                     if(message instanceof StringMessage stringMessage) {
-                        reconnectPlayer(stringMessage.getString(), labeledMessage.networkHandler(), true);
+                        reconnectPlayer(stringMessage.getString(), labeledMessage.exchangeHandler(), true);
                         continue;
                     }
                 }
-                case JOIN_GAME, REQUEST_COLORS -> labeledMessage.networkHandler().update(new Message(Status.GAME_FULL));
+                case JOIN_GAME, REQUEST_COLORS -> labeledMessage.exchangeHandler().update(new Message(Status.GAME_FULL));
             }
-            //ignore game messages sent by the other network handlers
-            if(labeledMessage.networkHandler() != handler){
+            //ignore game messages sent by the other exchange handlers
+            if(labeledMessage.exchangeHandler() != handler){
                 continue;
             }
-            //return the game message sent by the correct network handler
+            //return the game message sent by the correct exchange handler
             return labeledMessage.message();
         }
         return new Message(Status.PLAYER_DISCONNECTED);
@@ -304,12 +304,12 @@ public class GameController implements Runnable{
      * @param handler     the handler who sent it.
      *
      * @see ChatMessage
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
-    private void broadcastMessage(ChatMessage chatMessage, NetworkHandler handler){
+    private void broadcastMessage(ChatMessage chatMessage, ExchangeHandler handler){
         String senderNickname = game.getAllPlayers().stream()
                 .map(Player::getNickname)
-                .filter(n -> serverSubject.getNetworkHandler(n) == handler)
+                .filter(n -> serverSubject.getExchangeHandler(n) == handler)
                 .findFirst().orElse("No one");
         int chatMsgLength = chatMessage.getMessage().length();
         List<String> recipients = chatMessage.getRecipients();
@@ -328,27 +328,27 @@ public class GameController implements Runnable{
      *
      * @return the disconnected handlers.
      *
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
-    private List<NetworkHandler> getDisconnectedHandlers(){
+    private List<ExchangeHandler> getDisconnectedHandlers(){
         return game.getLobbyNicknames().stream()
-                .map(serverSubject::getNetworkHandler)
+                .map(serverSubject::getExchangeHandler)
                 .filter(n -> !connectedUsers.contains(n))
                 .toList();
     }
 
     /**
      * Checks if any player has disconnected from the game and sends a ping request to all the clients.
-     * If a player doesn't answer to the ping, sets his network handler to disconnected and notifies the others with
+     * If a player doesn't answer to the ping, sets his exchange handler to disconnected and notifies the others with
      * a PLAYER_DISCONNECTED message.
      * When the connected players are less than one, it sets the game over flag to true and stops the ping timer.
      * When there is only one player connected, it sets the only one player flag to true.
      *
-     * @see NetworkHandler
+     * @see ExchangeHandler
      * @see Status
      */
     private void handleGameDisconnections(){
-        List<NetworkHandler> disconnectedHandlers;
+        List<ExchangeHandler> disconnectedHandlers;
         //connected players part
         synchronized (connectedUsers) {
             if (connectedUsers.size() == 1) {
@@ -367,21 +367,21 @@ public class GameController implements Runnable{
             disconnectedHandlers = getDisconnectedHandlers();
             connectedUsers.clear();
             //notifying part
-            for(NetworkHandler networkHandler : disconnectedHandlers){
+            for(ExchangeHandler exchangeHandler : disconnectedHandlers){
                 synchronized (gameInfo) {
                     gameInfo.setGameStatus(GameStatus.PLAYER_DISCONNECTED);
                 }
-                if(networkHandler == null){
+                if(exchangeHandler == null){
                     continue;
                 }
-                if(!networkHandler.isDisconnected()){
+                if(!exchangeHandler.isDisconnected()){
                     serverSubject.notifyAll(new StringMessage(Status.PLAYER_DISCONNECTED,
                             game.getAllPlayers().stream()
                                     .map(Player::getNickname)
-                                    .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
+                                    .filter(n -> serverSubject.getExchangeHandler(n) == exchangeHandler)
                                     .findFirst().orElse("No players")));
                 }
-                networkHandler.setDisconnected();
+                exchangeHandler.setDisconnected();
             }
             if(disconnectedHandlers.isEmpty()){
                 synchronized (gameInfo){
@@ -397,12 +397,12 @@ public class GameController implements Runnable{
      * each client.
      */
     private void handleLobbyDisconnections(){
-        List<NetworkHandler> disconnectedHandlers;
+        List<ExchangeHandler> disconnectedHandlers;
         synchronized (connectedUsers) {
             disconnectedHandlers = getDisconnectedHandlers();
             connectedUsers.clear();
-            for(NetworkHandler networkHandler : disconnectedHandlers){
-                removePlayerFromLobby(networkHandler);
+            for(ExchangeHandler exchangeHandler : disconnectedHandlers){
+                removePlayerFromLobby(exchangeHandler);
             }
         }
         serverSubject.notifyAll(new Message(Status.REQUEST_PING));
@@ -411,13 +411,13 @@ public class GameController implements Runnable{
     /**
      * Removes a player from the lobby.
      *
-     * @param networkHandler the player's network handler.
+     * @param exchangeHandler the player's exchange handler.
      */
-    private void removePlayerFromLobby(NetworkHandler networkHandler){
+    private void removePlayerFromLobby(ExchangeHandler exchangeHandler){
         String playerNickname = game.getLobbyNicknames().stream()
-                .filter(n -> serverSubject.getNetworkHandler(n) == networkHandler)
+                .filter(n -> serverSubject.getExchangeHandler(n) == exchangeHandler)
                 .findFirst().orElse("No players");
-        serverSubject.getNetworkHandler(playerNickname).setCurrentGame(null);
+        serverSubject.getExchangeHandler(playerNickname).setCurrentGame(null);
         game.deletePlayerData(playerNickname);
     }
 
@@ -427,7 +427,7 @@ public class GameController implements Runnable{
     private void removeHandlers(){
         pingTimer.cancel();
         for (Player player : game.getAllPlayers()) {
-            NetworkHandler playerHandler = serverSubject.getNetworkHandler(player.getNickname());
+            ExchangeHandler playerHandler = serverSubject.getExchangeHandler(player.getNickname());
             if(playerHandler != null) {
                 playerHandler.setCurrentGame(null);
                 serverSubject.unsubscribe(player.getNickname());
@@ -446,7 +446,7 @@ public class GameController implements Runnable{
         synchronized (onlyOnePlayerLock) {
             if (onlyOnePlayer && !gameOver.get()) {
                 List<String> playerLeft = game.getAllPlayers().stream().map(Player::getNickname)
-                        .filter(n -> !serverSubject.getNetworkHandler(n).isDisconnected())
+                        .filter(n -> !serverSubject.getExchangeHandler(n).isDisconnected())
                         .toList();
                 serverSubject.notifyAll(new Message(Status.GAME_TIMEOUT_STARTED));
                 logger.info(String.format("Game %d: only one player left, the game will end in %d seconds.\n",
@@ -473,7 +473,7 @@ public class GameController implements Runnable{
                             while((message = messageQueue.poll()) != null){
                                 if(message.message().getStatus() == Status.RECONNECT &&
                                         message.message() instanceof StringMessage reconnectMessage) {
-                                    reconnectPlayer(reconnectMessage.getString(), message.networkHandler(), false);
+                                    reconnectPlayer(reconnectMessage.getString(), message.exchangeHandler(), false);
                                     break;
                                 }
                             }
@@ -549,7 +549,7 @@ public class GameController implements Runnable{
         BasicCard starterSide = null;
         while (!starterCard.frontSide().equals(starterSide) && !starterCard.backSide().equals(starterSide)){
             serverSubject.notify(player.getNickname(), new CardHandMessage(currentStatus, player.getHandCards()));
-            Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+            Message message = readFromQueue(serverSubject.getExchangeHandler(player.getNickname()));
             if (message instanceof CardPlacementMessage cardPlacementMessage){
                 starterSide = cardPlacementMessage.getCard();
             } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
@@ -578,7 +578,7 @@ public class GameController implements Runnable{
         serverSubject.notify(player.getNickname(), new ObjectivesMessage(Status.COMMON_OBJECTIVES, game.getCommonObjectives()));
         while(secretObjectives.isEmpty() || !drawnObjectives.containsAll(secretObjectives)){
             serverSubject.notify(player.getNickname(), new ObjectivesMessage(currentStatus, drawnObjectives));
-            Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+            Message message = readFromQueue(serverSubject.getExchangeHandler(player.getNickname()));
             if (message instanceof ObjectivesMessage objectiveMessage){
                 secretObjectives = objectiveMessage.getObjectives();
             } else if (message.getStatus() == Status.PLAYER_DISCONNECTED){
@@ -671,7 +671,7 @@ public class GameController implements Runnable{
         Corner chosenCorner = null;
         boolean moveValid = false;
         while (!moveValid) {
-            Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+            Message message = readFromQueue(serverSubject.getExchangeHandler(player.getNickname()));
             if (message instanceof CardPlacementMessage cardPlacementMessage) {
                 BasicCard cardToLookFor = cardPlacementMessage.getCard();
                 cardToPlace = player.getAllValidCards().stream()
@@ -731,7 +731,7 @@ public class GameController implements Runnable{
             do{
                 serverSubject.notify(player.getNickname(), new DrawOptionsMessage(currentStatus, game.getDrawableCards(), game.getNumberOfCardsLeft()));
                 currentStatus = Status.INVALID_DRAW;
-                Message message = readFromQueue(serverSubject.getNetworkHandler(player.getNickname()));
+                Message message = readFromQueue(serverSubject.getExchangeHandler(player.getNickname()));
                 if (message instanceof DrawChoiceMessage drawChoiceMessage){
                     indexChosen = drawChoiceMessage.getIndex();
                     typeChosen = drawChoiceMessage.getCardType();
@@ -787,13 +787,13 @@ public class GameController implements Runnable{
                         acceptPlayer(
                                 joinGameMessage.getNickname(),
                                 joinGameMessage.getColor(),
-                                labeledMessage.networkHandler());
+                                labeledMessage.exchangeHandler());
                     }
                 }
                 case Status.REQUEST_COLORS ->
-                    labeledMessage.networkHandler().update(
+                    labeledMessage.exchangeHandler().update(
                             new GameColorsMessage(Status.REQUEST_COLORS, game.getAvailableColors(), gameInfo.getGameId()));
-                case Status.PLAYER_DISCONNECTED -> removePlayerFromLobby(labeledMessage.networkHandler());
+                case Status.PLAYER_DISCONNECTED -> removePlayerFromLobby(labeledMessage.exchangeHandler());
             }
         }
     }

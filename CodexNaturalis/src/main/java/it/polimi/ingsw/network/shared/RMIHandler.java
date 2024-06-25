@@ -11,14 +11,14 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 /**
- * RMI-based NetworkHandler implementation.
+ * RMI-based ExchangeHandler implementation.
  *
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  *
- * @see NetworkHandler
+ * @see ExchangeHandler
  * @see RMIInterface
  */
-public class RMIHandler extends NetworkHandler implements RMIInterface{
+public class RMIHandler extends ExchangeHandler implements RMIInterface{
 
     //the RMI handler that's going to receive the messages sent by this instance.
     private RMIInterface receiverInterface;

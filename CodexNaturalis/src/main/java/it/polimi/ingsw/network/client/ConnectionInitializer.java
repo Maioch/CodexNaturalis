@@ -40,7 +40,7 @@ public class ConnectionInitializer {
             try {
                 TCPHandler tcpHandler = new TCPHandler(new Socket(settings.ip(), settings.port()), controller);
                 new Thread(tcpHandler).start();
-                controller.setNetworkHandler(tcpHandler);
+                controller.setExchangeHandler(tcpHandler);
             } catch (IOException e){
                 throw new TCPException();
             }
@@ -48,7 +48,7 @@ public class ConnectionInitializer {
             RMISetup rmiSetup = (RMISetup) Naming.lookup(String.format("//%s:%d/RMIManager", settings.ip(), settings.port()));
             RMIHandler rmiHandler = new RMIHandler(controller);
             rmiSetup.register(rmiHandler);
-            controller.setNetworkHandler(rmiHandler);
+            controller.setExchangeHandler(rmiHandler);
         }
     }
 }

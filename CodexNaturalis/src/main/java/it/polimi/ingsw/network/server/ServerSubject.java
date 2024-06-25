@@ -1,41 +1,41 @@
 package it.polimi.ingsw.network.server;
 
-import it.polimi.ingsw.network.shared.NetworkHandler;
+import it.polimi.ingsw.network.shared.ExchangeHandler;
 import it.polimi.ingsw.network.shared.messages.Message;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implements the observer pattern by interacting with the network handlers, notifying them about changes
+ * Implements the observer pattern by interacting with the exchange handlers, notifying them about changes
  * in the game model.
  *
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  *
- * @see NetworkHandler
+ * @see ExchangeHandler
  */
 public class ServerSubject {
 
-    //stores the nicknames used to identify the players along with its networkHandlers
-    private final Map<String, NetworkHandler> networkHandlers;
+    //stores the nicknames used to identify the players along with its exchangeHandlers
+    private final Map<String, ExchangeHandler> exchangeHandlers;
 
     /**
      * Constructor for the class.
      */
     public ServerSubject(){
-        networkHandlers = new HashMap<>();
+        exchangeHandlers = new HashMap<>();
     }
 
     /**
      * Adds a new client handler to the map.
      *
      * @param nickname       the nickname of the player associated with the new client.
-     * @param networkHandler the object that handles the new client.
+     * @param exchangeHandler the object that handles the new client.
      *
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
-    public synchronized void subscribe(String nickname, NetworkHandler networkHandler){
-        networkHandlers.put(nickname, networkHandler);
+    public synchronized void subscribe(String nickname, ExchangeHandler exchangeHandler){
+        exchangeHandlers.put(nickname, exchangeHandler);
     }
 
     /**
@@ -44,7 +44,7 @@ public class ServerSubject {
      * @param nickname the nickname of the player associated with the client.
      */
     public synchronized void unsubscribe(String nickname){
-        networkHandlers.remove(nickname);
+        exchangeHandlers.remove(nickname);
     }
 
     /**
@@ -55,9 +55,9 @@ public class ServerSubject {
      * @see Message
      */
     public synchronized void notifyAll(Message message){
-        for(NetworkHandler networkHandler : networkHandlers.values()){
-            if(!networkHandler.isDisconnected()) {
-                networkHandler.update(message);
+        for(ExchangeHandler exchangeHandler : exchangeHandlers.values()){
+            if(!exchangeHandler.isDisconnected()) {
+                exchangeHandler.update(message);
             }
         }
     }
@@ -71,21 +71,21 @@ public class ServerSubject {
      * @see Message
      */
     public synchronized void notify(String nickname, Message message){
-        if(networkHandlers.containsKey(nickname) && !networkHandlers.get(nickname).isDisconnected()){
-            networkHandlers.get(nickname).update(message);
+        if(exchangeHandlers.containsKey(nickname) && !exchangeHandlers.get(nickname).isDisconnected()){
+            exchangeHandlers.get(nickname).update(message);
         }
     }
 
     /**
-     * Gets the corresponding NetworkHandler.
+     * Gets the corresponding ExchangeHandler.
      *
-     * @param nickname the nickname of the player associated with the client (NetworkHandler).
+     * @param nickname the nickname of the player associated with the client (ExchangeHandler).
      *
      * @return         the handler associated to the client.
      *
-     * @see NetworkHandler
+     * @see ExchangeHandler
      */
-    public synchronized NetworkHandler getNetworkHandler(String nickname){
-        return networkHandlers.get(nickname);
+    public synchronized ExchangeHandler getExchangeHandler(String nickname){
+        return exchangeHandlers.get(nickname);
     }
 }

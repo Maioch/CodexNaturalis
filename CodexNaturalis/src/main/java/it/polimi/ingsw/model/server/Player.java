@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class Player {
 
-    //stores and notifies the networkHandlers.
+    //stores and notifies the exchangeHandlers.
     private final ServerSubject serverSubject;
 
     //the player's nickname.

@@ -3,7 +3,7 @@ package it.polimi.ingsw.controller.server;
 import it.polimi.ingsw.exceptions.IllegalNumberOfPlayers;
 import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.core.EventHandler;
-import it.polimi.ingsw.network.server.HandlerManager;
+import it.polimi.ingsw.network.server.ExchangeHandlerManager;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
@@ -22,8 +22,8 @@ import java.util.List;
 */
 public class ServerMessageHandler extends EventHandler<LabeledMessage> implements Runnable{
 
-    //the server's HandlerManager
-    private final HandlerManager handlerManager;
+    //the server's ExchangeHandlerManager
+    private final ExchangeHandlerManager exchangeHandlerManager;
 
     //the server's GamesManager.
     private final GamesManager games;
@@ -35,9 +35,9 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
      *
      * @see GamesManager
      */
-    public ServerMessageHandler(GamesManager games, HandlerManager handlerManager){
+    public ServerMessageHandler(GamesManager games, ExchangeHandlerManager exchangeHandlerManager){
         super();
-        this.handlerManager = handlerManager;
+        this.exchangeHandlerManager = exchangeHandlerManager;
         this.games = games;
     }
 
@@ -52,24 +52,24 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
             if(labeledMessage == null){
                 continue;
             }
-            GameController currentClientGame = labeledMessage.networkHandler().getCurrentGame();
+            GameController currentClientGame = labeledMessage.exchangeHandler().getCurrentGame();
             if(labeledMessage.message().getStatus() == Status.REQUEST_PING){
-                labeledMessage.networkHandler().update(new Message(Status.PING_ACK));
+                labeledMessage.exchangeHandler().update(new Message(Status.PING_ACK));
                 continue;
             }
             if(currentClientGame != null) {
                 if(labeledMessage.message().getStatus() == Status.PING_ACK){
-                    labeledMessage.networkHandler().getCurrentGame().receivePing(labeledMessage.networkHandler());
+                    labeledMessage.exchangeHandler().getCurrentGame().receivePing(labeledMessage.exchangeHandler());
                 } else {
-                    labeledMessage.networkHandler().getCurrentGame().addMessageToQueue(
-                            labeledMessage.message(), labeledMessage.networkHandler());
+                    labeledMessage.exchangeHandler().getCurrentGame().addMessageToQueue(
+                            labeledMessage.message(), labeledMessage.exchangeHandler());
                 }
                 continue;
             }
             switch(labeledMessage.message().getStatus()){
                 case REQUEST_GAMES -> {
                     List<GameInfo> matches = games.getFormattedAvailableMatches();
-                    labeledMessage.networkHandler().update(new MatchListMessage(Status.REQUEST_GAMES, matches));
+                    labeledMessage.exchangeHandler().update(new MatchListMessage(Status.REQUEST_GAMES, matches));
                 }
                 case NEW_GAME -> {
                     if (labeledMessage.message() instanceof NewGameMessage newGameMessage){
@@ -77,10 +77,10 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                             int nameLength = newGameMessage.getName().length();
                             int gameId = games.addGame(newGameMessage.getNumberOfPlayers(),
                                     newGameMessage.getName().substring(0, Math.min(nameLength, Parameters.getMaxNameLength())));
-                            labeledMessage.networkHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
+                            labeledMessage.exchangeHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
                         }catch (IllegalNumberOfPlayers e) {
                             List<GameInfo> matches = games.getFormattedAvailableMatches();
-                            labeledMessage.networkHandler().update(new MatchListMessage(Status.INVALID_PLAYERS_NUMBER, matches));
+                            labeledMessage.exchangeHandler().update(new MatchListMessage(Status.INVALID_PLAYERS_NUMBER, matches));
                         }
                     }
                 }
@@ -88,34 +88,34 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                     if(labeledMessage.message() instanceof IntegerMessage integerMessage){
                         GameController game = games.getController(integerMessage.getValue());
                         if(game == null){
-                            labeledMessage.networkHandler().update(new Message(Status.ERROR));
+                            labeledMessage.exchangeHandler().update(new Message(Status.ERROR));
                             break;
                         }
-                        game.addMessageToQueue(new Message(Status.REQUEST_COLORS), labeledMessage.networkHandler());
+                        game.addMessageToQueue(new Message(Status.REQUEST_COLORS), labeledMessage.exchangeHandler());
                     }
                 }
                 case JOIN_GAME -> {
                     if(labeledMessage.message() instanceof JoinGameMessage joinGameMessage){
                         GameController game = games.getController(joinGameMessage.getGameId());
                         if(game == null){
-                            labeledMessage.networkHandler().update(new Message(Status.ERROR));
+                            labeledMessage.exchangeHandler().update(new Message(Status.ERROR));
                             break;
                         }
-                        game.addMessageToQueue(joinGameMessage, labeledMessage.networkHandler());
+                        game.addMessageToQueue(joinGameMessage, labeledMessage.exchangeHandler());
                     }
                 }
                 case RECONNECT -> {
                     if(labeledMessage.message() instanceof JoinGameMessage joinGameMessage){
                         GameController game = games.getController(joinGameMessage.getGameId());
                         if(game == null){
-                            labeledMessage.networkHandler().update(new Message(Status.INVALID_RECONNECT));
+                            labeledMessage.exchangeHandler().update(new Message(Status.INVALID_RECONNECT));
                             break;
                         }
-                        game.addMessageToQueue(new StringMessage(Status.RECONNECT, joinGameMessage.getNickname()), labeledMessage.networkHandler());
+                        game.addMessageToQueue(new StringMessage(Status.RECONNECT, joinGameMessage.getNickname()), labeledMessage.exchangeHandler());
                         game.wakeUpAfterReconnect();
                     }
                 }
-                case PING_ACK -> handlerManager.receivePing(labeledMessage.networkHandler());
+                case PING_ACK -> exchangeHandlerManager.receivePing(labeledMessage.exchangeHandler());
             }
         }
     }

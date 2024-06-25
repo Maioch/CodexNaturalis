@@ -3,8 +3,8 @@ package it.polimi.ingsw;
 import it.polimi.ingsw.controller.client.ClientController;
 import it.polimi.ingsw.controller.server.GameController;
 import it.polimi.ingsw.core.EventHandler;
+import it.polimi.ingsw.network.shared.ExchangeHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
-import it.polimi.ingsw.network.shared.NetworkHandler;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
 
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestNetworkHandler extends NetworkHandler {
+public class TestNetworkHandler extends ExchangeHandler {
 
     private final List<Message> receivedMessages;
     private final GameController gameController;

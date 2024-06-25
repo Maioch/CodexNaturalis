@@ -87,23 +87,23 @@ public class GameControllerTest {
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME, nickname1, Content.RED, null, gameId));
         handlers.getFirst().awaitForMessage(Status.JOIN_GAME);
         handlers.getFirst().awaitForMessage(Status.NEW_PLAYER_JOINED);
-        assertEquals(serverSubject.getNetworkHandler(nickname1), handlers.getFirst());
+        assertEquals(serverSubject.getExchangeHandler(nickname1), handlers.getFirst());
 
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname1, Content.BLUE, null, gameId));
         handlers.getLast().awaitForMessage(Status.INVALID_NICKNAME);
-        assertEquals(serverSubject.getNetworkHandler(nickname1), handlers.getFirst());
+        assertEquals(serverSubject.getExchangeHandler(nickname1), handlers.getFirst());
 
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.RED, null, gameId));
         handlers.getLast().awaitForMessage(Status.INVALID_COLOR);
-        assertNull(serverSubject.getNetworkHandler(nickname2));
+        assertNull(serverSubject.getExchangeHandler(nickname2));
 
         handlers.get(1).send(new JoinGameMessage(Status.JOIN_GAME, nickname3, Content.GREEN, null, gameId));
         handlers.get(1).awaitForMessage(Status.JOIN_GAME);
-        assertEquals(serverSubject.getNetworkHandler(nickname3), handlers.get(1));
+        assertEquals(serverSubject.getExchangeHandler(nickname3), handlers.get(1));
 
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.BLUE, null, gameId));
         handlers.getLast().awaitForMessage(Status.GAME_FULL);
-        assertNull(serverSubject.getNetworkHandler(nickname2));
+        assertNull(serverSubject.getExchangeHandler(nickname2));
     }
 
     @Test
@@ -362,7 +362,7 @@ public class GameControllerTest {
             assertNull(handler.getCurrentGame());
         }
         for(int i = 0; i < numPlayers; i++) {
-            assertNull(serverSubject.getNetworkHandler("test" + i));
+            assertNull(serverSubject.getExchangeHandler("test" + i));
         }
         assertTrue(isGameEnded.get());
     }

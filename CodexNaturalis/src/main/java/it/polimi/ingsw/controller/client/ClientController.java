@@ -11,8 +11,8 @@ import it.polimi.ingsw.model.shared.card.CardSides;
 import it.polimi.ingsw.model.shared.card.Objective;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
 import it.polimi.ingsw.core.EventHandler;
+import it.polimi.ingsw.network.shared.ExchangeHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
-import it.polimi.ingsw.network.shared.NetworkHandler;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.shared.messages.game.*;
@@ -44,11 +44,11 @@ public class ClientController extends EventHandler<LabeledMessage> {
     //the current game's view, if any is being played.
     private GameView gameView;
 
-    //the current networkHandler.
-    private NetworkHandler networkHandler;
+    //the current exchangeHandler.
+    private ExchangeHandler exchangeHandler;
 
     //the lock used to synchronize all actions that use it.
-    private final Object networkHandlerLock;
+    private final Object exchangeHandlerLock;
 
     //the lock used to synchronize all actions that use it
     private final EventSubmitter eventSubmitter;
@@ -72,7 +72,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
         this.pingTimer = new Timer();
         this.setupView = setupView;
         this.eventSubmitter = eventSubmitter;
-        this.networkHandlerLock = new Object();
+        this.exchangeHandlerLock = new Object();
         isDisconnected = new AtomicBoolean(false);
     }
 
@@ -82,8 +82,8 @@ public class ClientController extends EventHandler<LabeledMessage> {
      * @param message the message the client is sending.
      */
     public void sendMessage(Message message){
-        synchronized (networkHandlerLock) {
-            networkHandler.update(message);
+        synchronized (exchangeHandlerLock) {
+            exchangeHandler.update(message);
         }
     }
 
@@ -98,13 +98,13 @@ public class ClientController extends EventHandler<LabeledMessage> {
     }
 
     /**
-     * Sets the network handler attribute.
+     * Sets the exchange handler attribute.
      *
-     * @param networkHandler the handler associated to the client.
+     * @param exchangeHandler the handler associated to the client.
      */
-    public void setNetworkHandler(NetworkHandler networkHandler){
-        synchronized (networkHandlerLock) {
-            this.networkHandler = networkHandler;
+    public void setExchangeHandler(ExchangeHandler exchangeHandler){
+        synchronized (exchangeHandlerLock) {
+            this.exchangeHandler = exchangeHandler;
         }
     }
 
@@ -285,7 +285,7 @@ public class ClientController extends EventHandler<LabeledMessage> {
     private void handlePings(){
         if(isDisconnected.get()){
             pingTimer.cancel();
-            networkHandler.stop();
+            exchangeHandler.stop();
             eventSubmitter.submit(((gameView == null) ? setupView : gameView)::showDisconnectionMessage);
             return;
         }

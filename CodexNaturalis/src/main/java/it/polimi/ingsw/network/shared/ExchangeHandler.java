@@ -2,15 +2,20 @@ package it.polimi.ingsw.network.shared;
 
 import it.polimi.ingsw.controller.server.GameController;
 import it.polimi.ingsw.core.EventHandler;
+import it.polimi.ingsw.network.shared.messages.Message;
 
 import java.util.logging.Logger;
 
 /**
- * Represents the objects that handle each client connected to the server.
+ * Handles a bidirectional message flow between two sides.
+ * It is used on both the server and the client to send and receive messages.
+ * Sending messages is done through the update method, while the logic for
+ * receiving messages from the other side has to be defined by the classes
+ * which extend it, and should leverage the handler attribute defined here.
  *
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
-public abstract class NetworkHandler implements Listener {
+public abstract class ExchangeHandler {
 
     //the handler that's supposed to handle the received messages.
     protected final EventHandler<LabeledMessage> handler;
@@ -34,7 +39,7 @@ public abstract class NetworkHandler implements Listener {
      *
      * @see EventHandler
      */
-    public NetworkHandler(EventHandler<LabeledMessage> handler) {
+    public ExchangeHandler(EventHandler<LabeledMessage> handler) {
         this.currentGame = null;
         this.handler = handler;
         this.logger = null;
@@ -49,7 +54,7 @@ public abstract class NetworkHandler implements Listener {
      *
      * @see EventHandler
      */
-    public NetworkHandler(EventHandler<LabeledMessage> handler, Logger logger) {
+    public ExchangeHandler(EventHandler<LabeledMessage> handler, Logger logger) {
         this.currentGame = null;
         this.handler = handler;
         this.logger = logger;
@@ -100,7 +105,14 @@ public abstract class NetworkHandler implements Listener {
     }
 
     /**
-     * Stops the currently running network handler instance.
+     * Stops the currently running exchange handler instance.
      */
     public abstract void stop();
+
+    /**
+     * Sends a message to the ExchangeHandler on the other side
+     *
+     * @param message the message to send.
+     */
+    public abstract void update(Message message);
 }
