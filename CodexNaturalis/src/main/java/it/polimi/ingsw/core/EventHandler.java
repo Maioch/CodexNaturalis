@@ -4,10 +4,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
-* Handles events following the FIFO principle by saving them in a queue.
-*
-* @author Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli, Marco Maiocchi
-*/
+ * Handles events following the FIFO principle by saving them in a queue.
+ *
+ * @param <T> the type of the events
+ *
+ * @author Andrea Fidanza, Guglielmo Gatti, Francesco Nisoli, Marco Maiocchi
+ */
 public abstract class EventHandler<T> implements Runnable{
 
     //stores the events which have yet to be handled.

@@ -31,6 +31,11 @@ public class CardFormatter {
     private final static int boardRadius = 4;
 
     /**
+     * Class constructor.
+     */
+    public CardFormatter(){}
+
+    /**
      * Formats the player's board.
      *
      * @param placedCards the player's current placed cards.

@@ -33,6 +33,11 @@ public class CardBuilder {
     private static final String filePath = "/gameFiles/";
 
     /**
+     * Class constructor.
+     */
+    public CardBuilder(){}
+
+    /**
      * Creates resource/gold/starter cards.
      *
      * @param cardId the card's ID.

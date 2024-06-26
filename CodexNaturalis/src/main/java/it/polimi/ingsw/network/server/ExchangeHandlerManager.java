@@ -1,23 +1,29 @@
 package it.polimi.ingsw.network.server;
 
+import it.polimi.ingsw.controller.server.GameController;
 import it.polimi.ingsw.core.Parameters;
 import it.polimi.ingsw.network.shared.ExchangeHandler;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * Keeps track of all the handlers, handles disconnections when a handler isn't part of a game,
+ * Keeps track of all the handlers, handles disconnections,
  * and stops the handlers that are considered disconnected.
+ *
+ * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class ExchangeHandlerManager {
 
+    //stores all the currently running handlers.
     private final List<ExchangeHandler> handlers ;
+
+    //stores the handlers which are expected to answer the ping request.
     private final List<ExchangeHandler> handlersToCheck;
+
+    //stores the handlers which answered the ping request.
     private final List<ExchangeHandler> connectedHandlers;
 
     /**
@@ -32,7 +38,7 @@ public class ExchangeHandlerManager {
             @Override
             public void run() {
                 stopDisconnectedHandlers();
-                handleSetupDisconnections();
+                handleDisconnections();
             }
         }, Parameters.getServerPingPeriodSeconds() * 1000L, Parameters.getServerPingPeriodSeconds() * 1000L);
     }
@@ -41,6 +47,8 @@ public class ExchangeHandlerManager {
      * Adds a new handler to the handler list.
      *
      * @param handler the handler to add.
+     *
+     * @see ExchangeHandler
      */
     public void addHandler(ExchangeHandler handler){
         synchronized (handlers) {
@@ -49,44 +57,60 @@ public class ExchangeHandlerManager {
     }
 
     /**
-     * Adds the handler to the connected handler list and notifies that the ping has been received.
+     * Adds the handler to the connected handlers and notifies that the ping has been received.
      *
      * @param handler the handler to add.
+     *
+     * @see ExchangeHandler
      */
     public void receivePing(ExchangeHandler handler){
         synchronized (connectedHandlers) {
             connectedHandlers.add(handler);
         }
-        System.out.println("received ping");
     }
 
     /**
-     * Handles the disconnection of a handler during the setup phase of the game.
+     * Checks for disconnected handlers, notifies the gameControllers about them,
+     * then starts the next round of pings.
      */
-    private void handleSetupDisconnections(){
+    private void handleDisconnections(){
         synchronized (connectedHandlers) {
-            for(ExchangeHandler handler : handlersToCheck) {
-                if (!connectedHandlers.contains(handler)) {
-                    handler.setDisconnected();
+            synchronized (handlers) {
+                List<ExchangeHandler> toDisconnect = new ArrayList<>();
+                for (ExchangeHandler handler : handlers) {
+                    if (!connectedHandlers.contains(handler) && handlersToCheck.contains(handler)) {
+                        toDisconnect.add(handler);
+                    }
                 }
+                List<GameController> gamesWithUsers =
+                        handlers.stream().map(ExchangeHandler::getCurrentGame).filter(Objects::nonNull).distinct().toList();
+                for(GameController game : gamesWithUsers){
+                    List<ExchangeHandler> connectedToGame = connectedHandlers.stream()
+                            .filter(h -> h.getCurrentGame() == game && !toDisconnect.contains(h))
+                            .collect(Collectors.toCollection(ArrayList::new));
+                    connectedToGame.addAll(handlers.stream()
+                            .filter(h -> h.getCurrentGame() == game && !handlersToCheck.contains(h))
+                            .toList());
+                    List<ExchangeHandler> disconnected = handlers.stream()
+                            .filter(h -> h.getCurrentGame() == game && toDisconnect.contains(h))
+                            .toList();
+                    game.handleDisconnections(connectedToGame, disconnected);
+                }
+                toDisconnect.forEach(ExchangeHandler::setDisconnected);
+                connectedHandlers.clear();
+                handlersToCheck.clear();
             }
-            connectedHandlers.clear();
-            handlersToCheck.clear();
         }
         synchronized (handlers) {
             for (ExchangeHandler handler : handlers) {
-                if (handler.getCurrentGame() == null) {
-                    handlersToCheck.add(handler);
-                }
+                handler.update(new Message(Status.REQUEST_PING));
+                handlersToCheck.add(handler);
             }
-        }
-        for (ExchangeHandler handler : handlersToCheck) {
-            handler.update(new Message(Status.REQUEST_PING));
         }
     }
 
     /**
-     * Removes all disconnected handlers from the handlers list and stops them.
+     * Removes all disconnected handlers from the handler list and stops them.
      */
     private void stopDisconnectedHandlers() {
         synchronized (handlers) {

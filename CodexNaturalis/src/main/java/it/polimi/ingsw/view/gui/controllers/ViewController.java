@@ -37,11 +37,18 @@ public abstract class ViewController {
      */
     protected record DisconnectionControls(GridPane popupGrid, Label label, Button button){}
 
-    //the client instance used for the entire program's lifecycle
+    /**
+     * the client instance used for the entire program's lifecycle
+     */
     protected Client client;
 
     //used to store the nodes that are shown whenever the client gets disconnected from the server.
     private DisconnectionControls disconnectionControls;
+
+    /**
+     * Class constructor.
+     */
+    public ViewController() {}
 
     /**
      * Sets the client instance related to the GUI.

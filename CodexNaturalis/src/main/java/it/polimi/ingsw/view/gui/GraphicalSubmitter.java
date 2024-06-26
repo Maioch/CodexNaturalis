@@ -11,6 +11,11 @@ import javafx.application.Platform;
 public class GraphicalSubmitter implements EventSubmitter {
 
     /**
+     * Class constructor.
+     */
+    public GraphicalSubmitter() {}
+
+    /**
      * Submits a new action.
      *
      * @param action the action to submit.

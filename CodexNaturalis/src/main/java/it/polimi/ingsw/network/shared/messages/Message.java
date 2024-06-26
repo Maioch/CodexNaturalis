@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class Message implements Serializable{
-    protected final Status status;
+    private final Status status;
 
     /**
      * Constructor for the class.
@@ -22,7 +22,9 @@ public class Message implements Serializable{
     }
 
     /**
-     * @return the status attribute.
+     * Gets the attached message's status.
+     *
+     * @return the attached message's status.
      *
      * @see Status
      */

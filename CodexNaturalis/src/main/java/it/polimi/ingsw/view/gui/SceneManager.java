@@ -51,7 +51,8 @@ public class SceneManager {
     /**
      * Changes (and loads) the current scene.
      *
-     * @param file the FXML resource path.
+     * @param file   the FXML resource path.
+     * @param client the client associated to this machine.
      *
      * @see Client
      */

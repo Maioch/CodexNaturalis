@@ -13,6 +13,13 @@ import java.io.IOException;
 public class CodexApplication extends Application {
 
     /**
+     * Class constructor.
+     */
+    public CodexApplication() {
+        super();
+    }
+
+    /**
      * Starts the GUI running.
      *
      * @param stage the JavaFX stage instance.

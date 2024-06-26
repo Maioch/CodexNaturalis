@@ -3,6 +3,7 @@ package it.polimi.ingsw;
 import it.polimi.ingsw.controller.client.ClientController;
 import it.polimi.ingsw.controller.server.GameController;
 import it.polimi.ingsw.core.EventHandler;
+import it.polimi.ingsw.network.server.ExchangeHandlerManager;
 import it.polimi.ingsw.network.shared.ExchangeHandler;
 import it.polimi.ingsw.network.shared.LabeledMessage;
 import it.polimi.ingsw.network.shared.messages.Message;
@@ -18,9 +19,10 @@ public class TestNetworkHandler extends ExchangeHandler {
     private final List<Message> receivedMessages;
     private final GameController gameController;
     private final ClientController clientController;
+    private final ExchangeHandlerManager handlerManager;
     private boolean stopped;
 
-    public TestNetworkHandler(GameController gameController){
+    public TestNetworkHandler(GameController gameController, ExchangeHandlerManager handlerManager){
         super(new EventHandler<>() {
             @Override
             public void run(){}
@@ -28,6 +30,7 @@ public class TestNetworkHandler extends ExchangeHandler {
         receivedMessages = new ArrayList<>();
         this.gameController = gameController;
         this.clientController = null;
+        this.handlerManager = handlerManager;
         this.stopped = false;
     }
 
@@ -39,6 +42,7 @@ public class TestNetworkHandler extends ExchangeHandler {
         receivedMessages = new ArrayList<>();
         this.gameController = null;
         this.clientController = clientController;
+        this.handlerManager = null;
     }
 
     public TestNetworkHandler(){
@@ -49,6 +53,7 @@ public class TestNetworkHandler extends ExchangeHandler {
         receivedMessages = new ArrayList<>();
         this.gameController = null;
         this.clientController = null;
+        this.handlerManager = null;
     }
 
     public synchronized List<Message> getReceivedMessages() {
@@ -141,7 +146,9 @@ public class TestNetworkHandler extends ExchangeHandler {
                 assertNotNull(clientController);
                 clientController.addEventToQueue(new LabeledMessage(this, new Message(Status.PING_ACK)));
             } else {
-                gameController.receivePing(this);
+                if(handlerManager != null) {
+                    handlerManager.receivePing(this);
+                }
             }
             return;
         }

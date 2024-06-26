@@ -136,6 +136,7 @@
                         </rowConstraints>
                         <RadioButton id="0" fx:id="tcpRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButtons" text="TCP" textFill="#351f16" GridPane.halignment="CENTER">
                             <toggleGroup>
+                                <!--suppress JavaFxUnresolvedFxIdReference -->
                                 <ToggleGroup fx:id="protocol" />
                             </toggleGroup>
                             <font>

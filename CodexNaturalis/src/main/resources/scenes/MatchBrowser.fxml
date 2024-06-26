@@ -110,7 +110,7 @@
                         <rowConstraints>
                             <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
                         </rowConstraints>
-                        <Button fx:id="refreshButton" mnemonicParsing="false" onAction="#refreshMatchList" prefHeight="33.0" prefWidth="186.0" stylesheets="@CodexTheme.css" text="Refresh" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                        <Button mnemonicParsing="false" onAction="#refreshMatchList" prefHeight="33.0" prefWidth="186.0" stylesheets="@CodexTheme.css" text="Refresh" textFill="#2f0606" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                             <font>
                                 <Font name="FIra Sans Condensed Regular" size="14.0" />
                             </font>
@@ -126,7 +126,7 @@
                                 <Insets left="4.0" />
                             </GridPane.margin>
                         </Button>
-                        <Button fx:id="requestCreationButton" mnemonicParsing="false" onAction="#requestCreation" prefHeight="33.0" prefWidth="186.0" stylesheets="@CodexTheme.css" text="Create" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                        <Button mnemonicParsing="false" onAction="#requestCreation" prefHeight="33.0" prefWidth="186.0" stylesheets="@CodexTheme.css" text="Create" textFill="#2f0606" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                             <font>
                                 <Font name="FIra Sans Condensed Regular" size="14.0" />
                             </font>
@@ -225,7 +225,7 @@
                 <rowConstraints>
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 </rowConstraints>
-                <ImageView fx:id="backFromJoinIcon" fitHeight="16.0" fitWidth="16.0" onMouseClicked="#goBackFromPopup" pickOnBounds="true" styleClass="backButton" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                <ImageView fitHeight="16.0" fitWidth="16.0" onMouseClicked="#goBackFromPopup" pickOnBounds="true" styleClass="backButton" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                     <Image url="@images/interface/back.png" />
                 </ImageView>
                 <Label alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Join game" textFill="#2f0606" GridPane.columnIndex="1">
@@ -335,7 +335,7 @@
                 <rowConstraints>
                     <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
                 </rowConstraints>
-                <ImageView fx:id="backFromCreateIcon" fitHeight="16.0" fitWidth="16.0" onMouseClicked="#goBackFromPopup" pickOnBounds="true" styleClass="backButton" GridPane.halignment="CENTER">
+                <ImageView fitHeight="16.0" fitWidth="16.0" onMouseClicked="#goBackFromPopup" pickOnBounds="true" styleClass="backButton" GridPane.halignment="CENTER">
                     <Image url="@images/interface/back.png" />
                 </ImageView>
                 <Label alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Create match" textFill="#2f0606" GridPane.columnIndex="1">
@@ -406,7 +406,7 @@
                 <rowConstraints>
                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 </rowConstraints>
-                <ImageView fx:id="backFromReconnectIcon" fitHeight="16.0" fitWidth="16.0" onMouseClicked="#goBackFromPopup" pickOnBounds="true" styleClass="backButton" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                <ImageView fitHeight="16.0" fitWidth="16.0" onMouseClicked="#goBackFromPopup" pickOnBounds="true" styleClass="backButton" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                     <Image url="@images/interface/back.png" />
                 </ImageView>
                 <Label alignment="CENTER" maxHeight="Infinity" maxWidth="Infinity" prefHeight="111.0" prefWidth="204.0" styleClass="titleBackground" text="Reconnect to game" textFill="#2f0606" GridPane.columnIndex="1">

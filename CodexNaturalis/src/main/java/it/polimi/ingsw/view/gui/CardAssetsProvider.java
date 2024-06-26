@@ -41,6 +41,11 @@ public class CardAssetsProvider {
     }};
 
     /**
+     * Class constructor.
+     */
+    public CardAssetsProvider() {}
+
+    /**
      * Returns the path where the parameter card is saved.
      * Resource and gold cards have the same back side, except for the color: if the card isn't a starter and its back
      * side is requested, the returned ID is the same for every card with the same color.

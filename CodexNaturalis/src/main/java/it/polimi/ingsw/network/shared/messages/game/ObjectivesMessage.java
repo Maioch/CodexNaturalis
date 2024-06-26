@@ -30,7 +30,9 @@ public class ObjectivesMessage extends Message {
     }
 
     /**
-     * @return the objectives.
+     * Gets the attached objectives.
+     *
+     * @return the attached objectives.
      *
      * @see Objective
      */

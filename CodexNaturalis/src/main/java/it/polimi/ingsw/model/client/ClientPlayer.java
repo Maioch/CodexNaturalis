@@ -34,10 +34,14 @@ public abstract class ClientPlayer {
     //the player's current score
     private int score;
 
-    //the event submitter used to update the view
+    /**
+     * the event submitter used to update the view
+     */
     protected EventSubmitter eventSubmitter;
 
-    //the current game view
+    /**
+     * the current game view
+     */
     protected GameView gameView;
 
     /**

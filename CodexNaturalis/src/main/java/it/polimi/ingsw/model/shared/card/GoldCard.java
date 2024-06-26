@@ -64,7 +64,7 @@ public class GoldCard extends BasicCard {
     }
 
     @Override
-    public Map<Content,Integer> getRequirements(){
+    public Map<Content, Integer> getRequirements(){
         return getMapFromContentList(requirements);
     }
 
@@ -126,6 +126,11 @@ public class GoldCard extends BasicCard {
      * as the multiplier that gets applied to the card's base points.
      */
     public class CornerBonus implements Bonus{
+
+        /**
+         * Class constructor.
+         */
+        public CornerBonus() {}
 
         /**
          * Gets the total amount of points given to the player when he places the card.

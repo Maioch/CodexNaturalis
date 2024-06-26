@@ -26,54 +26,45 @@ import java.util.List;
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class MatchBrowserViewController extends ViewController {
+
     @FXML
-    public Button requestCreationButton;
+    private GridPane matchGridPane;
     @FXML
-    public GridPane matchGridPane;
+    private GridPane errorPopupGrid;
     @FXML
-    public GridPane errorPopupGrid;
+    private Label errorLabel;
     @FXML
-    public Label errorLabel;
+    private Button okButton;
     @FXML
-    public Button okButton;
+    private GridPane joinPopupGrid;
     @FXML
-    public GridPane joinPopupGrid;
+    private TextField nicknameTextBox;
     @FXML
-    public TextField nicknameTextBox;
+    private Button joinPopupButton;
     @FXML
-    public Button joinPopupButton;
+    private Button requestJoinButton;
     @FXML
-    public Button refreshButton;
+    private GridPane colorChoiceGrid;
     @FXML
-    public Button requestJoinButton;
+    private GridPane createPopupGrid;
     @FXML
-    public GridPane colorChoiceGrid;
+    private TextField matchNameTextbox;
     @FXML
-    public GridPane createPopupGrid;
+    private Button createPopupButton;
     @FXML
-    public TextField matchNameTextbox;
+    private ToggleGroup playerNumberToggleGroup;
     @FXML
-    public Button createPopupButton;
+    private Button reconnectButton;
     @FXML
-    public ImageView backFromCreateIcon;
+    private TextField reconnectNicknameTextbox;
     @FXML
-    public ImageView backFromJoinIcon;
+    private GridPane reconnectPopUp;
     @FXML
-    public ToggleGroup playerNumberToggleGroup;
+    private GridPane disconnectionPopupGrid;
     @FXML
-    public ImageView backFromReconnectIcon;
+    private Button disconnectionButton;
     @FXML
-    public Button reconnectButton;
-    @FXML
-    public TextField reconnectNicknameTextbox;
-    @FXML
-    public GridPane reconnectPopUp;
-    @FXML
-    public GridPane disconnectionPopupGrid;
-    @FXML
-    public Button disconnectionButton;
-    @FXML
-    public Label disconnectionLabel;
+    private Label disconnectionLabel;
 
     //contains all the match browser's entries, grouped by row.
     private final List<List<RadioButton>> radioButtons = new ArrayList<>();
@@ -90,6 +81,14 @@ public class MatchBrowserViewController extends ViewController {
     //the animation offset used for all the transition which translate a node.
     private final double animationOffset = 200;
 
+    /**
+     * Class constructor.
+     */
+    public MatchBrowserViewController() {}
+
+    /**
+     * Initializes the scene by setting the disconnection controls.
+     */
     public void initialize(){
         setDisconnectionControls(new DisconnectionControls(disconnectionPopupGrid, disconnectionLabel, disconnectionButton));
     }

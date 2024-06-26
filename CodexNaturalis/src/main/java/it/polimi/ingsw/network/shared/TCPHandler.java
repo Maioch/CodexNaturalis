@@ -32,10 +32,12 @@ public class TCPHandler extends ExchangeHandler implements Runnable{
     /**
      * Constructor for the class. It doesn't set the logger (used only by the server).
      *
-     * @param socket  the socket to which the client is connected.
-     * @param handler the message handler that will handle the messages received.
+     * @param socket       the socket to which the client is connected.
+     * @param handler      the message handler that will handle the messages received.
      *
      * @see EventHandler
+     *
+     * @throws IOException if an I/O error occurs.
      */
     public TCPHandler(Socket socket, EventHandler<LabeledMessage> handler) throws IOException{
         super(handler);
@@ -47,11 +49,13 @@ public class TCPHandler extends ExchangeHandler implements Runnable{
     /**
      * Constructor for the class.
      *
-     * @param socket  the socket to which the client is connected.
-     * @param handler the message handler that will handle the messages received.
-     * @param logger  the logger used to log network events.
+     * @param socket       the socket to which the client is connected.
+     * @param handler      the message handler that will handle the messages received.
+     * @param logger       the logger used to log network events.
      *
      * @see EventHandler
+     *
+     * @throws IOException if an I/O error occurs.
      */
     public TCPHandler(Socket socket, EventHandler<LabeledMessage> handler, Logger logger) throws IOException{
         super(handler, logger);
@@ -61,11 +65,14 @@ public class TCPHandler extends ExchangeHandler implements Runnable{
     }
 
     /**
-     * Stops this handler running thread.
+     * Stops this handler's running thread.
      */
     @Override
     public void stop(){
         handlerThread.interrupt();
+        if(logger != null) {
+            logger.info("TCP handler stopped\n");
+        }
     }
 
     /**
@@ -113,7 +120,7 @@ public class TCPHandler extends ExchangeHandler implements Runnable{
             socketOutput.writeObject(message);
         }catch(IOException e){
             if(logger != null) {
-                logger.info("Encountered an IO Exception in TCPHandler:\n" + e.getMessage() + "\n");
+                logger.finest("Encountered an IO Exception in TCPHandler:\n" + e.getMessage() + "\n");
             }
         }
     }

@@ -26,6 +26,11 @@ public class Parameters {
     private final static String serverParametersFile = "serverParameters.json";
 
     /**
+     * Class constructor.
+     */
+    public Parameters() {}
+
+    /**
      * Returns the index of the first card of the parameter type.
      * Indexes start from 1 and are sequential for all the game card: first resource cards, then gold ones, starters and
      * finally objectives.

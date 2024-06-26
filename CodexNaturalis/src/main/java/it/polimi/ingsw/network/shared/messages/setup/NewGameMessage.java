@@ -25,14 +25,18 @@ public class NewGameMessage extends Message {
     }
 
     /**
-     * @return the name of the game.
+     * Gets the attached name of the game.
+     *
+     * @return the attached name of the game.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return the maximum amount of players for the game.
+     * Gets the attached maximum amount of players for the game.
+     *
+     * @return the attached maximum amount of players for the game.
      */
     public int getNumberOfPlayers(){
         return numberOfPlayers;

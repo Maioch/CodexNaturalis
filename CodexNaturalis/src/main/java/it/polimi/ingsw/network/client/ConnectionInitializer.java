@@ -21,6 +21,11 @@ import java.rmi.RemoteException;
 public class ConnectionInitializer {
 
     /**
+     * Class constructor.
+     */
+    public ConnectionInitializer() {}
+
+    /**
      * Initializes the TCP connection.
      *
      * @param settings               the server's ip, port and connection type (RMI or TCP).

@@ -23,25 +23,28 @@ import java.rmi.RemoteException;
 public class ConnectionViewController extends ViewController {
 
     @FXML
-    public TextField portTextBox;
+    private TextField portTextBox;
     @FXML
-    public TextField ipTextBox;
+    private TextField ipTextBox;
     @FXML
-    public Button connectButton;
+    private Button connectButton;
     @FXML
-    public Label errorText;
+    private Label errorText;
     @FXML
-    public RadioButton tcpRadioButton;
+    private RadioButton tcpRadioButton;
     @FXML
-    public RadioButton rmiRadioButton;
-    @FXML
-    public ToggleGroup protocol;
+    private RadioButton rmiRadioButton;
 
     //the connection settings chosen by the user
     private ConnectionSettings connectionSettings;
 
     //the application instance, used to open the rulebook's URL.
     private Application application;
+
+    /**
+     * Class constructor.
+     */
+    public ConnectionViewController() {}
 
     /**
      * Connects the client to the server, using the information inputted in the login module.

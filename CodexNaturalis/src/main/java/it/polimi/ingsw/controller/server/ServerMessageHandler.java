@@ -31,9 +31,11 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
     /**
      * Constructor for the class.
      *
-     * @param games the current list of games.
+     * @param games                  the current list of games.
+     * @param exchangeHandlerManager the exchange handler manager.
      *
      * @see GamesManager
+     * @see ExchangeHandlerManager
      */
     public ServerMessageHandler(GamesManager games, ExchangeHandlerManager exchangeHandlerManager){
         super();
@@ -57,13 +59,13 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                 labeledMessage.exchangeHandler().update(new Message(Status.PING_ACK));
                 continue;
             }
+            if(labeledMessage.message().getStatus() == Status.PING_ACK) {
+                exchangeHandlerManager.receivePing(labeledMessage.exchangeHandler());
+                continue;
+            }
             if(currentClientGame != null) {
-                if(labeledMessage.message().getStatus() == Status.PING_ACK){
-                    labeledMessage.exchangeHandler().getCurrentGame().receivePing(labeledMessage.exchangeHandler());
-                } else {
-                    labeledMessage.exchangeHandler().getCurrentGame().addMessageToQueue(
-                            labeledMessage.message(), labeledMessage.exchangeHandler());
-                }
+                labeledMessage.exchangeHandler().getCurrentGame().addMessageToQueue(
+                        labeledMessage.message(), labeledMessage.exchangeHandler());
                 continue;
             }
             switch(labeledMessage.message().getStatus()){
@@ -115,7 +117,6 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                         game.wakeUpAfterReconnect();
                     }
                 }
-                case PING_ACK -> exchangeHandlerManager.receivePing(labeledMessage.exchangeHandler());
             }
         }
     }

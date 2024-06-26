@@ -42,6 +42,8 @@ public class DrawOptionsMessage extends Message {
     }
 
     /**
+     * Gets the attached draw options.
+     *
      * @return a map containing, respectively, the card type and the card (sides) itself of all the possible options.
      *
      * @see CardType
@@ -56,6 +58,8 @@ public class DrawOptionsMessage extends Message {
     }
 
     /**
+     * Gets the attached number of cards left.
+     *
      * @return a map containing, respectively, the card type and the number of cards left for the respective deck.
      *
      * @see CardType

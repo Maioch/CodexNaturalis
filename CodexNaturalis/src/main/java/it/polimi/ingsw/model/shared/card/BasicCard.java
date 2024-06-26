@@ -22,25 +22,39 @@ import java.util.stream.Collectors;
  */
 public class BasicCard implements Serializable {
 
-    //the card's id
+    /**
+     * the card's id
+     */
     protected final int cardId;
 
-    //the card's main resource type
+    /**
+     * the card's main resource type
+     */
     protected final Content color;
 
-    //the card's corners
+    /**
+     * the card's corners
+     */
     protected final Set<Corner> corners;
 
-    //the number of points awarded when placing the card
+    /**
+     * the number of points awarded when placing the card
+     */
     protected final int points;
 
-    //the card's permanent resources (not to be confused with the resources from the card's corners)
+    /**
+     * the card's permanent resources (not to be confused with the resources on the card's corners)
+     */
     protected final List<Content> resources;
 
-    //whether this is the front or the back of the actual card with the same id.
+    /**
+     * whether this is the front or the back of the actual card with the same id.
+     */
     protected final boolean isFront;
 
-    //the card's owner
+    /**
+     * the card's owner
+     */
     protected transient Player owner;
 
     /**
@@ -186,7 +200,7 @@ public class BasicCard implements Serializable {
      *
      * @see Content
      */
-    public Map<Content,Integer> getCardSymbols(){
+    public Map<Content, Integer> getCardSymbols(){
         //Create a list containing all the contents of the card
         List<Content> totalContent = this.corners.stream()
                 .filter(Corner::getVisibility)

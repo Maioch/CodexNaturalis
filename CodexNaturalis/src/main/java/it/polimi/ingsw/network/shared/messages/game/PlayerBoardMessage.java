@@ -31,7 +31,9 @@ public class PlayerBoardMessage extends Message {
     }
 
     /**
-     * @return the player's board, as a list of BasicCards.
+     * Gets the attached player's board.
+     *
+     * @return the attached player's board, as a list of BasicCards.
      *
      * @see BasicCard
      */
@@ -40,7 +42,9 @@ public class PlayerBoardMessage extends Message {
     }
 
     /**
-     * @return the player's score.
+     * Gets the attached player's score.
+     *
+     * @return the attached player's score.
      */
     public int getPlayerScore(){
         return playerScore;

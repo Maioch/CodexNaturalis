@@ -25,6 +25,11 @@ import java.util.function.Predicate;
 public abstract class AbstractCLI {
 
     /**
+     * Class constructor
+     */
+    public AbstractCLI() {}
+
+    /**
      * Reads the client's inputs.
      *
      * @param <T>            generic used to return different types of converted inputs.
@@ -91,6 +96,16 @@ public abstract class AbstractCLI {
      */
     @FunctionalInterface
     protected interface Mapper<T,U>{
+
+        /**
+         * used to convert an object of type T to one of type U
+         *
+         * @param t the object to convert
+         *
+         * @return converted object
+         *
+         * @throws MapperException whenever a conversion error is encountered
+         */
         U apply(T t) throws MapperException;
     }
 

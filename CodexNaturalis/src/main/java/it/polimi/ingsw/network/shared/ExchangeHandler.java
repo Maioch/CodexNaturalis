@@ -17,10 +17,14 @@ import java.util.logging.Logger;
  */
 public abstract class ExchangeHandler {
 
-    //the handler that's supposed to handle the received messages.
+    /**
+     * the handler that's supposed to handle the received messages.
+     */
     protected final EventHandler<LabeledMessage> handler;
 
-    //the logger that, when present, will log info about this handler's state.
+    /**
+     * the logger that, when present, will log info about this handler's state.
+     */
     protected final Logger logger;
 
     //the handler's current game, if it's part of any.

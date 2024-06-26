@@ -30,7 +30,9 @@ public class CardPlacementMessage extends Message {
     }
 
     /**
-     * @return the card to be placed.
+     * Gets the attached card to be placed.
+     *
+     * @return attached the card to be placed.
      *
      * @see BasicCard
      */
@@ -39,7 +41,9 @@ public class CardPlacementMessage extends Message {
     }
 
     /**
-     * @return the corner where the card should be placed.
+     * Gets the attached corner where the card should be placed.
+     *
+     * @return the attached corner where the card should be placed.
      *
      * @see Corner
      */

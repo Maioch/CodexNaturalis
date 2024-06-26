@@ -49,9 +49,6 @@ public class GameController implements Runnable{
     //stores the messages sent by the exchangeHandlers.
     private final Queue<LabeledMessage> messageQueue;
 
-    //keeps track of which users have answered a ping.
-    private final List<ExchangeHandler> connectedUsers;
-
     //run when the game is canceled or the match ends.
     private final Consumer<GameController> endGameProcedure;
 
@@ -63,9 +60,6 @@ public class GameController implements Runnable{
 
     //logs information about the game.
     private final Logger logger;
-
-    //used to send pings periodically and check for disconnected users.
-    private Timer pingTimer;
 
     //stores which player has the current turn.
     private String playerWithTurn;
@@ -95,12 +89,10 @@ public class GameController implements Runnable{
         this.gameInfo = gameInfo;
         this.serverSubject = serverSubject;
         this.messageQueue = new LinkedList<>();
-        this.connectedUsers = new ArrayList<>();
         this.endGameProcedure = endGameProcedure;
         this.onlyOnePlayerLock = new Object();
         this.onlyOnePlayer = false;
         this.gameOver = new AtomicBoolean(false);
-        this.pingTimer = null;
         this.playerWithTurn = "";
         this.logger = Logger.getLogger(Parameters.getLoggerName());
     }
@@ -118,7 +110,6 @@ public class GameController implements Runnable{
         try {
             game.addPlayerData(nickname, color, handler);
             handler.setCurrentGame(this);
-            receivePing(handler);
         }catch(GameFullException G){
             handler.update(new Message(Status.GAME_FULL));
         }catch(GameException e){
@@ -146,7 +137,6 @@ public class GameController implements Runnable{
             return;
         }
         serverSubject.subscribe(nickname, handler);
-        receivePing(handler);
         handler.setCurrentGame(this);
         synchronized (onlyOnePlayerLock){
             onlyOnePlayer = false;
@@ -236,19 +226,6 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Adds the player to the connected users list.
-     *
-     * @param exchangeHandler the player that received the ping.
-     *
-     * @see ExchangeHandler
-     */
-    public void receivePing(ExchangeHandler exchangeHandler){
-        synchronized (connectedUsers){
-            connectedUsers.add(exchangeHandler);
-        }
-    }
-
-    /**
      * Polls a message from the message queue and returns it only if it is sent by the specified handler,
      * it ignores the message otherwise. If the handler is disconnected returns a PLAYER_DISCONNECTED message.
      * It doesn't return CHAT, RECONNECT, JOIN_GAME and REQUEST_COLORS messages as it handles them directly.
@@ -324,88 +301,69 @@ public class GameController implements Runnable{
     }
 
     /**
-     * Returns a list of the handlers that aren't in the connected users list.
+     * Handles a player disconnection.
      *
-     * @return the disconnected handlers.
+     * @param connectedUsers    the handlers that sent the ping ack.
+     * @param newlyDisconnected the handlers that didn't send the ping ack.
      *
      * @see ExchangeHandler
      */
-    private List<ExchangeHandler> getDisconnectedHandlers(){
-        return game.getLobbyNicknames().stream()
-                .map(serverSubject::getExchangeHandler)
-                .filter(n -> !connectedUsers.contains(n))
-                .toList();
+    public void handleDisconnections(List<ExchangeHandler> connectedUsers, List<ExchangeHandler> newlyDisconnected){
+        synchronized (gameInfo){
+            switch (gameInfo.getGameStatus()){
+                case PLAYER_DISCONNECTED, STARTED -> handleGameDisconnections(connectedUsers, newlyDisconnected);
+                case LOBBY -> handleLobbyDisconnections(newlyDisconnected);
+            }
+        }
     }
 
     /**
-     * Checks if any player has disconnected from the game and sends a ping request to all the clients.
-     * If a player doesn't answer to the ping, sets his exchange handler to disconnected and notifies the others with
-     * a PLAYER_DISCONNECTED message.
+     * Notifies everybody about disconnected players during the game.
      * When the connected players are less than one, it sets the game over flag to true and stops the ping timer.
      * When there is only one player connected, it sets the only one player flag to true.
      *
+     * @param connectedUsers    the handlers that sent the ping ack.
+     * @param newlyDisconnected the handlers that didn't send the ping ack.
+     *
      * @see ExchangeHandler
-     * @see Status
      */
-    private void handleGameDisconnections(){
-        List<ExchangeHandler> disconnectedHandlers;
+    private void handleGameDisconnections(List<ExchangeHandler> connectedUsers, List<ExchangeHandler> newlyDisconnected){
         //connected players part
-        synchronized (connectedUsers) {
-            if (connectedUsers.size() == 1) {
-                synchronized (onlyOnePlayerLock) {
-                    onlyOnePlayer = true;
-                }
+        gameInfo.setGameStatus(connectedUsers.size() == game.getNumberOfPlayers() ?
+                GameStatus.STARTED : GameStatus.PLAYER_DISCONNECTED);
+        if(connectedUsers.isEmpty()){
+            logger.info("Game " + gameInfo.getGameId() + ": No players connected, starting abort procedure.\n");
+            gameOver.set(true);
+            synchronized (onlyOnePlayerLock) {
+                onlyOnePlayerLock.notifyAll();
             }
-            if(connectedUsers.isEmpty()){
-                logger.info("Game " + gameInfo.getGameId() + ": No players connected, starting abort procedure.\n");
-                gameOver.set(true);
-                pingTimer.cancel();
-                synchronized (onlyOnePlayerLock) {
-                    onlyOnePlayerLock.notifyAll();
-                }
-            }
-            disconnectedHandlers = getDisconnectedHandlers();
-            connectedUsers.clear();
-            //notifying part
-            for(ExchangeHandler exchangeHandler : disconnectedHandlers){
-                synchronized (gameInfo) {
-                    gameInfo.setGameStatus(GameStatus.PLAYER_DISCONNECTED);
-                }
-                if(exchangeHandler == null){
-                    continue;
-                }
-                if(!exchangeHandler.isDisconnected()){
-                    serverSubject.notifyAll(new StringMessage(Status.PLAYER_DISCONNECTED,
-                            game.getAllPlayers().stream()
-                                    .map(Player::getNickname)
-                                    .filter(n -> serverSubject.getExchangeHandler(n) == exchangeHandler)
-                                    .findFirst().orElse("No players")));
-                }
-                exchangeHandler.setDisconnected();
-            }
-            if(disconnectedHandlers.isEmpty()){
-                synchronized (gameInfo){
-                    gameInfo.setGameStatus(GameStatus.STARTED);
-                }
+            return;
+        }
+        if(connectedUsers.size() == 1) {
+            synchronized (onlyOnePlayerLock) {
+                onlyOnePlayer = true;
             }
         }
-        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
+        //notifying part
+        for(ExchangeHandler exchangeHandler : newlyDisconnected){
+            serverSubject.notifyAll(new StringMessage(Status.PLAYER_DISCONNECTED,
+                    game.getLobbyNicknames().stream()
+                            .filter(n -> serverSubject.getExchangeHandler(n) == exchangeHandler)
+                            .findFirst().orElse("No players")));
+        }
     }
 
     /**
-     * Resets all the information about a player that has disconnected from the lobby; finally requests a ping to
-     * each client.
+     * Removes all disconnected players from the lobby.
+     *
+     * @param newlyDisconnected the handlers that didn't send the ping ack.
+     *
+     * @see ExchangeHandler
      */
-    private void handleLobbyDisconnections(){
-        List<ExchangeHandler> disconnectedHandlers;
-        synchronized (connectedUsers) {
-            disconnectedHandlers = getDisconnectedHandlers();
-            connectedUsers.clear();
-            for(ExchangeHandler exchangeHandler : disconnectedHandlers){
-                removePlayerFromLobby(exchangeHandler);
-            }
+    private void handleLobbyDisconnections(List<ExchangeHandler> newlyDisconnected){
+        for(ExchangeHandler exchangeHandler : newlyDisconnected){
+            removePlayerFromLobby(exchangeHandler);
         }
-        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
     }
 
     /**
@@ -425,7 +383,6 @@ public class GameController implements Runnable{
      * Removes all the players from the game.
      */
     private void removeHandlers(){
-        pingTimer.cancel();
         for (Player player : game.getAllPlayers()) {
             ExchangeHandler playerHandler = serverSubject.getExchangeHandler(player.getNickname());
             if(playerHandler != null) {
@@ -457,7 +414,6 @@ public class GameController implements Runnable{
                     public void run() {
                         synchronized (onlyOnePlayerLock){
                             gameOver.set(true);
-                            pingTimer.cancel();
                             serverSubject.notifyAll(new WinnersMessage(playerLeft));
                             removeHandlers();
                             onlyOnePlayerLock.notifyAll();
@@ -505,17 +461,6 @@ public class GameController implements Runnable{
      */
     private void initializeGame() {
         game.createPlayers();
-        pingTimer.cancel();
-        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
-        TimerTask pingTask = new TimerTask() {
-            @Override
-            public void run() {
-                handleGameDisconnections();
-            }
-        };
-        int periodSeconds = Parameters.getServerPingPeriodSeconds();
-        pingTimer = new Timer();
-        pingTimer.schedule(pingTask, periodSeconds * 1000L, periodSeconds * 1000L);
         Map<CardType, List<BasicCard>> cards = game.getDrawableCards();
         serverSubject.notifyAll(new DrawOptionsMessage(Status.DRAW_OPTIONS, cards, game.getNumberOfCardsLeft()));
         for (Player player : game.getAllPlayers()) {
@@ -804,17 +749,6 @@ public class GameController implements Runnable{
      * clients disconnected, ends the game.
      */
     private void startLobby(){
-        serverSubject.notifyAll(new Message(Status.REQUEST_PING));
-        TimerTask pingTask = new TimerTask() {
-            @Override
-            public void run() {
-                handleLobbyDisconnections();
-            }
-        };
-        pingTimer = new Timer();
-        pingTimer.schedule(pingTask,
-                Parameters.getServerPingPeriodSeconds() * 1000L,
-                Parameters.getServerPingPeriodSeconds() * 1000L);
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -826,7 +760,6 @@ public class GameController implements Runnable{
                     if(game.isLobbyEmpty()) {
                         removeHandlers();
                         gameOver.set(true);
-                        pingTimer.cancel();
                         endGameProcedure.accept(GameController.this);
                     }
                 }

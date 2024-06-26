@@ -28,14 +28,18 @@ public class DrawChoiceMessage extends Message {
     }
 
     /**
-     * @return the index of the chosen card.
+     * Gets the attached index of the chosen card.
+     *
+     * @return the attached index of the chosen card.
      */
     public int getIndex() {
         return index;
     }
 
     /**
-     * @return the card type of the chosen card.
+     * Gets the attached card type of the chosen card.
+     *
+     * @return the attached card type of the chosen card.
      *
      * @see CardType
      */

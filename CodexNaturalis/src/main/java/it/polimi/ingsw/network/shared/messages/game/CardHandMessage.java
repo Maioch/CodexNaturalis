@@ -30,7 +30,9 @@ public class CardHandMessage extends Message {
     }
 
     /**
-     * @return the hand's cards.
+     * Gets the attached hand's cards.
+     *
+     * @return the attached hand's cards.
      *
      * @see CardSides
      */

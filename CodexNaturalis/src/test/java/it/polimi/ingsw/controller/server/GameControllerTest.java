@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.shared.card.BasicCard;
 import it.polimi.ingsw.model.shared.card.CardType;
 import it.polimi.ingsw.model.shared.card.Objective;
 import it.polimi.ingsw.model.shared.card.corner.Corner;
+import it.polimi.ingsw.network.server.ExchangeHandlerManager;
 import it.polimi.ingsw.network.shared.messages.Message;
 import it.polimi.ingsw.network.shared.messages.Status;
 import it.polimi.ingsw.network.shared.messages.game.*;
@@ -75,13 +76,14 @@ public class GameControllerTest {
         String nickname3 = "test3";
         int gameId = 1;
         ServerSubject serverSubject = new ServerSubject();
+        ExchangeHandlerManager handlerManager = new ExchangeHandlerManager();
 
         GameController game = new GameController(2, serverSubject,
                 new GameInfo(gameId, "test", GameStatus.LOBBY), (g) -> {});
         List<TestNetworkHandler> handlers = new ArrayList<>() {{
-            add(new TestNetworkHandler(game));
-            add(new TestNetworkHandler(game));
-            add(new TestNetworkHandler(game));
+            add(new TestNetworkHandler(game, handlerManager));
+            add(new TestNetworkHandler(game, handlerManager));
+            add(new TestNetworkHandler(game, handlerManager));
         }};
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME, nickname1, Content.RED, null, gameId));
@@ -114,16 +116,18 @@ public class GameControllerTest {
         String nickname3 = "test3";
         int gameId = 1;
         ServerSubject serverSubject = new ServerSubject();
+        ExchangeHandlerManager handlerManager = new ExchangeHandlerManager();
 
         GameController game = new GameController(3, serverSubject,
                 new GameInfo(gameId, "test", GameStatus.LOBBY), (g) -> {});
         List<TestNetworkHandler> handlers = new ArrayList<>() {{
-            add(new TestNetworkHandler(game));
-            add(new TestNetworkHandler(game));
-            add(new TestNetworkHandler(game));
+            add(new TestNetworkHandler(game, handlerManager));
+            add(new TestNetworkHandler(game, handlerManager));
+            add(new TestNetworkHandler(game, handlerManager));
         }};
         new Thread(game).start();
         for (TestNetworkHandler handler : handlers) {
+            handlerManager.addHandler(handler);
             handler.send(new Message(Status.REQUEST_COLORS));
             handler.awaitForMessage(Status.REQUEST_COLORS);
         }
@@ -145,7 +149,7 @@ public class GameControllerTest {
         handlers.get(2).send(new Message(Status.PLAYER_DISCONNECTED));
         handlers.getFirst().awaitForMessage(Status.PLAYER_LEFT_LOBBY, List.of(Status.NEW_PLAYER_JOINED));
 
-        handlers.set(1, new TestNetworkHandler(game));
+        handlers.set(1, new TestNetworkHandler(game, handlerManager));
         handlers.get(1).send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.BLUE, null, gameId));
         handlers.get(1).awaitForMessage(Status.JOIN_GAME);
         assertEquals(GameStatus.LOBBY, game.getGameStatus());
@@ -162,12 +166,17 @@ public class GameControllerTest {
         String nickname2 = "test2";
         int gameId = 1;
         ServerSubject serverSubject = new ServerSubject();
+        ExchangeHandlerManager handlerManager = new ExchangeHandlerManager();
+
         GameController game = new GameController(2, serverSubject,
                 new GameInfo(gameId, "test", GameStatus.LOBBY), (g) -> {});
         List<TestNetworkHandler> handlers = new ArrayList<>() {{
-            add(new TestNetworkHandler(game));
-            add(new TestNetworkHandler(game));
+            add(new TestNetworkHandler(game, handlerManager));
+            add(new TestNetworkHandler(game, handlerManager));
         }};
+        for (TestNetworkHandler handler : handlers) {
+            handlerManager.addHandler(handler);
+        }
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME,nickname1, Content.RED, null, gameId));
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME,nickname2, Content.BLUE, null, gameId));
@@ -189,13 +198,17 @@ public class GameControllerTest {
         String nickname2 = "test2";
         int gameId = 1;
         ServerSubject serverSubject = new ServerSubject();
+        ExchangeHandlerManager handlerManager = new ExchangeHandlerManager();
         AtomicBoolean gameEnded = new AtomicBoolean(false);
         GameController game = new GameController(2, serverSubject,
                 new GameInfo(gameId, "test", GameStatus.LOBBY), (g) -> gameEnded.set(true));
         List<TestNetworkHandler> handlers = new ArrayList<>() {{
-            add(new TestNetworkHandler(game));
-            add(new TestNetworkHandler(game));
+            add(new TestNetworkHandler(game, handlerManager));
+            add(new TestNetworkHandler(game, handlerManager));
         }};
+        for (TestNetworkHandler handler : handlers) {
+            handlerManager.addHandler(handler);
+        }
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME, nickname1, Content.RED, null, gameId));
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.BLUE, null, gameId));
@@ -212,13 +225,17 @@ public class GameControllerTest {
         String nickname2 = "test2";
         int gameId = 1;
         ServerSubject serverSubject = new ServerSubject();
+        ExchangeHandlerManager handlerManager = new ExchangeHandlerManager();
         AtomicBoolean gameEnded = new AtomicBoolean(false);
         GameController game = new GameController(2, serverSubject,
                 new GameInfo(gameId, "test", GameStatus.LOBBY), (g) -> gameEnded.set(true));
         List<TestNetworkHandler> handlers = new ArrayList<>() {{
-            add(new TestNetworkHandler(game));
-            add(new TestNetworkHandler(game));
+            add(new TestNetworkHandler(game, handlerManager));
+            add(new TestNetworkHandler(game, handlerManager));
         }};
+        for (TestNetworkHandler handler : handlers) {
+            handlerManager.addHandler(handler);
+        }
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME, nickname1, Content.RED, null, gameId));
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.BLUE, null, gameId));
@@ -237,12 +254,16 @@ public class GameControllerTest {
         String nickname2 = "test2";
         int gameId = 1;
         ServerSubject serverSubject = new ServerSubject();
+        ExchangeHandlerManager handlerManager = new ExchangeHandlerManager();
         GameController game = new GameController(2, serverSubject,
                 new GameInfo(gameId, "test", GameStatus.LOBBY), (g) -> {});
         List<TestNetworkHandler> handlers = new ArrayList<>() {{
-            add(new TestNetworkHandler(game));
-            add(new TestNetworkHandler(game));
+            add(new TestNetworkHandler(game, handlerManager));
+            add(new TestNetworkHandler(game, handlerManager));
         }};
+        for (TestNetworkHandler handler : handlers) {
+            handlerManager.addHandler(handler);
+        }
         new Thread(game).start();
         handlers.getFirst().send(new JoinGameMessage(Status.JOIN_GAME, nickname1, Content.RED, null, gameId));
         handlers.getLast().send(new JoinGameMessage(Status.JOIN_GAME, nickname2, Content.BLUE, null, gameId));
@@ -250,7 +271,8 @@ public class GameControllerTest {
         handlers.getFirst().removeStatus(Status.PLAYER_DISCONNECTED);
         Thread.sleep(100);
         assertEquals(game.getGameStatus(), GameStatus.PLAYER_DISCONNECTED);
-        handlers.add(new TestNetworkHandler(game));
+        handlers.add(new TestNetworkHandler(game, handlerManager));
+        handlerManager.addHandler(handlers.getLast());
         handlers.getLast().send(new StringMessage(Status.RECONNECT, "test1"));
         game.wakeUpAfterReconnect();
         for(TestNetworkHandler handler : handlers) {
@@ -267,6 +289,7 @@ public class GameControllerTest {
         int numPlayers = 4;
         AtomicBoolean isGameEnded = new AtomicBoolean(false);
         ServerSubject serverSubject = new ServerSubject();
+        ExchangeHandlerManager handlerManager = new ExchangeHandlerManager();
         GameController game = new GameController(numPlayers, serverSubject,
                 new GameInfo(gameId, "test", GameStatus.LOBBY),
                 (g) -> isGameEnded.set(true));
@@ -274,8 +297,9 @@ public class GameControllerTest {
         List<TestNetworkHandler> finalHandlers = handlers;
         Map<TestNetworkHandler, String> playersNames = new HashMap<>(){{
             for(int i = 0; i < numPlayers; i++){
-                TestNetworkHandler handler = new TestNetworkHandler(game);
+                TestNetworkHandler handler = new TestNetworkHandler(game, handlerManager);
                 finalHandlers.add(handler);
+                handlerManager.addHandler(handler);
                 put(handler, "test" + i);
             }
         }};
@@ -330,10 +354,11 @@ public class GameControllerTest {
         for(TestNetworkHandler currentHandler : handlers) {
             currentHandler.awaitForMessage(Status.TURN_NOTIFICATION);
         }
-        handlers.add(new TestNetworkHandler(game));
+        handlers.add(new TestNetworkHandler(game, handlerManager));
         handlers.getLast().send(new StringMessage(Status.RECONNECT, "test5"));
         handlers.getLast().awaitForMessage(Status.WRONG_NAME);
         handlers.getLast().send(new StringMessage(Status.RECONNECT, playersNames.get(disconnectedHandler)));
+        handlerManager.addHandler(handlers.getLast());
         List<Status> expectedStatus = List.of(Status.JOIN_GAME, Status.NEW_PLAYER_JOINED, Status.DRAW_OPTIONS,
                 Status.SILENT_TURN_NOTIFICATION, Status.PLACEMENT_OK, Status.PLAYER_HAND_CARDS, Status.COMMON_OBJECTIVES,
                 Status.SECRET_OBJECTIVES, Status.PLAYER_HAND_BACK, Status.TURN_NOTIFICATION);

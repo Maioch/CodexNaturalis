@@ -35,7 +35,9 @@ public class ValidPlacementsMessage extends Message {
     }
 
     /**
-     * @return a list of the placeable corners.
+     * Gets the attached list of the placeable corners.
+     *
+     * @return the attached list of the placeable corners.
      *
      * @see Corner
      */
@@ -44,7 +46,9 @@ public class ValidPlacementsMessage extends Message {
     }
 
     /**
-     * @return a list of the placeable cards.
+     * Gets the attached list of the placeable cards.
+     *
+     * @return the attached list of the placeable cards.
      *
      * @see BasicCard
      */

@@ -32,9 +32,10 @@ public class RMIManager extends UnicastRemoteObject implements RMISetup {
     /**
      * Constructor for the class.
      *
-     * @param messageHandler   the event handler that the messages are going to be forwarded to.
+     * @param messageHandler         the event handler that the messages are going to be forwarded to.
+     * @param exchangeHandlerManager the exchange handler manager.
      *
-     * @throws RemoteException whenever the remote invocation of the method fails.
+     * @throws RemoteException       whenever the remote invocation of the method fails.
      *
      * @see EventHandler
      * @see LabeledMessage

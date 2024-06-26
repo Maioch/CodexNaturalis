@@ -30,7 +30,9 @@ public class MatchListMessage extends Message {
     }
 
     /**
-     * @return the match list.
+     * Gets the attached match list.
+     *
+     * @return the attached match list.
      *
      * @see GameInfo
      */

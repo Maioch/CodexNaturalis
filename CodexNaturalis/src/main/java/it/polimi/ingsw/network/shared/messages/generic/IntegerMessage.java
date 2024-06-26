@@ -23,6 +23,8 @@ public class IntegerMessage extends Message {
     }
 
     /**
+     * Gets the attached integer.
+     *
      * @return the attached integer.
      */
     public int getValue() {

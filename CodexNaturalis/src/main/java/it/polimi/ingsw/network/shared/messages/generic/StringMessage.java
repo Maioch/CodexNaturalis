@@ -23,6 +23,8 @@ public class StringMessage extends Message {
     }
 
     /**
+     * Gets the attached string.
+     *
      * @return the attached string.
      */
     public String getString() {

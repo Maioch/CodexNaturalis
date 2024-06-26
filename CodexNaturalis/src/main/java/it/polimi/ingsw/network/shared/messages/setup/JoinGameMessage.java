@@ -37,14 +37,18 @@ public class JoinGameMessage extends Message {
     }
 
     /**
-     * @return the player's nickname.
+     * Gets the attached player's nickname.
+     *
+     * @return the attached player's nickname.
      */
     public String getNickname(){
         return nickname;
     }
 
     /**
-     * @return the player's color.
+     * Gets the attached player's color.
+     *
+     * @return the attached player's color.
      *
      * @see Content
      */
@@ -53,14 +57,18 @@ public class JoinGameMessage extends Message {
     }
 
     /**
-     * @return the game's info.
+     * Gets the attached game's info.
+     *
+     * @return the attached game's info.
      */
     public Integer getGameInfo(){
         return gameInfo;
     }
 
     /**
-     * @return the game's id.
+     * Gets the attached game's id.
+     *
+     * @return the attached game's id.
      */
     public Integer getGameId(){ return gameId; }
 }

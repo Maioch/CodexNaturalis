@@ -21,16 +21,17 @@ import java.util.List;
  * @author Andrea Fidanza, Marco Maiocchi, Francesco Nisoli, Guglielmo Gatti
  */
 public class MatchLobbyViewController extends ViewController {
+
     @FXML
-    public Label playerCountText;
+    private Label playerCountText;
     @FXML
-    public GridPane playerList;
+    private GridPane playerList;
     @FXML
-    public GridPane disconnectionPopupGrid;
+    private GridPane disconnectionPopupGrid;
     @FXML
-    public Label disconnectionLabel;
+    private Label disconnectionLabel;
     @FXML
-    public Button disconnectionButton;
+    private Button disconnectionButton;
 
     //the group that all the player labels are part of.
     private final ToggleGroup group = new ToggleGroup();
@@ -40,6 +41,11 @@ public class MatchLobbyViewController extends ViewController {
 
     //the number of players required to start the game.
     private int maxNumberOfPlayers;
+
+    /**
+     * Class constructor.
+     */
+    public MatchLobbyViewController() {}
 
     /**
      * Initializes the lobby scene view.

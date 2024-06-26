@@ -25,7 +25,9 @@ public class WinnersMessage extends Message {
     }
 
     /**
-     * @return a list containing all the winners nicknames.
+     * Gets the attached list of the winners nickname.
+     *
+     * @return the attached list of the winners nicknames.
      */
     public List<String> getWinners() {
         return new ArrayList<>(winners);

@@ -94,6 +94,9 @@ public class RMIHandler extends ExchangeHandler implements RMIInterface{
     public void stop(){
         try {
             UnicastRemoteObject.unexportObject(this, true);
+            if(logger != null) {
+                logger.info("RMI handler stopped\n");
+            }
         } catch (NoSuchObjectException e) {
             if(logger != null) {
                 logger.severe("Could not un-export RMI interface:\n" + e.getMessage() + "\n");
@@ -117,7 +120,7 @@ public class RMIHandler extends ExchangeHandler implements RMIInterface{
                 receiverInterface.receiveUpdate(message);
             } catch (RemoteException e) {
                 if(logger != null) {
-                    logger.info("Encountered an IO Exception in RMIHandler:\n" + e.getMessage() + "\n");
+                    logger.finest("Encountered an IO Exception in RMIHandler:\n" + e.getMessage() + "\n");
                 }
             }
         });

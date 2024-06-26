@@ -34,14 +34,18 @@ public class PlayerSummaryMessage extends Message {
     }
 
     /**
-     * @return the final score of a player.
+     * Gets the attached final score of the player.
+     *
+     * @return the final score of the player.
      */
     public int getFinalScore(){
         return finalScore;
     }
 
     /**
-     * @return the objective scores of a player.
+     * Gets the attached objective scores of the player.
+     *
+     * @return the attached objective scores of the player.
      *
      * @see Objective
      */
@@ -50,7 +54,9 @@ public class PlayerSummaryMessage extends Message {
     }
 
     /**
-     * @return the player's nickname.
+     * Gets the attached player's nickname.
+     *
+     * @return attached the player's nickname.
      */
     public String getPlayerName(){ return playerName; }
 }

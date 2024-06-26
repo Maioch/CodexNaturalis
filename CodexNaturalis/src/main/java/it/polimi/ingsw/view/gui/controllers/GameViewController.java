@@ -50,83 +50,83 @@ import java.util.function.Consumer;
 public class GameViewController extends ViewController {
 
     @FXML
-    public ScrollPane gameBoardScrollPane;
+    private ScrollPane gameBoardScrollPane;
     @FXML
-    public Pane gameBoardPane;
+    private Pane gameBoardPane;
     @FXML
-    public GridPane cardHandGrid;
+    private GridPane cardHandGrid;
     @FXML
-    public GridPane starterChoicePopUp;
+    private GridPane starterChoicePopUp;
     @FXML
-    public GridPane frontStarterSidePane;
+    private GridPane frontStarterSidePane;
     @FXML
-    public GridPane backStarterSidePane;
+    private GridPane backStarterSidePane;
     @FXML
-    public GridPane playersTagsGrid;
+    private GridPane playersTagsGrid;
     @FXML
-    public TextField chatTextBox;
+    private TextField chatTextBox;
     @FXML
-    public SplitMenuButton chatSendButton;
+    private SplitMenuButton chatSendButton;
     @FXML
-    public VBox chatMessageBox;
+    private VBox chatMessageBox;
     @FXML
-    public GridPane resourceDeckGrid;
+    private GridPane resourceDeckGrid;
     @FXML
-    public GridPane goldDeckGrid;
+    private GridPane goldDeckGrid;
     @FXML
-    public GridPane outerPlayerTagGrid;
+    private GridPane outerPlayerTagGrid;
     @FXML
-    public GridPane notificationToastGrid;
+    private GridPane notificationToastGrid;
     @FXML
-    public ImageView objectivesIcon;
+    private ImageView objectivesIcon;
     @FXML
-    public GridPane objectivesPane;
+    private GridPane objectivesPane;
     @FXML
-    public GridPane commonObjectivesGrid1;
+    private GridPane commonObjectivesGrid1;
     @FXML
-    public GridPane commonObjectivesGrid2;
+    private GridPane commonObjectivesGrid2;
     @FXML
-    public GridPane secretObjectiveGrid;
+    private GridPane secretObjectiveGrid;
     @FXML
-    public GridPane objectivesRevealPopUp;
+    private GridPane objectivesRevealPopUp;
     @FXML
-    public GridPane commonObjectivesRevealPane;
+    private GridPane commonObjectivesRevealPane;
     @FXML
-    public GridPane secretObjectivesRevealPane;
+    private GridPane secretObjectivesRevealPane;
     @FXML
-    public GridPane objectivesButtonPane;
+    private GridPane objectivesButtonPane;
     @FXML
-    public GridPane woodenPanePopUpBackground;
+    private GridPane woodenPanePopUpBackground;
     @FXML
-    public GridPane cardSelectionPopup;
+    private GridPane cardSelectionPopup;
     @FXML
-    public GridPane cardSelectionGrid;
+    private GridPane cardSelectionGrid;
     @FXML
-    public Pane scorePane;
+    private Pane scorePane;
     @FXML
-    public Pane dragLayerPane;
+    private Pane dragLayerPane;
     @FXML
-    public GridPane matchSummaryGrid;
+    private GridPane matchSummaryGrid;
     @FXML
-    public GridPane resultGrid;
+    private GridPane resultGrid;
     @FXML
-    public Label winnersLabel;
+    private Label winnersLabel;
     @FXML
-    public GridPane summaryContentGrid;
+    private GridPane summaryContentGrid;
     @FXML
-    public ScrollPane chatScrollPane;
+    private ScrollPane chatScrollPane;
     @FXML
-    public ScrollPane resultsScrollPane;
+    private ScrollPane resultsScrollPane;
     @FXML
-    public GridPane disconnectionPopupGrid;
+    private GridPane disconnectionPopupGrid;
     @FXML
-    public Label disconnectionLabel;
+    private Label disconnectionLabel;
     @FXML
-    public Button disconnectionButton;
+    private Button disconnectionButton;
     @FXML
-    public AnchorPane rootAnchorPane;
+    private AnchorPane rootAnchorPane;
     @FXML
-    public GridPane sidePanel;
+    private GridPane sidePanel;
 
     //stores the players' names, along with their colors.
     private Map<String, Content> playerColors; //TODO: MIGHT BE REMOVED
@@ -217,6 +217,11 @@ public class GameViewController extends ViewController {
     private final int draggableCardSizeDifference = 10;
 
     /**
+     * Class constructor.
+     */
+    public GameViewController() {}
+
+    /**
      * Initializes the game scene view.
      */
     public void initialize(){
@@ -270,8 +275,9 @@ public class GameViewController extends ViewController {
      * Shows a new chat message.
      * The message is inserted into the chat message box.
      *
-     * @param sender  the sender's nickname
-     * @param message the message text content.
+     * @param sender     the sender's nickname
+     * @param recipients the recipients' nicknames.
+     * @param message    the message text content.
      */
     public void showChatMessage(String sender, List<String> recipients, String message){
         Label senderLabel = new Label(sender + ":");

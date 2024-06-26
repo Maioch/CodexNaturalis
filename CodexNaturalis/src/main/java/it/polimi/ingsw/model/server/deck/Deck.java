@@ -18,7 +18,9 @@ import java.util.function.Function;
 
 public class Deck<T>{
 
-    //the stack that contains the objects that are part of the deck.
+    /**
+     * the stack that contains the objects that are part of the deck.
+     */
     protected Stack<T> deck;
 
     /**

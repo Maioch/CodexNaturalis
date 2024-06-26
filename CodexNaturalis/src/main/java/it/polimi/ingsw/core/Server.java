@@ -25,6 +25,11 @@ import java.util.logging.SimpleFormatter;
 public class Server {
 
     /**
+     * Class constructor.
+     */
+    public Server() {}
+
+    /**
      * Main method, entry point for the server. It sets up the logger, the message handler, the games manager
      * and the rmi manager. Finally, starts listening on the tcp socket.
      * Each accepted connection is handled by a exchange handler.

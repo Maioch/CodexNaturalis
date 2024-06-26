@@ -10,6 +10,11 @@ import javafx.scene.Node;
  */
 public class Animator {
 
+    /**
+     * Constructor for the class.
+     */
+    public Animator() {}
+
     //the interpolator used for all the animations done by this class
     private static final Interpolator cubicInterpolator = Interpolator.SPLINE(.02,.68,.33,.95);
 

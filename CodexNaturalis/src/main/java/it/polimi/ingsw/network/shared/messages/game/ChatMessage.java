@@ -31,21 +31,27 @@ public class ChatMessage extends Message{
     }
 
     /**
-     * @return the chat message.
+     * Gets the attached chat message.
+     *
+     * @return the attached chat message.
      */
     public String getMessage(){
         return message;
     }
 
     /**
-     * @return the message sender.
+     * Gets the attached message's sender.
+     *
+     * @return the attached message's sender.
      */
     public String getSender(){
         return sender;
     }
 
     /**
-     * @return the recipients attribute, if present.
+     * Gets the attached recipients attribute, if present.
+     *
+     * @return the attached recipients attribute, if present.
      */
     public List<String> getRecipients(){
         return new ArrayList<>(recipients);
