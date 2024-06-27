@@ -359,13 +359,13 @@
                 <ColumnConstraints hgrow="ALWAYS" minWidth="16.0" percentWidth="5.0" prefWidth="16.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="16.0" prefHeight="16.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="8.0" prefHeight="8.0" vgrow="SOMETIMES" />
                 <!--suppress XmlUnresolvedReference -->
                 <RowConstraints maxHeight="-Infinity" minHeight="470.0" prefHeight="${sidePanel.width * 0.86}" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="-Infinity" minHeight="116.0" prefHeight="110.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="-Infinity" minHeight="110.0" prefHeight="110.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="1.0" prefHeight="1.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="8.0" prefHeight="8.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <GridPane.margin>
                 <Insets />

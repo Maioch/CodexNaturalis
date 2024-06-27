@@ -81,28 +81,25 @@ public class TCPHandler extends ExchangeHandler implements Runnable{
     @Override
     public void run(){
         handlerThread = Thread.currentThread();
-        try {
-            while (!handlerThread.isInterrupted()) {
-                try {
-                    Message message = (Message) socketInput.readObject();
-                    handler.addEventToQueue(new LabeledMessage(this, message));
-                } catch (ClassNotFoundException e) {
-                    if(logger != null) {
-                        logger.warning("Received an invalid message:\n" + e.getMessage() + "\n");
-                    }
-                }
-            }
-        } catch (IOException e){
-            if(logger != null) {
-                logger.info("Encountered an IO Exception in TCPHandler:\n" + e.getMessage() + "\n");
-            }
-        } finally {
+        while (!handlerThread.isInterrupted()) {
             try {
-                socket.close();
-            } catch (IOException e) {
+                Message message = (Message) socketInput.readObject();
+                handler.addEventToQueue(new LabeledMessage(this, message));
+            } catch (ClassNotFoundException e) {
                 if(logger != null) {
-                    logger.info("Couldn't close the socket:\n" + e.getMessage() + "\n");
+                    logger.warning("Received an invalid message:\n" + e.getMessage() + "\n");
                 }
+            } catch (IOException e){
+                if(logger != null) {
+                    logger.finest("Encountered an IO Exception in TCPHandler:\n" + e.getMessage() + "\n");
+                }
+            }
+        }
+        try {
+            socket.close();
+        } catch (IOException e) {
+            if(logger != null) {
+                logger.info("Couldn't close the socket:\n" + e.getMessage() + "\n");
             }
         }
     }

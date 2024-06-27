@@ -32,7 +32,7 @@ public class SceneManager {
      */
     public SceneManager(String sceneName) throws IOException{
         this.currentLoader = new FXMLLoader(getClass().getResource(filePath + sceneName));
-        this.scene = new Scene(currentLoader.load(),1820,980);
+        this.scene = new Scene(currentLoader.load(),1400,800);
     }
 
     /**

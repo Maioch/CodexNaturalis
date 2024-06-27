@@ -93,6 +93,7 @@ public class RMIHandler extends ExchangeHandler implements RMIInterface{
     @Override
     public void stop(){
         try {
+            executor.shutdown();
             UnicastRemoteObject.unexportObject(this, true);
             if(logger != null) {
                 logger.info("RMI handler stopped\n");
@@ -114,6 +115,9 @@ public class RMIHandler extends ExchangeHandler implements RMIInterface{
      */
     @Override
     public void update(Message message){
+        if (executor.isShutdown()){
+            return;
+        }
         //call the method through a single-threaded executor to avoid blocking the controller's thread
         executor.submit(() -> {
             try {
