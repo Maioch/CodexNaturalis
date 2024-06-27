@@ -81,8 +81,7 @@ public class ServerMessageHandler extends EventHandler<LabeledMessage> implement
                                     newGameMessage.getName().substring(0, Math.min(nameLength, Parameters.getMaxNameLength())));
                             labeledMessage.exchangeHandler().update(new IntegerMessage(Status.NEW_GAME, gameId));
                         }catch (IllegalNumberOfPlayers e) {
-                            List<GameInfo> matches = games.getFormattedAvailableMatches();
-                            labeledMessage.exchangeHandler().update(new MatchListMessage(Status.INVALID_PLAYERS_NUMBER, matches));
+                            labeledMessage.exchangeHandler().update(new Message(Status.INVALID_PLAYERS_NUMBER));
                         }
                     }
                 }

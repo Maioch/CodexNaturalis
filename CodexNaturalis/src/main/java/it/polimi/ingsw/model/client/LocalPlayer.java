@@ -52,7 +52,7 @@ public class LocalPlayer extends ClientPlayer{
      * @param show      flag that determines whether to update the view.
      */
     @Override
-    public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
+    public void setHandCards(List<CardSides> handCards, boolean show) {
         this.handCards = new ArrayList<>(handCards);
         if(show){
             eventSubmitter.submit(() -> gameView.updateLocalPlayerHand(handCards));
@@ -64,7 +64,7 @@ public class LocalPlayer extends ClientPlayer{
      *
      * @return the player's hand.
      */
-    public synchronized List<CardSides> getHandCards() {
+    public List<CardSides> getHandCards() {
         return new ArrayList<>(){{
             for(CardSides cardSides : handCards){
                 add(new CardSides(

@@ -114,7 +114,7 @@ public abstract class ClientPlayer {
      *
      * @return the placed card list.
      */
-    public synchronized List<BasicCard> getPlacedCards() {
+    public List<BasicCard> getPlacedCards() {
         List<BasicCard> result = new ArrayList<>();
         for(BasicCard card : placedCards){
             result.add(card.copy());
@@ -128,7 +128,7 @@ public abstract class ClientPlayer {
      * @param placedCards the player's placed cards.
      * @param score       the player's score.
      */
-    public synchronized void setPlacedCards(List<BasicCard> placedCards, int score) {
+    public void setPlacedCards(List<BasicCard> placedCards, int score) {
         this.placedCards = new ArrayList<>(placedCards);
         this.score = score;
         List<BasicCard> currentPlacedCards = getPlacedCards();

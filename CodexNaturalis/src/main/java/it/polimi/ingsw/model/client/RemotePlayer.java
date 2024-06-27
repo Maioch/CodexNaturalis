@@ -51,7 +51,7 @@ public class RemotePlayer extends ClientPlayer {
      * @param show      flag that determines whether to update the view.
      */
     @Override
-    public synchronized void setHandCards(List<CardSides> handCards, boolean show) {
+    public void setHandCards(List<CardSides> handCards, boolean show) {
         this.handCards = handCards.stream()
                 .map(CardSides::backSide)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -66,7 +66,7 @@ public class RemotePlayer extends ClientPlayer {
      *
      * @return the player's hand cards.
      */
-    public synchronized List<BasicCard> getHandCards() {
+    public List<BasicCard> getHandCards() {
         return new ArrayList<>() {{
             for (BasicCard card : handCards) {
                 add(card.copy());
