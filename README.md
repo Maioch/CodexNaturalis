@@ -22,7 +22,7 @@ A full recreation of the board game "Codex Naturalis", made as our final project
 
 The client can be run from one of the executables found in the releases section which are already packaged with
 the correct Java Runtime Environment version.
-Windows users have to simply run the executable file to install the game, and open it from the Start Menu afterward,
+Windows users can simply run the executable file to install the game and add it to their Start Menu,
 while those on Linux have to extract the zip archive and run the binary found in the /bin folder.
 Alternatively, the client can also be used through the platform-specific jar, 
 which requires JRE 22 or higher:
