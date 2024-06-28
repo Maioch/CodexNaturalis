@@ -4,9 +4,9 @@
 A full recreation of the board game "Codex Naturalis", made as our final project for the software engineering course held at the Polytechnic University of Milan.
 
 ## Screenshots
-![In-game](CodexNaturalis/deliverables/screenshots/ingame.png)
-![Match-browser](CodexNaturalis/deliverables/screenshots/matchbrowser.png)
-![Connection-screen](CodexNaturalis/deliverables/screenshots/connectionscreen.png)
+![In-game](deliverables/screenshots/ingame.png)
+![Match-browser](deliverables/screenshots/matchbrowser.png)
+![Connection-screen](deliverables/screenshots/connectionscreen.png)
 
 ## Features
 
