@@ -1,9 +1,0 @@
-{
-  "commandChar": "/",
-  "delimiter": "-",
-  "rulesURL": "https://studiobombyx.com/assets/CODEX_Rulebook_SD_EN.pdf",
-  "gameHelpBody": "Here's a list of all the available commands:\n /CHAT -rec1-rec2-... message : send a message to one or more players\n /BOARD nickname x y : get a view of the specified player's currently placed cards, centered on the x and y coordinates. Coordinates are optional. \n /HAND nickname : get a view of the specified player's hand\n /SYMBOLS : show game symbols and their meaning\n /OBJECTIVES : show the objectives you possess",
-  "setupHelpBody": "Here's a list of all the available commands:\n /GETRULES open the game's rulebook in your default browser\n /ABOUT show the game's credits",
-  "gameTitle": "\n   ___          _                 __      _                   _ _     \n  / __\\___   __| | _____  __   /\\ \\ \\__ _| |_ _   _ _ __ __ _| (_)___ \n / /  / _ \\ / _` |/ _ \\ \\/ /  /  \\/ / _` | __| | | | '__/ _` | | / __|\n/ /__| (_) | (_| |  __/>  <  / /\\  / (_| | |_| |_| | | | (_| | | \\__ \\\n\\____/\\___/ \\__,_|\\___/_/\\_\\ \\_\\ \\/ \\__,_|\\__|\\__,_|_|  \\__,_|_|_|___/\n                                                                      \n",
-  "pingPeriodSeconds" : 5
-}
