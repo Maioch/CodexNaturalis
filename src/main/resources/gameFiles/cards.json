@@ -1,0 +1,1406 @@
+{
+  "placeableCards" : [
+    {
+      "id" : 1,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "RED",
+        "TL" : "RED",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 2,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "RED",
+        "BR" : "WHITE",
+        "TR" : "RED"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 3,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "RED",
+        "TL" : "WHITE",
+        "BR" : "RED",
+        "TR" : "EMPTY"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 4,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "RED",
+        "TR" : "RED"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 5,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "GREEN",
+        "TL" : "EMPTY",
+        "BR" : "RED",
+        "TR" : "PEN"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 6,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "INK",
+        "BR" : "BLUE",
+        "TR" : "RED"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 7,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "PAPER",
+        "TL" : "RED",
+        "BR" : "WHITE",
+        "TR" : "PURPLE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 8,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "RED"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 9,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "RED",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 10,
+      "type" : "RESOURCE",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "RED",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 11,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "GREEN",
+        "TL" : "GREEN",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 12,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "GREEN",
+        "BR" : "WHITE",
+        "TR" : "GREEN"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 13,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "GREEN",
+        "TL" : "WHITE",
+        "BR" : "GREEN",
+        "TR" : "EMPTY"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 14,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "GREEN",
+        "TR" : "GREEN"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 15,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "PEN",
+        "TL" : "EMPTY",
+        "BR" : "GREEN",
+        "TR" : "PURPLE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 16,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "RED",
+        "BR" : "INK",
+        "TR" : "GREEN"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 17,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "GREEN",
+        "TL" : "PAPER",
+        "BR" : "BLUE",
+        "TR" : "EMPTY"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 18,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "GREEN",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 19,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "GREEN",
+        "TR" : "WHITE"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 20,
+      "type" : "RESOURCE",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "GREEN"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 21,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "BLUE",
+        "BR" : "EMPTY",
+        "TR" : "BLUE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 22,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "BLUE",
+        "TL" : "EMPTY",
+        "BR" : "BLUE",
+        "TR" : "WHITE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 23,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "BLUE",
+        "TL" : "BLUE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 24,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "BLUE",
+        "TR" : "BLUE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 25,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "INK",
+        "TL" : "EMPTY",
+        "BR" : "BLUE",
+        "TR" : "PURPLE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 26,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "GREEN",
+        "BR" : "PAPER",
+        "TR" : "BLUE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 27,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "BLUE",
+        "TL" : "PEN",
+        "BR" : "RED",
+        "TR" : "EMPTY"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 28,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "BLUE",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 29,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "BLUE",
+        "TR" : "EMPTY"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 30,
+      "type" : "RESOURCE",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "BLUE"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 31,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "PURPLE",
+        "BR" : "EMPTY",
+        "TR" : "PURPLE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 32,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "PURPLE",
+        "TL" : "EMPTY",
+        "BR" : "PURPLE",
+        "TR" : "WHITE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 33,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "PURPLE",
+        "TL" : "PURPLE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 34,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "PURPLE",
+        "TR" : "PURPLE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 35,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "BLUE",
+        "TL" : "EMPTY",
+        "BR" : "PURPLE",
+        "TR" : "PEN"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 36,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "PAPER",
+        "BR" : "RED",
+        "TR" : "PURPLE"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 37,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "INK",
+        "TL" : "PURPLE",
+        "BR" : "EMPTY",
+        "TR" : "GREEN"
+      },
+      "points" : 0
+    },
+    {
+      "id" : 38,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "PURPLE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 39,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "PURPLE",
+        "TR" : "WHITE"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 40,
+      "type" : "RESOURCE",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "PURPLE"
+      },
+      "points" : 1
+    },
+    {
+      "id" : 41,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "PEN",
+        "TR" : "WHITE"
+      },
+      "points" : 1,
+      "requirements" : ["RED", "RED", "BLUE"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "PEN"
+      }
+    },
+    {
+      "id" : 42,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "INK"
+      },
+      "points" : 1,
+      "requirements" : ["RED", "RED", "GREEN"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "INK"
+      }
+    },
+    {
+      "id" : 43,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "PAPER",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 1,
+      "requirements" : ["RED", "RED", "PURPLE"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "PAPER"
+      }
+    },
+    {
+      "id" : 44,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "points" : 2,
+      "requirements" : ["RED", "RED", "RED", "BLUE"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 45,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 2,
+      "requirements" : ["RED", "RED", "RED", "GREEN"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 46,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 2,
+      "requirements" : ["RED", "RED", "RED", "PURPLE"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 47,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "INK",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "EMPTY"
+      },
+      "points" : 3,
+      "requirements" : ["RED", "RED", "RED"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 48,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "PEN",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 3,
+      "requirements" : ["RED", "RED", "RED"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 49,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "PAPER"
+      },
+      "points" : 3,
+      "requirements" : ["RED", "RED", "RED"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 50,
+      "type" : "GOLD",
+      "color" : "RED",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "EMPTY"
+      },
+      "points" : 5,
+      "requirements" : ["RED", "RED", "RED", "RED", "RED"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 51,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "PEN",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 1,
+      "requirements" : ["GREEN", "GREEN", "PURPLE"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "PEN"
+      }
+    },
+    {
+      "id" : 52,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "PAPER"
+      },
+      "points" : 1,
+      "requirements" : ["GREEN", "GREEN", "RED"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "PAPER"
+      }
+    },
+    {
+      "id" : 53,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "INK",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 1,
+      "requirements" : ["GREEN", "GREEN", "BLUE"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "INK"
+      }
+    },
+    {
+      "id" : 54,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "points" : 2,
+      "requirements" : ["GREEN", "GREEN", "GREEN", "PURPLE"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 55,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 2,
+      "requirements" : ["GREEN", "GREEN", "GREEN", "BLUE"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 56,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 2,
+      "requirements" : ["GREEN", "GREEN", "GREEN", "RED"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 57,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "PEN",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "EMPTY"
+      },
+      "points" : 3,
+      "requirements" : ["GREEN", "GREEN", "GREEN"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 58,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "PAPER",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 3,
+      "requirements" : ["GREEN", "GREEN", "GREEN"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 59,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "INK"
+      },
+      "points" : 3,
+      "requirements" : ["GREEN", "GREEN", "GREEN"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 60,
+      "type" : "GOLD",
+      "color" : "GREEN",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 5,
+      "requirements" : ["GREEN", "GREEN", "GREEN", "GREEN", "GREEN"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 61,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "INK",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 1,
+      "requirements" : ["BLUE", "BLUE", "PURPLE"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "INK"
+      }
+    },
+    {
+      "id" : 62,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "PAPER",
+        "TR" : "WHITE"
+      },
+      "points" : 1,
+      "requirements" : ["BLUE", "BLUE", "GREEN"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "PAPER"
+      }
+    },
+    {
+      "id" : 63,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "PEN",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 1,
+      "requirements" : ["BLUE", "BLUE", "RED"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "PEN"
+      }
+    },
+    {
+      "id" : 64,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "points" : 2,
+      "requirements" : ["BLUE", "BLUE", "BLUE", "PURPLE"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 65,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 2,
+      "requirements" : ["BLUE", "BLUE", "BLUE", "RED"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 66,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "points" : 2,
+      "requirements" : ["BLUE", "BLUE", "BLUE", "GREEN"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 67,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "PAPER",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "EMPTY"
+      },
+      "points" : 3,
+      "requirements" : ["BLUE", "BLUE", "BLUE"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 68,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "INK"
+      },
+      "points" : 3,
+      "requirements" : ["BLUE", "BLUE", "BLUE"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 69,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "EMPTY",
+        "BR" : "PEN",
+        "TR" : "WHITE"
+      },
+      "points" : 3,
+      "requirements" : ["BLUE", "BLUE", "BLUE"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 70,
+      "type" : "GOLD",
+      "color" : "BLUE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "points" : 5,
+      "requirements" : ["BLUE", "BLUE", "BLUE", "BLUE", "BLUE"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 71,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "PEN"
+      },
+      "points" : 1,
+      "requirements" : ["PURPLE", "PURPLE", "GREEN"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "PEN"
+      }
+    },
+    {
+      "id" : 72,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "PAPER",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 1,
+      "requirements" : ["PURPLE", "PURPLE", "BLUE"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "PAPER"
+      }
+    },
+    {
+      "id" : 73,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "EMPTY",
+        "BR" : "INK",
+        "TR" : "WHITE"
+      },
+      "points" : 1,
+      "requirements" : ["PURPLE", "PURPLE", "RED"],
+      "bonus" : {
+        "type" : "OBJECT",
+        "object" : "INK"
+      }
+    },
+    {
+      "id" : 74,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "points" : 2,
+      "requirements" : ["PURPLE", "PURPLE", "PURPLE", "BLUE"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 75,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 2,
+      "requirements" : ["PURPLE", "PURPLE", "PURPLE", "GREEN"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 76,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 2,
+      "requirements" : ["PURPLE", "PURPLE", "PURPLE", "RED"],
+      "bonus" : {
+        "type" : "CORNER"
+      }
+    },
+    {
+      "id" : 77,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "INK",
+        "BR" : "EMPTY",
+        "TR" : "EMPTY"
+      },
+      "points" : 3,
+      "requirements" : ["PURPLE", "PURPLE", "PURPLE"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 78,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "PAPER"
+      },
+      "points" : 3,
+      "requirements" : ["PURPLE", "PURPLE", "PURPLE"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 79,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "PEN",
+        "TL" : "EMPTY",
+        "BR" : "WHITE",
+        "TR" : "EMPTY"
+      },
+      "points" : 3,
+      "requirements" : ["PURPLE", "PURPLE", "PURPLE"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 80,
+      "type" : "GOLD",
+      "color" : "PURPLE",
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "points" : 5,
+      "requirements" : ["PURPLE", "PURPLE", "PURPLE", "PURPLE", "PURPLE"],
+      "bonus" : {
+        "type" : "NOTHING"
+      }
+    },
+    {
+      "id" : 81,
+      "type" : "STARTER",
+      "points" : 0,
+      "cornersBack" : {
+        "BL" : "PURPLE",
+        "TL" : "RED",
+        "BR" : "BLUE",
+        "TR" : "GREEN"
+      },
+      "cornersFront" : {
+        "BL" : "PURPLE",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "GREEN"
+      },
+      "resources" : ["PURPLE"]
+    },
+    {
+      "id" : 82,
+      "type" : "STARTER",
+      "points" : 0,
+      "cornersBack" : {
+        "BL" : "RED",
+        "TL" : "GREEN",
+        "BR" : "PURPLE",
+        "TR" : "BLUE"
+      },
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "BLUE",
+        "BR" : "RED",
+        "TR" : "WHITE"
+      },
+      "resources" : ["RED"]
+    },
+    {
+      "id" : 83,
+      "type" : "STARTER",
+      "points" : 0,
+      "cornersBack" : {
+        "BL" : "RED",
+        "TL" : "PURPLE",
+        "BR" : "GREEN",
+        "TR" : "BLUE"
+      },
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "resources" : ["GREEN", "RED"]
+    },
+    {
+      "id" : 84,
+      "type" : "STARTER",
+      "points" : 0,
+      "cornersBack" : {
+        "BL" : "BLUE",
+        "TL" : "GREEN",
+        "BR" : "RED",
+        "TR" : "PURPLE"
+      },
+      "cornersFront" : {
+        "BL" : "WHITE",
+        "TL" : "WHITE",
+        "BR" : "WHITE",
+        "TR" : "WHITE"
+      },
+      "resources" : ["BLUE", "PURPLE"]
+    },
+    {
+      "id" : 85,
+      "type" : "STARTER",
+      "points" : 0,
+      "cornersBack" : {
+        "BL" : "GREEN",
+        "TL" : "PURPLE",
+        "BR" : "BLUE",
+        "TR" : "RED"
+      },
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "resources" : ["BLUE", "PURPLE", "GREEN"]
+    },
+    {
+      "id" : 86,
+      "type" : "STARTER",
+      "points" : 0,
+      "cornersBack" : {
+        "BL" : "GREEN",
+        "TL" : "RED",
+        "BR" : "PURPLE",
+        "TR" : "BLUE"
+      },
+      "cornersFront" : {
+        "BL" : "EMPTY",
+        "TL" : "WHITE",
+        "BR" : "EMPTY",
+        "TR" : "WHITE"
+      },
+      "resources" : ["GREEN", "BLUE", "RED"]
+    }
+  ],
+  "objectiveCards": [
+    {
+      "id" : 87,
+      "points" : 2,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [
+          {"color": "RED","x" : 0,"y" : 0},
+          {"color": "RED","x" : 1,"y" : 1},
+          {"color": "RED","x" : 2,"y" : 2}
+        ]
+      }
+    },
+    {
+      "id" : 88,
+      "points" : 2,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [
+          {"color": "GREEN","x" : 0,"y" : 0},
+          {"color": "GREEN","x" : 1,"y" : -1},
+          {"color": "GREEN","x" : 2,"y" : -2}
+        ]
+      }
+    },
+    {
+      "id" : 89,
+      "points" : 2,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [
+          {"color": "BLUE","x" : 0,"y" : 0},
+          {"color": "BLUE","x" : 1,"y" : 1},
+          {"color": "BLUE","x" : 2,"y" : 2}
+        ]
+      }
+    },
+    {
+      "id" : 90,
+      "points" : 2,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [
+          {"color": "PURPLE","x" : 0,"y" : 0},
+          {"color": "PURPLE","x" : 1,"y" : -1},
+          {"color": "PURPLE","x" : 2,"y" : -2}
+        ]
+      }
+    },
+    {
+      "id" : 91,
+      "points" : 3,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [
+          {"color": "RED","x" : 0,"y" : 0},
+          {"color": "RED","x" : 0,"y" : -2},
+          {"color": "GREEN","x" : 1,"y" : -3}
+        ]
+      }
+    },
+    {
+      "id" : 92,
+      "points" : 3,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [
+          {"color": "PURPLE","x" : 0,"y" : 0},
+          {"color": "GREEN","x" : 1,"y" : 1},
+          {"color": "GREEN","x" : 1,"y" : 3}
+        ]
+      }
+    },
+    {
+      "id" : 93,
+      "points" : 3,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [
+          {"color": "BLUE","x" : 0,"y" : 0},
+          {"color": "BLUE","x" : 0,"y" : 2},
+          {"color": "RED","x" : 1,"y" : 3}
+        ]
+      }
+    },
+    {
+      "id" : 94,
+      "points" : 3,
+      "bonus" : {
+        "type" : "PATTERN",
+        "pattern" : [
+          {"color": "BLUE","x" : 0,"y" : 0},
+          {"color": "PURPLE","x" : 1,"y" : -1},
+          {"color": "PURPLE","x" : 1,"y" : -3}
+        ]
+      }
+    },
+    {
+      "id" : 95,
+      "points" : 2,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["RED", "RED", "RED"]
+      }
+    },
+    {
+      "id" : 96,
+      "points" : 2,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["GREEN", "GREEN", "GREEN"]
+      }
+    },
+    {
+      "id" : 97,
+      "points" : 2,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["BLUE", "BLUE", "BLUE"]
+      }
+    },
+    {
+      "id" : 98,
+      "points" : 2,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["PURPLE", "PURPLE", "PURPLE"]
+      }
+    },
+    {
+      "id" : 99,
+      "points" : 3,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["PEN", "INK", "PAPER"]
+      }
+    },
+    {
+      "id" : 100,
+      "points" : 2,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["PAPER", "PAPER"]
+      }
+    },
+    {
+      "id" : 101,
+      "points" : 2,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["INK", "INK"]
+      }
+    },
+    {
+      "id" : 102,
+      "points" : 2,
+      "bonus" : {
+        "type" : "CONTENT",
+        "content" : ["PEN", "PEN"]
+      }
+    }
+  ]
+}
